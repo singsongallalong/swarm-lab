@@ -10,7 +10,9 @@ directions = "directions.txt"
 select = "select.md"
 # Four files, a registry, a catalog, three renders and revisions: closer to the kinds
 # job's work than the effects job's.
-max_turns = 70
+# 100 parts across four files took more than 70 turns for one of six generators in the
+# first run (courtly-gowns, 2026-10-29).
+max_turns = 100
 
 rules = ["docs/guides/armour-looks.md", "docs/art/A014-armour-looks.md", "docs/art/bible.md"]
 
