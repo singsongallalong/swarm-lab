@@ -14,7 +14,7 @@ from pathlib import Path
 
 from . import config
 
-FIELDS = ["run", "skill", "provider", "model", "gens", "finished", "survived", "picked",
+FIELDS = ["run", "skill", "provider", "model", "gens", "finished", "survived", "with_particles", "picked",
           "tokens", "cost_usd", "median_s", "top_reject", "playtest"]
 
 
@@ -39,6 +39,8 @@ def report(run_dir: Path) -> list[dict]:
             "gens": len(mine),
             "finished": sum(r.get("status") == "finished" for r in recs),
             "survived": sum(bool(c.get("survived")) for c in checks),
+            # Survivors whose final render fired at least one particle.
+            "with_particles": sum(bool(c.get("survived")) and ((c.get("manifest") or {}).get("counts") or {}).get("particles", 0) > 0 for c in checks),
             "picked": sum(g["gid"] in picked_gids for g in mine),
             "tokens": sum(r.get("tokens", 0) for r in recs),
             "cost_usd": round(sum(r.get("cost_usd", 0.0) for r in recs), 4),
@@ -49,10 +51,10 @@ def report(run_dir: Path) -> list[dict]:
 
     lines = [f"# Run {meta['run']}: {meta['skill']} ({meta['family']})", "",
              f"Base `{meta['base'][:10]}`, started {meta['started']}.", "",
-             "| Provider | Model | Gens | Finished | Survived | Picked | Tokens | Cost | Median s | Most common rejection |",
-             "|---|---|---|---|---|---|---|---|---|---|"]
+             "| Provider | Model | Gens | Finished | Survived | With particles | Picked | Tokens | Cost | Median s | Most common rejection |",
+             "|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
-        lines.append(f"| {r['provider']} | {r['model']} | {r['gens']} | {r['finished']} | {r['survived']} | {r['picked']} | "
+        lines.append(f"| {r['provider']} | {r['model']} | {r['gens']} | {r['finished']} | {r['survived']} | {r['with_particles']} | {r['picked']} | "
                      f"{r['tokens']:,} | ${r['cost_usd']:.2f} | {r['median_s']} | {r['top_reject'] or '—'} |")
     if sel:
         lines += ["", "## Selection", ""] + [f"- **{l}** ({key.get(l, {}).get('provider', '?')}): {sel['reasons'].get(l, '')}" for l in sel.get("picked", [])]

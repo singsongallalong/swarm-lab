@@ -67,6 +67,50 @@ def particles_render(job: Job, repo: Path) -> bool:
     return bool(spec.get("render_check")) and f.is_file() and re.search(spec["render_check"], f.read_text(encoding="utf-8")) is not None
 
 
+def burst_scales(bursts_src: str) -> dict[str, float]:
+    block = bursts_src.split("SCALE = {", 1)[1].split("}", 1)[0]
+    return {k: float(v) for k, v in re.findall(r"(\w+)\s*=\s*([\d.]+)", block)}
+
+
+def end_size(row_text: str) -> float:
+    """The last point of an Emitters row's size curve: its size at the end of a life."""
+    m = re.search(r"\bsize\s*=\s*\{(.*?)\}\s*,\s*\n", row_text, re.S)
+    points = re.findall(r"\{\s*[\d.]+\s*,\s*([\d.]+)\s*\}", m.group(1)) if m else []
+    if not points:
+        raise ValueError("no size curve")
+    return float(points[-1])
+
+
+def bursts_rule(spec: dict, bursts_src: str, emitters_src: str) -> str:
+    """The game's own burst rule, quoted, with a worked size example computed from the
+    current rows so it stays true when the game changes."""
+    start = bursts_src.find(spec["bursts_from"])
+    fn = bursts_src.find(spec["bursts_fn"], start)
+    end = bursts_src.find("\nend\n", fn)
+    if start < 0 or fn < 0 or end < 0:
+        raise KeyError("the burst rule's markers aren't in " + spec["bursts_file"])
+    quoted = bursts_src[bursts_src.rfind("\n", 0, start) + 1 : end + 5]
+    text = (
+        "### The game's burst rule, quoted\n\n"
+        f"From `{spec['bursts_file']}`, which both the game and the preview read, so a burst "
+        "the preview shows is the burst the game fires. `scale` multiplies the row's sizes "
+        "and speeds.\n\n" + _block("lua", quoted)
+    )
+    row, kind = spec.get("worked_row"), spec.get("worked_kind")
+    if row and kind:
+        scale = burst_scales(bursts_src).get(kind)
+        size = end_size(luarows.get(emitters_src, row))
+        if scale is not None:
+            text += (
+                f"\n\n**Worked example:** `{row}`'s puffs end at {size:g} studs. In a {kind} look "
+                f"they fire at scale {scale:g}, so they end at {size * scale:g} studs on screen: "
+                f"{'specks' if size * scale < 2 else 'readable'} by the measurements above. "
+                f"To end at about 2.5 studs in a {kind}, a row's last size point needs about "
+                f"{2.5 / scale:g}."
+            )
+    return text
+
+
 def particles_section(job: Job, repo: Path, skill: str) -> str:
     spec = job.data.get("particles")
     if not spec:
@@ -86,13 +130,16 @@ def particles_section(job: Job, repo: Path, skill: str) -> str:
             "you'll be judging them from those rings and the row's numbers alone."
         )
     out.append(
-        "An area look fires particles only through its own `emitter` field, which names an "
-        "Emitters row. Give your look its own row (named `{skill}...`) rather than reusing "
-        "`SlamDust`, so its colour, size and timing are this skill's. A burst costs no "
-        "parts (skill-effects.md, \"Particles before parts\"), so particles are the cheap "
-        "way to add volume and haze (SE6) without growing the part count (SE3)."
+        "An area look fires particles only through its own `emitter` field (and a Rocks "
+        "look's `burst`), which names an Emitters row. Give your look its own row (named "
+        "`{skill}...`) rather than reusing `SlamDust`, so its colour, size and timing are "
+        "this skill's."
     )
+    if spec.get("guide"):
+        out.append((job.dir / spec["guide"]).read_text(encoding="utf-8").strip())
     src = read(spec["file"])
+    if spec.get("bursts_file"):
+        out.append(bursts_rule(spec, read(spec["bursts_file"]), src))
     fmt = luarows.between(src, spec["from"], spec["to"])
     if fmt.count("{") > fmt.count("}"):  # the end marker sits on the type's last field
         fmt = fmt.rstrip() + "\n}"

@@ -78,6 +78,9 @@ def main() -> None:
         assert "rbxassetid://124158244676542" in text, "painted textures missing"
         assert "named `ColdSnap...`" in text, "skill name not filled in"
         assert "Renders don't draw particles yet" in text
+        assert "### What particles are for" in text and "### The game's burst rule, quoted" in text
+        assert "function AreaBursts.list" in text, "burst rule not quoted"
+        assert "end at 1.2 studs on screen: specks" in text, "worked example wrong"
         preview = game / "scripts" / "areapreview.luau"
         preview.parent.mkdir(exist_ok=True)
         preview.write_text('local Emitter = require("./motionlab/Emitter")\n')
@@ -93,7 +96,12 @@ def main() -> None:
         assert by["g03"]["reason"] == "no manifest", by["g03"]
         assert by["g05"]["reason"] == "spec DrawnEffects failed", by["g05"]
 
+        # Counts come from the harness's own render: only g04 fires particles.
+        assert by["g04"]["manifest"]["counts"] == {"parts": 21, "particles": 48}, by["g04"]["manifest"].get("counts")
+        assert by["g00"]["manifest"]["counts"]["particles"] == 0
+
         assert sheet.sheet(run_dir).exists()
+        assert "48 particles" in (run_dir / "select.md").read_text()
         key = json.loads((run_dir / "key.json").read_text())
         assert sorted(key) == ["A", "B", "C"]
         assert "Don't open `key.json`" in (run_dir / "select.md").read_text()
@@ -102,6 +110,7 @@ def main() -> None:
         (run_dir / "selection.json").write_text(json.dumps({"picked": [letter], "reasons": {letter: "test"}}))
         rows = report.report(run_dir)
         assert rows[0]["survived"] == 3 and rows[0]["picked"] == 1 and rows[0]["cost_usd"] > 0, rows
+        assert rows[0]["with_particles"] == 1, rows
 
         apply.apply(run_dir, letter)
         branch = subprocess.run(["git", "branch", "--show-current"], cwd=game, capture_output=True, text=True).stdout.strip()

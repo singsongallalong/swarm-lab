@@ -92,8 +92,11 @@ def sheet(run_dir: Path, seed: int | None = None) -> Path | None:
         tiles.append(_tile(renders[0], letter))
         _grid([_tile(r, f"{letter}  {r.name}") for r in renders]).save(run_dir / f"sheet-{letter}.png")
         requests = [r for r in g["manifest"].get("requests", []) if isinstance(r, str) and r.strip() and not r.startswith("<")]
+        counts = g["manifest"].get("counts")
+        # areapreview reports the most of each at any power it drew.
+        counted = f" (Most at any power: {counts['parts']} parts, {counts['particles']} particles.)" if counts else ""
         entries.append(
-            f"- **{letter}**: {g['manifest']['intent']} Full renders: `sheet-{letter}.png`; "
+            f"- **{letter}**: {g['manifest']['intent']}{counted} Full renders: `sheet-{letter}.png`; "
             f"rows: `gens/{g['gid']}/.swarm/patch.diff`"
             + (f". It asked for: {'; '.join(requests)}" if requests else "")
         )

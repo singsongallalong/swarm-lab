@@ -38,6 +38,16 @@ file = "src/shared/data/Emitters.luau"
 from = "-- A curve over a particle's life"
 to = "squash: Curve?"
 examples = ["SlamDust", "GustDust", "SlamSparks"]
+# The written guidance (what particles are for, measured sizes, where each kind fires).
+guide = "particles-guide.md"
+# The game's own rule for where, when and how big each kind bursts: quoted from the
+# scale table's comment through the end of the function that lists the bursts.
+bursts_file = "src/shared/systems/AreaBursts.luau"
+bursts_from = "-- Each kind's burst scale"
+bursts_fn = "function AreaBursts.list"
+# A worked size example in the pack: this row's end size in a look of this kind.
+worked_row = "SlamDust"
+worked_kind = "Wave"
 painted = "src/shared/data/EffectTextures.luau"
 render_check_file = "scripts/areapreview.luau"
 render_check = 'AreaParticles|AreaBursts|\bEmitter\b|render/Particles|\bParticles\b'

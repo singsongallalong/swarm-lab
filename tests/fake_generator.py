@@ -26,14 +26,34 @@ sv = wt / "src/shared/data/SkillVisuals.luau"
 assert "Generator" in (wt / "CLAUDE.md").read_text(), "the game's CLAUDE.md leaked into the worktree"
 
 body = "BROKEN" if gid == "g05" else "frost"
+# g04 also fires its own particles, from its own Emitters row.
+emitter = f'\t\temitter = "{skill}Rime",\n' if gid == "g04" else ""
 row = (
     f"\t{look} = {{\n"
     f'\t\tkind = "Wave",\n'
     f'\t\tabout = "A ring of {body} bursting out to the edge.",\n'
     f"\t\ttravel = 50,\n\t\tsteps = 5,\n\t\tthickness = 0.4,\n\t\tfade = 0.2,\n"
+    f"{emitter}"
     f"\t\tperPower = {{ thickness = 0.1 }},\n"
     f"\t}},\n"
 )
+if gid == "g04":
+    em = wt / "src/shared/data/Emitters.luau"
+    e = em.read_text()
+    rime = (
+        f"\t{skill}Rime = {{\n"
+        '\t\ttexture = "rbxasset://textures/particles/smoke_main.dds",\n'
+        "\t\tcount = 12,\n\t\tlifetime = { 0.5, 0.9 },\n\t\tspeed = { 4, 9 },\n\t\tspread = { 80, 80 },\n"
+        "\t\tacceleration = { 0, 1, 0 },\n\t\tdrag = 4,\n\t\tsize = { { 0, 2 }, { 1, 5 } },\n"
+        "\t\ttransparency = { { 0, 0.3 }, { 1, 1 } },\n\t\tcolor = { 190, 230, 255 },\n"
+        "\t\tlightEmission = 0.5,\n\t\tlightInfluence = 0.5,\n\t},\n"
+    )
+    # The fixture's table line, or the real game's typed one.
+    for opener in ("local Emitters = {\n", "local Emitters: { [string]: Emitter } = {\n"):
+        if opener in e:
+            e = e.replace(opener, opener + rime, 1)
+            break
+    em.write_text(e)
 src = de.read_text()
 src = src.replace("local area: { [string]: AreaLook } = {\n", "local area: { [string]: AreaLook } = {\n" + row, 1)
 if gid == "g02":

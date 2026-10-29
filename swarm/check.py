@@ -112,10 +112,15 @@ def skill_color(wt: Path, skill: str, fallback) -> list[int]:
     return list(fallback)
 
 
+COUNTS = re.compile(r"(\d+) parts(?:, (\d+) particles)?")
+
+
 def render_final(wt: Path, t: config.Target, meta: dict, manifest: dict) -> tuple[list[str], str | None]:
     """Re-render the candidate's look from the brief's own commands, so every tile on
-    the sheet is drawn the same way however the generator rendered it."""
+    the sheet is drawn the same way however the generator rendered it. The preview's
+    own count line (`<n> parts, <m> particles`) goes into the manifest as `counts`."""
     j = config.job(t, meta["job"])
+    manifest.pop("counts", None)  # only the harness's own render counts, never the generator's say-so
     brief = dict(j.brief(meta["brief"]))
     brief["color"] = skill_color(wt, meta["skill"], brief["color"])
     _, cmds = pack.render_commands(brief)
@@ -127,6 +132,9 @@ def render_final(wt: Path, t: config.Target, meta: dict, manifest: dict) -> tupl
         r = subprocess.run(cmd, cwd=wt, env=t.env(), shell=True, text=True, capture_output=True, timeout=300)
         if r.returncode != 0:
             return out, f"its look didn't render ({(r.stdout + r.stderr).strip()[-200:]})"
+        m = COUNTS.search(r.stdout)
+        if m and "counts" not in manifest:
+            manifest["counts"] = {"parts": int(m.group(1)), "particles": int(m.group(2) or 0)}
         path = next((a for a in cmd.split() if a.endswith(".png")), None)
         if path and (wt / path).is_file():
             out.append(path)

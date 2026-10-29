@@ -18,8 +18,15 @@ then the side view. What matters, in order:
 1. It reads as this skill, in its element, at the game camera (SE7, SE8).
 2. Volume, not a flat sheet: layers, out-of-plane motion (SE6).
 3. Power shows, with a flat part count (SE3).
-4. It never hides the fight: nothing big near the camera, nothing covering the body (SE10).
-5. Taste: would it sit beside Ground Slam's heave without looking cheaper (SE2)?
+4. Particles earn their place: you can see what they add at the game camera (haze, a
+   column, an after-beat, matter where it lands), not specks or nothing; the pack's
+   "Particles" section has the measured sizes. Each candidate's line above gives its
+   parts and particles; `0 particles` means none fired. Don't count particles as a
+   virtue on their own: a look without them can still win, but a look whose particles
+   visibly carry part of it is worth more than the same look without.
+5. It never hides the fight: nothing big near the camera, nothing covering the body,
+   including particle clouds that swallow the red post (SE10).
+6. Taste: would it sit beside Ground Slam's heave without looking cheaper (SE2)?
 
 A candidate that is good except for one fixable flaw beats a safe dull one: the critic
 loop fixes flaws, it can't add an idea. Pick at most 3, and fewer if fewer are worth it.
