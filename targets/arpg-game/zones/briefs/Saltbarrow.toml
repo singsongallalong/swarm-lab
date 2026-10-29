@@ -1,0 +1,21 @@
+# A new area for the zones job (fafwa, 2026-10-29: "a diverse set of areas").
+skill = "Saltbarrow"
+family = "zone"
+directions = "directions-saltbarrow.txt"
+brief = """
+A salt desert at night, the bed of a dead inland sea where something enormous died and
+the kings of a vanished people were buried in its bones. Inspired by the bone-strewn deserts of
+the old Warcraft games (giant skeletons half buried in the sand, broken centaur-like tombs, dust
+in the wind), but this game's own place: no names, symbols or shapes from that game.
+
+Its palette: pale salt crust and grey-beige dust, cracked dry mud, sun-bleached bone, dark
+basalt outcrops. Its one muted accent hue is a dusty **ochre** (desaturated old gold, like
+torchlight on sandstone), quite unlike the Ashfields' violet or the Moonwell's teal. The
+landmark is a colossal skeleton or a tomb cut into the bones. The signature effect is the
+wind: dust streaming low over the salt, or a slow ochre glow rising from the tombs.
+
+Make: the tileset (`Saltbarrow.luau`, registered as `saltbarrow`), the props it needs as sculpts (`saltbarrow_...`,
+existing kinds only), one theme (`saltbarrow`) and one or two set pieces (`saltbarrow_...`), and their catalog
+rows. Looks only: no new map, field, monsters or lighting preset. Repaint every ground colour
+by terrain material, inside the bible's caps.
+"""

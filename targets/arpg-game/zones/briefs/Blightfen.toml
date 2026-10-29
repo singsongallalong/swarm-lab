@@ -1,0 +1,21 @@
+# A new area for the zones job (fafwa, 2026-10-29: "a diverse set of areas").
+skill = "Blightfen"
+family = "zone"
+directions = "directions-blightfen.txt"
+brief = """
+A plague bog at night, farmland drowned and poisoned after a sickness emptied it,
+where the dead don't stay buried. Inspired by the plague-struck lands of the old Warcraft games
+(blighted fields, dead orchards, sick green pools, abandoned farmsteads), but this game's own
+place: no names, symbols or shapes from that game.
+
+Its palette: brown-black mud, dead grey-olive reeds and grass, rotten wood, stained stone.
+Its one muted accent hue is a sickly **yellow-green** (desaturated bile, never neon), quite unlike
+the Ashfields' violet or the Moonwell's teal; the only warmth is a few amber lamps the living
+left. The landmark is a plague pit, a drowned chapel or a ring of gibbets. The signature effect is
+the sickness: a low miasma drifting off the pools, or bubbles of foul light rising from them.
+
+Make: the tileset (`Blightfen.luau`, registered as `blightfen`), the props it needs as sculpts (`blightfen_...`,
+existing kinds only), one theme (`blightfen`) and one or two set pieces (`blightfen_...`), and their catalog
+rows. Looks only: no new map, field, monsters or lighting preset. Repaint every ground colour
+by terrain material, inside the bible's caps.
+"""

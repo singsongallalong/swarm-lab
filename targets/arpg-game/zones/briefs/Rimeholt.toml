@@ -1,0 +1,22 @@
+# A new area for the zones job (fafwa, 2026-10-29: "a diverse set of areas").
+skill = "Rimeholt"
+family = "zone"
+directions = "directions-rimeholt.txt"
+brief = """
+A frozen highland at night, where a hill-folk's barrows and standing stones lie under
+old snow beside a lake that never thaws. Inspired by the snowy highlands of the old Warcraft games
+(frost-rimed pines, a frozen lake, runestones and barrow mounds), but this game's own place: no
+names, symbols or shapes from that game.
+
+Its palette: blue-grey snow (never white: the bible caps value), dark frozen earth, black
+pines rimed pale, grey granite. Its one muted accent hue is a pale **ice-blue** with a touch of
+green (desaturated, like light inside old ice), and its lamps are the warm amber of the last
+hill-fires. The landmark is a ring of runestones on the frozen lake's shore or a great barrow.
+The signature effect is the cold: snow drifting low on the wind, or a cold glow under the lake's
+ice.
+
+Make: the tileset (`Rimeholt.luau`, registered as `rimeholt`), the props it needs as sculpts (`rimeholt_...`,
+existing kinds only), one theme (`rimeholt`) and one or two set pieces (`rimeholt_...`), and their catalog
+rows. Looks only: no new map, field, monsters or lighting preset. Repaint every ground colour
+by terrain material, inside the bible's caps.
+"""

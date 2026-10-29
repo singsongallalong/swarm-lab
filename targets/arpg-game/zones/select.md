@@ -18,12 +18,12 @@ $candidates
 Judge, in order:
 
 1. **It reads as its own place from above.** In the `whole` view, by colour and mass
-   alone: a dark cold wood with pale stone and one cold accent, clearly apart from the
+   alone, it matches the brief's palette and one accent hue, clearly apart from the
    Ashfields' grey ash and violet, and from the moor and field.
-2. **The landmark pulls.** A ring of pale stone round the well, or what guards it, that a
-   player would see from the high camera and walk toward (bible B11).
+2. **The landmark pulls.** The brief's landmark, seen from the high camera, is something a
+   player would walk toward (bible B11).
 3. **The signature effect reads** from the game camera in `zone-setpiece`, stays low, and
-   fits the brief: the well's light leaving it.
+   fits the brief.
 4. **The props are worth their parts:** big enough to read past the grass (about
    3.5 studs and up beside the 5-stud post), varied over seeds, and none floating or cut
    into the ground in the site views.

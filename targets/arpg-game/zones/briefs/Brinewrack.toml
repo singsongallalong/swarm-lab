@@ -1,0 +1,22 @@
+# A new area for the zones job (fafwa, 2026-10-29: "a diverse set of areas").
+skill = "Brinewrack"
+family = "zone"
+directions = "directions-brinewrack.txt"
+brief = """
+A drowned coast at night, where a fishing country went under the sea and the tide
+never fully went out. Inspired by the storm-wracked coasts of the old Warcraft games (wrecked
+ships on grey shingle, a dead lighthouse on a headland, drowned villages), but this game's own
+place: no names, symbols or shapes from that game.
+
+Its palette: wet slate-grey shingle and black rock, grey-brown driftwood, bleached ribs of
+wrecked hulls, pale tide-pools. Its one muted accent hue is a cold **sea-green** (desaturated,
+like phosphorescence in kelp), quite unlike the Ashfields' violet or the Moonwell's
+silver-teal. The landmark is the drowned lighthouse or a great wreck. The signature effect is
+the sea's: phosphorescent spray drifting off the tide-pools, or a slow green glow crawling
+along the tideline.
+
+Make: the tileset (`Brinewrack.luau`, registered as `brinewrack`), the props it needs as sculpts (`brinewrack_...`,
+existing kinds only), one theme (`brinewrack`) and one or two set pieces (`brinewrack_...`), and their catalog
+rows. Looks only: no new map, field, monsters or lighting preset. Repaint every ground colour
+by terrain material, inside the bible's caps.
+"""
