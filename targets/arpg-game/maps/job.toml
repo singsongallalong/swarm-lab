@@ -8,8 +8,9 @@
 template = "pack.md"
 directions = "directions.txt"
 select = "select.md"
-# A layout generator is real code: the kinds job (one module) needed 70 turns.
-max_turns = 100
+# A layout generator is real code. In glade-maps (2026-10-29) three of six ran out at 100
+# turns and finished within 30 more, so a run gets 140 (fafwa: "a heightened turn count").
+max_turns = 140
 tools = ["../zones/tools/explain.luau"]
 
 rules = ["docs/guides/adding-areas.md", "docs/art/bible.md"]
