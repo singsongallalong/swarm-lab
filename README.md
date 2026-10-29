@@ -21,12 +21,13 @@ brief ──► context pack ──► N generators (one worktree each, own mode
 
 ## Quick start
 
-Needs Linux (a cloud container or WSL), Python 3.11+, git, Pillow, the `claude` CLI
-(Claude Code) and the game's own toolchain (for arpg-game: `lune`, set up by its
+Needs Linux (a cloud container or WSL), Python 3.10+, git, Pillow, the `claude` CLI
+(Claude Code, which needs a recent Node: Ubuntu 22.04's own `nodejs` is far too old,
+see below) and the game's own toolchain (for arpg-game: `lune`, set up by its
 `scripts/cloud-setup.sh`).
 
 ```bash
-pip install pillow            # the contact sheet's only dependency
+pip install pillow tomli      # tomli only matters on Python 3.10
 cp .env.example .env          # then put your keys in .env (gitignored); the harness reads it itself
 
 # 1. Look at the context pack a brief produces, before spending anything
@@ -47,6 +48,23 @@ python3 -m swarm apply  runs/<run-id> C
 
 `python3 -m swarm run ... --dry-run` builds the worktrees and packs and prints the
 commands without calling any model.
+
+## Setting up WSL (Ubuntu 22.04)
+
+Work in the Linux home folder (`~/roblox`), not under `/mnt/c`: worktrees and symlinks
+are slow or broken on the Windows side.
+
+```bash
+sudo apt update                                        # stale package lists give 404s
+sudo apt install -y python3-pip git unzip curl
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs                             # Node 22, with npm; not Ubuntu's Node 12
+sudo npm install -g @anthropic-ai/claude-code
+pip install pillow tomli
+```
+
+If you run as root, add `IS_SANDBOX=1` to `.env`, or Claude Code refuses to run the
+generators unattended.
 
 ## Layout
 
