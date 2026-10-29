@@ -130,8 +130,10 @@ class Job:
                 return spec
         return None
 
-    def directions(self) -> list[str]:
-        p = self.dir / self.data.get("directions", "directions.txt")
+    def directions(self, brief: dict | None = None) -> list[str]:
+        # A brief may bring its own directions file (in the job's folder).
+        name = (brief or {}).get("directions") or self.data.get("directions", "directions.txt")
+        p = self.dir / name
         if not p.exists():
             return ["No set direction: make the look you think is best."]
         lines = [l.strip() for l in p.read_text().splitlines()]

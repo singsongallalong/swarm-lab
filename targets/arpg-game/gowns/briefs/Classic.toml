@@ -1,0 +1,43 @@
+# The prefix every file, look and catalog key of the set starts with.
+skill = "Classic"
+family = "armour"
+# Who wears it (targets/arpg-game/figures): narrow shoulders, waist and hem carry the outline.
+figure = "feminine"
+# Its own directions: variations on one outfit, not six eras.
+directions = "classic-directions.txt"
+brief = """
+Players wear their own avatars, and many wear the classic blocky body: the square-shouldered,
+yellow-skinned toy figure from Roblox's early years. Fans draw that classic figure dressed in
+gothic lolita, and the nostalgia is the charm. Make that outfit for this game: a gothic
+lolita dress set that looks made for the classic blocky body, as a costume from an old
+catalog would be.
+
+The reference fafwa gave is fan art of a classic figure in this outfit (described here, not
+to be copied part for part):
+
+- A black dress with long sleeves that widen into big hanging bell sleeves from the elbow down.
+- A fitted black bodice laced up the front in crimson, with a crimson bow at the throat and
+  a big crimson bow at the waist.
+- A full, knee-length skirt in tiers: a crimson tier, a cream lace edge, a black outer tier
+  trimmed with a thin crimson stripe, and a crimson ruffle peeking out at the very bottom.
+- Crimson gloves.
+- A headdress: a crimson lace band across the top of the head with a large crimson bow at
+  one side and a tiny clock pinned on it.
+- Below the skirt, dark stockings and pale ruffles at the ankles.
+
+Classic and nostalgic means **toy-like and chunky**: each feature is one or a few big, bold,
+colour-blocked parts that read instantly, like an early catalog accessory, rather than many
+fiddly ones. Flat, clean colour fields; crisp edges; a little bit cute. It must still live
+in this dark night world: the black stays deep, the crimson is a deep blood red (not candy
+red), the cream is soft bone, and worn edges are allowed but not required.
+
+From the high camera it must read as its own family, apart from iron, leather, studded,
+linen (the caster's robe), fenscale and the courtly gowns: a black-and-crimson dress with a
+fitted waist, a full tiered skirt, hanging sleeves and a bowed headdress.
+
+Make all four slots: Helm (the headdress), Chest (the bodice, the upper sleeves and the upper
+skirt tiers), Gloves (the bell sleeves' hanging part and the gloves), Boots (the lower skirt
+tiers, the bottom ruffle, stockings and shoes). Name them ClassicHeaddress, ClassicDress,
+ClassicSleeves and ClassicHem unless your idea calls for better names (keep the Classic
+prefix). Looks only: no base, numbers or drop weight.
+"""

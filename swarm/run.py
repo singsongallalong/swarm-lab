@@ -356,7 +356,7 @@ def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str
 
     rng = random.Random(seed if seed is not None else run_id)
     rng.shuffle(plan)  # mixed providers interleave, so a budget stop doesn't hit one arm
-    directions = j.directions()
+    directions = j.directions(brief)
     gens_meta = []
     for i, prov in enumerate(plan):
         gid = f"g{i:02d}"
