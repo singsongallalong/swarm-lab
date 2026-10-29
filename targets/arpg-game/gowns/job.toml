@@ -27,8 +27,9 @@ pattern = '(local {skill}\w* = require\("\./armourLooks/{skill}\w*"\)|{skill}\w*
 
 [files."src/shared/data/catalog/Gear.luau"]
 mode = "add_lines"
-# One catalog row per look, on one line.
-pattern = '\["armour:{skill}\w*"\] = row\("[^"]{1,90}"\),'
+# One catalog row per look: on one line, or as the formatter wraps a long one onto three
+# (`["armour:X"] = row(`, the quoted description, `),`).
+pattern = '(\["armour:{skill}\w*"\] = row\(("[^"]{1,120}"\),)?|"[^"]{1,120}"|\),)'
 
 # Look files are data modules: strict, small, and requiring only the look types and Kit.
 [purity]

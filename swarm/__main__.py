@@ -38,6 +38,11 @@ def main(argv=None) -> None:
     p = sub.add_parser("apply", help="put a picked candidate on a branch in the game repo")
     p.add_argument("run_dir", type=Path), p.add_argument("letter")
 
+    p = sub.add_parser("resume", help="continue a run's stopped generators, then check, tile and report it")
+    p.add_argument("run_dir", type=Path)
+    p.add_argument("--turns", type=int, default=30, help="more turns each (default 30)")
+    p.add_argument("--concurrency", type=int, default=4)
+
     p = sub.add_parser("probe", help="check a provider works and can see images, with the settings generators get")
     p.add_argument("provider")
     p.add_argument("image", nargs="?", type=Path, default=config.ROOT / "tests" / "probe-heavedrocks.png")
@@ -75,6 +80,13 @@ def main(argv=None) -> None:
         report_mod.report(a.run_dir)
     elif a.cmd == "apply":
         apply_mod.apply(a.run_dir, a.letter)
+    elif a.cmd == "resume":
+        run_mod.resume(a.run_dir, a.turns, a.concurrency)
+        print("check:")
+        res = check_mod.check(a.run_dir)
+        if res["survivors"]:
+            sheet_mod.sheet(a.run_dir)
+        report_mod.report(a.run_dir)
     elif a.cmd == "probe":
         probe(a.provider, a.image.resolve())
 

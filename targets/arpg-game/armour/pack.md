@@ -23,7 +23,8 @@ $files_section
 4. **Register each look** in `ArmourLooks.luau`: one `local <Name> = require("./armourLooks/<Name>")`
    line and one `<Name> = <Name>,` line in the table. Nothing else in that file changes.
 5. **Catalog each look** in `catalog/Gear.luau`: one line, after the other `armour:` rows,
-   exactly `["armour:<Name>"] = row("<what it looks like, one sentence, under 90 characters>"),`.
+   exactly `["armour:<Name>"] = row("<what it looks like, one sentence, under 90 characters>"),`
+   (the formatter may wrap a long one onto three lines; that's fine).
 6. **Stay within the part budget** (below): it's the one rule that's easy to break.
 7. **No new base, numbers, drop weight or bag picture.** Looks only.
 8. **Don't read files outside this pack** unless a command fails and its error names one.

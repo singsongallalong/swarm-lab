@@ -201,7 +201,9 @@ def render_final(wt: Path, t: config.Target, meta: dict, manifest: dict) -> tupl
 def check_one(wt: Path, t: config.Target, j: config.Job, meta: dict, gen: dict, run_specs_too: bool) -> dict:
     skill, base = meta["skill"], meta["base"]
     rec = {"gid": gen["gid"], "provider": gen.get("provider"), "survived": False}
-    if gen.get("status") not in (None, "finished"):
+    # A generator that stopped early (out of turns, say) is judged on what it left, if it
+    # left a manifest: the files are the work, and the checks below are the gate.
+    if gen.get("status") not in (None, "finished") and not (wt / ".swarm" / "manifest.json").exists():
         rec["reason"] = f"generator {gen['status']}"
         return rec
 

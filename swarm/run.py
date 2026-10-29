@@ -254,6 +254,79 @@ def run_one(t, p, wt: Path, log_dir: Path, gid: str, budget: Budget, dry: bool, 
     return rec
 
 
+RESUME_PROMPT = (
+    "You ran out of turns before finishing. Don't start over and don't revise the design "
+    "again: format, render your final look once, run the checks in .swarm/PACK.md's "
+    "Commands and fix only what fails, then write .swarm/manifest.json as the pack says, "
+    "and stop."
+)
+
+
+def resume_one(t, p, wt: Path, log_dir: Path, gid: str, prior: dict, turns: int) -> dict:
+    """Continue a stopped generator's own conversation (claude --resume), so its work so
+    far is kept and only finishing it costs. Usage and time add to the first attempt's."""
+    out_path = log_dir / f"{gid}.out"
+    try:
+        session = json.loads(out_path.read_text().strip().splitlines()[-1]).get("session_id")
+    except (OSError, json.JSONDecodeError, IndexError):
+        session = None
+    rec = dict(prior)
+    if not session:
+        rec["status"] = "not resumed: no session recorded"
+        return rec
+    argv = runtime_argv(p, turns)
+    argv[argv.index("-p") + 1] = RESUME_PROMPT
+    argv += ["--resume", session]
+    t0 = time.time()
+    try:
+        r = subprocess.run(argv, cwd=wt, env=runtime_env(t, p), text=True, capture_output=True, timeout=p.timeout_s)
+        out, err, code = r.stdout, r.stderr, r.returncode
+    except subprocess.TimeoutExpired as e:
+        out = e.stdout.decode() if isinstance(e.stdout, bytes) else (e.stdout or "")
+        err, code = f"timed out after {p.timeout_s}s", -1
+    (log_dir / f"{gid}.resume.out").write_text(out)
+    (log_dir / f"{gid}.resume.err").write_text(err)
+    try:
+        res = json.loads(out.strip().splitlines()[-1]) if out.strip() else {}
+    except (json.JSONDecodeError, IndexError):
+        res = {}
+    usage = res.get("usage", {}) or {}
+    merged = dict(rec.get("usage") or {})
+    for k, v in usage.items():
+        if isinstance(v, (int, float)):
+            merged[k] = merged.get(k, 0) + v
+    rec["usage"] = merged
+    rec["tokens"] = total_tokens(merged)
+    rec["cost_usd"] = round(p.cost(merged), 4)
+    rec["seconds"] = round(rec.get("seconds", 0) + time.time() - t0, 1)
+    rec["turns"] = (rec.get("turns") or 0) + (res.get("num_turns") or 0)
+    rec["resumed"] = True
+    rec["status"] = "finished" if code == 0 else f"exit {code}"
+    return rec
+
+
+def resume(run_dir: Path, turns: int = 30, concurrency: int = 4) -> Path:
+    """Resume every generator of a run that didn't finish and left no manifest."""
+    meta = json.loads((run_dir / "meta.json").read_text())
+    t = config.target(meta["target"])
+    provs = config.providers()
+    recs = {g["gid"]: g for g in json.loads((run_dir / "generators.json").read_text())}
+    todo = [g for g in meta["generators"]
+            if recs.get(g["gid"], {}).get("status") != "finished"
+            and not (run_dir / "gens" / g["gid"] / ".swarm" / "manifest.json").exists()]
+    log = lambda msg: print(f"[{meta['run']}] {msg}", flush=True)  # noqa: E731
+    log(f"resuming {len(todo)}: " + ", ".join(g["gid"] for g in todo) + f" (up to {turns} more turns each)")
+    with cf.ThreadPoolExecutor(max_workers=max(1, concurrency)) as pool:
+        futs = {pool.submit(resume_one, t, provs[g["provider"]], run_dir / "gens" / g["gid"], run_dir / "logs",
+                            g["gid"], recs.get(g["gid"], {}), turns): g for g in todo}
+        for f in cf.as_completed(futs):
+            rec = f.result()
+            recs[rec["gid"]] = rec
+            log(f"{rec['gid']} {rec['provider']}: {rec['status']}, total {rec.get('seconds')}s, ${rec.get('cost_usd')}")
+    (run_dir / "generators.json").write_text(json.dumps([recs[k] for k in sorted(recs)], indent=2))
+    return run_dir
+
+
 def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str | None = None,
         concurrency: int = 4, dry: bool = False, seed: int | None = None) -> Path:
     t = config.target(target_name)
