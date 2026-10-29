@@ -1,3 +1,4 @@
 run,skill,provider,model,gens,finished,survived,with_particles,picked,tokens,cost_usd,median_s,top_reject,playtest
 coldsnap-kinds,ColdSnap,deepseek,deepseek-flash[1m],6,3,3,3,2,21231561,1.227,404.7,generator exit 1,
 reaver-armour,Reaver,deepseek,deepseek-flash[1m],6,6,6,0,3,27573113,1.565,573.0,,
+courtly-gowns,Courtly,deepseek,deepseek-flash[1m],6,1,0,0,0,42257515,2.6231,949.4,generator exit 1,
