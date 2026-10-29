@@ -1,0 +1,16 @@
+{
+  "skill": "Reaver",
+  "look": "ReaverHelm,ReaverChest,ReaverGloves,ReaverBoots",
+  "rows_added": ["ReaverHelm", "ReaverChest", "ReaverGloves", "ReaverBoots"],
+  "intent": "A near-bare barbarian in smoke-cured hide and rawhide — a grey wolf-fur pauldron, a bone jaw mask with two horns and bold ash war-paint bands — so it reads from the high camera as a dark, striped, unplated fighter apart from the iron, leather, studded, linen and fenscale families.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A war-paint colour with real hue (muted ochre or woad blue): the trim limits cap it at a pale ash grey.",
+    "A fur or tuft builder in Kit: the wolf pelt is stacked boxes, since every tuft would cost a part."
+  ]
+}

@@ -185,8 +185,12 @@ def render_final(wt: Path, t: config.Target, meta: dict, manifest: dict) -> tupl
         r = subprocess.run(cmd, cwd=wt, env=t.env(), shell=True, text=True, capture_output=True, timeout=300)
         if r.returncode != 0:
             return out, f"its look didn't render ({(r.stdout + r.stderr).strip()[-200:]})"
+        # armourpreview prints each look's parts, then the set's as "<n> parts worn".
+        worn = re.search(r"(\d+) parts worn", r.stdout)
         m = COUNTS.search(r.stdout)
-        if m and "counts" not in manifest:
+        if worn and "counts" not in manifest:
+            manifest["counts"] = {"parts": int(worn.group(1)), "particles": 0}
+        elif m and "counts" not in manifest:
             manifest["counts"] = {"parts": int(m.group(1)), "particles": int(m.group(2) or 0)}
         path = next((a for a in cmd.split() if a.endswith(".png")), None)
         if path and (wt / path).is_file():

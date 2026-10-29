@@ -1,0 +1,16 @@
+{
+  "skill": "Reaver",
+  "look": "ReaverHelm,ReaverChest,ReaverGloves,ReaverBoots",
+  "rows_added": ["ReaverHelm", "ReaverChest", "ReaverGloves", "ReaverBoots"],
+  "intent": "Scavenged iron plates lashed with rawhide onto dark hide, with one big two-plate right pauldron, a scraped brow band, rust and a bone shard, so the high camera reads brown hide broken by mismatched grey plates and pale lashings.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A torn or frayed part shape: plate corners are clean boxes and wedges, so a scrap reads cut rather than ripped.",
+    "A matted fur colour or material for the neck ruff; felt and hide read as cloth at this camera."
+  ]
+}

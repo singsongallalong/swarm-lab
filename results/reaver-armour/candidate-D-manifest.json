@@ -1,0 +1,16 @@
+{
+  "skill": "Reaver",
+  "look": "ReaverHelm,ReaverChest,ReaverGloves,ReaverBoots",
+  "rows_added": ["ReaverHelm", "ReaverChest", "ReaverGloves", "ReaverBoots"],
+  "intent": "A dark smoke-cured hide set with ash-fur shoulders and cuffs, wide scuffed belts and scavenged iron and bone, whose two great bone antlers throw a pale horned outline above the shoulders at the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A fur material or texture: the pelt is boxes in Fabric, so at close range it reads as pale cloth rather than shaggy fur.",
+    "A third antler segment per side: the 11-part helm cap leaves the antlers two straight-ish segments instead of a branched rack."
+  ]
+}

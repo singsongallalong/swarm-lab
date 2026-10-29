@@ -1,0 +1,16 @@
+{
+  "skill": "Reaver",
+  "look": "ReaverHelm,ReaverChest,ReaverGloves,ReaverBoots",
+  "rows_added": ["ReaverHelm", "ReaverChest", "ReaverGloves", "ReaverBoots"],
+  "intent": "A grizzled grey-brown wolf pelt thrown over lean hide wraps: a big pale ragged fur mantle and wolf-pelt hood are the silhouette, reading apart from the iron, leather, studded, linen and fenscale sets from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A dedicated fur colour or shaggy material: the pelt is faked with plain Leather boxes and a local colour table.",
+    "A few more parts: at 63 of 64 there was no room for more tufts to ragged the mantle's edge."
+  ]
+}

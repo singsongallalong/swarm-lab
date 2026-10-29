@@ -1,0 +1,16 @@
+{
+  "skill": "Reaver",
+  "look": "ReaverHelm,ReaverChest,ReaverGloves,ReaverBoots",
+  "rows_added": ["ReaverHelm", "ReaverChest", "ReaverGloves", "ReaverBoots"],
+  "intent": "A barbarian trophy set: a horned beast-skull helm over smoked hide, a broad wolf-fur mantle and bleached bone trophies, reading from the high camera as pale skull and bone against dark furred hide.",
+  "renders": [
+    ".swarm/out/armour-set-r2.png",
+    ".swarm/out/armour-set-close-r2.png",
+    ".swarm/out/armour-set-fit-r2.png"
+  ],
+  "revisions": 1,
+  "requests": [
+    "A matte fur material: Fabric reads flat on the mane, mantle and pelt, so the shaggy silhouette has to come from geometry.",
+    "A bone colour that reads pale like the fen bone but without Marble's slight sheen; the trophies are the set's signature at the high camera."
+  ]
+}
