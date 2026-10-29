@@ -27,8 +27,7 @@ Needs Linux (a cloud container or WSL), Python 3.11+, git, Pillow, the `claude` 
 
 ```bash
 pip install pillow            # the contact sheet's only dependency
-cp .env.example .env          # add the provider keys you'll use; .env is gitignored
-set -a; . ./.env; set +a
+cp .env.example .env          # then put your keys in .env (gitignored); the harness reads it itself
 
 # 1. Look at the context pack a brief produces, before spending anything
 python3 -m swarm pack arpg-game effects ColdSnap
@@ -92,5 +91,7 @@ with `python3 -m swarm pack ...`, which fails loudly when a file or row it quote
 
 ## Keys
 
-Keys come from the environment only (`.env`, gitignored). Never put a key in
-`providers.toml`, a pack, a log or the game repo.
+Keys live in `.env` at swarm-lab's root (gitignored), one `NAME=value` per line. Every
+`python3 -m swarm ...` command reads it on start, so there's nothing to export. A
+variable already set in your shell wins over the file, for a one-off override. Never put
+a key in `providers.toml`, a pack, a log or the game repo.

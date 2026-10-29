@@ -10,6 +10,29 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def load_dotenv(path: Path | None = None) -> None:
+    """Read KEY=value lines from swarm-lab's .env into the environment. A variable
+    already set in the shell wins, so a one-off override still works. Blank lines and
+    # comments are skipped; quotes around a value are stripped."""
+    path = path or ROOT / ".env"
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.removeprefix("export ").strip()
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        if key and value and key not in os.environ:
+            os.environ[key] = value
+
+
+load_dotenv()
+
+
 def load_toml(path: Path) -> dict:
     with open(path, "rb") as f:
         return tomllib.load(f)
