@@ -1,0 +1,15 @@
+{
+  "skill": "Glade",
+  "look": "GladePaleAvenue",
+  "rows_added": ["glade_well_light"],
+  "intent": "A long dead-straight processional avenue lined with ranks of ruined houses, broken arches and old field walls opens into a vast round glade where a henge of standing stones rings the sacred well's glowing silver-teal pool, then the wood closes in and a narrow way winds out east past two round side glades.",
+  "renders": [
+    ".swarm/out/map-whole-r3.png",
+    ".swarm/out/map-landmark-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A way for a draft to keep the moonwell tileset's own sacred_ring prop set from placing its second stone circle when the layout places the well itself; the layout pushes it out of the heart glade but it still lands elsewhere on every seed.",
+    "A light on a draft landmark: the Moonwell's well light is a tileset piece light, so the layout's own ring had to borrow a Neon pool sculpt for its cold glow while the tileset's lesser ring keeps the real PointLight."
+  ]
+}

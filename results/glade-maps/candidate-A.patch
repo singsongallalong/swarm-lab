@@ -1,0 +1,652 @@
+diff --git a/src/shared/data/DraftedMaps.luau b/src/shared/data/DraftedMaps.luau
+index 32479ef..6c3450a 100644
+--- a/src/shared/data/DraftedMaps.luau
++++ b/src/shared/data/DraftedMaps.luau
+@@ -4,8 +4,10 @@
+ -- `lune run scripts/dresspreview whole out.png 3 1 layout=<Name>` before anything
+ -- builds it.
+ local DraftedMap = require("../systems/DraftedMap")
++local GladeSpiral = require("../systems/draftedmaps/GladeSpiral")
+ 
+ local DraftedMaps: { [string]: DraftedMap.Draft } = {
++	GladeSpiral = GladeSpiral,
+ }
+ 
+ return table.freeze(DraftedMaps)
+diff --git a/src/shared/systems/draftedmaps/GladeSpiral.luau b/src/shared/systems/draftedmaps/GladeSpiral.luau
+new file mode 100644
+index 0000000..d37a583
+--- /dev/null
++++ b/src/shared/systems/draftedmaps/GladeSpiral.luau
+@@ -0,0 +1,631 @@
++--!strict
++-- GladeSpiral: the Moonwell glade's layout (swarm-lab's maps job). A pilgrim's
++-- spiral: the road comes in off the map's edge, coils inward through drowned woods
++-- to the sacred ring at the heart, and leaves by a straight avenue cut across the
++-- coils, with glades opening off the outer turns. Nothing here knows how anything
++-- looks; the moonwell tileset and the sculpts do that.
++local DraftedMap = require("../DraftedMap")
++local Grid = require("../Grid")
++local Heath = require("../Heath")
++local Noise = require("../Noise")
++local TerrainTypes = require("../../TerrainTypes")
++
++type EdgeKind = TerrainTypes.EdgeKind
++type SiteKind = TerrainTypes.SiteKind
++type Map = Heath.Map
++type CellKind = Heath.CellKind
++type Site = Heath.Site
++
++type Point = { x: number, z: number }
++-- A road sample and the half-width, in cells, of the open ground round it there.
++type Sample = { x: number, z: number, band: number }
++-- A clearing opening off a turn: a disc of open ground beside the road.
++type Glade = { x: number, z: number, radius: number }
++
++type Layout = {
++	path: { Sample },
++	spiral: { Sample },
++	glade: number, -- the radius of the ring of open ground round the well
++	dir: number, -- +1 or -1: the way the spiral turns
++}
++
++-- The map, in cells of 4 studs.
++local WIDTH = 128
++local DEPTH = 128
++local AREA = WIDTH * DEPTH
++-- The well stands at the map's middle, the same cell on every seed, so every
++-- road leads to it.
++local WELL_X = 64.5
++local WELL_Z = 64.5
++-- Void kept round the walkable ground; the outermost ring is always wall.
++local MARGIN = 4
++
++-- Half-widths, in cells, and how finely the road is sampled.
++local ROAD_HALF = 1.5
++local RING_ROAD = 9.5
++local SAMPLE_STEP = 0.8
++-- How far, and how fast, the open band's edge wobbles in and out.
++local BAND_FREQUENCY = 0.083
++local BAND_WOBBLE = 1.1
++
++local RIM_FREQUENCY = 0.061
++local RIM_NOISE_OFFSET = 517.3
++
++-- Rim kinds in the order they are dealt out; neighbours in this order meet most
++-- often, so thickets grow against cliffs and fallen precinct walls.
++local EDGE_ORDER: { EdgeKind } = { "drop", "cliff", "thicket", "ruin_wall" }
++local EDGE_WEIGHTS: { [EdgeKind]: number } = {
++	drop = 0.1,
++	cliff = 0.3,
++	thicket = 0.45,
++	ruin_wall = 0.15,
++}
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + rng:NextNumber() * (hi - lo)
++end
++
++-- A whole number in [lo, hi], from NextNumber alone (test stand-ins have no NextInteger).
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(rng:NextNumber(lo, hi + 1))
++end
++
++local function polar(r: number, phi: number): Point
++	return { x = WELL_X + r * math.cos(phi), z = WELL_Z + r * math.sin(phi) }
++end
++
++-- How far from the middle the walkable ground may reach along `phi`, leaving MARGIN
++-- cells of void to the map's edge.
++local function edgeRadius(phi: number): number
++	local c, s = math.abs(math.cos(phi)), math.abs(math.sin(phi))
++	local halfX = (WIDTH - 1) / 2 - MARGIN
++	local halfZ = (DEPTH - 1) / 2 - MARGIN
++	local rx = if c > 1e-6 then halfX / c else math.huge
++	local rz = if s > 1e-6 then halfZ / s else math.huge
++	return math.min(rx, rz)
++end
++
++-- One pass of a three-point smoothing filter over the centreline; kinks where the
++-- spiral hands over to the ring road and the avenue round off.
++local function smooth(samples: { Sample }, passes: number): { Sample }
++	local out = samples
++	for _ = 1, passes do
++		local nextSamples: { Sample } = {}
++		nextSamples[1] = out[1]
++		for i = 2, #out - 1 do
++			local a, b, c = out[i - 1], out[i], out[i + 1]
++			nextSamples[i] = {
++				x = b.x * 0.5 + (a.x + c.x) * 0.25,
++				z = b.z * 0.5 + (a.z + c.z) * 0.25,
++				band = b.band * 0.5 + (a.band + c.band) * 0.25,
++			}
++		end
++		nextSamples[#out] = out[#out]
++		out = nextSamples
++	end
++	return out
++end
++
++-- The road, one continuous curve: a lead-in off the inset edge, the spiral inward,
++-- a swing round the well's half-circle of paving, then the avenue out to the far edge.
++local function buildLayout(rng: Random, field: Noise.Field): Layout
++	-- Where the road comes in (south, either side of due south) and which way it coils.
++	local phi0 = math.rad(90) + between(rng, -1, 1) * math.rad(26)
++	local dir = if rng:NextNumber() < 0.5 then -1 else 1
++	local turns = between(rng, 2, 2.5)
++	local outer = between(rng, 46.5, 50)
++	local inner = between(rng, 14, 17)
++	local bandOuter = between(rng, 4.8, 5.4)
++	local bandInner = between(rng, 3.6, 4.2)
++
++	-- A slow sway in the coil's radius as a function of the angle alone: every turn at
++	-- the same bearing shifts together, so the spiral reads as a path worn by hand while
++	-- the wood between its turns stays as wide as it was.
++	local function sway(phi: number): number
++		return Noise.sample(field, math.cos(phi) * 0.7 + 37.7, math.sin(phi) * 0.7 + 61.3) * 1.4
++	end
++
++	local lead: { Sample } = {}
++	local outerR = outer + sway(phi0)
++	local startRadius = math.min(edgeRadius(phi0), outerR + 12)
++	local leadSteps = math.max(2, math.ceil((startRadius - outerR) / SAMPLE_STEP))
++	for i = 0, leadSteps - 1 do
++		local p = polar(startRadius + (outerR - startRadius) * i / leadSteps, phi0)
++		table.insert(lead, { x = p.x, z = p.z, band = 4.8 })
++	end
++
++	-- The spiral proper: two to two and a half turns, each a little narrower than the
++	-- last as it closes on the well.
++	local spiral: { Sample } = {}
++	local totalPhi = dir * math.rad(360) * turns
++	local spiralLength = 0.5 * (outer + inner) * math.abs(totalPhi)
++	local spiralSteps = math.max(8, math.ceil(spiralLength / SAMPLE_STEP))
++	for i = 0, spiralSteps - 1 do
++		local u = i / spiralSteps
++		local phi = phi0 + totalPhi * u
++		local p = polar(outer + (inner - outer) * u + sway(phi), phi)
++		table.insert(spiral, { x = p.x, z = p.z, band = bandOuter + (bandInner - bandOuter) * u })
++	end
++
++	-- Out of the spiral: swing in to the paved half-ring round the well...
++	local tail: { Sample } = {}
++	local phiEnd = phi0 + totalPhi
++	local innerR = inner + sway(phiEnd)
++	local ringLength = math.pi * 0.5 * (inner + RING_ROAD)
++	local ringSteps = math.max(10, math.ceil(ringLength / SAMPLE_STEP))
++	for i = 1, ringSteps - 1 do
++		local u = i / ringSteps
++		local r = RING_ROAD + (innerR - RING_ROAD) * (1 - u) ^ 1.5
++		local p = polar(r, phiEnd + dir * math.pi * u)
++		table.insert(tail, { x = p.x, z = p.z, band = 4 })
++	end
++	-- ...and the avenue straight out, a little off the radius so it leaves the ring
++	-- smoothly instead of at a right angle.
++	local phiLeave = phiEnd + dir * math.pi
++	local exitAngle = phiLeave + dir * math.rad(12)
++	local exitRadius = edgeRadius(exitAngle)
++	local exitSteps = math.max(2, math.ceil((exitRadius - RING_ROAD) / SAMPLE_STEP))
++	for i = 0, exitSteps do
++		local u = i / exitSteps
++		local p = polar(RING_ROAD + (exitRadius - RING_ROAD) * u, phiLeave + dir * math.rad(12) * u)
++		table.insert(tail, { x = p.x, z = p.z, band = 4.1 })
++	end
++
++	local path: { Sample } = {}
++	for _, s in lead do
++		table.insert(path, s)
++	end
++	for _, s in spiral do
++		table.insert(path, s)
++	end
++	for _, s in tail do
++		table.insert(path, s)
++	end
++
++	return {
++		path = smooth(path, 3),
++		spiral = spiral,
++		glade = innerR + between(rng, 8, 10),
++		dir = dir,
++	}
++end
++
++-- Fills every cell whose centre lies in the disc with `kind`, never in the margin.
++local function stamp(kinds: { CellKind }, cx: number, cz: number, radius: number, kind: CellKind)
++	local r = math.ceil(radius)
++	local x0 = math.max(MARGIN + 1, math.floor(cx) - r)
++	local x1 = math.min(WIDTH - MARGIN, math.floor(cx) + r)
++	local z0 = math.max(MARGIN + 1, math.floor(cz) - r)
++	local z1 = math.min(DEPTH - MARGIN, math.floor(cz) + r)
++	for z = z0, z1 do
++		local row = (z - 1) * WIDTH
++		for x = x0, x1 do
++			if (x - cx) ^ 2 + (z - cz) ^ 2 <= radius * radius then
++				kinds[row + x] = kind
++			end
++		end
++	end
++end
++
++local function fitsInMap(x: number, z: number, radius: number): boolean
++	return x - radius >= MARGIN + 1
++		and x + radius <= WIDTH - MARGIN
++		and z - radius >= MARGIN + 1
++		and z + radius <= DEPTH - MARGIN
++end
++
++local function clearOf(glades: { Glade }, x: number, z: number, radius: number, gap: number): boolean
++	for _, g in glades do
++		local reach = radius + g.radius + gap
++		if (g.x - x) ^ 2 + (g.z - z) ^ 2 < reach * reach then
++			return false
++		end
++	end
++	return true
++end
++
++-- One glade at `t` along the spiral, pushed off the road's flank and overlapping the
++-- band so it opens off it. It may bridge the wood to the next turn, which is what a
++-- clearing in a coiled wood is; only the heart of the map is kept out of its reach.
++local function gladeAt(
++	rng: Random,
++	spiral: { Sample },
++	glades: { Glade },
++	centre: number,
++	t: number,
++	radius: number,
++	firstSide: number
++): boolean
++	local n = #spiral
++	local index = math.max(2, math.min(n - 1, math.floor(t * (n - 1)) + 1))
++	local a, b = spiral[index - 1], spiral[index + 1]
++	local dx, dz = b.x - a.x, b.z - a.z
++	local length = math.max(math.sqrt(dx * dx + dz * dz), 1e-6)
++	local nx, nz = -dz / length, dx / length
++	local sample = spiral[index]
++	local sides = if firstSide > 0 then { 1, -1 } else { -1, 1 }
++	for _ = 1, 3 do
++		for _, side in sides do
++			local offset = sample.band + radius - between(rng, 2, 3.5)
++			local x = sample.x + nx * side * offset
++			local z = sample.z + nz * side * offset
++			local gap = centre + radius * 0.4
++			if
++				fitsInMap(x, z, radius)
++				and (x - WELL_X) ^ 2 + (z - WELL_Z) ^ 2 >= gap * gap
++				and clearOf(glades, x, z, radius, 2)
++			then
++				table.insert(glades, { x = x, z = z, radius = radius })
++				return true
++			end
++		end
++		radius *= 0.85
++	end
++	return false
++end
++
++-- The clearings: one great glade beside an outer turn, and a few smaller ones, so
++-- there is open ground to fight in and room for the order's own shrines and stones.
++local function placeGlades(rng: Random, spiral: { Sample }, centre: number, dir: number): { Glade }
++	local glades: { Glade } = {}
++	local n = #spiral
++	if n < 6 then
++		return glades
++	end
++	for _ = 1, 3 do
++		local t = between(rng, 0.13, 0.33)
++		local radius = between(rng, 13, 16)
++		if gladeAt(rng, spiral, glades, centre, t, radius, dir) then
++			break
++		end
++	end
++	local count = whole(rng, 4, 6)
++	for k = 1, count do
++		local t = 0.06 + 0.62 * ((k - 1) + between(rng, 0.2, 0.8)) / count
++		local radius = between(rng, 8, 11)
++		local side = if rng:NextNumber() < 0.5 then -1 else 1
++		gladeAt(rng, spiral, glades, centre, t, radius, side)
++	end
++	return glades
++end
++
++local function claim(claimed: { [number]: boolean }, map: Map, x0: number, z0: number, x1: number, z1: number)
++	for z = z0, z1 do
++		for x = x0, x1 do
++			claimed[Grid.index(map.grid, x, z)] = true
++		end
++	end
++end
++
++-- Every cell of the rectangle grown by `pad` is open heath that nothing else claimed.
++local function siteFits(
++	map: Map,
++	claimed: { [number]: boolean },
++	x0: number,
++	z0: number,
++	x1: number,
++	z1: number,
++	pad: number,
++	heart: number
++): boolean
++	for z = z0 - pad, z1 + pad do
++		for x = x0 - pad, x1 + pad do
++			if not Grid.inBounds(map.grid, x, z) then
++				return false
++			end
++			local i = Grid.index(map.grid, x, z)
++			if map.kinds[i] ~= "heath" or claimed[i] then
++				return false
++			end
++			if (x - WELL_X) ^ 2 + (z - WELL_Z) ^ 2 < heart * heart then
++				return false
++			end
++		end
++	end
++	return true
++end
++
++-- Tries rectangles of even side, near `cx, cz`, until one stands whole on open heath.
++local function placeSite(
++	map: Map,
++	claimed: { [number]: boolean },
++	rng: Random,
++	cx: number,
++	cz: number,
++	spread: number,
++	kind: SiteKind,
++	heart: number
++): Site?
++	for _ = 1, 160 do
++		local w = 6 + 2 * whole(rng, 0, 2)
++		local d = 6 + 2 * whole(rng, 0, 2)
++		local x0 = math.floor(cx + between(rng, -spread, spread) - w / 2 + 0.5)
++		local z0 = math.floor(cz + between(rng, -spread, spread) - d / 2 + 0.5)
++		local x1, z1 = x0 + w - 1, z0 + d - 1
++		if siteFits(map, claimed, x0, z0, x1, z1, 1, heart) then
++			claim(claimed, map, x0, z0, x1, z1)
++			return { kind = kind, x0 = x0, z0 = z0, x1 = x1, z1 = z1 }
++		end
++	end
++	return nil
++end
++
++-- A ruin or a fenced graveyard in the glades; the ring of open ground round the well
++-- is left to the well.
++local function placeSites(map: Map, glades: { Glade }, rng: Random, heart: number)
++	local claimed: { [number]: boolean } = {}
++	local target = whole(rng, 2, 4)
++	local kinds: { SiteKind } = { "ruin", "graveyard" }
++	local offset = if rng:NextNumber() < 0.5 then 0 else 1
++	for index, glade in glades do
++		if #map.sites >= target then
++			break
++		end
++		local kind = kinds[(index + offset) % 2 + 1]
++		local site = placeSite(map, claimed, rng, glade.x, glade.z, glade.radius * 0.45, kind, heart)
++		if site then
++			table.insert(map.sites, site)
++		end
++	end
++end
++
++-- Low-frequency noise orders the rim cells, then each kind takes its weight's share
++-- of that order, so kinds come in long runs.
++local function assignEdges(map: Map, rim: { number }, field: Noise.Field)
++	local value: { [number]: number } = {}
++	for _, i in rim do
++		local x, z = Grid.coords(map.grid, i)
++		value[i] = Noise.sample(field, x * RIM_FREQUENCY + RIM_NOISE_OFFSET, z * RIM_FREQUENCY)
++	end
++	table.sort(rim, function(a: number, b: number): boolean
++		if value[a] ~= value[b] then
++			return value[a] < value[b]
++		end
++		return a < b
++	end)
++	local weights: { number } = {}
++	local total = 0
++	for k, kind in EDGE_ORDER do
++		weights[k] = EDGE_WEIGHTS[kind] or 0
++		total += weights[k]
++	end
++	local k, budget = 1, 0
++	for n, i in rim do
++		while k < #EDGE_ORDER and n > budget + weights[k] / total * #rim do
++			budget += weights[k] / total * #rim
++			k += 1
++		end
++		map.edges[i] = EDGE_ORDER[k]
++	end
++end
++
++-- The sacred precinct's wall: every rim close to the well, and every rim round a
++-- ruin, is the order's fallen stone.
++local function precinctWalls(map: Map, rim: { number })
++	for _, i in rim do
++		local x, z = Grid.coords(map.grid, i)
++		if (x - WELL_X) ^ 2 + (z - WELL_Z) ^ 2 < 24 * 24 then
++			map.edges[i] = "ruin_wall"
++		end
++	end
++	for _, site in map.sites do
++		if site.kind == "ruin" then
++			for z = site.z0 - 1, site.z1 + 1 do
++				for x = site.x0 - 1, site.x1 + 1 do
++					if Grid.inBounds(map.grid, x, z) then
++						local i = Grid.index(map.grid, x, z)
++						if map.edges[i] ~= nil then
++							map.edges[i] = "ruin_wall"
++						end
++					end
++				end
++			end
++		end
++	end
++end
++
++-- The first road cell within a couple of cells of `point`, so a start or exit the
++-- clipping nudged stays on the road.
++local function snapToRoad(map: Map, point: Point): Grid.CellCoord
++	local cx = math.floor(point.x + 0.5)
++	local cz = math.floor(point.z + 0.5)
++	local bestX, bestZ, best = cx, cz, math.huge
++	for dz = -2, 2 do
++		for dx = -2, 2 do
++			local x, z = cx + dx, cz + dz
++			if Grid.inBounds(map.grid, x, z) and map.kinds[Grid.index(map.grid, x, z)] == "road" then
++				local d = dx * dx + dz * dz
++				if d < best then
++					best, bestX, bestZ = d, x, z
++				end
++			end
++		end
++	end
++	return { x = bestX, z = bestZ }
++end
++
++local function generate(rng: Random): Map
++	local field = Noise.field(rng)
++	local layout = buildLayout(rng, field)
++	local kinds: { CellKind } = table.create(AREA, "void" :: CellKind)
++
++	-- Open ground: the band along the road, wobbling in and out; the glades; the
++	-- ring round the well. The road itself is laid on top after.
++	for _, sample in layout.path do
++		local wobble = Noise.sample(field, sample.x * BAND_FREQUENCY, sample.z * BAND_FREQUENCY) * BAND_WOBBLE
++		stamp(kinds, sample.x, sample.z, sample.band + wobble, "heath")
++	end
++	stamp(kinds, WELL_X, WELL_Z, layout.glade, "heath")
++	local glades = placeGlades(rng, layout.spiral, layout.glade, layout.dir)
++	for _, glade in glades do
++		stamp(kinds, glade.x, glade.z, glade.radius, "heath")
++	end
++	for _, sample in layout.path do
++		stamp(kinds, sample.x, sample.z, ROAD_HALF, "road")
++	end
++
++	local grid = Grid.new(WIDTH, DEPTH, Grid.WALL)
++	for i, kind in kinds do
++		if kind == "heath" or kind == "road" then
++			grid.cells[i] = Grid.FLOOR
++		end
++	end
++	-- Anything the wobble pinched off goes back to the wood.
++	Grid.keepLargestRegion(grid)
++	for i, cell in grid.cells do
++		if cell == Grid.WALL and (kinds[i] == "heath" or kinds[i] == "road") then
++			kinds[i] = "void"
++		end
++	end
++
++	local road: { Point } = {}
++	for _, sample in layout.path do
++		table.insert(road, { x = sample.x, z = sample.z })
++	end
++	local map: Map = {
++		grid = grid,
++		kinds = kinds,
++		edges = {},
++		road = road,
++		start = { x = 0, z = 0 },
++		exit = { x = 0, z = 0 },
++		sites = {},
++		heights = table.create(AREA, 0),
++		terraces = {},
++	}
++
++	placeSites(map, glades, rng, layout.glade + 1)
++
++	local rim: { number } = {}
++	for i, kind in kinds do
++		if kind == "void" then
++			local x, z = Grid.coords(grid, i)
++			for _, d in Grid.NEIGHBOURS do
++				if Grid.get(grid, x + d[1], z + d[2]) == Grid.FLOOR then
++					kinds[i] = "rim"
++					table.insert(rim, i)
++					break
++				end
++			end
++		end
++	end
++	assignEdges(map, rim, field)
++	precinctWalls(map, rim)
++
++	map.start = snapToRoad(map, road[1])
++	map.exit = snapToRoad(map, road[#road])
++	return map
++end
++
++-- A cell the landmark can stand on.
++local function onFloor(map: Map, x: number, z: number): boolean
++	return Grid.get(map.grid, math.floor(x + 0.5), math.floor(z + 0.5)) == Grid.FLOOR
++end
++
++local function farFromSites(map: Map, x: number, z: number, gap: number): boolean
++	for _, site in map.sites do
++		if x >= site.x0 - gap and x <= site.x1 + gap and z >= site.z0 - gap and z <= site.z1 + gap then
++			return false
++		end
++	end
++	return true
++end
++
++local function landmarks(map: Map, rng: Random): { DraftedMap.Landmark }
++	local marks: { DraftedMap.Landmark } = {}
++
++	-- The well itself, first so the close-up shows it: the sacred ring, scaled to read
++	-- from the high camera across the whole glade, with its still black water inside.
++	table.insert(marks, {
++		sculpt = "moonwell_sacred_ring",
++		x = WELL_X,
++		z = WELL_Z,
++		yaw = between(rng, 0, 360),
++		scale = 1.8,
++	})
++	table.insert(marks, {
++		sculpt = "moonwell_pool",
++		x = WELL_X,
++		z = WELL_Z,
++		yaw = between(rng, 0, 360),
++		scale = 1.15,
++	})
++
++	-- Standing stones either side of the road where it comes out of the wood.
++	local gateIn = math.min(6, #map.road)
++	local gateOut = math.min(12, #map.road)
++	local a, b = map.road[gateIn], map.road[gateOut]
++	local gx, gz = b.x - a.x, b.z - a.z
++	local glen = math.max(math.sqrt(gx * gx + gz * gz), 1e-6)
++	for _, side in { -1, 1 } do
++		local x = a.x - gz / glen * side * 4
++		local z = a.z + gx / glen * side * 4
++		if onFloor(map, x, z) then
++			table.insert(marks, {
++				sculpt = "moonwell_standing_stone",
++				x = x,
++				z = z,
++				yaw = math.deg(math.atan2(gx, gz)),
++				scale = 1.4,
++			})
++		end
++	end
++
++	-- The order's last shrine, beside the paved way round the well where the pilgrims
++	-- stopped. The arc's middle is the average of the road points near the middle.
++	local sx, sz, near = 0, 0, 0
++	for _, p in map.road do
++		if (p.x - WELL_X) ^ 2 + (p.z - WELL_Z) ^ 2 <= 12 * 12 then
++			sx += p.x - WELL_X
++			sz += p.z - WELL_Z
++			near += 1
++		end
++	end
++	if near > 0 then
++		local len = math.max(math.sqrt(sx * sx + sz * sz), 1e-6)
++		local ox, oz = sx / len, sz / len
++		for _, sweep in { 0, 0.5, -0.5 } do
++			local angle = math.atan2(oz, ox) + sweep
++			local x = WELL_X + math.cos(angle) * (RING_ROAD + 3.5)
++			local z = WELL_Z + math.sin(angle) * (RING_ROAD + 3.5)
++			if onFloor(map, x, z) and farFromSites(map, x, z, 3) then
++				table.insert(marks, {
++					sculpt = "moonwell_shrine",
++					x = x,
++					z = z,
++					yaw = math.deg(math.atan2(-math.cos(angle), -math.sin(angle))),
++					scale = 1.4,
++				})
++				break
++			end
++		end
++	end
++
++	-- The broken arch frames the way out, part way down the avenue.
++	local out = map.road[#map.road]
++	local ax, az = out.x - WELL_X, out.z - WELL_Z
++	local alen = math.max(math.sqrt(ax * ax + az * az), 1e-6)
++	local ux, uz = ax / alen, az / alen
++	local archX, archZ = WELL_X + ux * 30, WELL_Z + uz * 30
++	if onFloor(map, archX, archZ) then
++		table.insert(marks, {
++			sculpt = "moonwell_arch",
++			x = archX,
++			z = archZ,
++			yaw = math.deg(math.atan2(ux, uz)),
++			scale = 1.4,
++		})
++	end
++
++	return marks
++end
++
++local GladeSpiral: DraftedMap.Draft = {
++	name = "GladeSpiral",
++	about = "A pilgrim's spiral: the road coils in from the edge through drowned woods to the sacred ring at the heart, and out by a straight avenue.",
++	tileset = "moonwell",
++	generate = generate,
++	landmarks = landmarks,
++}
++
++return GladeSpiral

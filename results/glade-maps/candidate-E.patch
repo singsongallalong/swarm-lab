@@ -1,0 +1,662 @@
+diff --git a/src/shared/data/DraftedMaps.luau b/src/shared/data/DraftedMaps.luau
+index 32479ef..0476f9e 100644
+--- a/src/shared/data/DraftedMaps.luau
++++ b/src/shared/data/DraftedMaps.luau
+@@ -4,8 +4,10 @@
+ -- `lune run scripts/dresspreview whole out.png 3 1 layout=<Name>` before anything
+ -- builds it.
+ local DraftedMap = require("../systems/DraftedMap")
++local GladeBrokenRing = require("../systems/draftedmaps/GladeBrokenRing")
+ 
+ local DraftedMaps: { [string]: DraftedMap.Draft } = {
++	GladeBrokenRing = GladeBrokenRing,
+ }
+ 
+ return table.freeze(DraftedMaps)
+diff --git a/src/shared/systems/draftedmaps/GladeBrokenRing.luau b/src/shared/systems/draftedmaps/GladeBrokenRing.luau
+new file mode 100644
+index 0000000..c6321e0
+--- /dev/null
++++ b/src/shared/systems/draftedmaps/GladeBrokenRing.luau
+@@ -0,0 +1,641 @@
++--!strict
++-- GladeBrokenRing: the Moonwell laid out as one great broken ring of open ground
++-- round a drowned isle of black wood. The paved way comes in through the eastern
++-- woods, follows the ring's far shore past the sacred circle of standing stones in
++-- its bay, and leaves through the western woods, crossing the drowned breach on a
++-- narrow causeway. Seeded and pure: every roll comes from `rng` (swarm-lab's maps
++-- job, .swarm/PACK.md).
++local DraftedMap = require("../DraftedMap")
++local Grid = require("../Grid")
++local Heath = require("../Heath")
++local Noise = require("../Noise")
++local TerrainTypes = require("../../TerrainTypes")
++
++type CellKind = Heath.CellKind
++type Map = Heath.Map
++type Site = Heath.Site
++type EdgeKind = TerrainTypes.EdgeKind
++type Landmark = DraftedMap.Landmark
++type Point = { x: number, z: number }
++
++-- The map in cells; a cell is 4 studs.
++local WIDTH = 136
++local DEPTH = 112
++local CELLS = WIDTH * DEPTH
++local CX = (WIDTH + 1) / 2
++local CZ = (DEPTH + 1) / 2
++
++-- The ring: a heath band between two ellipses, and the drowned isle inside it.
++local RX_OUT = 50
++local RZ_OUT = 42
++local RX_IN = 31
++local RZ_IN = 26
++local RX_MID = (RX_OUT + RX_IN) / 2
++local RZ_MID = (RZ_OUT + RZ_IN) / 2
++-- How far inside the heath the isle's thin wood (void, edged as thicket) runs.
++local ISLE_SHELL = 2
++local EDGE_FREQ = 0.06
++local EDGE_WOBBLE = 2.6
++local INNER_WOBBLE = 2
++
++-- The road in and out, and the floor it carries with it through the woods.
++local START_X = WIDTH - 6
++local END_X = 6
++local ROAD_HALF = 1.7
++local CORRIDOR_HALF = 4.2
++local CAUSEWAY_HALF = 2.5
++
++-- The well: just inside the ring's far shore, opposite the start.
++local WELL_DIST = 26
++local WELL_GREEN = 13
++local WELL_CLEAR = 16
++
++-- The drowned breach in the ring, and the causeway over it.
++local INLET_RADIAL = 14
++local INLET_TANGENT = 9
++
++-- Sites keep this many cells of open heath round them.
++local SITE_PAD = 3
++local GLADES = 3
++
++-- Rim kinds in the order they are dealt out, so neighbours read well: the wood
++-- runs into cliffs, cliffs fall to drops, and old walls stand by the breaks.
++local EDGE_ORDER: { EdgeKind } = { "thicket", "cliff", "drop", "ruin_wall" }
++local EDGE_WEIGHT: { [string]: number } = { thicket = 0.52, cliff = 0.2, drop = 0.18, ruin_wall = 0.1 }
++
++local function at(x: number, z: number): number
++	return (z - 1) * WIDTH + x
++end
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + rng:NextNumber() * (hi - lo)
++end
++
++-- Distance from the map's centre to the ellipse (rx, rz) along the direction `phi`.
++local function radiusAt(phi: number, rx: number, rz: number): number
++	local c, s = math.cos(phi), math.sin(phi)
++	return 1 / math.sqrt((c / rx) ^ 2 + (s / rz) ^ 2)
++end
++
++-- Whether two directions are far enough apart (0.42 rad) to keep features apart.
++local function apart(a: number, b: number): boolean
++	local d = (a - b + math.pi) % (2 * math.pi) - math.pi
++	return math.abs(d) > 0.42
++end
++
++local function catmull(p0: number, p1: number, p2: number, p3: number, t: number): number
++	local t2, t3 = t * t, t * t * t
++	return 0.5 * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (3 * p1 - p0 - 3 * p2 + p3) * t3)
++end
++
++-- Dense samples of a Catmull-Rom curve through the control points, so the road
++-- is one smooth polyline with a sample at least every half cell.
++local function sampleCurve(controls: { Point }): { Point }
++	local points: { Point } = {}
++	for i = 1, #controls - 1 do
++		local p0 = controls[math.max(i - 1, 1)]
++		local p1 = controls[i]
++		local p2 = controls[i + 1]
++		local p3 = controls[math.min(i + 2, #controls)]
++		local len = math.sqrt((p2.x - p1.x) ^ 2 + (p2.z - p1.z) ^ 2)
++		local steps = math.max(1, math.ceil(len * 2))
++		for s = 0, steps - 1 do
++			local t = s / steps
++			table.insert(points, {
++				x = math.clamp(catmull(p0.x, p1.x, p2.x, p3.x, t), 1.5, WIDTH - 1.5),
++				z = math.clamp(catmull(p0.z, p1.z, p2.z, p3.z, t), 1.5, DEPTH - 1.5),
++			})
++		end
++	end
++	table.insert(points, controls[#controls])
++	return points
++end
++
++-- Fills a disc of cells, never touching the map's outer ring of wall.
++local function paintDisc(kinds: { CellKind }, cx: number, cz: number, radius: number, kind: CellKind)
++	local r = math.ceil(radius)
++	for z = math.max(2, math.floor(cz) - r), math.min(DEPTH - 1, math.floor(cz) + r) do
++		for x = math.max(2, math.floor(cx) - r), math.min(WIDTH - 1, math.floor(cx) + r) do
++			if (x - cx) ^ 2 + (z - cz) ^ 2 <= radius * radius then
++				kinds[at(x, z)] = kind
++			end
++		end
++	end
++end
++
++-- A whole site on open heath, clear of the road, the well and everything claimed.
++local function siteFits(
++	kinds: { CellKind },
++	claimed: { [number]: boolean },
++	x0: number,
++	z0: number,
++	x1: number,
++	z1: number,
++	wellX: number,
++	wellZ: number
++): boolean
++	for z = z0 - SITE_PAD, z1 + SITE_PAD do
++		for x = x0 - SITE_PAD, x1 + SITE_PAD do
++			if x < 2 or z < 2 or x > WIDTH - 1 or z > DEPTH - 1 then
++				return false
++			end
++			local i = at(x, z)
++			if kinds[i] ~= "heath" or claimed[i] then
++				return false
++			end
++			if (x - wellX) ^ 2 + (z - wellZ) ^ 2 < WELL_CLEAR ^ 2 then
++				return false
++			end
++		end
++	end
++	return true
++end
++
++local function generate(rng: Random): Map
++	local field = Noise.field(rng)
++	local grid = Grid.new(WIDTH, DEPTH, Grid.WALL)
++	local kinds: { CellKind } = table.create(CELLS, "void" :: CellKind)
++
++	-- The plan: in from the east, round the far shore past the well, out west.
++	local phiS = between(rng, -0.25, 0.05)
++	local dir = if rng:NextNumber() < 0.5 then -1 else 1
++	local phiW = phiS + math.pi
++	local phiE = phiW + dir * between(rng, 0.25, 0.4)
++	local phiB = phiS + dir * math.pi * between(rng, 0.35, 0.55)
++	local roadPhase = between(rng, 0, 2 * math.pi)
++	local roadWave = between(rng, 1, 1.8)
++	local entryWander = between(rng, -1.4, 1.4)
++	local exitWander = between(rng, -1.4, 1.4)
++	local wellX = CX + math.cos(phiW) * WELL_DIST
++	local wellZ = CZ + math.sin(phiW) * WELL_DIST
++
++	-- The heath band and the drowned isle inside it: heath to the ring's inner
++	-- edge, a thin wood of void, then the isle's rock.
++	for z = 2, DEPTH - 1 do
++		for x = 2, WIDTH - 1 do
++			local dx, dz = x - CX, z - CZ
++			local r = math.sqrt(dx * dx + dz * dz)
++			local phi = if r > 1e-6 then math.atan2(dz, dx) else 0
++			local outer = radiusAt(phi, RX_OUT, RZ_OUT)
++				+ Noise.sample(field, x * EDGE_FREQ, z * EDGE_FREQ) * EDGE_WOBBLE
++			local inner = radiusAt(phi, RX_IN, RZ_IN)
++				+ Noise.sample(field, x * EDGE_FREQ + 31.7, z * EDGE_FREQ) * INNER_WOBBLE
++			local i = at(x, z)
++			if r <= outer and r >= inner then
++				kinds[i] = "heath"
++			elseif r < inner - ISLE_SHELL then
++				kinds[i] = "outcrop"
++			end
++		end
++	end
++
++	-- Glades opening off the ring, bulging into the outer wood.
++	local glades: { { x: number, z: number, radius: number } } = {}
++	for _ = 1, 60 do
++		if #glades >= GLADES then
++			break
++		end
++		local phi = between(rng, -math.pi, math.pi)
++		if apart(phi, phiS) and apart(phi, phiE) and apart(phi, phiW) and apart(phi, phiB) then
++			local radius = between(rng, 7, 11)
++			local base = radiusAt(phi, RX_OUT, RZ_OUT) - 2
++			table.insert(glades, { x = CX + math.cos(phi) * base, z = CZ + math.sin(phi) * base, radius = radius })
++		end
++	end
++	for _, g in glades do
++		paintDisc(kinds, g.x, g.z, g.radius, "heath")
++	end
++
++	-- The well's green: a bay bitten into the isle's shore round the stones.
++	paintDisc(kinds, wellX, wellZ, WELL_GREEN, "heath")
++
++	-- The drowned breach: an ellipse across the band on the road's route.
++	local bRad = radiusAt(phiB, RX_MID, RZ_MID) + math.sin(phiB * 3 + roadPhase) * roadWave
++	local bx = CX + math.cos(phiB) * bRad
++	local bz = CZ + math.sin(phiB) * bRad
++	local bc, bs = math.cos(phiB), math.sin(phiB)
++	local inInlet: { [number]: boolean } = {}
++	local inletCells: { number } = {}
++	local br = math.ceil(INLET_RADIAL)
++	for z = math.max(2, math.floor(bz) - br), math.min(DEPTH - 1, math.floor(bz) + br) do
++		for x = math.max(2, math.floor(bx) - br), math.min(WIDTH - 1, math.floor(bx) + br) do
++			local dx, dz = x - bx, z - bz
++			local radial = dx * bc + dz * bs
++			local tangent = -dx * bs + dz * bc
++			if (radial / INLET_RADIAL) ^ 2 + (tangent / INLET_TANGENT) ^ 2 <= 1 then
++				local i = at(x, z)
++				kinds[i] = "void"
++				inInlet[i] = true
++				table.insert(inletCells, i)
++			end
++		end
++	end
++
++	-- The road: in along the entry ray, round the ring past the well, out along
++	-- the exit ray.
++	local rMidS = radiusAt(phiS, RX_MID, RZ_MID)
++	local rStart = (START_X - CX) / math.cos(phiS)
++	local rExit = (END_X - CX) / math.cos(phiE)
++	local startPoint: Point = { x = START_X, z = CZ + math.sin(phiS) * rStart }
++	local exitPoint: Point = { x = END_X, z = CZ + math.sin(phiE) * rExit }
++	local controls: { Point } = { startPoint }
++	for k = 1, 2 do
++		local f = k / 3
++		local r = rStart + (rMidS - rStart) * f
++		local side = math.sin(f * math.pi) * entryWander
++		table.insert(controls, {
++			x = CX + math.cos(phiS) * r - math.sin(phiS) * side,
++			z = CZ + math.sin(phiS) * r + math.cos(phiS) * side,
++		})
++	end
++	local span = math.pi + (phiE - phiW) * dir
++	local steps = math.max(3, math.ceil(span / 0.26))
++	for k = 0, steps do
++		local a = phiS + dir * span * k / steps
++		local r = radiusAt(a, RX_MID, RZ_MID) + math.sin(a * 3 + roadPhase) * roadWave
++		table.insert(controls, { x = CX + math.cos(a) * r, z = CZ + math.sin(a) * r })
++	end
++	local rE = radiusAt(phiE, RX_MID, RZ_MID) + math.sin(phiE * 3 + roadPhase) * roadWave
++	for k = 1, 2 do
++		local f = k / 3
++		local r = rE + (rExit - rE) * f
++		local side = math.sin(f * math.pi) * exitWander
++		table.insert(controls, {
++			x = CX + math.cos(phiE) * r - math.sin(phiE) * side,
++			z = CZ + math.sin(phiE) * r + math.cos(phiE) * side,
++		})
++	end
++	table.insert(controls, exitPoint)
++	local road = sampleCurve(controls)
++
++	-- Road cells, and a shoulder over the causeway where the breach took the floor.
++	local roadReach = math.ceil(CAUSEWAY_HALF) + 1
++	for _, p in road do
++		for z = math.max(2, math.floor(p.z) - roadReach), math.min(DEPTH - 1, math.floor(p.z) + roadReach) do
++			for x = math.max(2, math.floor(p.x) - roadReach), math.min(WIDTH - 1, math.floor(p.x) + roadReach) do
++				local d2 = (x - p.x) ^ 2 + (z - p.z) ^ 2
++				local i = at(x, z)
++				if d2 <= ROAD_HALF * ROAD_HALF then
++					kinds[i] = "road"
++				elseif inInlet[i] and d2 <= CAUSEWAY_HALF * CAUSEWAY_HALF then
++					kinds[i] = "heath"
++				end
++			end
++		end
++	end
++	-- The path through the woods at each end is wider than the paving.
++	local corridorReach = math.ceil(CORRIDOR_HALF)
++	for _, p in road do
++		local dx, dz = p.x - CX, p.z - CZ
++		local r = math.sqrt(dx * dx + dz * dz)
++		local phi = if r > 1e-6 then math.atan2(dz, dx) else 0
++		if r > radiusAt(phi, RX_OUT, RZ_OUT) + 0.5 then
++			for z = math.max(2, math.floor(p.z) - corridorReach), math.min(DEPTH - 1, math.floor(p.z) + corridorReach) do
++				for x = math.max(2, math.floor(p.x) - corridorReach), math.min(WIDTH - 1, math.floor(p.x) + corridorReach) do
++					if (x - p.x) ^ 2 + (z - p.z) ^ 2 <= CORRIDOR_HALF * CORRIDOR_HALF then
++						local i = at(x, z)
++						if kinds[i] ~= "road" then
++							kinds[i] = "heath"
++						end
++					end
++				end
++			end
++		end
++	end
++
++	-- Sites: graveyards and ruins on the open ring, in order.
++	local claimed: { [number]: boolean } = {}
++	local sites: { Site } = {}
++	local rules: { { kind: TerrainTypes.SiteKind, count: number, sizeMin: number, sizeMax: number } } = {
++		{ kind = "graveyard", count = 2, sizeMin = 8, sizeMax = 10 },
++		{ kind = "ruin", count = 2, sizeMin = 6, sizeMax = 8 },
++	}
++	for _, rule in rules do
++		for _ = 1, rule.count do
++			for _ = 1, 400 do
++				local phi = between(rng, -math.pi, math.pi)
++				local rIn = radiusAt(phi, RX_IN, RZ_IN)
++				local rOut = radiusAt(phi, RX_OUT, RZ_OUT)
++				local r = rIn + (rOut - rIn) * between(rng, 0.12, 0.88)
++				local half = (rule.sizeMax - rule.sizeMin) / 2 + 1
++				local w = rule.sizeMin + 2 * math.floor(rng:NextNumber() * half)
++				local d = rule.sizeMin + 2 * math.floor(rng:NextNumber() * half)
++				local x0 = math.floor(CX + math.cos(phi) * r - w / 2)
++				local z0 = math.floor(CZ + math.sin(phi) * r - d / 2)
++				local x1, z1 = x0 + w - 1, z0 + d - 1
++				if siteFits(kinds, claimed, x0, z0, x1, z1, wellX, wellZ) then
++					for z = z0, z1 do
++						for x = x0, x1 do
++							claimed[at(x, z)] = true
++						end
++					end
++					table.insert(sites, { kind = rule.kind, x0 = x0, z0 = z0, x1 = x1, z1 = z1 })
++					break
++				end
++			end
++		end
++	end
++
++	-- Build the walkable grid and keep only what the party can reach.
++	for i, kind in kinds do
++		if kind == "heath" or kind == "road" then
++			grid.cells[i] = Grid.FLOOR
++		end
++	end
++	Grid.keepLargestRegion(grid)
++	for i, kind in kinds do
++		if grid.cells[i] == Grid.WALL and (kind == "heath" or kind == "road") then
++			kinds[i] = "void"
++		end
++	end
++	for k = #sites, 1, -1 do
++		if not Heath.onFloor(grid, sites[k]) then
++			table.remove(sites, k)
++		end
++	end
++
++	-- Rim cells line the walkable ground; everything else that was void is off
++	-- the map and stays undressed.
++	local rim: { number } = {}
++	for i, kind in kinds do
++		if kind == "void" then
++			local x, z = Grid.coords(grid, i)
++			for _, d in Grid.NEIGHBOURS do
++				if Grid.get(grid, x + d[1], z + d[2]) == Grid.FLOOR then
++					kinds[i] = "rim"
++					table.insert(rim, i)
++					break
++				end
++			end
++		end
++	end
++
++	-- Cells the road runs through, so their rims read as the path's wood walls.
++	local nearRoad: { [number]: boolean } = {}
++	for _, p in road do
++		local px, pz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++		for dz = -4, 4 do
++			for dx = -4, 4 do
++				if dx * dx + dz * dz <= 16 then
++					local x, z = px + dx, pz + dz
++					if x >= 2 and z >= 2 and x <= WIDTH - 1 and z <= DEPTH - 1 then
++						nearRoad[at(x, z)] = true
++					end
++				end
++			end
++		end
++	end
++	local nearInlet: { [number]: boolean } = {}
++	for _, i in inletCells do
++		local x, z = Grid.coords(grid, i)
++		for dz = -1, 1 do
++			for dx = -1, 1 do
++				if x + dx >= 2 and z + dz >= 2 and x + dx <= WIDTH - 1 and z + dz <= DEPTH - 1 then
++					nearInlet[at(x + dx, z + dz)] = true
++				end
++			end
++		end
++	end
++
++	-- Deal the rim kinds in long runs by low-frequency noise, then override where
++	-- the place says what an edge is: the breach's banks drop, the isle's shore
++	-- and the path's sides are wood, and the map's own edge falls to mist.
++	local value: { [number]: number } = {}
++	for _, i in rim do
++		local x, z = Grid.coords(grid, i)
++		value[i] = Noise.sample(field, x * 0.045 + 97.1, z * 0.045)
++	end
++	local order = table.clone(rim)
++	table.sort(order, function(a: number, b: number): boolean
++		if value[a] ~= value[b] then
++			return value[a] < value[b]
++		end
++		return a < b
++	end)
++	local dealt: { [number]: EdgeKind } = {}
++	local weights: { number } = {}
++	local total = 0
++	for k, kind in EDGE_ORDER do
++		weights[k] = EDGE_WEIGHT[kind] or 0
++		total += weights[k]
++	end
++	local k, budget = 1, 0
++	for n, i in order do
++		while k < #EDGE_ORDER and n > budget + weights[k] / total * #order do
++			budget += weights[k] / total * #order
++			k += 1
++		end
++		dealt[i] = EDGE_ORDER[k]
++	end
++	local edges: { [number]: EdgeKind } = {}
++	for _, i in rim do
++		local x, z = Grid.coords(grid, i)
++		local edge: EdgeKind = dealt[i] or "thicket"
++		local dx, dz = x - CX, z - CZ
++		local r = math.sqrt(dx * dx + dz * dz)
++		local phi = if r > 1e-6 then math.atan2(dz, dx) else 0
++		if x == 1 or z == 1 or x == WIDTH or z == DEPTH or nearInlet[i] then
++			edge = "drop"
++		elseif r < radiusAt(phi, RX_IN, RZ_IN) + 2 or nearRoad[i] then
++			edge = "thicket"
++		end
++		edges[i] = edge
++	end
++
++	local startCell: Grid.CellCoord = { x = math.floor(startPoint.x + 0.5), z = math.floor(startPoint.z + 0.5) }
++	local exitCell: Grid.CellCoord = { x = math.floor(exitPoint.x + 0.5), z = math.floor(exitPoint.z + 0.5) }
++	return {
++		grid = grid,
++		kinds = kinds,
++		edges = edges,
++		road = road,
++		start = startCell,
++		exit = exitCell,
++		sites = sites,
++		heights = table.create(CELLS, 0),
++		terraces = {},
++	}
++end
++
++local function cellKind(map: Map, x: number, z: number): CellKind?
++	local gx, gz = math.floor(x), math.floor(z)
++	if not Grid.inBounds(map.grid, gx, gz) then
++		return nil
++	end
++	return map.kinds[Grid.index(map.grid, gx, gz)]
++end
++
++local function onSite(map: Map, x: number, z: number): boolean
++	local gx, gz = math.floor(x), math.floor(z)
++	for _, site in map.sites do
++		if gx >= site.x0 and gx <= site.x1 and gz >= site.z0 and gz <= site.z1 then
++			return true
++		end
++	end
++	return false
++end
++
++local function nearRoad(map: Map, x: number, z: number, reach: number): boolean
++	local r2 = reach * reach
++	for _, p in map.road do
++		if (p.x - x) ^ 2 + (p.z - z) ^ 2 <= r2 then
++			return true
++		end
++	end
++	return false
++end
++
++-- A point `side` cells to one side of the road at `fraction` along it.
++local function besideRoad(map: Map, fraction: number, side: number): (number?, number?)
++	local n = #map.road
++	local k = math.clamp(math.floor(n * fraction) + 1, 1, n)
++	local p = map.road[k]
++	local a = map.road[math.max(1, k - 1)]
++	local b = map.road[math.min(n, k + 1)]
++	local tx, tz = b.x - a.x, b.z - a.z
++	local tl = math.sqrt(tx * tx + tz * tz)
++	if tl < 1e-6 then
++		return nil, nil
++	end
++	return p.x - tz / tl * side, p.z + tx / tl * side
++end
++
++local function landmarks(map: Map, rng: Random): { Landmark }
++	local marks: { Landmark } = {}
++	local dx, dz = map.start.x - CX, map.start.z - CZ
++	local len = math.max(math.sqrt(dx * dx + dz * dz), 1e-6)
++	local ux, uz = dx / len, dz / len
++	local wellX = CX - ux * WELL_DIST
++	local wellZ = CZ - uz * WELL_DIST
++
++	-- The sacred ring of stones, the map's landmark, in its bay on the far shore,
++	-- with the well's black water held inside it.
++	local ringScale = between(rng, 1.9, 2.2)
++	table.insert(marks, {
++		sculpt = "moonwell_sacred_ring",
++		x = wellX,
++		z = wellZ,
++		yaw = between(rng, 0, 360),
++		scale = ringScale,
++	})
++	table.insert(marks, {
++		sculpt = "moonwell_pool",
++		x = wellX,
++		z = wellZ,
++		yaw = between(rng, 0, 90),
++		scale = ringScale * 0.9,
++	})
++
++	-- A wayside shrine on the green's edge, its lamp the well's cold teal.
++	local shrineAngle = math.atan2(uz, ux) + between(rng, -0.6, 0.6)
++	local shrineX = wellX - math.cos(shrineAngle) * 11
++	local shrineZ = wellZ - math.sin(shrineAngle) * 11
++	if cellKind(map, shrineX, shrineZ) == "heath" and not onSite(map, shrineX, shrineZ) then
++		table.insert(marks, {
++			sculpt = "moonwell_shrine",
++			x = shrineX,
++			z = shrineZ,
++			yaw = math.deg(shrineAngle) + 180 + between(rng, -20, 20),
++		})
++	end
++
++	-- The broken arch behind it, framing the stones from the isle's side.
++	local archX = CX - ux * (WELL_DIST - 9.5)
++	local archZ = CZ - uz * (WELL_DIST - 9.5)
++	if cellKind(map, archX, archZ) == "heath" and not onSite(map, archX, archZ) then
++		table.insert(marks, {
++			sculpt = "moonwell_arch",
++			x = archX,
++			z = archZ,
++			yaw = math.deg(math.atan2(uz, ux)) - 90 + between(rng, -6, 6),
++			scale = between(rng, 1, 1.25),
++		})
++	end
++
++	-- Standing stones beside the way at the two thresholds of the ring.
++	for _, spot in { { fraction = 0.08, side = 4 }, { fraction = 0.94, side = -4 } } do
++		local x, z = besideRoad(map, spot.fraction, spot.side)
++		if x and z and cellKind(map, x, z) == "heath" and not onSite(map, x, z) then
++			table.insert(marks, {
++				sculpt = "moonwell_standing_stone",
++				x = x,
++				z = z,
++				yaw = between(rng, 0, 360),
++			})
++		end
++	end
++
++	-- Ancient trees along the isle's shore and standing in the isle itself, so the
++	-- ring reads as a glade in a wood; no two crowns close enough to merge.
++	local treeSpots: { { x: number, z: number } } = {}
++	local function roomForTree(x: number, z: number): boolean
++		for _, spot in treeSpots do
++			if (spot.x - x) ^ 2 + (spot.z - z) ^ 2 < 5 * 5 then
++				return false
++			end
++		end
++		table.insert(treeSpots, { x = x, z = z })
++		return true
++	end
++	local trees = 0
++	for _ = 1, 100 do
++		if trees >= 5 then
++			break
++		end
++		local phi = between(rng, -math.pi, math.pi)
++		local r = radiusAt(phi, RX_IN, RZ_IN) + between(rng, 1.8, 4.2)
++		local x, z = CX + math.cos(phi) * r, CZ + math.sin(phi) * r
++		if
++			(x - wellX) ^ 2 + (z - wellZ) ^ 2 > 15 * 15
++			and cellKind(map, x, z) == "heath"
++			and not onSite(map, x, z)
++			and not nearRoad(map, x, z, 3.5)
++			and roomForTree(x, z)
++		then
++			table.insert(marks, {
++				sculpt = "moonwell_ancient_tree",
++				x = x,
++				z = z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.9, 1.2),
++			})
++			trees += 1
++		end
++	end
++	local isleTrees = 0
++	for _ = 1, 100 do
++		if isleTrees >= 6 then
++			break
++		end
++		local phi = between(rng, -math.pi, math.pi)
++		local r = radiusAt(phi, RX_IN, RZ_IN) * between(rng, 0.35, 0.9)
++		local x, z = CX + math.cos(phi) * r, CZ + math.sin(phi) * r
++		if
++			(x - wellX) ^ 2 + (z - wellZ) ^ 2 > 16 * 16
++			and cellKind(map, x, z) == "outcrop"
++			and not onSite(map, x, z)
++			and roomForTree(x, z)
++		then
++			table.insert(marks, {
++				sculpt = "moonwell_ancient_tree",
++				x = x,
++				z = z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1, 1.35),
++			})
++			isleTrees += 1
++		end
++	end
++
++	return marks
++end
++
++local GladeBrokenRing: DraftedMap.Draft = {
++	name = "GladeBrokenRing",
++	about = "The Moonwell's drowned glade as one great broken ring of open ground round a drowned isle ringed by black wood, its paved way circling past the sacred circle of stones before it leaves the wood.",
++	tileset = "moonwell",
++	generate = generate,
++	landmarks = landmarks,
++}
++
++return GladeBrokenRing

@@ -1,0 +1,16 @@
+{
+  "skill": "Glade",
+  "look": "GladeSpiral",
+  "rows_added": [],
+  "intent": "The pilgrim's spiral: the road comes in off the map's edge and coils two-and-a-bit turns inward through drowned woods, with broad glades opening off the outer turns, to a great unlit ring of standing stones with a black well-pool inside it at the heart, then leaves by a straight processional avenue cut across the coils; from above it reads as a hand-swung spiral around a wide sacred ring.",
+  "renders": [
+    ".swarm/out/map-whole-r3.png",
+    ".swarm/out/map-landmark-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A light on a draft-placed landmark: the tileset gives its own sacred ring a teal well-light, but a draft's landmark carries none, so the great ring at the heart stands unlit while the dressing's smaller ring nearby glows.",
+    "A floor or edge kind for standing water (drowned ground): the glade is meant to be drowned and the road a causeway over pools, but every cell is heath/road or a dry rim, so the water can only be hinted at with a pool landmark.",
+    "A way for a draft to reserve open heath for a tileset's quiet prop sets (a clearance-4 patch clear of the road and the draft's own keep-outs), so a required placement like the moonwell's sacred ring does not depend on seed luck."
+  ]
+}

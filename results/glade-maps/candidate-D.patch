@@ -1,0 +1,618 @@
+diff --git a/src/shared/data/DraftedMaps.luau b/src/shared/data/DraftedMaps.luau
+index 32479ef..5c36372 100644
+--- a/src/shared/data/DraftedMaps.luau
++++ b/src/shared/data/DraftedMaps.luau
+@@ -4,8 +4,10 @@
+ -- `lune run scripts/dresspreview whole out.png 3 1 layout=<Name>` before anything
+ -- builds it.
+ local DraftedMap = require("../systems/DraftedMap")
++local GladeBloom = require("../systems/draftedmaps/GladeBloom")
+ 
+ local DraftedMaps: { [string]: DraftedMap.Draft } = {
++	GladeBloom = GladeBloom,
+ }
+ 
+ return table.freeze(DraftedMaps)
+diff --git a/src/shared/systems/draftedmaps/GladeBloom.luau b/src/shared/systems/draftedmaps/GladeBloom.luau
+new file mode 100644
+index 0000000..830fcbf
+--- /dev/null
++++ b/src/shared/systems/draftedmaps/GladeBloom.luau
+@@ -0,0 +1,597 @@
++--!strict
++-- Glade Bloom: the Moonwell glade laid out as a crown of glades. A round sacred
++-- clearing holds the well at the map's heart; four or five oval petal glades
++-- hang off it on short necks, and a track comes out of the wood into one petal,
++-- crosses the clearing on a ring path round the well, and leaves through
++-- another. Ruins and graveyards stand in the side glades. Flat ground, one
++-- region, drawn by the moonwell tileset.
++local DraftedMap = require("../DraftedMap")
++local Grid = require("../Grid")
++local Heath = require("../Heath")
++local Noise = require("../Noise")
++local TerrainTypes = require("../../TerrainTypes")
++
++type CellKind = Heath.CellKind
++type EdgeKind = TerrainTypes.EdgeKind
++type Map = Heath.Map
++type Site = Heath.Site
++type Point = { x: number, z: number }
++type Landmark = DraftedMap.Landmark
++type SiteKind = "ruin" | "graveyard"
++
++local WIDTH = 128
++local DEPTH = 128
++
++-- The sacred clearing at the heart, and the ring path the road makes round the well.
++local HUB_RADIUS = 19
++local HUB_WOBBLE = 2
++local ARC_RADIUS = 12.5
++local ROAD_HALF = 2.15
++
++-- The petal glades: ellipses hung off the clearing on short necks.
++local PETAL_COUNT_MIN = 4
++local PETAL_COUNT_MAX = 5
++local PETAL_DISTANCE_MIN = 37
++local PETAL_DISTANCE_MAX = 40
++local PETAL_LONG_MIN = 15
++local PETAL_LONG_MAX = 17
++local PETAL_SHORT_MIN = 13.5
++local PETAL_SHORT_MAX = 15
++local NECK_RADIUS = 4.0
++
++-- The track the road runs along from the wood's edge into the entry and exit
++-- petals; it bows a little so it reads as a wood path, not a runway.
++local APPROACH_RADIUS = 3.8
++
++local SAMPLES_PER_CELL = 2
++local EDGE_FREQUENCY = 0.115
++local RIM_FREQUENCY = 0.055
++local RIM_NOISE_OFFSET = 517.3
++local ATTEMPTS = 80
++
++local EDGE_ORDER: { EdgeKind } = { "drop", "cliff", "thicket", "ruin_wall" }
++local EDGE_WEIGHTS: { [EdgeKind]: number } = {
++	thicket = 0.5,
++	cliff = 0.22,
++	drop = 0.18,
++	ruin_wall = 0.1,
++}
++
++type PetalRole = "entry" | "exit" | "glade"
++
++type Petal = {
++	angle: number,
++	distance: number,
++	long: number,
++	short: number,
++	x: number,
++	z: number,
++	ux: number,
++	uz: number,
++	vx: number,
++	vz: number,
++	role: PetalRole,
++	-- How far from the map's heart the petal's track runs, and how far it bows
++	-- aside by its end; nil but in the entry and exit petals, where the road
++	-- comes in and goes out.
++	track: number?,
++	bow: number?,
++}
++
++type Layout = {
++	cx: number,
++	cz: number,
++	petals: { Petal },
++	entry: Petal,
++	exit: Petal,
++}
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + rng:NextNumber() * (hi - lo)
++end
++
++local function catmullRom(p0: number, p1: number, p2: number, p3: number, t: number): number
++	local t2, t3 = t * t, t * t * t
++	return 0.5 * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (3 * p1 - p0 - 3 * p2 + p3) * t3)
++end
++
++-- Where a petal's track stops: far enough inside the map's edge that the
++-- corridor's floor never reaches the wall ring round the map, allowing for the
++-- bow its end has swung aside by.
++local function trackEnd(cx: number, cz: number, p: Petal, bow: number): number
++	local clear = APPROACH_RADIUS + 1.5
++	local function bound(offset: number): number
++		local ex, ez = cx + p.vx * offset, cz + p.vz * offset
++		local limit = math.huge
++		if p.ux > 1e-6 then
++			limit = math.min(limit, (WIDTH - clear - ex) / p.ux)
++		elseif p.ux < -1e-6 then
++			limit = math.min(limit, (1 + clear - ex) / p.ux)
++		end
++		if p.uz > 1e-6 then
++			limit = math.min(limit, (DEPTH - clear - ez) / p.uz)
++		elseif p.uz < -1e-6 then
++			limit = math.min(limit, (1 + clear - ez) / p.uz)
++		end
++		return limit
++	end
++	return math.min(bound(0), bound(bow))
++end
++
++-- A point on the petal's track, `radial` cells from the map's heart, swung
++-- aside by the bow, which grows quadratically from the petal's heart.
++local function trackPoint(cx: number, cz: number, p: Petal, radial: number): Point
++	local span = (p.track or 0) - p.distance
++	local bow = p.bow or 0
++	local f = if span > 0 then math.clamp((radial - p.distance) / span, 0, 1) else 0
++	local side = bow * f * f
++	return { x = cx + p.ux * radial + p.vx * side, z = cz + p.uz * radial + p.vz * side }
++end
++
++local function makeLayout(rng: Random): Layout
++	local cx, cz = (WIDTH + 1) / 2, (DEPTH + 1) / 2
++	local count = PETAL_COUNT_MIN + math.floor(rng:NextNumber() * (PETAL_COUNT_MAX - PETAL_COUNT_MIN + 1))
++	local base = rng:NextNumber() * 2 * math.pi
++	local petals: { Petal } = {}
++	for i = 1, count do
++		local angle = base + (i - 1) * 2 * math.pi / count + between(rng, -0.11, 0.11)
++		local distance = between(rng, PETAL_DISTANCE_MIN, PETAL_DISTANCE_MAX)
++		local long = between(rng, PETAL_LONG_MIN, PETAL_LONG_MAX)
++		local short = between(rng, PETAL_SHORT_MIN, PETAL_SHORT_MAX)
++		local ux, uz = math.cos(angle), math.sin(angle)
++		table.insert(petals, {
++			angle = angle,
++			distance = distance,
++			long = long,
++			short = short,
++			x = cx + ux * distance,
++			z = cz + uz * distance,
++			ux = ux,
++			uz = uz,
++			vx = -uz,
++			vz = ux,
++			role = "glade",
++		})
++	end
++	-- The road comes in through one petal and out through one two turns away,
++	-- so it crosses the clearing past the well instead of cutting straight through.
++	local exitIndex = if count == PETAL_COUNT_MIN then 3 else 3 + math.floor(rng:NextNumber() * 2)
++	petals[1].role = "entry"
++	petals[exitIndex].role = "exit"
++	for _, p in petals do
++		if p.role ~= "glade" then
++			local straight = trackEnd(cx, cz, p, 0)
++			local span = straight - p.distance
++			local bow = 0
++			if span > 14 then
++				-- Gentle enough that the carved corridor stays wider than the road
++				-- even where the curve leans.
++				bow = between(rng, 0.15, 0.3) * span * (if rng:NextNumber() < 0.5 then -1 else 1)
++			end
++			local finish = trackEnd(cx, cz, p, bow)
++			if finish - p.distance < 10 then
++				bow = 0
++				finish = straight
++			end
++			p.track = finish
++			p.bow = bow
++		end
++	end
++	return { cx = cx, cz = cz, petals = petals, entry = petals[1], exit = petals[exitIndex] }
++end
++
++-- Whether (x, z) is on the glade's walkable ground before anything else is cut:
++-- the hub, each petal's oval, its short neck, and the tracks in and out.
++local function inGlade(layout: Layout, x: number, z: number, field: Noise.Field): boolean
++	local dx, dz = x - layout.cx, z - layout.cz
++	local hubNoise = Noise.sample(field, x * EDGE_FREQUENCY, z * EDGE_FREQUENCY)
++	if math.sqrt(dx * dx + dz * dz) <= HUB_RADIUS + hubNoise * HUB_WOBBLE then
++		return true
++	end
++	for index, p in layout.petals do
++		local u = dx * p.ux + dz * p.uz
++		local v = dx * p.vx + dz * p.vz
++		local n = Noise.sample(field, x * EDGE_FREQUENCY + 71.3 * index, z * EDGE_FREQUENCY)
++		local reach = 1 + n * 0.07
++		local uu = u / (p.long * reach)
++		local vv = v / (p.short * reach)
++		if uu * uu + vv * vv <= 1 then
++			return true
++		end
++		-- The neck: a corridor from the clearing's heart to the petal's.
++		local neck = NECK_RADIUS * (1 + n * 0.06)
++		local neckAlong = math.clamp(u, 0, p.distance)
++		local neckOff = u - neckAlong
++		if neckOff * neckOff + v * v <= neck * neck then
++			return true
++		end
++		-- The track: the same corridor carried on out into the wood, bowing
++		-- aside as it goes.
++		local track = p.track
++		if track and track > p.distance then
++			local span = track - p.distance
++			local radial = math.clamp(u, p.distance, track)
++			local f = math.clamp((radial - p.distance) / span, 0, 1)
++			local side = (p.bow or 0) * f * f
++			local dr, dv = u - radial, v - side
++			local width = APPROACH_RADIUS * (1 + n * 0.06)
++			if dr * dr + dv * dv <= width * width then
++				return true
++			end
++		end
++	end
++	return false
++end
++
++-- The road's control points: straight in along the entry track, on round the
++-- well at ring radius, and straight out along the exit track.
++local function roadControls(layout: Layout): { Point }
++	local out: { Point } = {}
++	local function at(angle: number, distance: number): Point
++		return { x = layout.cx + math.cos(angle) * distance, z = layout.cz + math.sin(angle) * distance }
++	end
++	local entry, exit = layout.entry, layout.exit
++	local entryEnd = entry.track or (entry.distance + entry.long * 0.72)
++	local inSteps = math.max(1, math.ceil((entryEnd - entry.distance) / 5))
++	for s = 0, inSteps - 1 do
++		table.insert(out, trackPoint(layout.cx, layout.cz, entry, entryEnd - (entryEnd - entry.distance) * s / inSteps))
++	end
++	table.insert(out, trackPoint(layout.cx, layout.cz, entry, entry.distance))
++	table.insert(out, at(entry.angle, ARC_RADIUS))
++	local delta = exit.angle - entry.angle
++	while delta > math.pi do
++		delta -= 2 * math.pi
++	end
++	while delta <= -math.pi do
++		delta += 2 * math.pi
++	end
++	local arcSteps = math.max(3, math.ceil(math.abs(delta) / (math.pi / 12)))
++	for s = 1, arcSteps - 1 do
++		table.insert(out, at(entry.angle + delta * s / arcSteps, ARC_RADIUS))
++	end
++	table.insert(out, at(exit.angle, ARC_RADIUS))
++	table.insert(out, trackPoint(layout.cx, layout.cz, exit, exit.distance))
++	local exitEnd = exit.track or (exit.distance + exit.long * 0.72)
++	local outSteps = math.max(1, math.ceil((exitEnd - exit.distance) / 5))
++	for s = 1, outSteps do
++		table.insert(
++			out,
++			trackPoint(layout.cx, layout.cz, exit, exit.distance + (exitEnd - exit.distance) * s / outSteps)
++		)
++	end
++	return out
++end
++
++local function sampleRoad(controls: { Point }): { Point }
++	local points: { Point } = {}
++	local n = #controls
++	for i = 1, n - 1 do
++		local p0 = controls[math.max(i - 1, 1)]
++		local p1 = controls[i]
++		local p2 = controls[i + 1]
++		local p3 = controls[math.min(i + 2, n)]
++		local length = math.sqrt((p2.x - p1.x) ^ 2 + (p2.z - p1.z) ^ 2)
++		local steps = math.max(1, math.ceil(length * SAMPLES_PER_CELL))
++		for s = 0, steps - 1 do
++			local t = s / steps
++			table.insert(
++				points,
++				{ x = catmullRom(p0.x, p1.x, p2.x, p3.x, t), z = catmullRom(p0.z, p1.z, p2.z, p3.z, t) }
++			)
++		end
++	end
++	table.insert(points, controls[n])
++	return points
++end
++
++local function distancesToRoad(road: { Point }): { number }
++	local distances = table.create(WIDTH * DEPTH, math.huge)
++	for z = 1, DEPTH do
++		for x = 1, WIDTH do
++			local best = math.huge
++			for _, p in road do
++				local dx, dz = p.x - x, p.z - z
++				local d = dx * dx + dz * dz
++				if d < best then
++					best = d
++				end
++			end
++			distances[(z - 1) * WIDTH + x] = math.sqrt(best)
++		end
++	end
++	return distances
++end
++
++-- Every cell of the rectangle grown by `pad` is open heath no site or rock has claimed.
++local function fits(
++	map: Map,
++	claimed: { [number]: boolean },
++	x0: number,
++	z0: number,
++	x1: number,
++	z1: number,
++	pad: number
++): boolean
++	for z = z0 - pad, z1 + pad do
++		for x = x0 - pad, x1 + pad do
++			if not Grid.inBounds(map.grid, x, z) then
++				return false
++			end
++			local i = Grid.index(map.grid, x, z)
++			if map.kinds[i] ~= "heath" or claimed[i] then
++				return false
++			end
++		end
++	end
++	return true
++end
++
++local function claim(
++	map: Map,
++	claimed: { [number]: boolean },
++	x0: number,
++	z0: number,
++	x1: number,
++	z1: number,
++	pad: number
++)
++	for z = z0 - pad, z1 + pad do
++		for x = x0 - pad, x1 + pad do
++			if Grid.inBounds(map.grid, x, z) then
++				claimed[Grid.index(map.grid, x, z)] = true
++			end
++		end
++	end
++end
++
++-- One site in a petal's flank, set off the road and inside the oval. A ruin
++-- sits tighter than a graveyard's fenced rows.
++local function trySite(map: Map, claimed: { [number]: boolean }, petal: Petal, kind: SiteKind, rng: Random): Site?
++	local depthMax = if kind == "graveyard" then 10 else 8
++	for _ = 1, ATTEMPTS do
++		local width = 6 + 2 * math.floor(rng:NextNumber() * 2)
++		local depth = 6 + 2 * math.floor(rng:NextNumber() * ((depthMax - 6) / 2 + 1))
++		local side = if rng:NextNumber() < 0.5 then -1 else 1
++		local nearEdge = ROAD_HALF + 1.5 + width / 2
++		local farEdge = petal.short - 1.5 - width / 2
++		if farEdge >= nearEdge then
++			local offset = between(rng, nearEdge, farEdge)
++			local along = between(rng, -2, 2)
++			local px = petal.x + petal.vx * offset * side + petal.ux * along
++			local pz = petal.z + petal.vz * offset * side + petal.uz * along
++			local x0 = math.floor(px + 0.5) - math.floor(width / 2)
++			local z0 = math.floor(pz + 0.5) - math.floor(depth / 2)
++			local x1, z1 = x0 + width - 1, z0 + depth - 1
++			if fits(map, claimed, x0, z0, x1, z1, 1) then
++				claim(map, claimed, x0, z0, x1, z1, 2)
++				return { kind = kind, x0 = x0, z0 = z0, x1 = x1, z1 = z1 }
++			end
++		end
++	end
++	return nil
++end
++
++local function placeSites(map: Map, claimed: { [number]: boolean }, layout: Layout, rng: Random)
++	local placed = 0
++	for _, p in layout.petals do
++		if placed >= 3 then
++			break
++		end
++		if p.role == "glade" then
++			local kind: SiteKind = if rng:NextNumber() < 0.5 then "ruin" else "graveyard"
++			local site = trySite(map, claimed, p, kind, rng)
++			if site then
++				table.insert(map.sites, site)
++				placed += 1
++			end
++		end
++	end
++end
++
++-- Rock islands in the petals: they break up a glade without closing a neck.
++type Rock = { x: number, z: number, r: number }
++
++local function placeOutcrops(
++	map: Map,
++	claimed: { [number]: boolean },
++	layout: Layout,
++	roadDistance: { number },
++	rng: Random
++)
++	local count = 2 + math.floor(rng:NextNumber() * 2)
++	local rocks: { Rock } = {}
++	for _ = 1, count do
++		for _ = 1, ATTEMPTS do
++			local p = layout.petals[1 + math.floor(rng:NextNumber() * #layout.petals)]
++			local angle = rng:NextNumber() * 2 * math.pi
++			local reach = math.sqrt(rng:NextNumber()) * (p.short - 4)
++			local cx = p.x + math.cos(angle) * reach
++			local cz = p.z + math.sin(angle) * reach
++			local radius = between(rng, 1.8, 3)
++			local ok = true
++			for _, r in rocks do
++				if (r.x - cx) ^ 2 + (r.z - cz) ^ 2 < (r.r + radius + 2) ^ 2 then
++					ok = false
++					break
++				end
++			end
++			local pad = math.ceil(radius) + 1
++			if ok then
++				for z = math.floor(cz) - pad, math.floor(cz) + pad do
++					for x = math.floor(cx) - pad, math.floor(cx) + pad do
++						if not Grid.inBounds(map.grid, x, z) then
++							ok = false
++							break
++						end
++						local i = Grid.index(map.grid, x, z)
++						if map.kinds[i] ~= "heath" or claimed[i] or roadDistance[i] < ROAD_HALF + 1.5 then
++							ok = false
++							break
++						end
++					end
++					if not ok then
++						break
++					end
++				end
++			end
++			if ok then
++				table.insert(rocks, { x = cx, z = cz, r = radius })
++				for z = math.floor(cz) - math.ceil(radius), math.floor(cz) + math.ceil(radius) do
++					for x = math.floor(cx) - math.ceil(radius), math.floor(cx) + math.ceil(radius) do
++						if (x - cx) ^ 2 + (z - cz) ^ 2 <= radius * radius then
++							map.kinds[Grid.index(map.grid, x, z)] = "outcrop"
++						end
++					end
++				end
++				break
++			end
++		end
++	end
++end
++
++-- Void cells touching walkable ground become the rim that closes the glade in.
++local function rimCells(map: Map): { number }
++	local rim: { number } = {}
++	local grid = map.grid
++	for i, kind in map.kinds do
++		if kind == "void" then
++			local x, z = Grid.coords(grid, i)
++			for _, d in Grid.NEIGHBOURS do
++				if Grid.get(grid, x + d[1], z + d[2]) == Grid.FLOOR then
++					map.kinds[i] = "rim"
++					table.insert(rim, i)
++					break
++				end
++			end
++		end
++	end
++	return rim
++end
++
++-- Low-frequency noise orders the rim, then each edge kind takes its weight's
++-- share, so a wood's thickets come in long runs between cliffs and old walls.
++local function assignEdges(map: Map, rim: { number }, field: Noise.Field)
++	local value: { [number]: number } = {}
++	for _, i in rim do
++		local x, z = Grid.coords(map.grid, i)
++		value[i] = Noise.sample(field, x * RIM_FREQUENCY + RIM_NOISE_OFFSET, z * RIM_FREQUENCY)
++	end
++	table.sort(rim, function(a: number, b: number): boolean
++		if value[a] ~= value[b] then
++			return value[a] < value[b]
++		end
++		return a < b
++	end)
++	local total = 0
++	local weights: { number } = {}
++	for k, kind in EDGE_ORDER do
++		weights[k] = EDGE_WEIGHTS[kind]
++		total += weights[k]
++	end
++	local k, budget = 1, 0
++	for n, i in rim do
++		while k < #EDGE_ORDER and n > budget + weights[k] / total * #rim do
++			budget += weights[k] / total * #rim
++			k += 1
++		end
++		map.edges[i] = EDGE_ORDER[k]
++	end
++end
++
++local function attempt(rng: Random): Map
++	local field = Noise.field(rng)
++	local grid = Grid.new(WIDTH, DEPTH, Grid.WALL)
++	local map: Map = {
++		grid = grid,
++		kinds = table.create(WIDTH * DEPTH, "void" :: CellKind),
++		edges = {},
++		road = {},
++		start = { x = 0, z = 0 },
++		exit = { x = 0, z = 0 },
++		sites = {},
++		heights = table.create(WIDTH * DEPTH, 0),
++		terraces = {},
++	}
++	local layout = makeLayout(rng)
++	for z = 1, DEPTH do
++		for x = 1, WIDTH do
++			if inGlade(layout, x, z, field) then
++				map.kinds[Grid.index(grid, x, z)] = "heath"
++			end
++		end
++	end
++	-- The road is the ring path and its two tracks, cut across the glade's floor.
++	map.road = sampleRoad(roadControls(layout))
++	local roadDistance = distancesToRoad(map.road)
++	for i, kind in map.kinds do
++		if kind == "heath" and roadDistance[i] <= ROAD_HALF then
++			map.kinds[i] = "road"
++		end
++	end
++	local claimed: { [number]: boolean } = {}
++	placeSites(map, claimed, layout, rng)
++	placeOutcrops(map, claimed, layout, roadDistance, rng)
++	for i, kind in map.kinds do
++		if kind == "heath" or kind == "road" then
++			grid.cells[i] = Grid.FLOOR
++		end
++	end
++	-- A rock can pinch a sliver off; anything unreachable goes back to the wood.
++	Grid.keepLargestRegion(grid)
++	for i, kind in map.kinds do
++		if (kind == "heath" or kind == "road") and grid.cells[i] == Grid.WALL then
++			map.kinds[i] = "void"
++		end
++	end
++	for k = #map.sites, 1, -1 do
++		if not Heath.onFloor(grid, map.sites[k]) then
++			table.remove(map.sites, k)
++		end
++	end
++	assignEdges(map, rimCells(map), field)
++	local first, last = map.road[1], map.road[#map.road]
++	map.start = { x = math.floor(first.x + 0.5), z = math.floor(first.z + 0.5) }
++	map.exit = { x = math.floor(last.x + 0.5), z = math.floor(last.z + 0.5) }
++	return map
++end
++
++-- Landmarks: the well's ring at the heart of the clearing, and the still black
++-- water inside it. The look's own shrines, arches, stones and trees dress the
++-- open heath the layout leaves; the draft keeps those grounds free for them.
++local function placeLandmarks(_map: Map, rng: Random): { Landmark }
++	local cx, cz = (WIDTH + 1) / 2, (DEPTH + 1) / 2
++	local marks: { Landmark } = {}
++
++	-- The well itself, first, so the dress keeps the whole clearing's props off it.
++	local wellScale = between(rng, 1.6, 1.8)
++	table.insert(marks, {
++		sculpt = "moonwell_sacred_ring",
++		x = cx,
++		z = cz,
++		yaw = rng:NextNumber() * 360,
++		scale = wellScale,
++		sink = 0.2,
++	})
++
++	-- The well's water: a still black pool inside the ring, the heart of the glade.
++	table.insert(marks, {
++		sculpt = "moonwell_pool",
++		x = cx,
++		z = cz,
++		yaw = rng:NextNumber() * 360,
++		scale = between(rng, 1.2, 1.4),
++		sink = 0.05,
++	})
++
++	return marks
++end
++
++local draft: DraftedMap.Draft = {
++	name = "GladeBloom",
++	about = "A drowned sacred glade round the Moonwell: petal clearings off a ring path, graveyards and ruins in the side glades.",
++	tileset = "moonwell",
++	generate = attempt,
++	landmarks = placeLandmarks,
++}
++
++return draft

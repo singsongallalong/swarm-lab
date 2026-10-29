@@ -12,6 +12,9 @@ import re
 from dataclasses import dataclass
 
 ROW_START = re.compile(r"^(?P<indent>[ \t]+)(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*\{")
+# A row added after its table as a field assignment at the top of the file
+# (`Sculpts.field_well = {`, as Sculpts.luau does after its table): named by the field.
+DOTTED_START = re.compile(r"^(?P<indent>)[A-Za-z_][A-Za-z0-9_]*\.(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*\{")
 
 
 @dataclass
@@ -71,7 +74,7 @@ def rows(src: str) -> list[Row]:
         pos += len(line)
     k = 0
     while k < len(lines):
-        m = ROW_START.match(lines[k])
+        m = ROW_START.match(lines[k]) or DOTTED_START.match(lines[k])
         if not m:
             k += 1
             continue
@@ -83,7 +86,7 @@ def rows(src: str) -> list[Row]:
         # comment lines directly above, at the same indent
         indent = m.group("indent")
         first = k
-        while first > 0 and lines[first - 1].startswith(indent + "--"):
+        while first > 0 and lines[first - 1].startswith(indent + "--") and (indent or not lines[first - 1].startswith("---")):
             first -= 1
         out.append(Row(m.group("name"), offsets[first], end, indent))
         # skip to the line after this row

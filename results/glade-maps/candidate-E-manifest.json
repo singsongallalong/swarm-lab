@@ -1,0 +1,16 @@
+{
+  "skill": "Glade",
+  "look": "GladeBrokenRing",
+  "rows_added": [],
+  "intent": "A great broken ring of open heath round a drowned rock isle ringed by black wood, its paved way entering through the eastern woods, crossing a drowned breach on a narrow causeway and circling the isle's far shore past the sacred stone circle and its black pool in the western bay before leaving west; from above the ring, the pool, the breach and the isle's tree line are the shape.",
+  "renders": [
+    ".swarm/out/map-whole-r3.png",
+    ".swarm/out/map-landmark-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "a standing-water floor kind or a pool cell, so a drowned breach reads as black water instead of a drop into mist",
+    "a causeway or bridge rim edge with stone parapets, for a road crossing a breach",
+    "a landmark preview eye-level camera aimed at the landmark itself, since the current corner camera can fall inside a map's central mass"
+  ]
+}

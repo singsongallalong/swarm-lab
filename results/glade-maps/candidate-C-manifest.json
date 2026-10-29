@@ -1,0 +1,16 @@
+{
+  "skill": "Glade",
+  "look": "GladeCauseway",
+  "rows_added": [],
+  "intent": "A diagonal bead-chain of wooded, ruined and graveyard isles strung across a black mere by one narrow paved causeway, with the well's ringed isle at its heart; from above it reads as a drowned glade split into islands by dark water, the pale way threading them from landing to landing.",
+  "renders": [
+    ".swarm/out/map-whole-r3.png",
+    ".swarm/out/map-landmark-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A drowned-ground cell kind: interior void within 18 cells of any shore is drawn as stepped rising land, so open water only reads in the middle of very wide basins; a water wall kind would let narrow channels read as water.",
+    "Lights on draft landmarks: a landmark copies its sculpt and size but not the tileset piece's light, so the well's ring cannot carry the moonwell's cold teal glow the way the tileset's own sacred_ring prop does.",
+    "A way to reserve open heath for a tileset's own quiet prop with `least`: the moonwell's sacred_ring needs a clear 15-cell disc away from draft landmarks, which forced the extra side glade."
+  ]
+}

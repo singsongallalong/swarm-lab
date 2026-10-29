@@ -1,0 +1,15 @@
+{
+  "skill": "Glade",
+  "look": "GladeTwinHollows",
+  "rows_added": [],
+  "intent": "Two great wooded hollows joined by one narrow pass, the barrows (fenced graveyards and ruins) filling the first and the sacred stone ring round its black well at the heart of the second, with the road crossing the dead, sweeping round the ring and out the far side, so the shape reads as a double glade rather than the moor's band.",
+  "renders": [
+    ".swarm/out/map-whole-r3.png",
+    ".swarm/out/map-landmark-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A drowned-ground cell kind (or a moonwell pool set) so the hollows' still water and a causeway could sit on a flat map; today only rims and props can say 'drowned'.",
+    "A way for a draft to claim or suppress a tileset's required quiet prop (moonwell's sacred_ring), so the draft's own scaled well is not joined by the tileset's second, smaller ring."
+  ]
+}

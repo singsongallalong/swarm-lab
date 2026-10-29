@@ -1,0 +1,13 @@
+{
+  "skill": "Glade",
+  "look": "GladeBloom",
+  "rows_added": [],
+  "intent": "A crown of four or five petal glades on short necks round a round sacred clearing, where a ring path circles the Moonwell's stone-ringed black pool and two bowed woodland tracks carry the road in through one petal and out through another.",
+  "renders": [".swarm/out/map-whole-r3.png", ".swarm/out/map-landmark-r3.png"],
+  "revisions": 2,
+  "requests": [
+    "A water or drowned-ground cell kind (or a pool site kind), so still water and a causeway over it can be part of the walkable layout instead of only flat pool props.",
+    "A way for a draft landmark to carry a tileset light: the moonwell look's own smaller well ring glows teal, while the draft's landmark ring at the heart cannot.",
+    "A way to reserve the look's own quiet sacred_ring prop, so a draft that places the well itself does not also get the look's second, lit ring in the same clearing."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "picked": ["A", "D", "B"],
+  "reasons": {
+    "A": "The spiral: the most striking map, a road coiling in to the well at the heart, unmistakably a pilgrimage from above, and each seed enters from a different side.",
+    "D": "The hub of glades: a star of glades round a central clearing with the well, and the best variety of the six, with the petals' number and angles changing from seed to seed.",
+    "B": "The pale avenue: a straight processional road into a round glade whose ring holds a pool of cold teal light (its own glade_well_light sculpt), the most beautiful landmark of the run."
+  },
+  "fixes": {
+    "A": "Check the ground between the spiral's turns at eye level: open heath, not a maze of thin strips; packs need room.",
+    "D": "The petals are narrow; widen them so a fight fits in each.",
+    "B": "Its three seeds are nearly the same map; vary the avenue's angle and the side glades."
+  },
+  "notes": "Every draft met the brief's forms, and all six read as different places, not the moor repainted. Three needed 30 more turns (100 wasn't enough for a whole layout generator). One was first rejected for adding a sculpt as `Sculpts.x = {` after the table, the file's own later style; the row reader now accepts that. Variety between seeds is the weak point: most maps vary in detail more than in shape."
+}
