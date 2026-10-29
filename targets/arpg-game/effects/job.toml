@@ -1,0 +1,62 @@
+# The effects job: a skill's area or flight look, made as data only.
+
+template = "pack.md"
+directions = "directions.txt"
+
+# Quoted whole in every pack.
+rules = ["docs/design/skill-effects.md", "docs/art/bible.md"]
+
+# The only files a generator may change. Each entry says how:
+#   owned_row  only the row named by the brief's `skill` may change (or be added)
+#   add_rows   existing rows must stay byte-identical; new rows must start with the
+#              skill's name
+[files."src/shared/data/SkillVisuals.luau"]
+mode = "owned_row"
+
+[files."src/shared/data/DrawnEffects.luau"]
+mode = "add_rows"
+
+[files."src/shared/data/Emitters.luau"]
+mode = "add_rows"
+
+# Rows quoted in every pack as the benchmark (SE2) and its own visuals.
+[[examples]]
+file = "src/shared/data/DrawnEffects.luau"
+row = "HeavedRocks"
+
+[[examples]]
+file = "src/shared/data/SkillVisuals.luau"
+row = "GroundSlam"
+
+[[examples]]
+file = "src/shared/data/Emitters.luau"
+row = "SlamDust"
+
+# The kind reference quoted for each look family: from the first marker up to the line
+# holding the second.
+[kinds.area]
+file = "src/shared/data/DrawnEffects.luau"
+from = "-- Area kinds"
+to = "export type AreaLook"
+
+[kinds.flight]
+file = "src/shared/data/DrawnEffects.luau"
+from = "-- Flight kinds (SkillVfxController"
+to = "export type FlightLook"
+
+# Run by `check` in each surviving worktree, in order; a failure rejects the run.
+[[specs]]
+name = "DrawnEffects"
+cmd = "lune run tests DrawnEffects"
+
+[[specs]]
+name = "AreaLayout"
+cmd = "lune run tests AreaLayout"
+
+[[specs]]
+name = "ContentCompleteness"
+cmd = "lune run tests ContentCompleteness"
+
+[[specs]]
+name = "WeaponEcho"
+cmd = "lune run tests WeaponEcho"

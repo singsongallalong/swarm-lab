@@ -1,0 +1,13 @@
+# One direction per generator, assigned in order and repeated when there are more
+# generators than lines. A direction is a starting stance, not a constraint on the
+# rules: the pack's rules still win. Lines starting with # are ignored.
+Thin and fast: a bright, slim core that's gone almost as soon as it lands; growth with power carried by reach and edge.
+Heavy and layered: three clearly separate layers (core, body, haze), each at its own pace; growth carried by the outer layer.
+Built on Ground Slam's structure: the same ripple-to-the-edge timing as HeavedRocks, re-dressed in this skill's element.
+Two-tone: the skill's hue plus one darker shade of it, no third colour; contrast does the work instead of glow.
+Ground-hugging: everything stays below knee height; it reads from the game camera by its shape on the ground.
+Sharp and crystalline: hard edges, faceted pieces, few of them, each big enough to read at pitch 50.
+Out-of-plane motion first: tilt, twist and stacked heights before anything else; a flat sheet is the failure to avoid.
+Particles before parts: lean on an Emitters burst for the body of the look, keep drawn parts few.
+Minimal: the fewest pieces that still read as this skill at power 0; spend everything on how it grows to power 8.
+Late bloom: quiet at the instant of the hit, the look peaking a beat later as it spreads to the edge.

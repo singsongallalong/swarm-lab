@@ -1,0 +1,17 @@
+# The game the swarm works on.
+
+# A local path or a git URL. Runs clone it into runs/<run>/base, so the original is
+# never touched until `swarm apply`.
+repo = "../arpg-game"
+ref = "origin/main"
+
+# Run once in the base clone; worktrees then share its tools through `share`.
+setup = "bash scripts/cloud-setup.sh"
+# Put on PATH for every command run in a worktree (setup, renders, specs).
+path = ["~/.cache/arpg-tools/bin"]
+# Folders the setup makes that each worktree links to instead of rebuilding.
+share = ["Packages", "ServerPackages", ".luau-lsp", "sourcemap.json"]
+
+# Removed from every generator's worktree, so Claude Code doesn't load the game's
+# session protocol and skills into a generator. A stub CLAUDE.md replaces them.
+hide = ["CLAUDE.md", ".claude"]

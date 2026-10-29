@@ -1,0 +1,260 @@
+"""Launch a swarm: a base clone, one worktree per generator, generators in parallel.
+
+Layout of a run:
+    runs/<run>/
+        meta.json          target, job, brief, base commit, generators (provider, direction)
+        base/              a clone of the game at the run's base commit, set up once
+        pack.md            the context pack every generator gets
+        gens/<gid>/        one worktree per generator
+            .swarm/PACK.md, DIRECTION.md, manifest.json (the generator's), out/ (renders)
+        logs/<gid>.json    the runtime's own output (usage, turns, result)
+        logs/<gid>.err     its stderr
+"""
+
+from __future__ import annotations
+
+import concurrent.futures as cf
+import json
+import os
+import random
+import shutil
+import subprocess
+import threading
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+from . import config, pack
+
+STUB = """# Generator
+
+You are a generator in a swarm, not a session on this game. Ignore any usual protocol
+for this repo. Your whole task is in `.swarm/PACK.md`: read it first, then
+`.swarm/DIRECTION.md`, then do the task.
+"""
+
+PROMPT = "Read .swarm/PACK.md, then .swarm/DIRECTION.md, and do the task they describe. Stop when the manifest is written."
+
+
+def sh(cmd: list[str] | str, cwd: Path, env: dict | None = None, timeout: int | None = None, check=True) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        cmd, cwd=cwd, env=env, timeout=timeout, check=check, text=True, capture_output=True, shell=isinstance(cmd, str)
+    )
+
+
+def parse_gens(spec: str, provs: dict[str, config.Provider]) -> list[str]:
+    """'deepseek:3,qwen:2' -> ['deepseek', 'deepseek', 'deepseek', 'qwen', 'qwen']"""
+    out = []
+    for part in spec.split(","):
+        name, _, n = part.strip().partition(":")
+        if name not in provs:
+            raise SystemExit(f"unknown provider {name!r}; known: {', '.join(provs)}")
+        out += [name] * int(n or 1)
+    return out
+
+
+def make_base(t: config.Target, run_dir: Path, log) -> str:
+    base = run_dir / "base"
+    if not base.exists():
+        src = t.repo_path()
+        log(f"cloning {src or t.repo}")
+        sh(["git", "clone", "--quiet", str(src or t.repo), str(base)], cwd=run_dir)
+        # A local clone's origin is the local repo, which tracks the real origin's
+        # branches as remotes; fetch them so refs like origin/main resolve.
+        if src is not None:
+            sh(["git", "fetch", "--quiet", str(src), "+refs/remotes/origin/*:refs/remotes/origin/*"], cwd=base, check=False)
+        sh(["git", "checkout", "--quiet", "--detach", t.ref], cwd=base)
+        if t.setup:
+            log(f"setup: {t.setup}")
+            r = sh(t.setup, cwd=base, env=t.env(), timeout=1800, check=False)
+            (run_dir / "logs").mkdir(exist_ok=True)
+            (run_dir / "logs" / "setup.log").write_text(r.stdout + r.stderr)
+            if r.returncode != 0:
+                log("setup reported problems (logs/setup.log); continuing")
+    return sh(["git", "rev-parse", "HEAD"], cwd=base).stdout.strip()
+
+
+def render_reference(t: config.Target, brief: dict, run_dir: Path, log) -> None:
+    """Render the brief's reference commands once in the base clone, so the contact
+    sheet's REF tile is drawn exactly as the brief says, whatever generators do."""
+    base = run_dir / "base"
+    (base / ".swarm" / "out").mkdir(parents=True, exist_ok=True)
+    ref_cmds, _ = pack.render_commands(brief)
+    for cmd in ref_cmds.splitlines():
+        r = sh(cmd, cwd=base, env=t.env(), timeout=300, check=False)
+        if r.returncode != 0:
+            log(f"reference render failed: {cmd}\n{(r.stdout + r.stderr)[-400:]}")
+
+
+def make_worktree(t: config.Target, run_dir: Path, gid: str, commit: str, pack_text: str, direction: str) -> Path:
+    base = run_dir / "base"
+    wt = run_dir / "gens" / gid
+    if wt.exists():
+        return wt
+    sh(["git", "worktree", "add", "--quiet", "--detach", str(wt), commit], cwd=base)
+    for rel in t.hide:
+        p = wt / rel
+        if p.is_dir():
+            shutil.rmtree(p)
+        elif p.exists():
+            p.unlink()
+    (wt / "CLAUDE.md").write_text(STUB)
+    for rel in t.share:
+        src, dst = base / rel, wt / rel
+        if src.exists() and not dst.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.symlink_to(src.resolve(), target_is_directory=src.is_dir())
+    sw = wt / ".swarm"
+    (sw / "out").mkdir(parents=True, exist_ok=True)
+    (sw / "PACK.md").write_text(pack_text)
+    (sw / "DIRECTION.md").write_text(pack.direction_file(direction))
+    return wt
+
+
+def runtime_argv(p: config.Provider) -> list[str]:
+    if p.runtime == "claude-code":
+        return [
+            "claude", "-p", PROMPT,
+            "--output-format", "json",
+            "--max-turns", str(p.max_turns),
+            "--model", p.model,
+            "--permission-mode", "bypassPermissions",
+            "--disallowedTools", "WebSearch", "WebFetch", "Task", "Agent", "NotebookEdit",
+        ]
+    if p.runtime == "exec":
+        return list(p.command)
+    raise SystemExit(f"runtime {p.runtime!r} isn't built yet (provider {p.name})")
+
+
+def runtime_env(t: config.Target, p: config.Provider) -> dict[str, str]:
+    env = t.env()
+    if p.runtime == "claude-code":
+        if p.base_url:
+            env["ANTHROPIC_BASE_URL"] = p.base_url
+            env["ANTHROPIC_AUTH_TOKEN"] = p.key()
+            env.pop("ANTHROPIC_API_KEY", None)
+        elif p.key():
+            env["ANTHROPIC_API_KEY"] = p.key()
+        env["ANTHROPIC_MODEL"] = p.model
+        env["ANTHROPIC_SMALL_FAST_MODEL"] = p.small_model or p.model
+        env["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] = "1"
+    return env
+
+
+class Budget:
+    """Stops launching a provider's generators once its run budget is spent."""
+
+    def __init__(self, provs: dict[str, config.Provider]):
+        # None means no cap (budget_tokens = 0 or unset).
+        self.left: dict[str, int | None] = {n: (p.budget_tokens or None) for n, p in provs.items()}
+        self.lock = threading.Lock()
+
+    def ok(self, name: str) -> bool:
+        with self.lock:
+            left = self.left.get(name)
+            return left is None or left > 0
+
+    def spend(self, name: str, tokens: int) -> None:
+        with self.lock:
+            if self.left.get(name) is not None:
+                self.left[name] -= tokens
+
+
+def total_tokens(usage: dict) -> int:
+    return sum(int(usage.get(k, 0)) for k in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens", "output_tokens"))
+
+
+def run_one(t, p, wt: Path, log_dir: Path, gid: str, budget: Budget, dry: bool) -> dict:
+    argv = runtime_argv(p)
+    rec = {"gid": gid, "provider": p.name, "model": p.model, "argv": argv}
+    if dry:
+        rec["status"] = "dry-run"
+        return rec
+    if not budget.ok(p.name):
+        rec["status"] = "skipped: provider budget spent"
+        return rec
+    if p.runtime == "claude-code" and p.key_env and not p.key():
+        rec["status"] = f"skipped: {p.key_env} is not set"
+        return rec
+    t0 = time.time()
+    try:
+        r = subprocess.run(argv, cwd=wt, env=runtime_env(t, p), text=True, capture_output=True, timeout=p.timeout_s)
+        out, err, code = r.stdout, r.stderr, r.returncode
+    except subprocess.TimeoutExpired as e:
+        out = e.stdout.decode() if isinstance(e.stdout, bytes) else (e.stdout or "")
+        err, code = f"timed out after {p.timeout_s}s", -1
+    rec["seconds"] = round(time.time() - t0, 1)
+    rec["exit"] = code
+    (log_dir / f"{gid}.out").write_text(out)
+    (log_dir / f"{gid}.err").write_text(err)
+    usage = {}
+    try:
+        res = json.loads(out.strip().splitlines()[-1]) if out.strip() else {}
+        usage = res.get("usage", {}) or {}
+        rec["turns"] = res.get("num_turns")
+        rec["runtime_error"] = res.get("is_error", False)
+    except (json.JSONDecodeError, IndexError):
+        rec["runtime_error"] = True
+    rec["usage"] = usage
+    rec["tokens"] = total_tokens(usage)
+    rec["cost_usd"] = round(p.cost(usage), 4)
+    budget.spend(p.name, rec["tokens"])
+    rec["status"] = "finished" if code == 0 else f"exit {code}"
+    return rec
+
+
+def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str | None = None,
+        concurrency: int = 4, dry: bool = False, seed: int | None = None) -> Path:
+    t = config.target(target_name)
+    j = config.job(t, job_name)
+    brief = j.brief(brief_name)
+    provs = config.providers()
+    plan = parse_gens(gens, provs)
+
+    run_id = run_id or f"{datetime.now().strftime('%Y%m%d-%H%M')}-{brief['skill']}"
+    run_dir = config.ROOT / "runs" / run_id
+    (run_dir / "logs").mkdir(parents=True, exist_ok=True)
+    log = lambda msg: print(f"[{run_id}] {msg}", flush=True)  # noqa: E731
+
+    commit = make_base(t, run_dir, log)
+    pack_text = pack.build(j, brief, run_dir / "base")
+    (run_dir / "pack.md").write_text(pack_text)
+    log(f"pack: {len(pack_text):,} chars (~{len(pack_text) // 4:,} tokens)")
+    if not dry:
+        render_reference(t, brief, run_dir, log)
+
+    rng = random.Random(seed if seed is not None else run_id)
+    rng.shuffle(plan)  # mixed providers interleave, so a budget stop doesn't hit one arm
+    directions = j.directions()
+    gens_meta = []
+    for i, prov in enumerate(plan):
+        gid = f"g{i:02d}"
+        d = directions[i % len(directions)]
+        make_worktree(t, run_dir, gid, commit, pack_text, d)
+        gens_meta.append({"gid": gid, "provider": prov, "model": provs[prov].model, "direction": d})
+
+    meta = {
+        "run": run_id, "target": target_name, "job": job_name, "brief": brief_name,
+        "skill": brief["skill"], "family": brief["family"], "base": commit,
+        "started": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "generators": gens_meta,
+    }
+    (run_dir / "meta.json").write_text(json.dumps(meta, indent=2))
+
+    budget = Budget({n: provs[n] for n in set(plan)})
+    log(f"{len(plan)} generators: " + ", ".join(f"{n}×{plan.count(n)}" for n in sorted(set(plan))) + (" (dry run)" if dry else ""))
+    results = []
+    with cf.ThreadPoolExecutor(max_workers=max(1, concurrency)) as pool:
+        futs = {
+            pool.submit(run_one, t, provs[g["provider"]], run_dir / "gens" / g["gid"], run_dir / "logs", g["gid"], budget, dry): g
+            for g in gens_meta
+        }
+        for f in cf.as_completed(futs):
+            rec = f.result()
+            results.append(rec)
+            log(f"{rec['gid']} {rec['provider']}: {rec['status']}" + (f", {rec.get('seconds')}s, ${rec.get('cost_usd')}" if "seconds" in rec else ""))
+    results.sort(key=lambda r: r["gid"])
+    (run_dir / "generators.json").write_text(json.dumps(results, indent=2))
+    if dry:
+        log("dry run: argv for g00 is " + " ".join(results[0]["argv"]) if results else "dry run: nothing to run")
+    return run_dir

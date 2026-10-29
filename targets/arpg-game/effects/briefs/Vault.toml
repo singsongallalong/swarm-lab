@@ -1,0 +1,13 @@
+skill = "Vault"
+family = "area"
+current_look = "ThrustGust"  # borrowed from Piercing Thrust
+color = [210, 215, 235]      # pale moonlit steel (B3)
+angle = 18
+radius = 14
+brief = """
+Vault leaps up to 18 studs on a spear and lands with a 14-stud, 18° line at 120% weapon
+damage, pointing the way it vaulted; 4 s cooldown, spear only. Its look today is
+Piercing Thrust's ThrustGust, which reads as a solid flat white wedge at every power
+(SE6, SE7, SE13). It needs its own landing look along that narrow line: the spear driven
+down and the force running out ahead of the landing, in pale steel, growing with power.
+"""

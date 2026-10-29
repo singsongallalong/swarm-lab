@@ -1,0 +1,14 @@
+skill = "SnareArrow"
+family = "area"
+current_look = "EdgeOutline" # the library's spare outline, borrowed
+color = [214, 224, 240]      # Power Shot's moonlight
+angle = 360
+radius = 5
+brief = """
+Snare Arrow is the Skirmisher's setup shot: one arrow at 80% weapon damage that bursts
+into a 5-stud net where it strikes, Chilling everything in it for 2 s. The arrow keeps
+ShotArrow in flight; this brief is only the net. Today the net is EdgeOutline, a faint
+ring that fafwa barely saw on landing (SE2, SE13). It needs its own look: a net that
+snaps open over the 5-stud circle where the arrow lands and clearly reads as a trap,
+growing with power from 0 to 8.
+"""

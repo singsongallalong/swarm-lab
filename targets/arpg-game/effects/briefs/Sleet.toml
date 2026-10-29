@@ -1,0 +1,12 @@
+skill = "Sleet"
+family = "flight"
+current_look = "IceLance"    # borrowed from Ice Spear; too long for shards
+color = [170, 225, 255]
+volley = "count=5 spread=12.5"   # flightpreview's volley column: five shards in the 50° fan
+brief = """
+Sleet throws five ice shards in a 50° fan, 18 studs, 3–4 cold each, a 0.3 s cast and
+4 mana, no cooldown and no Chill. Today each shard flies as Ice Spear's IceLance, which
+is far too long for a shard, and fafwa saw five white lances (SE7). It needs its own
+flight look: a small, quick, faceted shard of ice that still reads at the game camera
+when five fly at once, growing with power from 0 to 8.
+"""

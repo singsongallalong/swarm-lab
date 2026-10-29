@@ -1,0 +1,65 @@
+# One table per provider. `runtime = "claude-code"` runs the `claude` CLI headless
+# against the provider's Anthropic-compatible endpoint, so generators get the same
+# tools (Read, Edit, Bash, image reading) as any Claude Code session.
+#
+# Prices are USD per million tokens and only feed the cost report. CHECK THEM against
+# the provider's own price page before a run: these were taken on 2026-10-28 from
+# trackers that disagreed with each other (docs/experiment.md, "Prices").
+
+[deepseek]
+runtime = "claude-code"
+base_url = "https://api.deepseek.com/anthropic"
+key_env = "DEEPSEEK_API_KEY"
+model = "deepseek-flash"          # served by DeepSeek-V4.1-Flash-1017; the only DeepSeek model that reads images
+small_model = "deepseek-flash"
+price_in = 0.30
+price_cached = 0.03
+price_out = 1.20
+max_turns = 40
+timeout_s = 1500
+budget_tokens = 30_000_000        # whole-run cap across this provider's generators
+
+[qwen]
+runtime = "claude-code"
+# VERIFY: Alibaba Model Studio's Anthropic-compatible endpoint and the exact model id
+# for your account and region. If there is none, set runtime = "opencode" (not yet
+# built; see docs/experiment.md, "Open").
+base_url = "https://dashscope-intl.aliyuncs.com/apps/anthropic"
+key_env = "DASHSCOPE_API_KEY"
+model = "qwen3.6-flash"
+small_model = "qwen3.6-flash"
+price_in = 0.25
+price_cached = 0.05
+price_out = 1.50
+max_turns = 40
+timeout_s = 1500
+budget_tokens = 30_000_000
+
+[kimi]
+runtime = "claude-code"
+# VERIFY the endpoint and model id before use.
+base_url = "https://api.moonshot.ai/anthropic"
+key_env = "MOONSHOT_API_KEY"
+model = "kimi-k2.6"
+small_model = "kimi-k2.6"
+price_in = 0.55
+price_cached = 0.19
+price_out = 2.65
+max_turns = 40
+timeout_s = 1500
+budget_tokens = 20_000_000
+
+# The control arm: the same harness on Claude, for a like-for-like comparison.
+[claude]
+runtime = "claude-code"
+key_env = "ANTHROPIC_API_KEY"
+model = "claude-sonnet-5-5"
+small_model = "claude-haiku-5-5"
+# Fill these in from https://docs.claude.com pricing before using this arm; the cost
+# report shows 0 until then.
+price_in = 0.0
+price_cached = 0.0
+price_out = 0.0
+max_turns = 40
+timeout_s = 1500
+budget_tokens = 10_000_000

@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+"""A stand-in for `lune` in the fixture game.
+
+    lune run scripts/areapreview|flightpreview <look> <out.png> [...]  draws a labelled PNG
+    lune run tests <Name>                                              fails if a data file says BROKEN
+"""
+import pathlib
+import sys
+
+args = sys.argv[1:]
+if args[:1] != ["run"] or len(args) < 3:
+    sys.exit("fake lune: unsupported " + " ".join(args))
+what = args[1]
+if what in ("scripts/areapreview", "scripts/flightpreview"):
+    from PIL import Image, ImageDraw
+
+    look, out = args[2], pathlib.Path(args[3])
+    out.parent.mkdir(parents=True, exist_ok=True)
+    im = Image.new("RGB", (600, 900), (26, 30, 42))
+    d = ImageDraw.Draw(im)
+    d.text((20, 20), f"{what.split('/')[1]}  {look}", fill=(230, 230, 240))
+    for i, p in enumerate((0, 4, 8)):
+        d.ellipse((200 - p * 8, 150 + i * 250 - p * 8, 400 + p * 8, 300 + i * 250 + p * 8), outline=(170, 225, 255), width=3)
+    im.save(out)
+elif what == "tests":
+    data = pathlib.Path("src/shared/data")
+    if any("BROKEN" in f.read_text() for f in data.glob("*.luau")):
+        print(f"{args[2]}: FAIL (a row says BROKEN)")
+        sys.exit(1)
+    print(f"{args[2]}: ok")
+else:
+    sys.exit("fake lune: unsupported " + what)
