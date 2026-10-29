@@ -1,0 +1,334 @@
+diff --git a/src/shared/data/DrawnEffects.luau b/src/shared/data/DrawnEffects.luau
+index d2c4171..4ec523c 100644
+--- a/src/shared/data/DrawnEffects.luau
++++ b/src/shared/data/DrawnEffects.luau
+@@ -1817,6 +1817,27 @@ local area: { [string]: AreaLook } = {
+ 		every = 8,
+ 		perPower = { size = 0.12 },
+ 	},
++	ColdSnapRime = {
++		kind = "Drafted",
++		about = "Rime creeping out from the caster like frost across glass, every branch forking in two as it goes, the tips curling up, then dissolving.",
++		-- Cold Snap's own look (R036): branching frost rather than a swept
++		-- ring, so the circle reads as cold landing all round the caster.
++		layout = "ColdSnapRime",
++		trunks = 4,
++		reach = 1,
++		width = 0.55,
++		thick = 0.18,
++		bud = 1.1,
++		glow = 0.25,
++		travel = 40,
++		hold = 0.26,
++		fade = 0.3,
++		burstScale = 0.9,
++		emitter = "ColdSnapRimeMist",
++		-- Longer, wider and thicker branches and taller fins as the hit grows;
++		-- the same 33 parts at every power (SE3).
++		perPower = { reach = 0.03, width = 0.06, thick = 0.12, bud = 0.08, glow = 0.07 },
++	},
+ }
+ 
+ local flight: { [string]: FlightLook } = {
+diff --git a/src/shared/data/Emitters.luau b/src/shared/data/Emitters.luau
+index 8b44e44..ad697b4 100644
+--- a/src/shared/data/Emitters.luau
++++ b/src/shared/data/Emitters.luau
+@@ -451,6 +451,24 @@ local Emitters: { [string]: Emitter } = {
+ 		rotation = { 0, 360 },
+ 		rotSpeed = { -240, 240 },
+ 	},
++	-- Cold Snap's rime (ColdSnapRime): a low pale mist where the frost forks,
++	-- half-lit and about 3 studs at the end of its life so it reads at the
++	-- game camera (A33's measure). No colour of its own: the skill's ice blue.
++	ColdSnapRimeMist = {
++		texture = "rbxassetid://114237359953780", -- EffectTextures.Puff
++		count = 8,
++		lifetime = { 0.7, 1.1 },
++		speed = { 2, 5 },
++		spread = { 80, 80 },
++		acceleration = { 0, 1.5, 0 },
++		drag = 3.5,
++		size = { { 0, 1.2 }, { 0.55, 2.4 }, { 1, 3.2 } },
++		transparency = { { 0, 0.35 }, { 0.6, 0.6 }, { 1, 1 } },
++		lightEmission = 0.5,
++		lightInfluence = 0.5,
++		rotation = { 0, 360 },
++		rotSpeed = { -50, 50 },
++	},
+ }
+ 
+ return Emitters
+diff --git a/src/shared/data/SkillVisuals.luau b/src/shared/data/SkillVisuals.luau
+index e64360c..821d64a 100644
+--- a/src/shared/data/SkillVisuals.luau
++++ b/src/shared/data/SkillVisuals.luau
+@@ -229,14 +229,14 @@ local SkillVisuals: { [string]: SkillVisual } = {
+ 		flightLook = "IceLance",
+ 		icon = "rbxassetid://110445057446322",
+ 	},
+-	-- Ice Spear's pale blue; the library's spare SweepWave, a ring swept out
+-	-- to the circle's edge, in that blue (R036). PLACEHOLDER until Lebègue's
+-	-- look; no icon yet, so the bar shows the name.
++	-- Ice Spear's pale blue; Cold Snap's own look, rime branching out from the
++	-- caster to the circle's edge and forking as it goes (ColdSnapRime). No
++	-- icon yet, so the bar shows the name.
+ 	ColdSnap = {
+ 		color = Color3.fromRGB(170, 225, 255),
+ 		fiery = false,
+ 		burstRadius = 1.5,
+-		areaLook = "SweepWave",
++		areaLook = "ColdSnapRime",
+ 	},
+ 	-- Ice Spear's pale blue and its IceLance, five at once (R036). Hits this
+ 	-- light sit near power 0 (0.3 on a new Warden, lane C232), so each is
+diff --git a/src/shared/systems/DraftedKinds.luau b/src/shared/systems/DraftedKinds.luau
+index 6184886..e7f5ffd 100644
+--- a/src/shared/systems/DraftedKinds.luau
++++ b/src/shared/systems/DraftedKinds.luau
+@@ -5,6 +5,7 @@ local DraftedTypes = require("../DraftedTypes")
+ 
+ local DraftedKinds: { [string]: DraftedTypes.Layout } = {
+ 	ShardBloom = require("./drafted/ShardBloom"),
++	ColdSnapRime = require("./drafted/ColdSnapRime"),
+ }
+ 
+ return table.freeze(DraftedKinds)
+diff --git a/src/shared/systems/drafted/ColdSnapRime.luau b/src/shared/systems/drafted/ColdSnapRime.luau
+new file mode 100644
+index 0000000..32a6e33
+--- /dev/null
++++ b/src/shared/systems/drafted/ColdSnapRime.luau
+@@ -0,0 +1,232 @@
++--!strict
++-- Cold Snap's look: rime creeping out from the caster like frost across a
++-- window, each branch forking in two as it goes, the tips curling up off the
++-- ground and a small ice fin budding where each trunk forks, then dissolving.
++-- Pure: `plan` builds the whole branch skeleton once, `pose` lays a blade
++-- along each piece of it at any age, growing from its root to its tip.
++--
++-- Row fields (DrawnEffects.area, kind "Drafted", layout "ColdSnapRime"):
++--   trunks  main branches leaving the origin (8 parts each, whatever the power)
++--   reach   share of the area's radius the branch paths span (grown by power)
++--   width   studs, a branch's footprint, widest at the origin
++--   thick   studs, a branch's thickness
++--   bud     studs, the ice fins standing where a trunk forks
++--   glow    0-1, how far a branch's colour runs toward white at its tips
++--   travel  studs/s the rime creeps out
++--   hold    seconds the whole fern stands once grown
++--   fade    seconds it takes to dissolve
++--   burstScale   the cold breath at the origin
++--   emitter an Emitters row puffed where the branches fork
++local AreaLayout = require("../AreaLayout")
++local DraftedTypes = require("../../DraftedTypes")
++local SculptMath = require("../SculptMath")
++local SkillTypes = require("../../SkillTypes")
++
++type Piece = DraftedTypes.Piece
++type AreaShape = SkillTypes.AreaShape
++
++type Segment = {
++	f0: number,
++	r0: number,
++	y0: number,
++	f1: number,
++	r1: number,
++	y1: number,
++	df: number,
++	dr: number,
++	dy: number,
++	length: number,
++	at: number,
++	grow: number,
++	depth: number,
++	roll: number,
++}
++type Bud = { f: number, r: number, y: number, at: number, heading: number, lean: number, scale: number }
++type Puff = { f: number, r: number, y: number, at: number, scale: number }
++type Plan = { segments: { Segment }, buds: { Bud }, puffs: { Puff } }
++
++local ColdSnapRime = {}
++
++ColdSnapRime.about =
++	"Rime creeping out from the caster, forking and forking again, the tips curling up before it dissolves."
++
++-- A trunk and its two fork levels, each fork in two: one part a branch.
++local SEGMENTS_PER_TRUNK = 7
++-- Each level's path length as a share of the area's radius, and its climb.
++local SHARE = { 0.44, 0.29, 0.19 }
++local CLIMB = { 4, 17, 38 } -- degrees each level rises off the ground
++local SPLAY = { 25, 31 } -- degrees a fork turns from its parent
++local TAPER = { 1, 0.8, 0.62 } -- width left at each level
++local MAX_SCALE = 1.08 -- the longest a branch's own roll can make it
++local MAX_DEPTH = 2
++
++function ColdSnapRime.count(look: any): number
++	return math.floor(look.trunks) * (SEGMENTS_PER_TRUNK + 1) + 1
++end
++
++function ColdSnapRime.lasts(look: any, shape: AreaShape): number
++	-- The longest path one branch can run, at the largest roll of its scale.
++	local path = 0
++	for level = 1, MAX_DEPTH + 1 do
++		path += SHARE[level]
++	end
++	return shape.radius * path * look.reach * MAX_SCALE / look.travel + look.hold + look.fade
++end
++
++function ColdSnapRime.plan(look: any, shape: AreaShape, rng: Random): Plan
++	local segments: { Segment } = {}
++	local buds: { Bud } = {}
++	local puffs: { Puff } = {}
++	local half = AreaLayout.halfAngle(shape)
++	local n = math.floor(look.trunks)
++	local phase = rng:NextNumber(-0.1, 0.1)
++
++	local function sprout(f: number, r: number, y: number, heading: number, depth: number, at: number, scale: number)
++		local climb = math.rad(CLIMB[depth + 1])
++		local length = shape.radius * SHARE[depth + 1] * look.reach * scale
++		local df = math.cos(heading) * math.cos(climb)
++		local dr = math.sin(heading) * math.cos(climb)
++		local dy = math.sin(climb)
++		local f1 = f + df * length
++		local r1 = r + dr * length
++		local y1 = y + dy * length
++		local take = length / look.travel
++		table.insert(segments, {
++			f0 = f,
++			r0 = r,
++			y0 = y,
++			f1 = f1,
++			r1 = r1,
++			y1 = y1,
++			df = df,
++			dr = dr,
++			dy = dy,
++			length = length,
++			at = at,
++			grow = take,
++			depth = depth,
++			roll = rng:NextNumber(-7, 7),
++		})
++		-- An ice fin stands where a trunk splits, clear of the caster's feet.
++		if depth == 0 then
++			table.insert(buds, {
++				f = f1,
++				r = r1,
++				y = y1,
++				at = at + take,
++				heading = heading,
++				lean = 14 + rng:NextNumber(-4, 4),
++				scale = rng:NextNumber(0.7, 1.15),
++			})
++		end
++		if depth < MAX_DEPTH then
++			-- A puff only where a trunk splits: fewer, bigger and half-lit, so
++			-- the mist hangs round the fern instead of hiding its branches.
++			if depth == 0 then
++				table.insert(puffs, { f = f1, r = r1, y = y1, at = at + take, scale = 0.9 })
++			end
++			local splay = math.rad(SPLAY[depth + 1])
++			for side = -1, 1, 2 do
++				local turn = side * (splay + rng:NextNumber(-0.06, 0.06))
++				sprout(f1, r1, y1, heading + turn, depth + 1, at + take, scale)
++			end
++		end
++	end
++
++	for i = 1, n do
++		local heading = -half + 2 * half * ((i - 0.5) / n) + phase + rng:NextNumber(-0.06, 0.06)
++		sprout(0, 0, 0, heading, 0, 0, rng:NextNumber(0.88, MAX_SCALE))
++	end
++	return { segments = segments, buds = buds, puffs = puffs }
++end
++
++local function mix(a: { number }, b: { number }, t: number): { number }
++	return {
++		math.round(a[1] + (b[1] - a[1]) * t),
++		math.round(a[2] + (b[2] - a[2]) * t),
++		math.round(a[3] + (b[3] - a[3]) * t),
++	}
++end
++
++-- A piece's transparency: its faint body, then gone by `fadeEnd`.
++local function alphaOf(base: number, age: number, fadeStart: number, fadeEnd: number): number
++	if age >= fadeEnd then
++		return 1
++	end
++	if age <= fadeStart then
++		return base
++	end
++	return base + (1 - base) * ((age - fadeStart) / (fadeEnd - fadeStart))
++end
++
++function ColdSnapRime.pose(look: any, shape: AreaShape, plan: Plan, age: number, color: { number }): { Piece }
++	local out: { Piece } = {}
++	local lasts = ColdSnapRime.lasts(look, shape)
++	local fadeStart = lasts - look.fade
++
++	for _, s in plan.segments do
++		local t = age - s.at
++		local k = if t > 0 then math.min(t / s.grow, 1) else 0
++		-- The blade grows from its root toward its tip.
++		local headF = s.f0 + (s.f1 - s.f0) * k
++		local headR = s.r0 + (s.r1 - s.r0) * k
++		local headY = s.y0 + (s.y1 - s.y0) * k
++		local rotation = SculptMath.mul(SculptMath.alongX({ s.dr, s.dy, -s.df }), SculptMath.rotX(s.roll))
++		table.insert(out, {
++			shape = "Block",
++			size = { math.max(s.length * k, 0.05), look.thick, look.width * TAPER[s.depth + 1] },
++			position = {
++				(s.r0 + headR) / 2,
++				(s.y0 + headY) / 2,
++				-(s.f0 + headF) / 2,
++			},
++			rotation = rotation,
++			color = mix(color, { 255, 255, 255 }, look.glow * (0.45 + 0.27 * s.depth)),
++			material = "Neon",
++			transparency = if t > 0 then alphaOf(0.05 + 0.04 * s.depth, age, fadeStart, lasts) else 1,
++		})
++	end
++
++	for _, b in plan.buds do
++		local t = age - b.at
++		local rise = math.max(look.bud * b.scale / look.travel, 0.001)
++		local k = if t > 0 then math.min(t / rise, 1) else 0
++		local h = math.max(look.bud * b.scale * k, 0.05)
++		local turn = SculptMath.mul(SculptMath.rotY(-math.deg(b.heading)), SculptMath.rotX(-b.lean))
++		table.insert(out, {
++			shape = "Wedge",
++			size = { look.width * 0.9, h, look.width * 1.4 },
++			position = { b.r, b.y + h * 0.4, -b.f },
++			rotation = turn,
++			color = mix(color, { 255, 255, 255 }, math.min(look.glow + 0.15, 1)),
++			material = "Neon",
++			transparency = if t > 0 then alphaOf(0.06, age, fadeStart, lasts) else 1,
++		})
++	end
++
++	-- The cold breath at the caster's feet: a flat disc, bright for a moment.
++	local flash = if age < 0.14 then 1 - age / 0.14 else 0
++	table.insert(out, {
++		shape = "Cylinder",
++		size = { 0.12, 2.2 * look.reach, 2.2 * look.reach },
++		position = { 0, 0.08, 0 },
++		rotation = SculptMath.rotZ(90),
++		color = mix(color, { 255, 255, 255 }, 0.65),
++		material = "Neon",
++		transparency = if flash > 0 then 1 - 0.8 * flash else 1,
++	})
++	return out
++end
++
++function ColdSnapRime.bursts(look: any, _shape: AreaShape, plan: Plan): { DraftedTypes.Burst }
++	-- A cold breath at the origin, then a puff at every fork as it splits.
++	local out: { DraftedTypes.Burst } = {
++		{ at = 0, f = 0, r = 0, y = 0.15, scale = look.burstScale },
++	}
++	for _, p in plan.puffs do
++		table.insert(out, { at = p.at, f = p.f, r = p.r, y = p.y, scale = p.scale })
++	end
++	return out
++end
++
++return table.freeze(ColdSnapRime)

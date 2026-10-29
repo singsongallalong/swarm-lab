@@ -1,0 +1,307 @@
+diff --git a/src/shared/data/DrawnEffects.luau b/src/shared/data/DrawnEffects.luau
+index d2c4171..a8a3468 100644
+--- a/src/shared/data/DrawnEffects.luau
++++ b/src/shared/data/DrawnEffects.luau
+@@ -1817,6 +1817,36 @@ local area: { [string]: AreaLook } = {
+ 		every = 8,
+ 		perPower = { size = 0.12 },
+ 	},
++	-- Cold Snap's own look (ColdSnapRimeSpiral): a double arm of frost blades
++	-- winding out from the caster, turning as it spreads and rising at the
++	-- rim, with cold mist lifting along it. Not a ring: power winds the
++	-- vortex tighter and raises and lengthens its blades, on the same parts.
++	ColdSnapRimeSpiral = {
++		kind = "Drafted",
++		about = "A double spiral of frost blades winding out from the caster, turning as it spreads and rising at the rim, with cold mist lifting along it.",
++		layout = "ColdSnapRimeSpiral",
++		arms = 2,
++		perArm = 13,
++		turns = 0.58,
++		reach = 0.94,
++		spin = 165,
++		travel = 42,
++		length = 1.8,
++		thickness = 0.32,
++		height = 1.1,
++		lean = 38,
++		lift = 0.14,
++		rise = 0.07,
++		hold = 0.14,
++		fade = 0.3,
++		glow = 0.22,
++		hub = 1.6,
++		hubLife = 0.32,
++		emitter = "ColdSnapFrost",
++		-- Taller, longer blades winding tighter and spinning faster as the
++		-- hit grows; the same 27 parts.
++		perPower = { height = 0.1, length = 0.06, turns = 0.05, spin = 0.05, lift = 0.04, hub = 0.05 },
++	},
+ }
+ 
+ local flight: { [string]: FlightLook } = {
+diff --git a/src/shared/data/Emitters.luau b/src/shared/data/Emitters.luau
+index 8b44e44..97ce8e9 100644
+--- a/src/shared/data/Emitters.luau
++++ b/src/shared/data/Emitters.luau
+@@ -451,6 +451,25 @@ local Emitters: { [string]: Emitter } = {
+ 		rotation = { 0, 360 },
+ 		rotSpeed = { -240, 240 },
+ 	},
++	-- Cold Snap's frost (ColdSnapRimeSpiral): a few soft half-lit puffs of the
++	-- skill's pale blue lifting off the turning spiral as its blades come up,
++	-- so the vortex carries a cold haze above the hard blades. No colour of its
++	-- own: the skill's. Big and half-lit, so it reads at the game camera.
++	ColdSnapFrost = {
++		texture = "rbxassetid://114237359953780", -- EffectTextures.Puff
++		count = 12,
++		lifetime = { 0.55, 1 },
++		speed = { 2, 6 },
++		spread = { 80, 80 },
++		acceleration = { 0, 3.5, 0 },
++		drag = 2.2,
++		size = { { 0, 0.8 }, { 0.4, 2 }, { 1, 2.8 } },
++		transparency = { { 0, 0.3 }, { 0.55, 0.5 }, { 1, 1 } },
++		lightEmission = 0.55,
++		lightInfluence = 0.45,
++		rotation = { 0, 360 },
++		rotSpeed = { -25, 25 },
++	},
+ }
+ 
+ return Emitters
+diff --git a/src/shared/data/SkillVisuals.luau b/src/shared/data/SkillVisuals.luau
+index e64360c..88124fe 100644
+--- a/src/shared/data/SkillVisuals.luau
++++ b/src/shared/data/SkillVisuals.luau
+@@ -229,14 +229,14 @@ local SkillVisuals: { [string]: SkillVisual } = {
+ 		flightLook = "IceLance",
+ 		icon = "rbxassetid://110445057446322",
+ 	},
+-	-- Ice Spear's pale blue; the library's spare SweepWave, a ring swept out
+-	-- to the circle's edge, in that blue (R036). PLACEHOLDER until Lebègue's
+-	-- look; no icon yet, so the bar shows the name.
++	-- Ice Spear's pale blue, now the cold's own look (R036): RimeSpiral winds
++	-- a double arm of frost blades out from the caster to the circle's edge,
++	-- turning as it spreads. No icon yet, so the bar shows the name.
+ 	ColdSnap = {
+-		color = Color3.fromRGB(170, 225, 255),
++		color = Color3.fromRGB(150, 212, 255),
+ 		fiery = false,
+ 		burstRadius = 1.5,
+-		areaLook = "SweepWave",
++		areaLook = "ColdSnapRimeSpiral",
+ 	},
+ 	-- Ice Spear's pale blue and its IceLance, five at once (R036). Hits this
+ 	-- light sit near power 0 (0.3 on a new Warden, lane C232), so each is
+diff --git a/src/shared/systems/DraftedKinds.luau b/src/shared/systems/DraftedKinds.luau
+index 6184886..59a0ee6 100644
+--- a/src/shared/systems/DraftedKinds.luau
++++ b/src/shared/systems/DraftedKinds.luau
+@@ -5,6 +5,7 @@ local DraftedTypes = require("../DraftedTypes")
+ 
+ local DraftedKinds: { [string]: DraftedTypes.Layout } = {
+ 	ShardBloom = require("./drafted/ShardBloom"),
++	ColdSnapRimeSpiral = require("./drafted/ColdSnapRimeSpiral"),
+ }
+ 
+ return table.freeze(DraftedKinds)
+diff --git a/src/shared/systems/drafted/ColdSnapRimeSpiral.luau b/src/shared/systems/drafted/ColdSnapRimeSpiral.luau
+new file mode 100644
+index 0000000..269068e
+--- /dev/null
++++ b/src/shared/systems/drafted/ColdSnapRimeSpiral.luau
+@@ -0,0 +1,194 @@
++--!strict
++-- A drafted area kind (DraftedTypes): frost blades laid along a double
++-- spiral that winds out from the caster, so the cold bursts as a turning
++-- vortex rather than a ring or a starburst. The arms come up in sequence
++-- from the middle to the rim while the whole spiral turns, each blade
++-- rising out of the ground, leaning along the turn, then sinking and
++-- fading at the rim, with cold mist lifting off it. Pure: `plan` rolls the
++-- scatter once, `pose` places every piece at any age.
++--
++-- Row fields (DrawnEffects.area, kind "Drafted", layout "ColdSnapRimeSpiral"):
++--   arms      spiral arms
++--   perArm    blades in each arm (each one part)
++--   turns     windings an arm makes from the middle to the rim
++--   reach     share of the area's radius the spiral fills
++--   spin      degrees/s the whole spiral turns
++--   travel    studs/s the arm runs outward from the middle
++--   length    studs, a blade's length along the turn at the rim (shorter in)
++--   thickness studs, a blade's depth
++--   height    studs, a blade's height at the rim (shorter in)
++--   lean      degrees each blade leans along the turn
++--   lift      studs the blades stand above the ground
++--   rise      seconds a blade takes to come up
++--   hold      seconds it stands
++--   fade      seconds it sinks and fades
++--   glow      0-1, how far the blades' colour runs toward white
++--   hub       studs, the radius of the cold orb blooming at the caster
++--   hubLife   seconds the hub shows
++local AreaLayout = require("../AreaLayout")
++local DraftedTypes = require("../../DraftedTypes")
++local SculptMath = require("../SculptMath")
++local SkillTypes = require("../../SkillTypes")
++
++type Piece = DraftedTypes.Piece
++type AreaShape = SkillTypes.AreaShape
++
++type Blade = {
++	phase: number, -- where on the turn it sits, 0-1
++	d: number, -- studs from the caster
++	at: number, -- seconds after the start it comes up
++	scale: number, -- its share of the row's length, height and thickness
++	lean: number, -- degrees it leans along the turn
++	twist: number, -- degrees it tips across the turn
++	mist: boolean, -- whether it lifts a puff of mist as it comes up
++	head: boolean, -- the arm's leading blade, drawn as a glowing frost glint
++}
++type Plan = { blades: { Blade } }
++
++local ColdSnapRimeSpiral = {}
++
++ColdSnapRimeSpiral.about =
++	"A double spiral of frost blades winding out from the caster, turning as it spreads and rising at the rim, with cold mist lifting along it."
++
++local function mix(a: { number }, b: { number }, t: number): { number }
++	return {
++		math.round(a[1] + (b[1] - a[1]) * t),
++		math.round(a[2] + (b[2] - a[2]) * t),
++		math.round(a[3] + (b[3] - a[3]) * t),
++	}
++end
++
++local function frac(x: number): number
++	return x - math.floor(x)
++end
++
++function ColdSnapRimeSpiral.count(look: any): number
++	-- One part a blade, plus the cold orb at the caster.
++	return math.floor(look.arms) * math.floor(look.perArm) + 1
++end
++
++function ColdSnapRimeSpiral.lasts(look: any, shape: AreaShape): number
++	-- The last blade starts as the turn reaches the rim (and a little past,
++	-- for the scatter's jitter), then stands and fades.
++	return shape.radius * look.reach * 1.08 / look.travel + look.rise + look.hold + look.fade
++end
++
++function ColdSnapRimeSpiral.plan(look: any, shape: AreaShape, rng: Random): Plan
++	local blades: { Blade } = {}
++	local arms = math.max(1, math.floor(look.arms))
++	local perArm = math.max(1, math.floor(look.perArm))
++	for arm = 0, arms - 1 do
++		for k = 0, perArm - 1 do
++			-- Even steps out along the arm; each arm starts a share of a turn
++			-- round from the last, so the pair reads as one double spiral.
++			local along = (k + 0.5) / perArm
++			local d = shape.radius * look.reach * (0.16 + 0.84 * along) * rng:NextNumber(0.94, 1.04)
++			table.insert(blades, {
++				phase = frac(look.turns * along + arm / arms + rng:NextNumber(-0.02, 0.02)),
++				d = d,
++				at = d / look.travel,
++				scale = (0.5 + 0.8 * along) * rng:NextNumber(0.9, 1.1),
++				lean = look.lean + rng:NextNumber(-6, 6),
++				twist = rng:NextNumber(-14, 14),
++				mist = k % 4 == 1,
++				head = k == perArm - 1,
++			})
++		end
++	end
++	return { blades = blades }
++end
++
++-- How far up a blade is, 0 to 1, and how solid, at `t` seconds after its start.
++local function stage(look: any, t: number): (number, number)
++	if t < 0 then
++		return 0, 0
++	end
++	if t < look.rise then
++		local k = t / look.rise
++		return 1 - (1 - k) * (1 - k), 1
++	end
++	t -= look.rise
++	if t < look.hold then
++		return 1, 1
++	end
++	t -= look.hold
++	if t < look.fade then
++		local k = t / look.fade
++		return 1 - 0.5 * k, 1 - k
++	end
++	return 0, 0
++end
++
++function ColdSnapRimeSpiral.pose(look: any, shape: AreaShape, plan: Plan, age: number, color: { number }): { Piece }
++	local out: { Piece } = {}
++	local bright = mix(color, { 240, 250, 255 }, look.glow)
++	local half = AreaLayout.halfAngle(shape)
++	local turned = look.spin * age / 360 -- turns the whole spiral has made
++	for _, b in plan.blades do
++		local up, solid = stage(look, age - b.at)
++		local phase = frac(b.phase + turned)
++		local heading = -half + 2 * half * phase
++		local h = math.max(look.height * b.scale, 0.08)
++		-- Turn the blade so its length runs along the turn, then lean it
++		-- along the swirl and tip it across the turn for a little torsion.
++		local turn = SculptMath.mul(
++			SculptMath.rotY(-math.deg(heading)),
++			SculptMath.mul(SculptMath.rotZ(b.lean), SculptMath.rotX(b.twist))
++		)
++		table.insert(out, {
++			shape = "Wedge",
++			size = { math.max(look.length * b.scale, 0.1), h, math.max(look.thickness * b.scale, 0.08) },
++			position = {
++				b.d * math.sin(heading),
++				look.lift + h * (up - 0.5),
++				-b.d * math.cos(heading),
++			},
++			rotation = turn,
++			color = bright,
++			-- The arm's head glows as a frost glint; the rest are lit so
++			-- their facets read.
++			material = if b.head then "Neon" else "SmoothPlastic",
++			transparency = if solid > 0 then 1 - 0.86 * solid else 1,
++		})
++	end
++	-- The cold orb at the caster's feet: it blooms with the first turn and is
++	-- gone in a moment, so the vortex has a bright eye to wind out of.
++	local k = if look.hubLife > 0 then math.clamp(age / look.hubLife, 0, 1) else 1
++	local show = if age < look.hubLife then 1 - k else 0
++	local hub = math.max(look.hub * (1 + 0.5 * k), 0.1)
++	table.insert(out, {
++		shape = "Ball",
++		size = { hub, hub * 0.55, hub },
++		position = { 0, hub * 0.22, 0 },
++		rotation = SculptMath.identity(),
++		color = mix(color, { 255, 255, 255 }, 0.55),
++		material = "Neon",
++		transparency = if show > 0 then 1 - 0.82 * show else 1,
++	})
++	return out
++end
++
++function ColdSnapRimeSpiral.bursts(look: any, shape: AreaShape, plan: Plan): { DraftedTypes.Burst }
++	local out: { DraftedTypes.Burst } = {}
++	local half = AreaLayout.halfAngle(shape)
++	for _, b in plan.blades do
++		if b.mist then
++			-- A puff where the blade stands as it comes up, on the turn it
++			-- has made by then.
++			local at = b.at + look.rise
++			local heading = -half + 2 * half * frac(b.phase + look.spin * at / 360)
++			table.insert(out, {
++				at = at,
++				f = b.d * math.cos(heading),
++				r = b.d * math.sin(heading),
++				y = look.lift + 0.25,
++				scale = 0.7 + 0.5 * b.d / math.max(shape.radius, 1e-6),
++			})
++		end
++	end
++	-- A puff at the caster as the orb blooms.
++	table.insert(out, { at = 0, f = 0, r = 0, y = 0.3, scale = 1 })
++	return out
++end
++
++return table.freeze(ColdSnapRimeSpiral)

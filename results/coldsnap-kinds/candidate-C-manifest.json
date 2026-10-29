@@ -1,0 +1,14 @@
+{
+  "skill": "ColdSnap",
+  "look": "ColdSnapRimeSweep",
+  "layout": "ColdSnapRimeSweep",
+  "idea": "Frost blades that turn round the caster like the hands of a clock, each unfurling outward and leaving a rising spiral crescent of rime behind it, so the area is drawn with travelling, turning arcs no existing kind can draw.",
+  "rows_added": ["ColdSnapRimeSweep", "ColdSnapRime"],
+  "intent": "Three pale ice-blue blades sweep a full turn round the caster in half a second, unfurling out to the circle's edge and trailing a climbing crescent of rime that fades behind them; with power the blades reach further, thicken and the rime climbs higher, at the same 22 parts.",
+  "renders": [".swarm/out/area-ColdSnapRimeSweep-r3.png"],
+  "revisions": 2,
+  "requests": [
+    "A painted frost-crystal particle texture; the Puff is the closest of the allowed set.",
+    "A bent-blade primitive: blades are straight cylinders, so the sweep's curve is carried by the rising rime crescent instead."
+  ]
+}

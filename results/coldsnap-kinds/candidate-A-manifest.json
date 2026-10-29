@@ -1,0 +1,11 @@
+{
+  "skill": "ColdSnap",
+  "look": "ColdSnapRime",
+  "layout": "ColdSnapRime",
+  "idea": "Rime that creeps outward from the caster and forks in two, then in two again, the way frost branches across a window, with the tips curling up and ice fins budding where the trunks split: split, spreading growth that no existing kind draws.",
+  "rows_added": ["ColdSnapRime", "ColdSnapRimeMist"],
+  "intent": "Pale ice-blue blades burst from the caster's feet and fork across the whole circle in under a quarter second, tips curling up and small ice fins budding where the trunks split, then the fern dissolves; power lengthens, widens and thickens the branches and raises the fins.",
+  "renders": [".swarm/out/area-ColdSnapRime-r3.png"],
+  "revisions": 2,
+  "requests": ["A painted frost-crystal or rime-frond sprite: the Puff reads as ground mist, so the fork puffs cannot carry the crystalline sparkle the fern's tips have."]
+}

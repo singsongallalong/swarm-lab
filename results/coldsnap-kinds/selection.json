@@ -1,0 +1,19 @@
+{
+  "picked": [
+    "A",
+    "B"
+  ],
+  "reasons": {
+    "A": "Frost forking across the circle like rime on glass reads instantly as cold from the game camera, a form no existing kind can draw, with a crisp silhouette, real height in the side view and visible particles at the forks.",
+    "B": "A two-armed spiral vortex winding out from the caster is new and reads as a spell rather than terrain at 0.25 s; it loses shape late as it breaks up, but the idea is strong."
+  },
+  "fixes": {
+    "A": "Power barely shows from the game camera (SE3): grow branch length and reach more with power; the late frames are fainter than they need to be.",
+    "B": "Its last two stills turn into a cluttered knot of blades and motes: tighten the fade so the spiral's shape stays legible to the end."
+  },
+  "code_review": {
+    "A": "Fine to go in after one change: pose recomputes each branch's rotation every frame; compute it once in plan. Otherwise one cheap pass over planned pieces, clear names, numbers from the row.",
+    "B": "Not reviewed in depth yet; read before porting."
+  },
+  "notes": "Mode collapse broken: three different forms (branching, spiral, sweep), no ring of spikes. All three failures ran out of 40 turns, none failed a check; kinds now gets 70. All three survivors asked for a painted frost-crystal particle texture: a strong signal for the next texture to paint. C (clock-hand sweep with rime crescents) passed over: too dark and thin to read at the game camera."
+}

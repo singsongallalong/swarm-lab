@@ -1,0 +1,338 @@
+diff --git a/src/shared/data/DrawnEffects.luau b/src/shared/data/DrawnEffects.luau
+index d2c4171..8ec8bb6 100644
+--- a/src/shared/data/DrawnEffects.luau
++++ b/src/shared/data/DrawnEffects.luau
+@@ -1015,6 +1015,32 @@ local area: { [string]: AreaLook } = {
+ 		-- Taller and wider shards as the hit grows; the same 19 parts.
+ 		perPower = { height = 0.1, width = 0.05 },
+ 	},
++	-- Cold Snap's own look (R036): three frost blades sweeping round the caster
++	-- like clock hands, unfurling to the circle's edge, each trailing a rising
++	-- crescent of rime; frost puffs off the ground where they pass. Grows by
++	-- reaching further, thickening and climbing higher, never by more parts.
++	ColdSnapRimeSweep = {
++		kind = "Drafted",
++		about = "Frost blades sweeping round the caster like clock hands, unfurling to the edge and trailing a rising crescent of rime that fades behind them.",
++		layout = "ColdSnapRimeSweep",
++		blades = 3,
++		trail = 5,
++		reach = 0.88,
++		inner = 0.1,
++		width = 0.6,
++		height = 0.9,
++		tilt = 8,
++		spin = 1.1,
++		sweep = 0.5,
++		rise = 0.05,
++		fade = 0.22,
++		wake = 14,
++		lift = 2.2,
++		flash = 0.12,
++		glow = 0.25,
++		emitter = "ColdSnapRime",
++		perPower = { reach = 0.015, width = 0.06, wake = 0.04, lift = 0.05 },
++	},
+ 	RayFan = {
+ 		kind = "Fan",
+ 		about = "Seven glowing rays fanned over the area, flashed and faded; the default.",
+diff --git a/src/shared/data/Emitters.luau b/src/shared/data/Emitters.luau
+index 8b44e44..56a8125 100644
+--- a/src/shared/data/Emitters.luau
++++ b/src/shared/data/Emitters.luau
+@@ -451,6 +451,26 @@ local Emitters: { [string]: Emitter } = {
+ 		rotation = { 0, 360 },
+ 		rotSpeed = { -240, 240 },
+ 	},
++	-- Cold Snap's own (R036): a small puff of rime lifting off the ground
++	-- where the frost blades pass over it, half lit so it shows at night and
++	-- about 2.5 studs across at the end of its life (SE9: frost where the
++	-- cold lands; SE10: few and clear, so the blades still read through it).
++	-- In the skill's own blue (no `color`).
++	ColdSnapRime = {
++		texture = "rbxassetid://114237359953780", -- EffectTextures.Puff
++		count = 7,
++		lifetime = { 0.65, 1.05 },
++		speed = { 3, 6.5 },
++		spread = { 45, 45 },
++		acceleration = { 0, 5.5, 0 },
++		drag = 3,
++		size = { { 0, 0.7 }, { 0.45, 1.6 }, { 1, 2.9 } },
++		transparency = { { 0, 0.32 }, { 0.65, 0.55 }, { 1, 1 } },
++		lightEmission = 0.5,
++		lightInfluence = 0.5,
++		rotation = { 0, 360 },
++		rotSpeed = { -70, 70 },
++	},
+ }
+ 
+ return Emitters
+diff --git a/src/shared/data/SkillVisuals.luau b/src/shared/data/SkillVisuals.luau
+index e64360c..8c3b68f 100644
+--- a/src/shared/data/SkillVisuals.luau
++++ b/src/shared/data/SkillVisuals.luau
+@@ -229,14 +229,14 @@ local SkillVisuals: { [string]: SkillVisual } = {
+ 		flightLook = "IceLance",
+ 		icon = "rbxassetid://110445057446322",
+ 	},
+-	-- Ice Spear's pale blue; the library's spare SweepWave, a ring swept out
+-	-- to the circle's edge, in that blue (R036). PLACEHOLDER until Lebègue's
+-	-- look; no icon yet, so the bar shows the name.
++	-- Ice Spear's pale blue, with a frost look of its own (R036): blades
++	-- sweeping round the caster and trailing a rising crescent of rime; no
++	-- icon yet, so the bar shows the name.
+ 	ColdSnap = {
+-		color = Color3.fromRGB(170, 225, 255),
++		color = Color3.fromRGB(155, 215, 255),
+ 		fiery = false,
+ 		burstRadius = 1.5,
+-		areaLook = "SweepWave",
++		areaLook = "ColdSnapRimeSweep",
+ 	},
+ 	-- Ice Spear's pale blue and its IceLance, five at once (R036). Hits this
+ 	-- light sit near power 0 (0.3 on a new Warden, lane C232), so each is
+diff --git a/src/shared/systems/DraftedKinds.luau b/src/shared/systems/DraftedKinds.luau
+index 6184886..316f6c4 100644
+--- a/src/shared/systems/DraftedKinds.luau
++++ b/src/shared/systems/DraftedKinds.luau
+@@ -5,6 +5,7 @@ local DraftedTypes = require("../DraftedTypes")
+ 
+ local DraftedKinds: { [string]: DraftedTypes.Layout } = {
+ 	ShardBloom = require("./drafted/ShardBloom"),
++	ColdSnapRimeSweep = require("./drafted/ColdSnapRimeSweep"),
+ }
+ 
+ return table.freeze(DraftedKinds)
+diff --git a/src/shared/systems/drafted/ColdSnapRimeSweep.luau b/src/shared/systems/drafted/ColdSnapRimeSweep.luau
+new file mode 100644
+index 0000000..9c472b7
+--- /dev/null
++++ b/src/shared/systems/drafted/ColdSnapRimeSweep.luau
+@@ -0,0 +1,228 @@
++--!strict
++-- A drafted area kind (DraftedTypes): frost blades sweeping round the caster
++-- like the hands of a clock, unfurling out toward the area's edge as they go
++-- and each dragging a rising crescent of rime that fades once the sweep
++-- stops. `plan` rolls each hand's phase, pace, height, tilt and wake once;
++-- `pose` places every piece at any age.
++--
++-- Row fields (DrawnEffects.area, kind "Drafted", layout "ColdSnapRimeSweep"):
++--   blades  how many hands sweep
++--   trail   rime pieces each hand leaves behind it
++--   reach   share of the area's radius a blade's tip reaches
++--   inner   share of the area's radius a blade's root starts from
++--   width   studs, a blade's thickness
++--   height  studs above the ground the blades cut
++--   tilt    degrees a blade rises toward its tip
++--   spin    sweeps each hand makes across the area's width
++--   sweep   seconds the sweep takes
++--   rise    seconds the blades fade in
++--   fade    seconds the rime takes to fade once the sweep stops
++--   wake    degrees between the rime's pieces
++--   lift    studs the rime climbs behind the blade
++--   flash   seconds the cast's flash lasts
++--   glow    0-1, how far the bright colour runs toward white
++local AreaLayout = require("../AreaLayout")
++local DraftedTypes = require("../../DraftedTypes")
++local SculptMath = require("../SculptMath")
++local SkillTypes = require("../../SkillTypes")
++
++type Piece = DraftedTypes.Piece
++type AreaShape = SkillTypes.AreaShape
++
++-- One sweeping hand: where in the sweep it starts, how many sweeps it makes,
++-- how high it rides, how far it leans up and how wide its rime is spaced.
++type Hand = { phase: number, spin: number, lift: number, tilt: number, step: number }
++type Plan = { hands: { Hand } }
++
++local RimeSweep = {}
++
++RimeSweep.about =
++	"Frost blades sweeping round the caster like clock hands, unfurling to the edge and trailing a rising crescent of rime."
++
++local function mix(a: { number }, b: { number }, t: number): { number }
++	return {
++		math.round(a[1] + (b[1] - a[1]) * t),
++		math.round(a[2] + (b[2] - a[2]) * t),
++		math.round(a[3] + (b[3] - a[3]) * t),
++	}
++end
++
++local function normalize(v: { number }): { number }
++	local m = math.sqrt(v[1] * v[1] + v[2] * v[2] + v[3] * v[3])
++	if m <= 0 then
++		return { 1, 0, 0 }
++	end
++	return { v[1] / m, v[2] / m, v[3] / m }
++end
++
++-- Where a hand points `p` sweeps in, and which way it is turning there: a
++-- full circle keeps turning one way (a clock hand), while a narrower area is
++-- swept back and forth across its own width so the blades stay inside it.
++local function handAngle(span: number, full: boolean, p: number): (number, number)
++	if full then
++		return -span / 2 + span * (p % 1), 1
++	end
++	local cycle = p % 2
++	if cycle <= 1 then
++		return -span / 2 + span * cycle, 1
++	end
++	return -span / 2 + span * (2 - cycle), -1
++end
++
++function RimeSweep.count(look: any): number
++	-- A bright blade, a fainter companion and `trail` rime pieces a hand, plus the flash.
++	return math.floor(look.blades) * (2 + math.floor(look.trail)) + 1
++end
++
++function RimeSweep.lasts(look: any, _shape: AreaShape): number
++	return look.sweep + look.fade
++end
++
++function RimeSweep.plan(look: any, _shape: AreaShape, rng: Random): Plan
++	local hands: { Hand } = {}
++	local n = math.floor(look.blades)
++	for i = 1, n do
++		-- Spread evenly round the sweep, nudged so no two casts are alike.
++		table.insert(hands, {
++			phase = (i - 1) / n + rng:NextNumber(-0.02, 0.02),
++			spin = look.spin * rng:NextNumber(0.94, 1.06),
++			lift = rng:NextNumber(-0.15, 0.15),
++			tilt = look.tilt + rng:NextNumber(-2, 2),
++			step = look.wake * rng:NextNumber(0.9, 1.1),
++		})
++	end
++	return { hands = hands }
++end
++
++function RimeSweep.pose(look: any, shape: AreaShape, plan: Plan, age: number, color: { number }): { Piece }
++	local half = AreaLayout.halfAngle(shape)
++	local span = 2 * half
++	local full = half >= math.pi - 1e-6
++	local radius = shape.radius
++
++	-- The cast's clock: fade in, sweep, then fade where the hands stopped.
++	local t = math.max(age, 0)
++	local fadeIn = math.min(t / math.max(look.rise, 1e-4), 1)
++	local fadeOut = if t <= look.sweep then 1 else math.max(1 - (t - look.sweep) / math.max(look.fade, 1e-4), 0)
++	local live = fadeIn * fadeOut
++	local u = math.clamp(t / math.max(look.sweep, 1e-4), 0, 1)
++	-- Fast as it leaves the caster, settling at the edge, and unfurling
++	-- outward as it goes, so the frost bursts out to the circle's rim.
++	local eased = 1 - (1 - u) * (1 - u)
++	local grow = 0.55 + 0.45 * eased
++
++	local inner = look.inner * radius
++	local reach = math.min(look.reach, 0.99) * radius
++	local tip = inner + (reach - inner) * grow
++	local mid = (inner + tip) / 2
++	local bladeLength = math.max(tip - inner, 0.05)
++	local wakeR = inner + (tip - inner) * 0.88
++	local glow = math.clamp(look.glow, 0, 1)
++	local bright = mix(color, { 255, 255, 255 }, glow)
++	local soft = mix(color, { 255, 255, 255 }, glow * 0.45)
++
++	local out: { Piece } = {}
++	local trail = math.floor(look.trail)
++	for _, hand in plan.hands do
++		local h, dir = handAngle(span, full, hand.spin * eased + hand.phase)
++		local bladeY = look.height + hand.lift
++		local tilt = math.rad(hand.tilt)
++		-- Outward along the hand's heading, tipped up at its far end.
++		local facing = SculptMath.alongX({
++			math.sin(h) * math.cos(tilt),
++			math.sin(tilt),
++			-math.cos(h) * math.cos(tilt),
++		})
++		local px, pz = math.sin(h) * mid, -math.cos(h) * mid
++
++		table.insert(out, {
++			shape = "Cylinder",
++			size = { bladeLength, look.width, look.width },
++			position = { px, bladeY + 0.18, pz },
++			rotation = facing,
++			color = bright,
++			material = "Neon",
++			transparency = 1 - 0.9 * live,
++		})
++		-- A second, fainter blade a step behind and tipped the other way, so a
++		-- hand reads as a scythe pair with depth from the side, not as one flat
++		-- rod (SE6). Thin like the first: a wide under-layer reads as a slab.
++		local lag = h - dir * 0.09
++		local ct = math.rad(-hand.tilt * 0.75)
++		table.insert(out, {
++			shape = "Cylinder",
++			size = { bladeLength * 0.92, look.width * 1.1, look.width * 1.1 },
++			position = { math.sin(lag) * mid, bladeY - 0.18, -math.cos(lag) * mid },
++			rotation = SculptMath.alongX({
++				math.sin(lag) * math.cos(ct),
++				math.sin(ct),
++				-math.cos(lag) * math.cos(ct),
++			}),
++			color = soft,
++			material = "Neon",
++			transparency = 1 - 0.5 * live,
++		})
++
++		-- The wake: short pieces laid along the arc the blade's tip sweeps,
++		-- each one a step further back and a step higher, so the rime climbs
++		-- away behind the blade and tapers as it fades.
++		local stepRad = math.rad(hand.step)
++		local risePerK = look.lift / math.max(trail, 1)
++		local arc = math.max(wakeR * stepRad, 0.05)
++		local slope = risePerK / arc
++		local pieceLen = math.sqrt(arc * arc + risePerK * risePerK) * 1.18
++		for k = 1, trail do
++			local a = h - dir * stepRad * k
++			local along = 1 - (k - 1) / math.max(trail - 1, 1)
++			local wide = look.width * (0.45 + 0.55 * along)
++			table.insert(out, {
++				shape = "Cylinder",
++				size = { pieceLen, math.max(wide, 0.08), math.max(wide, 0.08) },
++				position = { math.sin(a) * wakeR, bladeY - 0.1 + risePerK * k, -math.cos(a) * wakeR },
++				rotation = SculptMath.alongX(normalize({ -dir * math.cos(a), slope, -dir * math.sin(a) })),
++				color = mix(bright, color, 0.55 * (1 - along)),
++				material = "Neon",
++				transparency = 1 - 0.7 * live * (0.25 + 0.75 * along),
++			})
++		end
++	end
++
++	-- A short, small flash at the caster as the frost lets go. Never a floor
++	-- disc: the look turns, and a solid floor flash under it would blind the
++	-- fight (SE10).
++	local flash = if age >= 0 and age < look.flash then 1 - age / math.max(look.flash, 1e-4) else 0
++	table.insert(out, {
++		shape = "Ball",
++		size = { 1.7, 1.7, 1.7 },
++		position = { 0, look.height, 0 },
++		rotation = SculptMath.identity(),
++		color = mix(color, { 255, 255, 255 }, 0.8),
++		material = "Neon",
++		transparency = if flash > 0 then 1 - 0.85 * flash else 1,
++	})
++	return out
++end
++
++function RimeSweep.bursts(look: any, shape: AreaShape, _plan: Plan): { DraftedTypes.Burst }
++	-- Frost settles on the ground where the sweep passes: a few puffs round
++	-- the area, timed to the hands coming round.
++	local half = AreaLayout.halfAngle(shape)
++	local span = 2 * half
++	local d = math.min(look.reach, 0.99) * shape.radius * 0.75
++	local out: { DraftedTypes.Burst } = {}
++	local n = 6
++	for i = 1, n do
++		local f = (i - 0.5) / n
++		local a = -half + span * f
++		table.insert(out, {
++			at = look.sweep * f / math.max(look.spin, 0.1),
++			f = math.cos(a) * d,
++			r = math.sin(a) * d,
++			y = 0,
++			scale = 0.95,
++		})
++	end
++	return out
++end
++
++return table.freeze(RimeSweep)

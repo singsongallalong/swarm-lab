@@ -1,0 +1,13 @@
+{
+  "skill": "ColdSnap",
+  "look": "ColdSnapRimeSpiral",
+  "layout": "ColdSnapRimeSpiral",
+  "idea": "Two opposed arms of frost blades wound along a spiral that turns as it spreads outward from the caster, so the skill draws as a vortex rather than a ring, a starburst or a crack.",
+  "rows_added": ["ColdSnapRimeSpiral", "ColdSnapFrost"],
+  "intent": "Two opposed arms of pale ice-blue frost blades climb out of the ground along a turning spiral, short at the caster's eye and taller and longer at the rim, with cold mist lifting along them and a brief glowing orb at the eye; power raises and lengthens the blades, winds the spiral tighter and spins it faster, on the same 27 parts.",
+  "renders": [".swarm/out/area-ColdSnapRimeSpiral-r3.png"],
+  "revisions": 2,
+  "requests": [
+    "A painted frost-crystal or rime texture of our own for the airborne motes, so the cold reads as crystalline rather than as a soft smoke puff (Puff, rbxassetid://114237359953780, stands in)."
+  ]
+}
