@@ -1,0 +1,51 @@
+{
+  "skill": "Moonwell",
+  "look": "moonwell",
+  "tileset": "moonwell",
+  "sculpts": [
+    "moonwell_sacred_ring",
+    "moonwell_crypt",
+    "moonwell_headstone",
+    "moonwell_headstone_broken",
+    "moonwell_standing_stone",
+    "moonwell_arch",
+    "moonwell_shrine",
+    "moonwell_pool",
+    "moonwell_barrow_grass",
+    "moonwell_ancient_tree"
+  ],
+  "setpiece": "moonwell_barrow_coil",
+  "rows_added": [
+    "moonwell_sacred_ring",
+    "moonwell_crypt",
+    "moonwell_headstone",
+    "moonwell_headstone_broken",
+    "moonwell_standing_stone",
+    "moonwell_arch",
+    "moonwell_shrine",
+    "moonwell_pool",
+    "moonwell_barrow_grass",
+    "moonwell_ancient_tree",
+    "moonwell",
+    "moonwell_barrow_coil",
+    "moonwell_well_motes"
+  ],
+  "intent": "A drowned moon-priestess glade: dark blue-black woods round a barrow field of pale green-grey stone, still black pools and one cold silver-teal well-light, whose ring of standing stones and glowing pool is the landmark that pulls the eye across the map from the high camera.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png",
+    ".swarm/out/zone-setpiece-well-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A `well` sculpt kind (a round stone kerb round a black shaft) to stand inside the sacred ring; the `wayside` well form is a roofed road well and cannot read as a moonwell from above.",
+    "A way to make a `waystones` ring solid so bodies stop at the stones without blocking the walk into the ring; props are all walk-through except boulders.",
+    "A water-sheet sculpt that can carry a light, so the ring's pool reads as still water rather than a Neon dome.",
+    "A cold preset of its own (colder moon, blue-black haze); the job could only name `mood`."
+  ]
+}

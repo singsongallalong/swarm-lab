@@ -1,0 +1,58 @@
+{
+  "skill": "Moonwell",
+  "look": "moonwell",
+  "tileset": "moonwell",
+  "sculpts": [
+    "moonwell_tree",
+    "moonwell_tree_bent",
+    "moonwell_fern",
+    "moonwell_stone_ring",
+    "moonwell_standing_stones",
+    "moonwell_shrine",
+    "moonwell_arch",
+    "moonwell_shrine_arch",
+    "moonwell_tower",
+    "moonwell_pool",
+    "moonwell_headstone",
+    "moonwell_crypt",
+    "moonwell_marker",
+    "moonwell_lamppost"
+  ],
+  "setpiece": "moonwell_wisps",
+  "rows_added": [
+    "moonwell_tree",
+    "moonwell_tree_bent",
+    "moonwell_fern",
+    "moonwell_stone_ring",
+    "moonwell_standing_stones",
+    "moonwell_shrine",
+    "moonwell_arch",
+    "moonwell_shrine_arch",
+    "moonwell_tower",
+    "moonwell_pool",
+    "moonwell_headstone",
+    "moonwell_crypt",
+    "moonwell_marker",
+    "moonwell_lamppost",
+    "moonwell",
+    "moonwell_wisps",
+    "moonwell_light_way"
+  ],
+  "intent": "A drowned blue-black glade: pale green-grey standing stones and broken shrine arches in a cold blue-green wood, black pools crossed by pale causeways, almost no warm light, and the sacred well's silver-teal wisps drifting low over the water, so from the high camera it reads as a cold blue-green place pulled toward its pale stone ring and towers.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png",
+    ".swarm/out/zone-setpiece-lightway-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A carved round stone column kind: `columns` only builds hexagonal basalt cliff chunks, so the order's ruined colonnades had to be carried by arches and standing stones instead.",
+    "A soft round glow texture for the well's motes: every texture in the existing kits is a streak, smoke curl or veil, so the wisps read as drifting smoke rather than distinct points of light.",
+    "A flat pool-sheet prop that follows the ground, so still water could fill the heath itself as the drowned-glade direction asks, rather than only the layout's terrace hollows."
+  ]
+}

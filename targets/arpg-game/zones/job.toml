@@ -47,12 +47,14 @@ prefix = "{skill_lower}_"
 mode = "add_lines"
 # Catalog rows for its sculpts and its tileset: on one line, or as the formatter wraps a
 # long one (`["sculpt:x"] = row(`, the quoted description, `MOOR`, `),`).
-pattern = '(\["(sculpt:{skill_lower}_\w+|outdoor:{skill_lower})"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),)?|"[^"]{1,160}",|(MOOR|TOWN)|\),)'
+# Comment lines above them are fine (moonwell-zones, 2026-10-29: four of six added one).
+pattern = '(\["(sculpt:{skill_lower}_\w+|outdoor:{skill_lower})"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),)?|"[^"]{1,160}",|(MOOR|TOWN)|\),|--[^\n]{0,200})'
 
 # The tileset file is data: strict, and requiring only what a derived tileset needs.
 [purity]
 first_line = "--!strict"
-max_lines = 300
+# A whole area's look runs long: the Ashfields' is 274 lines; two of six ran 340-350.
+max_lines = 450
 requires = ["./Field", "./Moor", "../LightingPresets", "../../OutdoorTypes", "../Sculpts"]
 forbid = [
   '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',

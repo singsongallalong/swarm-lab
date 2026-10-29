@@ -1,0 +1,52 @@
+{
+  "skill": "Moonwell",
+  "look": "moonwell",
+  "tileset": "moonwell",
+  "sculpts": [
+    "moonwell_tree",
+    "moonwell_tree_leaning",
+    "moonwell_tower",
+    "moonwell_tower_broken",
+    "moonwell_ring",
+    "moonwell_stone_circle",
+    "moonwell_shrine",
+    "moonwell_arch",
+    "moonwell_columns",
+    "moonwell_ferns",
+    "moonwell_pool",
+    "moonwell_marker"
+  ],
+  "setpiece": "moonwell_wellglow",
+  "rows_added": [
+    "moonwell_tree",
+    "moonwell_tree_leaning",
+    "moonwell_tower",
+    "moonwell_tower_broken",
+    "moonwell_ring",
+    "moonwell_stone_circle",
+    "moonwell_shrine",
+    "moonwell_arch",
+    "moonwell_columns",
+    "moonwell_ferns",
+    "moonwell_pool",
+    "moonwell_marker",
+    "moonwell",
+    "moonwell_wellglow"
+  ],
+  "intent": "A drowned moonlit glade of dark blue-black woods and pale green-grey stone, with one cold silver-teal pool of light in a wide ring of standing stones at its heart, ruined watchtowers ringing the rims, still black pools and low blue-grey mist.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A ring path for set pieces, so the well's light can crackle around its own stone ring instead of a seeded worm wandering off it.",
+    "A composite sculpt kind joining a waystone ring and a pool in one prop, so the well reads as stone round still water in a single placement.",
+    "A lantern-crowned tower kind, so the dead lanterns on the rims are towers with glazed tops rather than plain watchtowers."
+  ]
+}

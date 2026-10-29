@@ -1,0 +1,46 @@
+{
+  "skill": "Moonwell",
+  "look": "moonwell",
+  "tileset": "moonwell",
+  "sculpts": [
+    "moonwell_ring",
+    "moonwell_standing_stone",
+    "moonwell_arch",
+    "moonwell_tree",
+    "moonwell_fern",
+    "moonwell_headstone",
+    "moonwell_lamp",
+    "moonwell_pool",
+    "moonwell_tower"
+  ],
+  "setpiece": "moonwell_breath",
+  "rows_added": [
+    "moonwell_ring",
+    "moonwell_standing_stone",
+    "moonwell_arch",
+    "moonwell_tree",
+    "moonwell_fern",
+    "moonwell_headstone",
+    "moonwell_lamp",
+    "moonwell_pool",
+    "moonwell_tower",
+    "moonwell",
+    "moonwell_breath"
+  ],
+  "intent": "A drowned moon-priestess glade of dark blue-green wood under frost-silver dead trees, pale mossy stone and black still water, whose one cold silver-teal glow inside a ring of eleven standing stones reads from the high camera as the landmark to walk to.",
+  "renders": [
+    ".swarm/out/zone-whole-r2.png",
+    ".swarm/out/zone-pool-r2.png",
+    ".swarm/out/zone-ruin-r2.png",
+    ".swarm/out/zone-tileset-r2.png",
+    ".swarm/out/zone-tileset-eye-r2.png",
+    ".swarm/out/zone-sculpts-r2.png",
+    ".swarm/out/zone-setpiece-r2.png"
+  ],
+  "revisions": 1,
+  "requests": [
+    "A shallow basin or well-head sculpt kind: the pool kind is a flat sheet and waystones are upright slabs, so the well's water is a light inside the stone ring instead of a water surface.",
+    "A pale-stone run recipe for a fallen shrine boundary wall (new runs are code-side rows this job cannot add), so ruined edges stay stone rather than reusing the moor's field wall.",
+    "A soft rising-mote sprite of its own for the well's light; the theme reuses the Ashfields' aurora wisp texture."
+  ]
+}

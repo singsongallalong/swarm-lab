@@ -1,0 +1,737 @@
+diff --git a/src/shared/data/EnvThemes.luau b/src/shared/data/EnvThemes.luau
+index e92d57b..2520266 100644
+--- a/src/shared/data/EnvThemes.luau
++++ b/src/shared/data/EnvThemes.luau
+@@ -44,6 +44,25 @@ local themes: { [string]: Theme } = {
+ 			braid = "rbxassetid://99282949776586", -- assets/vfx/worm-braid.png (OpenArt, A19-D15)
+ 		},
+ 	},
++	-- The Moonwell's light (a drowned glade): the sacred well's cold
++	-- silver-teal, a pale moon-white core and a deeper teal haze, desaturated
++	-- against the glade's blue-black wood. The kit borrows the aurora's own
++	-- soft textures; no new uploads.
++	moonwell = {
++		about = "The Moonwell's light: cold silver-teal wisps and a pale moon-white core rising off the black water of a drowned glade.",
++		colors = {
++			core = { 224, 242, 236 },
++			glow = { 138, 200, 192 },
++			deep = { 74, 128, 130 },
++			moss = { 168, 196, 172 },
++		},
++		kit = {
++			wisp = "rbxassetid://113245411673535", -- assets/vfx/worm-wisp.png (OpenArt, A19-D15)
++			ribbon = "rbxassetid://91161104794799", -- assets/vfx/worm-ribbon.png (OpenArt, A19-D15)
++			veil = "rbxassetid://116287069271100", -- assets/vfx/worm-veil.png (OpenArt, A19-D15)
++			smoke = "rbxassetid://118279823035826", -- assets/vfx/worm-smoke.png (OpenArt, A19-D15)
++		},
++	},
+ }
+ 
+ return table.freeze(themes)
+diff --git a/src/shared/data/OutdoorTilesets.luau b/src/shared/data/OutdoorTilesets.luau
+index 104cc30..3dd5016 100644
+--- a/src/shared/data/OutdoorTilesets.luau
++++ b/src/shared/data/OutdoorTilesets.luau
+@@ -2,6 +2,7 @@
+ -- Every outdoor tileset by name (docs/guides/map-tools.md).
+ local Field = require("./outdoorTilesets/Field")
+ local Field2 = require("./outdoorTilesets/Field2")
++local Moonwell = require("./outdoorTilesets/Moonwell")
+ local Moor = require("./outdoorTilesets/Moor")
+ local OutdoorTypes = require("../OutdoorTypes")
+ 
+@@ -9,6 +10,7 @@ local OutdoorTilesets: { [string]: OutdoorTypes.OutdoorTileset } = {
+ 	moor = Moor,
+ 	field = Field,
+ 	field2 = Field2,
++	moonwell = Moonwell,
+ }
+ 
+ return table.freeze(OutdoorTilesets)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index b945ab9..e95da83 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -433,6 +433,143 @@ local Sculpts: { [string]: Recipe } = {
+ 			{ width = 36, depth = 38, rise = 12, steps = 8 },
+ 		},
+ 	},
++	-- The Moonwell (a drowned glade): the order of moon-priestesses' pale
++	-- green-grey stone, gone soft with age and wet, and its dark blue-black
++	-- trees leaning over the water. The one accent is the well's cold
++	-- silver-teal, in a rag, a hanging cloth and the water itself (bible B8).
++	moonwell_tree = {
++		kind = "tree",
++		size = { 6, 16, 6 },
++		material = "Wood",
++		colors = { { 38, 43, 47 }, { 33, 38, 42 }, { 45, 50, 54 } },
++		maxPrims = 48,
++		segments = 5,
++		branches = 5,
++		bend = 16,
++	},
++	moonwell_tree_bent = {
++		kind = "tree",
++		size = { 8, 13, 8 },
++		material = "Wood",
++		colors = { { 38, 43, 47 }, { 33, 38, 42 }, { 45, 50, 54 } },
++		maxPrims = 44,
++		segments = 6,
++		branches = 4,
++		bend = 32,
++	},
++	-- Moon-fern: the glade's ground cover, low silver-green clumps with pale
++	-- tips, merged so it reaches every cell without spending the parts.
++	moonwell_fern = {
++		kind = "tuft",
++		size = { 3.8, 3.2, 3.8 },
++		material = "Grass",
++		colors = { { 60, 76, 72 }, { 52, 68, 64 }, { 70, 84, 78 }, { 90, 102, 96 } },
++		maxPrims = 12,
++		blades = 2,
++		body = 0.55,
++		rounded = true,
++		merge = 12,
++	},
++	-- The landmark: a ring of pale standing stones round the well, one fallen.
++	moonwell_stone_ring = {
++		kind = "waystones",
++		size = { 26, 12, 3.4 },
++		material = "Slate",
++		colors = { { 92, 98, 92 }, { 82, 88, 84 }, { 98, 100, 94 } },
++		maxPrims = 12,
++		stones = 9,
++	},
++	moonwell_standing_stones = {
++		kind = "waystones",
++		size = { 13, 6.5, 1.7 },
++		material = "Slate",
++		colors = { { 92, 98, 92 }, { 82, 88, 84 }, { 98, 100, 94 } },
++		maxPrims = 9,
++		stones = 5,
++	},
++	-- A shrine of the order, its niche cold, a silver-teal cloth hanging in it.
++	moonwell_shrine = {
++		kind = "wayside",
++		form = "shrine",
++		size = { 3.4, 6.5, 3.4 },
++		material = "Slate",
++		colors = { { 92, 98, 92 }, { 82, 88, 84 }, { 62, 56, 48 }, { 62, 92, 92 } },
++		materials = { [3] = "WoodPlanks", [4] = "Fabric" },
++		maxPrims = 10,
++	},
++	-- The way on at a map's end, and the broken arch of a ruined shrine.
++	moonwell_arch = {
++		kind = "arch",
++		size = { 15, 15, 3 },
++		material = "Slate",
++		colors = { { 92, 98, 92 }, { 82, 88, 84 }, { 98, 100, 94 } },
++		maxPrims = 12,
++		span = 9,
++	},
++	moonwell_shrine_arch = {
++		kind = "arch",
++		size = { 16, 13, 3 },
++		material = "Slate",
++		colors = { { 92, 98, 92 }, { 82, 88, 84 }, { 98, 100, 94 } },
++		maxPrims = 12,
++		span = 9,
++		snapped = true,
++	},
++	-- The order's broken tower, to steer by across the dark wood (B11).
++	moonwell_tower = {
++		kind = "tower",
++		size = { 13, 30, 3.2 },
++		material = "Slate",
++		colors = { { 92, 98, 92 }, { 82, 88, 84 }, { 98, 100, 94 } },
++		maxPrims = 20,
++	},
++	-- The still black water: a wide thin sheet, dark enough that the sky and
++	-- the well's light are what show in it (C34).
++	moonwell_pool = {
++		kind = "pool",
++		size = { 30, 0.1, 30 },
++		material = "Glass",
++		colors = { { 26, 34, 38 }, { 30, 40, 44 } },
++		reflectance = 0.4,
++		maxPrims = 4,
++	},
++	moonwell_headstone = {
++		kind = "headstone",
++		size = { 2.8, 4.2, 0.9 },
++		material = "Slate",
++		colors = { { 90, 96, 90 }, { 82, 88, 84 } },
++		maxPrims = 4,
++		top = "round",
++		lean = 12,
++	},
++	moonwell_crypt = {
++		kind = "crypt",
++		size = { 8, 6, 5.5 },
++		material = "Slate",
++		colors = { { 90, 96, 90 }, { 82, 88, 84 } },
++		accent = { 52, 70, 70 },
++		maxPrims = 10,
++	},
++	-- The threshold marker, its rag the order's silver-teal (bible B8).
++	moonwell_marker = {
++		kind = "marker",
++		size = { 3.4, 7, 1.8 },
++		material = "Slate",
++		colors = { { 92, 98, 92 }, { 82, 88, 84 } },
++		accent = { 62, 92, 92 },
++		maxPrims = 9,
++	},
++	-- The last lanterns: a dark timber post, the lantern's light in the tileset.
++	moonwell_lamppost = {
++		kind = "lamppost",
++		size = { 3, 9, 0.6 },
++		material = "Wood",
++		colors = { { 52, 48, 44 }, { 46, 42, 39 }, { 60, 56, 50 } },
++		maxPrims = 6,
++		reach = 2.2,
++		arm = 8.2,
++		drop = 0.7,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index b2b50eb..9586ef2 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -420,6 +420,122 @@ local recipes: { [string]: Recipe } = {
+ 			},
+ 		},
+ 	},
++	-- The Moonwell's signature effect (a drowned glade): the well's light
++	-- leaving the water. Silver-teal motes rise a little way off the black
++	-- pool and drift on standing waves, a thin coil of pale light winds low
++	-- over the stones, and a couple of shadowless lights let the pale stone
++	-- catch the colour. Deliberately short (42 studs of worm) and low: the
++	-- game camera looks down and sees nothing above the horizon, and a big
++	-- haze near it would fog the screen (A19-D16). Five emitters on the worm
++	-- and two lights, well inside a phone's ten and three.
++	moonwell_wisps = {
++		about = "The Moonwell's light leaving the water: silver-teal motes drifting low off the black pool, over a faint coil of pale light on the stones.",
++		theme = "moonwell",
++		path = { kind = "worm", length = 42, step = 4, bend = 14, climb = 6, round = 3 },
++		layers = {
++			{
++				name = "motes",
++				look = {
++					kind = "stream",
++					every = 10,
++					thick = 8,
++					lift = 6,
++					toward = "up",
++					rise = 0.5,
++					life = { 5, 8 },
++					rate = 4,
++					size = 3.2,
++					tall = 0.9,
++					transparency = 0.68,
++					color = "glow",
++					texture = "smoke",
++					lean = 22,
++					vary = 0.5,
++				},
++				motion = { kind = "sway", amplitude = 3.5, tilt = 5, span = 18, periods = { 9, 6 } },
++				priority = 1,
++			},
++			{
++				name = "coil",
++				look = { kind = "neon", width = 0.4, segment = 6, transparency = 0.62, color = "core" },
++				motion = {
++					kind = "flow",
++					wavelength = 18,
++					speed = 2.5,
++					depth = 0.7,
++					swell = { wavelength = 26, speed = 2, depth = 0.6 },
++					wiggle = { amplitude = 0.5, span = 20, periods = { 7, 4.5 } },
++				},
++				priority = 2,
++			},
++			{
++				name = "lights",
++				look = { kind = "light", every = 18, max = 2, range = 20, brightness = 0.9, color = "glow" },
++				motion = { kind = "pulse", period = 6, depth = 0.3 },
++				priority = 3,
++			},
++		},
++	},
++	-- The other half of the same light: a thin stream of it winding low
++	-- through the trees toward the well, motes running along it in a slack
++	-- helix, so the eye is pulled along the wood to the water. Five emitters
++	-- and two lights.
++	moonwell_light_way = {
++		about = "A thin stream of the Moonwell's silver-teal light winding low through the trees toward the well, with motes running along it.",
++		theme = "moonwell",
++		path = { kind = "worm", length = 90, step = 5, bend = 6, climb = 4, round = 3 },
++		layers = {
++			{
++				name = "thread",
++				look = { kind = "neon", width = 0.3, segment = 5, transparency = 0.5, color = "glow" },
++				motion = {
++					kind = "flow",
++					wavelength = 36,
++					speed = 6,
++					depth = 0.6,
++					swell = { wavelength = 140, speed = 5, depth = 0.7 },
++					wiggle = { amplitude = 0.3, span = 30, periods = { 6, 4 } },
++				},
++				priority = 1,
++			},
++			{
++				name = "motes",
++				look = {
++					kind = "stream",
++					every = 18,
++					thick = 2,
++					lift = 1.5,
++					toward = "along",
++					rise = 5,
++					life = { 3, 5 },
++					rate = 3,
++					size = 1.6,
++					tall = 1.2,
++					transparency = 0.55,
++					color = "glow",
++					texture = "veil",
++					lean = 8,
++					vary = 0.4,
++				},
++				motion = {
++					kind = "worm",
++					amplitude = 0.8,
++					across = 0.6,
++					periods = { 9, 6 },
++					twist = 6,
++					coil = 0.6,
++					swell = { wavelength = 140, speed = 5, depth = 0.7 },
++				},
++				priority = 2,
++			},
++			{
++				name = "lights",
++				look = { kind = "light", every = 30, max = 2, range = 14, brightness = 0.6, color = "deep" },
++				motion = { kind = "pulse", period = 7, depth = 0.25 },
++				priority = 3,
++			},
++		},
++	},
+ }
+ 
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 3e038c4..4f1749b 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -122,6 +122,50 @@ local rows: { [string]: Row } = {
+ 		"The Labyrinth's gate: a stepped stone-brick portal up a flight of pale stairs on a raised dais, its throat a dim violet glow.",
+ 		TOWN
+ 	),
++	["sculpt:moonwell_tree"] = row(
++		"A tall dark blue-black tree leaning over the drowned glade, out in the old wood.",
++		MOOR
++	),
++	["sculpt:moonwell_tree_bent"] = row("A wind-bent dark tree leaning out over the Moonwell's black water.", MOOR),
++	["sculpt:moonwell_fern"] = row(
++		"A low silver-green fern clump with pale tips, scattered over the Moonwell's heath.",
++		MOOR
++	),
++	["sculpt:moonwell_stone_ring"] = row(
++		"A ring of pale green-grey standing stones round the Moonwell, one fallen: the glade's landmark.",
++		MOOR
++	),
++	["sculpt:moonwell_standing_stones"] = row(
++		"A small ring of pale standing stones, a ruined shrine out in the Moonwell's wood.",
++		MOOR
++	),
++	["sculpt:moonwell_shrine"] = row(
++		"A niche shrine of the moon-priestesses in pale stone, its hanging cloth their silver-teal.",
++		MOOR
++	),
++	["sculpt:moonwell_arch"] = row("The pale stone arch the way on opens under at the Moonwell's end.", MOOR),
++	["sculpt:moonwell_shrine_arch"] = row(
++		"A broken shrine arch of the Moonwell's order, one side's lintel fallen.",
++		MOOR
++	),
++	["sculpt:moonwell_tower"] = row(
++		"A broken pale tower of the order's sanctum, to steer by across the Moonwell's dark wood.",
++		MOOR
++	),
++	["sculpt:moonwell_pool"] = row("A wide still black sheet of water in the Moonwell's drowned hollows.", MOOR),
++	["sculpt:moonwell_headstone"] = row("A round-topped pale headstone in the Moonwell's waterlogged graveyard.", MOOR),
++	["sculpt:moonwell_crypt"] = row(
++		"The order's stone vault at the back of the Moonwell's graveyard, its iron door barred.",
++		MOOR
++	),
++	["sculpt:moonwell_marker"] = row(
++		"A tall pale marker stone hung with the Moonwell's silver-teal rag at a threshold.",
++		MOOR
++	),
++	["sculpt:moonwell_lamppost"] = row(
++		"A dark timber lamp post with a hanging lantern: one of the order's last few lights on the road.",
++		MOOR
++	),
+ 	-- data/RunRecipes
+ 	["run:moor_field_wall"] = row("A dry-stone field wall run along the moor's old field edges.", MOOR),
+ 	["run:moor_retaining_wall"] = row(
+@@ -174,6 +218,10 @@ local rows: { [string]: Row } = {
+ 		"Field 2, the Ashfields: the first field burnt, ash and charcoal trees in violet mist, smouldering stumps and giants' bones, under an aurora.",
+ 		MOOR
+ 	),
++	["outdoor:moonwell"] = row(
++		"The Moonwell: a drowned blue-black glade, pale stone rings and broken arches, black pools crossed by causeways, and the well's silver-teal wisps in the mist.",
++		MOOR
++	),
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
+diff --git a/src/shared/data/outdoorTilesets/Moonwell.luau b/src/shared/data/outdoorTilesets/Moonwell.luau
+new file mode 100644
+index 0000000..4059604
+--- /dev/null
++++ b/src/shared/data/outdoorTilesets/Moonwell.luau
+@@ -0,0 +1,340 @@
++--!strict
++-- The Moonwell: a drowned glade in a dark blue-black wood, where an order of
++-- moon-priestesses kept a sacred well and left it. Still black water fills the
++-- hollows, pale green-grey stone stands in rings and broken arches, and the
++-- only cold light is the well's own silver-teal, leaving the water as wisps.
++-- Its amber is the last few lanterns on the road. Derived from the moor the
++-- way the Ashfields derive from the field: the same skeleton, repainted
++-- drowned, and its warm living ground cooled to blue-green.
++local Moor = require("./Moor")
++local OutdoorTypes = require("../../OutdoorTypes")
++local Sculpts = require("../Sculpts")
++
++local function with<T>(base: T, changes: { [string]: any }): T
++	local out = table.clone(base :: any)
++	for key, value in changes do
++		out[key] = value
++	end
++	return table.freeze(out) :: any
++end
++
++-- Drowned ground by terrain material, as Field paints its living ground:
++-- Terrain keeps one colour per material, so every look on a material moves
++-- together (OutdoorTilesets.spec). Dark blue-green heath, black silt and wet
++-- cold stone, all far under the bible's large-surface caps (B8).
++local DROWNED: { [string]: { number } } = {
++	Grass = { 58, 68, 66 }, -- the glade's heath, cold blue-green; Roblox's blades take it
++	Ground = { 54, 58, 62 }, -- the old paths, wet grey
++	LeafyGrass = { 40, 46, 46 }, -- the shaded margin under the trees and the banks
++	Mud = { 38, 42, 44 }, -- wet silt under the water, the ruins and the thickets
++	Basalt = { 38, 42, 46 }, -- cold wet rock, darker than the heath so the rim reads
++	Slate = { 76, 82, 78 }, -- the pale green-grey stone of the order's ruins
++}
++
++local function drowned(look: OutdoorTypes.GroundLook): OutdoorTypes.GroundLook
++	local color = DROWNED[look.material]
++	return if color then with(look, { color = color }) else look
++end
++
++-- The cliffs keep their generated meshes (Moor's reasoning: sculpted columns
++-- read as boxes from the ARPG camera), painted a colder blue-grey than the
++-- moor's so the rim reads as wet rock under the moon, not ash.
++local CLIFF_ROCK = { 46, 50, 54 }
++-- The priestesses' last lanterns: the one warm light left in the glade, and
++-- rare. A small caged flame, so it reads as a lantern and never as a lamp moon.
++local LANTERN_CAGE = 0.8
++local ROAD_LIGHT: OutdoorTypes.LightLook = {
++	color = { 255, 170, 96 },
++	range = 16,
++	brightness = 1.2,
++	-- Under the post's chain, as on the moor.
++	height = (Sculpts.moonwell_lamppost.arm :: number)
++		- (Sculpts.moonwell_lamppost.drop :: number)
++		- LANTERN_CAGE * 1.3 / 2,
++	reach = Sculpts.moonwell_lamppost.reach,
++	cage = LANTERN_CAGE,
++	pulse = { style = "flicker", depth = 0.12, period = 1.3 },
++}
++local ROAD_LAMP: OutdoorTypes.PieceLook = {
++	name = "MoonLantern",
++	size = Sculpts.moonwell_lamppost.size,
++	sculpt = "moonwell_lamppost",
++	light = ROAD_LIGHT,
++}
++-- The arrival's own: dimmer, because a party lands beside it (C38's lesson).
++local ARRIVAL_LAMP: OutdoorTypes.PieceLook = with(ROAD_LAMP, {
++	name = "MoonArrivalLantern",
++	light = with(ROAD_LIGHT, { range = 14, brightness = 0.8 }),
++})
++
++local props: any = table.clone(Moor.props)
++-- Moon-fern in place of heather: low silver-green clumps with pale tips, the
++-- ground cover of the drowned glade. Merged, so the colour reaches every cell
++-- without spending the part budget (fafwa's heather lesson).
++props.heather = with(props.heather, {
++	perHundredCells = 5,
++	pieces = {
++		{ name = "MoonFern", size = Sculpts.moonwell_fern.size, sculpt = "moonwell_fern" },
++	},
++})
++-- Fewer road lanterns than anywhere else: the order's last few, far apart.
++props.lanterns = {
++	pieces = { ROAD_LAMP },
++	perHundredCells = 0.6,
++	on = { "roadside" :: OutdoorTypes.PropGround },
++	spacing = 150,
++	faceRoad = true,
++	scale = { 0.95, 1.1 },
++	sink = 0.5,
++}
++-- The order's graves, in the same pale stone: round-topped stones leaning by
++-- the water.
++props.headstones = with(props.headstones, {
++	perHundredCells = 22,
++	pieces = {
++		{ name = "MoonHeadstone", size = Sculpts.moonwell_headstone.size, sculpt = "moonwell_headstone" },
++	},
++})
++-- A few grave lanterns still burn; the rest went out long ago.
++props.candles = with(props.candles, { perHundredCells = 4 })
++-- No fires in the ruins: the glade is cold, and the well is the only light
++-- that matters.
++props.embers = nil
++-- The moor's watchtower and stone circles are replaced by the order's own.
++props.watchtower = nil
++props.stone_circles = nil
++
++-- The pale stone rings: the area's landmark, a ring of standing stones round
++-- a hollow (or, at a map's arrival, round its pool of cold light). Scattered
++-- where the heath opens, two to a map, clear of the way and the ruins.
++local stoneRings: OutdoorTypes.PropSet = {
++	pieces = {
++		{ name = "MoonStoneRing", size = Sculpts.moonwell_stone_ring.size, sculpt = "moonwell_stone_ring" },
++		{
++			name = "MoonStandingStones",
++			size = Sculpts.moonwell_standing_stones.size,
++			sculpt = "moonwell_standing_stones",
++			weight = 0.8,
++		},
++	},
++	perHundredCells = 0,
++	count = 2,
++	spacing = 140,
++	clearance = 4,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	scale = { 0.95, 1.05 },
++	sink = 0.5,
++}
++props.stone_rings = table.freeze(stoneRings)
++
++-- Ruined shrines of the order, out in the wood: a niche shrine and a broken
++-- arch, both pale stone, none of them lit any more.
++local shrines: OutdoorTypes.PropSet = {
++	pieces = {
++		{ name = "MoonShrine", size = Sculpts.moonwell_shrine.size, sculpt = "moonwell_shrine" },
++		{
++			name = "BrokenShrineArch",
++			size = Sculpts.moonwell_shrine_arch.size,
++			sculpt = "moonwell_shrine_arch",
++			weight = 0.7,
++		},
++	},
++	perHundredCells = 0,
++	count = 3,
++	spacing = 110,
++	clearance = 3,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	scale = { 0.95, 1.15 },
++	sink = 0.4,
++}
++props.shrines = table.freeze(shrines)
++
++-- One broken tower to steer by, the area's skyline landmark (bible B11): a
++-- pale stump of the order's sanctum rising out of the dark wood.
++local moonTower: OutdoorTypes.PropSet = {
++	pieces = { { name = "MoonTower", size = Sculpts.moonwell_tower.size, sculpt = "moonwell_tower" } },
++	perHundredCells = 0,
++	count = 1,
++	clearance = 4,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	scale = { 0.95, 1.05 },
++	sink = 0.6,
++}
++props.moon_tower = table.freeze(moonTower)
++
++-- A few ancient trees out on the open ground, leaning over the water and the
++-- ruins; the thickets along the rims stay cheap mesh trees, as on the moor.
++local heroTrees: OutdoorTypes.PropSet = {
++	pieces = {
++		{ name = "MoonTree", size = Sculpts.moonwell_tree.size, sculpt = "moonwell_tree" },
++		{ name = "MoonTreeBent", size = Sculpts.moonwell_tree_bent.size, sculpt = "moonwell_tree_bent", weight = 0.8 },
++	},
++	perHundredCells = 0,
++	count = 5,
++	spacing = 70,
++	clearance = 2,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	scale = { 0.95, 1.1 },
++	sink = 0.5,
++}
++props.hero_trees = table.freeze(heroTrees)
++
++-- Boulders in the glade's cold rock.
++local boulderPieces = table.clone(props.boulders.pieces)
++for i, piece in boulderPieces do
++	boulderPieces[i] = with(piece, { color = CLIFF_ROCK })
++end
++props.boulders = with(props.boulders, { pieces = boulderPieces })
++
++local cliffs: { OutdoorTypes.PieceLook } = {}
++for i, piece in Moor.edges.cliff.pieces do
++	cliffs[i] = with(piece, { color = CLIFF_ROCK })
++end
++
++local edges: { [string]: OutdoorTypes.EdgeLook } = table.clone(Moor.edges :: any)
++-- The wood round the glade: the same generated trees, painted blue-black, and
++-- grown larger, so the rim reads as old forest mass from the high camera.
++local treePieces = table.clone(edges["thicket"].pieces)
++for i, piece in treePieces do
++	if not piece.sculpt then
++		treePieces[i] = with(piece, { color = { 36, 42, 46 } })
++	end
++end
++edges["thicket"] = with(edges["thicket"], { pieces = treePieces, spacing = 5, scale = { 2, 3 } })
++edges["cliff"] = with(edges["cliff"], { pieces = cliffs })
++for kind, edge in edges do
++	if edge.ground then
++		edges[kind] = with(edge, { ground = drowned(edge.ground) })
++	end
++end
++
++local moonwell = table.clone(Moor) :: OutdoorTypes.OutdoorTileset
++moonwell.name = "moonwell"
++moonwell.palette = "dark blue-black glade grass, black still water, pale green-grey weathered stone, "
++	.. "dark wet basalt, silver-teal light as the only cold glow, a few amber lanterns, desaturated, matte, no highlights"
++moonwell.lighting = "mood"
++moonwell.props = table.freeze(props)
++moonwell.edges = table.freeze(edges) :: any
++-- The heath and the black silt of the ruins; the road on to the well is old
++-- wet cobbles, paler than the ground so it reads as the way (the Ashfields'
++-- lesson: at 56 grey the road vanished into the ground, Field2 2026-10-25).
++moonwell.ground = with(Moor.ground, {
++	heath = drowned(Moor.ground.heath),
++	ruin = drowned(Moor.ground.ruin),
++	road = { material = "Cobblestone", color = { 64, 74, 74 } },
++})
++moonwell.outcrop = with(Moor.outcrop, {
++	pieces = cliffs,
++	ground = if Moor.outcrop.ground then drowned(Moor.outcrop.ground) else nil,
++})
++local bluff = Moor.bluff
++if bluff then
++	moonwell.bluff = with(bluff, {
++		rock = if bluff.rock then drowned(bluff.rock) else nil,
++		-- The retaining wall's rubble core: the pale stone of the ruins.
++		backing = { material = "Slate", color = { 76, 82, 78 } },
++	})
++end
++-- Standing water in the hollows (A012 step 2b, the direction's drowned glade):
++-- a wide still black sheet on a bed of silt, pale flat stones laid across it
++-- as a causeway, so the water is a thing to cross rather than a hole.
++local moorPools = assert(Moor.pools, "the moor has pools")
++moonwell.pools = {
++	sheet = { name = "StillWater", size = Sculpts.moonwell_pool.size, sculpt = "moonwell_pool" },
++	bed = drowned(moorPools.bed),
++	causeway = {
++		stones = {
++			{ name = "CausewayStone", size = { 2.6, 0.8, 3.6 }, material = "Slate", color = { 96, 100, 94 } },
++			{ name = "CausewayStone", size = { 3.2, 0.8, 2.8 }, material = "Slate", color = { 88, 94, 90 } },
++			{ name = "CausewayStone", size = { 2.2, 0.9, 3.0 }, material = "Slate", color = { 92, 98, 92 } },
++		},
++		step = 3,
++		sink = 0.35,
++	},
++}
++-- A map's ends (A012 steps 3–4). The arrival is the moonwell itself: the ring
++-- of standing stones round a pool of cold silver-teal light, the landmark a
++-- player sees and walks to; its lantern is one of the priestesses' last. The
++-- way on is a pale arch whose sheet burns the same cold colour once cleared.
++moonwell.ends = {
++	arrival = {
++		ring = { name = "MoonRing", size = Sculpts.moonwell_stone_ring.size, sculpt = "moonwell_stone_ring" },
++		lamp = ARRIVAL_LAMP,
++		-- Dark and see-through, as the moor's: Neon brightens its colour, and a
++		-- paler one read as a white disc from the game camera (C32).
++		pool = { radius = 6, color = { 40, 74, 72 }, transparency = 0.55 },
++	},
++	exit = {
++		arch = { name = "MoonArch", size = Sculpts.moonwell_arch.size, sculpt = "moonwell_arch" },
++		sheet = {
++			width = 6,
++			height = 10,
++			dim = { 44, 54, 56 },
++			lit = { 150, 206, 196 },
++			transparency = 0.25,
++			light = { color = { 140, 196, 188 }, range = 26, brightness = 2 },
++		},
++	},
++	-- Across a road that comes in off the map: a broken shrine arch, its gap
++	-- filled by the road and the mist.
++	offMap = {
++		name = "MoonGate",
++		size = Sculpts.moonwell_shrine_arch.size,
++		sculpt = "moonwell_shrine_arch",
++		solid = true,
++	},
++}
++-- Each threshold: a lamp and a marker stone hung with the order's silver-teal
++-- rag, the zone accent (bible B8), so a way on reads the same every time.
++moonwell.thresholds = {
++	lamp = ROAD_LAMP,
++	marker = {
++		name = "MoonMarker",
++		size = Sculpts.moonwell_marker.size,
++		sculpt = "moonwell_marker",
++		solid = true,
++	},
++}
++-- Fewer lit doors than the moor: the order is long gone.
++moonwell.wallLights = with(Moor.wallLights, { chance = 0.25 })
++-- No lit windows at all: every room in the drowned glade is dark (B7).
++moonwell.litWindows = nil
++-- The order's vault at the back of its graveyard.
++local graveyard = assert(Moor.graveyard, "the moor has a graveyard")
++moonwell.graveyard = with(graveyard, {
++	crypt = { name = "MoonCrypt", size = Sculpts.moonwell_crypt.size, sculpt = "moonwell_crypt" },
++})
++-- The water's own haze: cold blue-grey, thicker than the moor's, because the
++-- glade is drowned (B9). Not shown offline; set by the bible.
++moonwell.groundMist = with(Moor.groundMist, {
++	color = { 96, 112, 120 },
++	perHundredCells = 0.55,
++	spacing = 46,
++	height = 1.4,
++	size = 28,
++	transparency = 0.8,
++})
++-- The drowned ground's wisps (fafwa's mana, kept for this area): pale
++-- silver-teal motes rising a little way over the water and drifting toward the
++-- map's mana point, the well's light leaking out. Glowing on their own, so
++-- small and few: about six emitters a map, with the mist well inside the
++-- phone's emitter budget.
++moonwell.mana = {
++	color = { 140, 192, 184 },
++	perHundredCells = 0.1,
++	spacing = 64,
++	height = 2.5,
++	size = 0.6,
++	speed = 1.6,
++	rate = 3,
++}
++-- Rising land and hills, drowned blue-green and cold rock; the haze below
++-- melts into the night, as the mood preset's atmosphere does.
++moonwell.beyond = with(Moor.beyond, {
++	ground = drowned(Moor.beyond.ground),
++	rock = drowned(Moor.beyond.rock),
++	abyss = { material = "Slate", color = { 18, 20, 22 } },
++	mist = with(Moor.beyond.mist, { color = { 84, 94, 102 } }),
++})
++
++return table.freeze(moonwell)

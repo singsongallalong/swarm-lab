@@ -1,0 +1,51 @@
+{
+  "skill": "Moonwell",
+  "look": "moonwell",
+  "tileset": "moonwell",
+  "sculpts": [
+    "moonwell_ring",
+    "moonwell_shrine",
+    "moonwell_arch",
+    "moonwell_column",
+    "moonwell_marker",
+    "moonwell_tree",
+    "moonwell_tree_bent",
+    "moonwell_moss",
+    "moonwell_pool",
+    "moonwell_boulder"
+  ],
+  "setpiece": "moonwell_motes",
+  "rows_added": [
+    "moonwell_ring",
+    "moonwell_shrine",
+    "moonwell_arch",
+    "moonwell_column",
+    "moonwell_marker",
+    "moonwell_tree",
+    "moonwell_tree_bent",
+    "moonwell_moss",
+    "moonwell_pool",
+    "moonwell_boulder",
+    "moonwell",
+    "moonwell_motes",
+    "moonwell_thread"
+  ],
+  "intent": "A drowned moonlit glade of dark blue-green wood and wet earth, pale green-grey stone and still black water, whose sacred ring of tall pale standing stones round a pool of cold silver-teal light is the landmark that pulls the eye across the map from the high camera.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png",
+    ".swarm/out/zone-thread-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A 'ring' sculpt kind that raises a circle of arches or columns round a pool in one piece; waystones only makes standing slabs, so the sacred well is slabs plus a light.",
+    "A cold 'pool of light' glow: a piece light's ember is a small orb, and the well wants a broad, low sheet of light lying on the water.",
+    "A still-water surface texture and a lichen ground cover; the theme kit could only reuse the aurora's worm sprites.",
+    "A colder night lighting preset than 'mood' tuned for the glade (out of scope here)."
+  ]
+}

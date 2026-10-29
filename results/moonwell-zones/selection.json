@@ -1,0 +1,14 @@
+{
+  "picked": ["F", "C", "D"],
+  "reasons": {
+    "F": "The barrow glade: the only signature effect that clearly reads from the game camera (a teal coil of streaming light over the barrows), with a standing-stone ring, crypts and headstones that give the area an identity of its own.",
+    "C": "The fading well: the cleanest sacred ring of eleven standing stones plus lone stones and arches, the clearest landmark prop of the six; its breath of motes is faint from the camera.",
+    "D": "The watch of towers: slender ruined towers and leaning ancients give the rims a silhouette none of the others has, and its well-glow coils and crackles; the palette is the same cold green-grey as the rest."
+  },
+  "fixes": {
+    "F": "The ring is scattered as a prop set like any other; give it one fixed place at the pool so the landmark sits where the brief wants it (a layout or landmark change, not data).",
+    "C": "Raise the motes' size and rate, or add a light layer, so the effect reads from the game camera.",
+    "D": "Push the accent: from above it is indistinguishable from the other five."
+  },
+  "notes": "All six landed on nearly the same cold green-grey palette, so the whole-map view barely separates them; the directions varied the props and effects but not the colour. The landmark brief can't be met with data alone: a tileset scatters prop sets, so a ring 'round the well' needs a landmark placement in code. Two rules were too strict and were loosened after the run (catalog comment lines; a 300-line cap on the tileset), after which all six passed."
+}

@@ -1,0 +1,48 @@
+{
+  "skill": "Moonwell",
+  "look": "moonwell",
+  "tileset": "moonwell",
+  "sculpts": [
+    "moonwell_moss",
+    "moonwell_tree",
+    "moonwell_tree_leaning",
+    "moonwell_columns",
+    "moonwell_moonstone",
+    "moonwell_arch",
+    "moonwell_ruin_arch",
+    "moonwell_pool",
+    "moonwell_marker",
+    "moonwell_shrine"
+  ],
+  "setpiece": "moonwell_thread",
+  "rows_added": [
+    "moonwell_moss",
+    "moonwell_tree",
+    "moonwell_tree_leaning",
+    "moonwell_columns",
+    "moonwell_moonstone",
+    "moonwell_arch",
+    "moonwell_ruin_arch",
+    "moonwell_pool",
+    "moonwell_marker",
+    "moonwell_shrine",
+    "moonwell",
+    "moonwell_thread",
+    "moonwell_wisps"
+  ],
+  "intent": "A dark blue-black drowned glade where pale green-grey moonstone ruins and a ring of standing stones round one cold silver-teal glow read from the high camera against a pale processional road and still black pools, with the well's light threading low between the trees.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A sculpt kind that builds a pool of water inside a ring of standing stones, so the Moonwell's water and its stones are one landmark piece rather than a stone ring with a light ember at its heart.",
+    "A pale moonstone building kit for the order's temple ruins; stone_village is the village's charcoal stone and reads as cottages, not a drowned temple."
+  ]
+}
