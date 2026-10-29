@@ -58,6 +58,21 @@ def apply_platform(j: config.Job, base: Path, log) -> None:
     file it needs is missing, apply its patches to the base clone and commit them
     there, so every worktree starts from the patched game. The real repo is never
     touched."""
+    # A job may also change a few lines of its own base clone (job.toml [[base_edits]]:
+    # a file, an exact `find` and its `replace`), say a budget raised for one experiment.
+    # Committed in the clone, so worktrees and patches build on it; the real repo never
+    # sees it, and a winner that relies on it says so.
+    edits = j.data.get("base_edits", [])
+    for e in edits:
+        f = base / e["file"]
+        text = f.read_text(encoding="utf-8")
+        if e["find"] not in text:
+            raise SystemExit(f"base edit: {e['find']!r} isn't in {e['file']} any more; update the job")
+        f.write_text(text.replace(e["find"], e["replace"], 1), encoding="utf-8")
+        log(f"base edit in {e['file']}: {e.get('why', '')}")
+    if edits:
+        sh(["git", "-c", "user.name=swarm-lab", "-c", "user.email=swarm-lab@localhost", "commit", "-qam",
+            f"swarm-lab: base edits for the {j.name} job (not in the game)"], cwd=base)
     plat = j.data.get("platform")
     if not plat or (base / plat["needs"]).exists():
         return

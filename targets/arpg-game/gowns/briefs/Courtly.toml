@@ -1,0 +1,26 @@
+# The prefix every file, look and catalog key of the set starts with.
+skill = "Courtly"
+family = "armour"
+brief = """
+The game has nothing for women yet: every armour family is a warrior's or a caster's kit.
+Make a full courtly gown as one coordinated set that dresses the whole body, the way a
+gothic lolita or a court dress does: an elegant, structured dress with its accessories,
+worn by someone of standing in a dying, night-bound world. Think of a reference fafwa
+gave: a black gown printed in pale grey with a full knee-length skirt over a layered
+ruffled hem and a pale petticoat edge; a fitted bodice with a big black bow at the chest
+and a smaller bow at the throat; a pale lace-ruffled collar; puffed sleeves gathered into
+banded lace cuffs at the wrist; a large black bow in the hair. Not a copy of it: a set in
+that spirit, as fitting for this gothic world as the iron and fenscale sets are.
+
+It must still read as its own family from the high camera, apart from iron, leather,
+studded, linen (the caster's robe) and fenscale, mostly by its silhouette: a fitted waist
+and a wide, full skirt, and a headpiece. It stays in the game's palette: muted, worn at the
+edges, night-lit, with pale trims kept as soft bone or ivory rather than bright white.
+Elegant is the point; this is finery, not rags, though the world has aged it a little.
+
+Make all four slots: Helm (the headpiece: a bow, a bonnet, a veil, a headdress), Chest
+(the bodice, sleeves and the upper skirt), Gloves (the cuffs and gloves), Boots (the lower
+skirt and hem, petticoat and shoes). Name them CourtlyHeaddress, CourtlyGown, CourtlyCuffs
+and CourtlyHem unless your idea calls for better names (keep the Courtly prefix). Looks
+only: no base, numbers or drop weight.
+"""

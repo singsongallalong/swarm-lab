@@ -1,0 +1,102 @@
+# The gowns job: the armour job's machinery for full-body courtly dress (gowns and their
+# accessories), with the set budget raised to 100 parts in the run's own base clone
+# (fafwa, 2026-10-29: "a slightly large part budget of 100" for this experiment). A
+# winner needs that budget, or trimming, before it can merge. Looks only: no new bases,
+# numbers, drop weights or bag pictures (those are Rhodri's and fafwa's; see
+# arpg-game docs/guides/adding-items.md). A human decides which bases wear a winner.
+
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+# Four files, a registry, a catalog, three renders and revisions: closer to the kinds
+# job's work than the effects job's.
+max_turns = 70
+
+rules = ["docs/guides/armour-looks.md", "docs/art/A014-armour-looks.md", "docs/art/bible.md"]
+
+# What a generator may change, and how. `{skill}` is the brief's prefix (the set's name).
+[files."src/shared/data/armourLooks/{skill}*.luau"]
+mode = "new_file"
+
+[files."src/shared/data/ArmourLooks.luau"]
+mode = "add_lines"
+# Its require line, and its entry in the table.
+pattern = '(local {skill}\w* = require\("\./armourLooks/{skill}\w*"\)|{skill}\w* = {skill}\w*,)'
+
+[files."src/shared/data/catalog/Gear.luau"]
+mode = "add_lines"
+# One catalog row per look, on one line.
+pattern = '\["armour:{skill}\w*"\] = row\("[^"]{1,90}"\),'
+
+# Look files are data modules: strict, small, and requiring only the look types and Kit.
+[purity]
+first_line = "--!strict"
+max_lines = 300
+requires = ["../../ArmourLookTypes", "./Kit"]
+forbid = [
+  '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
+  '\btask\.', '\bwait\s*\(', '\bspawn\s*\(', '\bdelay\s*\(', '\bcoroutine\.',
+  '\bos\.', '\bdebug\.', '\bgetfenv\b', '\bsetfenv\b', '\bloadstring\b', '\b_G\b', '\bshared\b',
+  '\bwhile\b', '\brepeat\b',
+]
+
+# The experiment's budget, in the base clone only (the real game keeps 64).
+[[base_edits]]
+file = "src/shared/data/PerfBudget.luau"
+find = "\tarmour = {\n\t\tparts = 64,"
+replace = "\tarmour = {\n\t\tparts = 100,"
+why = "armour set budget 64 -> 100 for the gowns experiment"
+
+# Quoted into the pack by name.
+[quotes.types]
+file = "src/shared/ArmourLookTypes.luau"
+note = "what a look is"
+
+[quotes.kit]
+file = "src/shared/data/armourLooks/Kit.luau"
+note = "the shared palette and builders (require it as \"./Kit\")"
+
+[quotes.example_helm]
+file = "src/shared/data/armourLooks/IronCap.luau"
+note = "a helm"
+
+[quotes.example_chest]
+file = "src/shared/data/armourLooks/LinenRobe.luau"
+note = "the one robe in the game: how a long garment hangs from the thighs"
+
+[quotes.example_gloves]
+file = "src/shared/data/armourLooks/StuddedGloves.luau"
+note = "gloves"
+
+[quotes.example_boots]
+file = "src/shared/data/armourLooks/FenscaleWaders.luau"
+note = "boots"
+
+[quotes.registry]
+file = "src/shared/data/ArmourLooks.luau"
+note = "the registry: add a require line and a table entry for each of your looks"
+
+# Run in order by `check`; the first failure rejects the run.
+[[specs]]
+name = "ArmourLooks"
+cmd = "lune run tests ArmourLooks"
+
+[[specs]]
+name = "Armour"
+cmd = "lune run tests Armour"
+
+[[specs]]
+name = "Catalog"
+cmd = "lune run tests Catalog"
+
+[[specs]]
+name = "ContentCompleteness"
+cmd = "lune run tests ContentCompleteness"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/data/armourLooks src/shared/data/ArmourLooks.luau"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/data/armourLooks src/shared/data/ArmourLooks.luau src/shared/data/catalog/Gear.luau"

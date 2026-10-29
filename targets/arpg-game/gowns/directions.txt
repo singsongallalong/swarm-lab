@@ -1,0 +1,11 @@
+# One direction per generator, assigned in order and repeated past the last line. Each
+# names an ERA and a silhouette, so the swarm explores six dresses, not six versions of
+# one. All stay in the game's muted night palette. Lines starting with # are ignored.
+Gothic lolita: a bell-shaped knee-length skirt over layered ruffles and a petticoat edge, a fitted bodice with a great bow, puffed sleeves, a bow in the hair; black with pale bone trims.
+Rococo: wide panniered hips, a stomacher laced with a ladder of small bows, lace cascading from the elbows, a small tilted cap or a pouf; faded rose or dove grey with ivory, never bright pastel.
+Baroque: heavy brocade in deep wine or bottle green, a stiff pointed bodice, a standing lace collar fanning behind the neck, slashed sleeves, a long full skirt; gilt kept dull like old brass.
+Medieval: a long houppelande with trailing hanging sleeves, a high belt under the bust, a tall hennin or a wimple and veil; deep plum, midnight blue or moss with fur trim at the hem.
+Victorian mourning: a high-necked fitted bodice, a bustle swelling behind, a long tiered skirt, a veiled hat and black lace gloves; all black and slate, jet beads catching the moon.
+Cathedral: a gown cut like vestments, a stiff high collar like a cathedral arch, a long cape from the shoulders, a crown or halo-like headdress of thin spires; ivory, silver-grey and black.
+Masquerade: a ball gown with a sweeping asymmetric overskirt drawn up to one hip, long gloves, and the headpiece a feathered half-mask or a fascinator; ink black and tarnished silver.
+Night garden: a gown with layered petal-shaped skirt panels like an opened black rose, a corset bodice with thorned stems, a wreath of dark roses in the hair; black, wine and leaf-dark green.
