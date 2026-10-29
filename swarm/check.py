@@ -247,7 +247,9 @@ def check_one(wt: Path, t: config.Target, j: config.Job, meta: dict, gen: dict, 
         return rec
 
     if run_specs_too:
-        rec["specs"], why = run_specs(wt, j.data.get("specs", []), t.env())
+        # The figures' checks run after the job's own specs (meta from before figures has none).
+        figure_checks = [c for name in meta.get("figures", []) for c in config.figure(t, name).checks(skill)]
+        rec["specs"], why = run_specs(wt, j.data.get("specs", []) + figure_checks, t.env())
         if why:
             rec["reason"] = why
             return rec

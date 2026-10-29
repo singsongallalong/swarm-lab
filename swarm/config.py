@@ -147,3 +147,63 @@ class Job:
 def job(t: Target, name: str) -> Job:
     d = t.dir / name
     return Job(name=name, dir=d, data=load_toml(d / "job.toml"))
+
+
+# Where a figure's files go in each worktree, relative to its root.
+FIGURE_DIR = ".swarm/figure"
+
+
+@dataclass
+class Figure:
+    """Who wears a set: guidance added to the pack after the brief, files copied into
+    each worktree, and checks the filter runs after the job's specs
+    (targets/<target>/figures/<name>/figure.toml)."""
+
+    name: str
+    dir: Path
+    data: dict
+
+    @property
+    def values(self) -> dict:
+        return self.data.get("values", {})
+
+    def wt_dir(self) -> str:
+        return f"{FIGURE_DIR}/{self.name}"
+
+    def checks(self, skill: str) -> list[dict]:
+        """The figure's checks as specs ({name, cmd}), their commands filled in."""
+        fill = {**{k: str(v) for k, v in self.values.items()}, "skill": skill, "dir": self.wt_dir()}
+        return [{"name": f"{self.name}:{c['name']}", "cmd": c["cmd"].format(**fill)} for c in self.data.get("checks", [])]
+
+    def guide(self, skill: str) -> str:
+        from string import Template
+
+        checks = self.checks(skill)
+        text = (self.dir / self.data.get("guide", "guide.md")).read_text(encoding="utf-8")
+        return Template(text).substitute(**self.values, figure_cmd=checks[0]["cmd"] if checks else "")
+
+
+def figure(t: Target, name: str) -> Figure:
+    d = t.dir / "figures" / name
+    if not (d / "figure.toml").exists():
+        known = sorted(p.name for p in (t.dir / "figures").glob("*") if (p / "figure.toml").exists())
+        raise KeyError(f"no figure {name!r} in {t.name}; known: {', '.join(known) or 'none'}")
+    return Figure(name=name, dir=d, data=load_toml(d / "figure.toml"))
+
+
+def figures(t: Target, j: Job, brief: dict, override: str | None = None) -> list[Figure]:
+    """The figures a run uses: the command line's, else the brief's, else the job's. Each
+    may be one name, a comma list or a list; "none" means no figure."""
+    for spec in (override, brief.get("figure"), j.data.get("figure")):
+        if spec is None:
+            continue
+        names = [n.strip() for n in (spec.split(",") if isinstance(spec, str) else spec) if n.strip()]
+        if names == ["none"]:
+            return []
+        out = [figure(t, n) for n in names]
+        for f in out:
+            fams = f.data.get("families")
+            if fams and brief.get("family") not in fams:
+                raise ValueError(f"figure {f.name!r} is for {', '.join(fams)} briefs, not {brief.get('family')!r}")
+        return out
+    return []

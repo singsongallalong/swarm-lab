@@ -122,7 +122,8 @@ def render_reference(t: config.Target, brief: dict, run_dir: Path, log) -> None:
             log(f"reference render failed: {cmd}\n{(r.stdout + r.stderr)[-400:]}")
 
 
-def make_worktree(t: config.Target, run_dir: Path, gid: str, commit: str, pack_text: str, direction: str) -> Path:
+def make_worktree(t: config.Target, run_dir: Path, gid: str, commit: str, pack_text: str, direction: str,
+                  figures: list[config.Figure] | tuple = ()) -> Path:
     base = run_dir / "base"
     wt = run_dir / "gens" / gid
     if wt.exists():
@@ -144,6 +145,11 @@ def make_worktree(t: config.Target, run_dir: Path, gid: str, commit: str, pack_t
     (sw / "out").mkdir(parents=True, exist_ok=True)
     (sw / "PACK.md").write_text(pack_text)
     (sw / "DIRECTION.md").write_text(pack.direction_file(direction))
+    for f in figures:
+        dst = wt / f.wt_dir()
+        dst.mkdir(parents=True, exist_ok=True)
+        for rel in f.data.get("files", []):
+            shutil.copy2(f.dir / rel, dst / Path(rel).name)
     return wt
 
 
@@ -328,10 +334,11 @@ def resume(run_dir: Path, turns: int = 30, concurrency: int = 4) -> Path:
 
 
 def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str | None = None,
-        concurrency: int = 4, dry: bool = False, seed: int | None = None) -> Path:
+        concurrency: int = 4, dry: bool = False, seed: int | None = None, figure: str | None = None) -> Path:
     t = config.target(target_name)
     j = config.job(t, job_name)
     brief = j.brief(brief_name)
+    figs = config.figures(t, j, brief, figure)
     provs = config.providers()
     plan = parse_gens(gens, provs)
 
@@ -341,7 +348,7 @@ def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str
     log = lambda msg: print(f"[{run_id}] {msg}", flush=True)  # noqa: E731
 
     commit = make_base(t, run_dir, log, j)
-    pack_text = pack.build(j, brief, run_dir / "base")
+    pack_text = pack.build(j, brief, run_dir / "base", figs)
     (run_dir / "pack.md").write_text(pack_text)
     log(f"pack: {len(pack_text):,} chars (~{len(pack_text) // 4:,} tokens)")
     if not dry:
@@ -354,12 +361,13 @@ def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str
     for i, prov in enumerate(plan):
         gid = f"g{i:02d}"
         d = directions[i % len(directions)]
-        make_worktree(t, run_dir, gid, commit, pack_text, d)
+        make_worktree(t, run_dir, gid, commit, pack_text, d, figs)
         gens_meta.append({"gid": gid, "provider": prov, "model": provs[prov].model, "direction": d})
 
     meta = {
         "run": run_id, "target": target_name, "job": job_name, "brief": brief_name,
         "skill": brief["skill"], "family": brief["family"], "base": commit,
+        "figures": [f.name for f in figs],
         "started": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "generators": gens_meta,
     }

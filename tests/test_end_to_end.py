@@ -43,6 +43,21 @@ def setup(tmp: Path) -> Path:
         f'repo = "{game}"\nref = "main"\nsetup = ""\npath = ["{FIX / "bin"}"]\nshare = []\nhide = ["CLAUDE.md", ".claude"]\n'
     )
     shutil.copytree(ROOT / "targets" / "arpg-game" / "effects", tdir / "effects")
+    # A figure whose check rejects any look that fires particles (only g04's does).
+    fig = tdir / "figures" / "plain"
+    fig.mkdir(parents=True)
+    (fig / "figure.toml").write_text(
+        'families = ["area"]\nguide = "guide.md"\nfiles = ["noburst.py"]\n[values]\nlimit = 0\n'
+        '[[checks]]\nname = "noburst"\ncmd = "python3 {dir}/noburst.py {skill} {limit}"\n'
+    )
+    (fig / "guide.md").write_text("## The figure: plain\n\nAt most $limit bursts. Check with:\n\n```\n$figure_cmd\n```\n")
+    (fig / "noburst.py").write_text(
+        "import pathlib, subprocess, sys\n"
+        "rel = 'src/shared/data/DrawnEffects.luau'\n"
+        "before = subprocess.run(['git', 'show', 'HEAD:' + rel], capture_output=True, text=True).stdout\n"
+        "added = pathlib.Path(rel).read_text().count('emitter =') - before.count('emitter =')\n"
+        "sys.exit(1 if added > int(sys.argv[2]) else 0)\n"
+    )
 
     provs = tmp / "providers.toml"
     provs.write_text(
@@ -105,6 +120,29 @@ def main() -> None:
         key = json.loads((run_dir / "key.json").read_text())
         assert sorted(key) == ["A", "B", "C"]
         assert "Don't open `key.json`" in (run_dir / "select.md").read_text()
+
+        # A figure: its guide follows the brief, demoted under it; its check joins the specs.
+        figs = config.figures(t, j, j.brief("ColdSnap"), "plain")
+        ftext = pack.build(j, j.brief("ColdSnap"), game, figs)
+        assert "### The figure: plain" in ftext and "At most 0 bursts" in ftext, "figure guide missing"
+        assert ftext.count("python3 .swarm/figure/plain/noburst.py ColdSnap 0") == 2, "figure check not in guide and specs"
+        assert config.figures(t, j, {**j.brief("ColdSnap"), "figure": "plain"}, "none") == [], "none didn't win"
+        try:
+            config.figures(t, j, j.brief("ColdSnap"), "nosuch")
+            raise AssertionError("unknown figure accepted")
+        except KeyError:
+            pass
+        fig_dir = ROOT / "runs" / "e2e-fig"
+        shutil.rmtree(fig_dir, ignore_errors=True)
+        try:
+            run.run(TARGET, "effects", "ColdSnap", "fake:5", run_id="e2e-fig", concurrency=3, figure="plain")
+            assert json.loads((fig_dir / "meta.json").read_text())["figures"] == ["plain"]
+            assert (fig_dir / "gens" / "g04" / ".swarm" / "figure" / "plain" / "noburst.py").exists()
+            fby = {g["gid"]: g for g in check.check(fig_dir)["generators"]}
+            assert fby["g00"]["survived"], fby["g00"]
+            assert fby["g04"]["reason"] == "spec plain:noburst failed", fby["g04"]
+        finally:
+            shutil.rmtree(fig_dir, ignore_errors=True)
 
         letter = sorted(key)[0]
         (run_dir / "selection.json").write_text(json.dumps({"picked": [letter], "reasons": {letter: "test"}}))

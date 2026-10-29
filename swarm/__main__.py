@@ -19,6 +19,7 @@ def main(argv=None) -> None:
     p.add_argument("target"), p.add_argument("job"), p.add_argument("brief")
     p.add_argument("--repo", help="read the game from this path instead of target.toml's")
     p.add_argument("--out", help="write the pack here instead of printing it")
+    p.add_argument("--figure", help="who wears it: a figure in targets/<target>/figures (comma list; none for none)")
 
     p = sub.add_parser("run", help="launch a swarm, then check, tile and report it")
     p.add_argument("target"), p.add_argument("job"), p.add_argument("brief")
@@ -27,6 +28,7 @@ def main(argv=None) -> None:
     p.add_argument("--concurrency", type=int, default=4)
     p.add_argument("--dry-run", action="store_true", help="build worktrees and packs, call no model")
     p.add_argument("--no-specs", action="store_true", help="skip the specs in the check")
+    p.add_argument("--figure", help="who wears it: overrides the brief's and job's figure (comma list; none for none)")
 
     for name, help_ in [("check", "filter a run's generators"), ("sheet", "tile the survivors blind"),
                         ("report", "summarise a run and update the ledger")]:
@@ -57,14 +59,15 @@ def main(argv=None) -> None:
         repo = Path(a.repo) if a.repo else t.repo_path()
         if repo is None:
             sys.exit("target repo is a URL: pass --repo with a local checkout")
-        text = pack.build(j, j.brief(a.brief), repo)
+        brief = j.brief(a.brief)
+        text = pack.build(j, brief, repo, config.figures(t, j, brief, a.figure))
         if a.out:
             Path(a.out).write_text(text)
             print(f"{a.out}: {len(text):,} chars (~{len(text) // 4:,} tokens)")
         else:
             print(text)
     elif a.cmd == "run":
-        run_dir = run_mod.run(a.target, a.job, a.brief, a.gens, a.run_id, a.concurrency, a.dry_run)
+        run_dir = run_mod.run(a.target, a.job, a.brief, a.gens, a.run_id, a.concurrency, a.dry_run, figure=a.figure)
         if not a.dry_run:
             print("check:")
             res = check_mod.check(run_dir, specs=not a.no_specs)

@@ -12,7 +12,7 @@ from pathlib import Path
 from string import Template
 
 from . import luarows
-from .config import Job
+from .config import Figure, Job
 
 MODES = {
     "owned_row": "only the `{skill}` row may change, or be added if missing",
@@ -211,7 +211,7 @@ def quote(spec: dict, read) -> str:
     return head + _block("lua", text)
 
 
-def build(job: Job, brief: dict, repo: Path) -> str:
+def build(job: Job, brief: dict, repo: Path, figures: list[Figure] | tuple = ()) -> str:
     skill = brief["skill"]
     read = lambda rel: (repo / rel).read_text(encoding="utf-8")  # noqa: E731
 
@@ -252,6 +252,15 @@ def build(job: Job, brief: dict, repo: Path) -> str:
         rules.append(f"### From `{rel}`\n\n{text}")
 
     specs = "\n".join(s["cmd"] for s in job.data.get("specs", []))
+    # A figure's guidance follows the brief, and its checks run with the job's.
+    figure_checks = [c["cmd"] for f in figures for c in f.checks(skill)]
+    if figure_checks:
+        specs += "\n" + "\n".join(figure_checks)
+    brief_text = brief["brief"].strip()
+    for f in figures:
+        # Demoted a level, so its headings sit under "The brief".
+        guide = f.guide(skill).strip().splitlines()
+        brief_text += "\n\n" + "\n".join(("#" + l) if l.startswith("#") else l for l in guide)
     ref_cmds, render_cmds = render_commands(brief)
 
     quotes = {name: quote(spec, read) for name, spec in job.data.get("quotes", {}).items()}
@@ -261,7 +270,7 @@ def build(job: Job, brief: dict, repo: Path) -> str:
         **quotes,
         skill=skill,
         family=brief["family"],
-        brief=brief["brief"].strip(),
+        brief=brief_text,
         current_look=brief.get("current_look", "none"),
         color=_rgb(brief.get("color", (0, 0, 0))),
         files_section=files,

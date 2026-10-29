@@ -1,0 +1,31 @@
+# A figure: design guidance for who wears a set, added to a run's pack after the brief,
+# with checks of its own that the filter runs after the job's specs. Switch it on with
+# `figure = "feminine"` in a job.toml or a brief, or with `--figure feminine` on `swarm
+# pack` and `swarm run` (the command line wins, then the brief, then the job; `none`
+# turns a figure off).
+#
+# fafwa, 2026-10-29: the courtly gowns read with blocky, emphasised shoulders. Keep the
+# blocky retro look, but steer feminine silhouettes away from broad shoulders. Measured on
+# the first courtly-gowns run: all five survivors were over these limits (out 0.14-0.28,
+# rise 0.07-0.44), and of today's families only Brigandine and Fenscale Jack (pauldrons)
+# are; Linen Robe is at out 0.11, rise 0.05.
+
+description = "A feminine outline: narrow shoulders, a defined waist, width at the hips and hem."
+
+# Families this figure applies to: a figure on another family's brief is an error.
+families = ["armour"]
+
+# The text added to the pack, and the values it may quote as $name. $figure_cmd is
+# the first check's command, as the generator runs it.
+guide = "guide.md"
+files = ["shoulders.luau"]
+
+[values]
+max_out = 0.15
+max_rise = 0.15
+
+# Run from the worktree root. {skill} is the brief's prefix, {dir} the figure's files
+# in the worktree, and {name} a value above.
+[[checks]]
+name = "shoulders"
+cmd = "lune run {dir}/shoulders {skill} {max_out} {max_rise}"

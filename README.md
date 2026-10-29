@@ -92,6 +92,8 @@ generators unattended.
 | `targets/arpg-game/target.toml` | where the game is, its setup, which files are hidden from generators |
 | `targets/arpg-game/effects/` | the effects job: new looks from the existing kinds (rows only), with briefs |
 | `targets/arpg-game/kinds/` | the kinds job: new kinds of drawing, each a pure Luau module (drafted kinds); shares the effects briefs |
+| `targets/arpg-game/armour/`, `gowns/` | armour sets (four new look files each); gowns raises the set budget to 100 in the run's base clone |
+| `targets/arpg-game/figures/` | figures: who wears a set (see below) |
 | `docs/kind-drafting/` | the game-side platform the kinds job needs, as a patch and a handoff note |
 | `prompts/select.md` | the orchestrator's selection prompt |
 | `docs/experiment.md` | the experiment plan: arms, metrics, what counts as success |
@@ -117,6 +119,41 @@ generators unattended.
   run. Only survivors reach the sheet.
 - **Caps**: turns and wall time per generator, and a run-level token budget per
   provider (`providers.toml`).
+
+## Figures: who wears it
+
+A figure is guidance about the body a set is designed for, plus checks that enforce it.
+It lives in `targets/<target>/figures/<name>/`:
+
+- `figure.toml` lists the families it applies to, its files, its `[values]` and its
+  `[[checks]]`.
+- `guide.md` is added to the pack right after the brief. It may quote the values as
+  `$name` and the first check's command as `$figure_cmd`.
+- Its files are copied into each worktree at `.swarm/figure/<name>/`.
+
+The checks run with the job's specs, both in the generator's own command list and in
+`check`. A check that fails discards the run, as any spec does.
+
+Turn a figure on in one of three places. The command line wins, then the brief, then the
+job:
+
+- `figure = "feminine"` in a brief;
+- `figure = "feminine"` in a `job.toml`;
+- `--figure feminine` on `swarm pack` or `swarm run`.
+
+A comma list stacks several figures, and `--figure none` turns them off.
+
+`feminine` asks for a narrow shoulder line, a defined waist, and width at the hips and
+hem, while keeping the part-built, blocky look. Its `shoulders.luau` check places the
+set's Chest look on the reference body and rejects it when anything reaches more than
+0.15 studs past the shoulders, or rises more than 0.15 studs above them. Collars inside
+the neck's width don't count. Measured on 2026-10-29:
+
+- all five courtly-gowns survivors failed it, mostly on puffed upper sleeves;
+- of the game's own families, only the pauldroned Brigandine and Fenscale Jack fail;
+- Linen Robe passes (out 0.11).
+
+The courtly brief uses it.
 
 ## Where things live
 

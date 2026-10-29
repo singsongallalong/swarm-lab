@@ -1,6 +1,8 @@
 # The prefix every file, look and catalog key of the set starts with.
 skill = "Courtly"
 family = "armour"
+# Who wears it (targets/arpg-game/figures): narrow shoulders, waist and hem carry the outline.
+figure = "feminine"
 brief = """
 The game has nothing for women yet: every armour family is a warrior's or a caster's kit.
 Make a full courtly gown as one coordinated set that dresses the whole body, the way a
