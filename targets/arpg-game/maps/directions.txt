@@ -1,0 +1,8 @@
+# One direction per generator: a different FORM of map, so the swarm explores six
+# layouts, not six versions of one. Lines starting with # are ignored.
+The pilgrim's spiral: the road coils inward from the rim toward the well at the heart, each turn a little narrower, with small glades opening off the outer turns; the exit leaves by a second, straighter path.
+The drowned causeway: most of the glade is lost to water (wall cells as drowned ground, rimmed by `drop` edges), and the road crosses it on a long, narrow causeway of land from island to island to the well's island.
+The hub of glades: a round clearing at the centre with the well, and four or five glades round it like petals, each joined to the hub by a short neck; the road runs in through one glade and out through another.
+The pale avenue: a long straight processional road between ranks of standing ruins leading to the well, then the wood closes in and the way out winds away through thick trees.
+The two hollows: the glade is two great hollows joined by a single pass, the barrows in the first and the well in the second, so the player crosses the dead to reach the light.
+The broken ring: the walkable ground is itself a great ring round a central island of wood, with the well on the ring's far side from the start, so the player sees it across the trees before reaching it.

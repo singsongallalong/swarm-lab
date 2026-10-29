@@ -63,6 +63,16 @@ def render_commands(brief: dict) -> tuple[str, str]:
             "lune run scripts/armourpreview <YourLook> .swarm/out/armour-set-fit-r1.png fit",
         ]
         return "\n".join(ref), "\n".join(mine)
+    if brief["family"] == "map":
+        # A drafted map's layout, dressed in its own tileset: the whole map over three
+        # seeds, and its first landmark up close. The reference is the moor's own layout
+        # in the same look, the map a draft must not merely repaint.
+        ref = ["lune run scripts/dresspreview whole .swarm/out/ref-whole-moor-moonwell.png 2 1 tileset=moonwell"]
+        mine = [
+            "lune run scripts/dresspreview whole .swarm/out/map-whole-r1.png 3 1 layout=<YourLook>",
+            "lune run scripts/dresspreview landmark .swarm/out/map-landmark-r1.png 2 1 layout=<YourLook>",
+        ]
+        return "\n".join(ref), "\n".join(mine)
     if brief["family"] == "zone":
         # A whole area's look: its tileset dressing the moor's layouts (dresspreview's
         # tileset=), its pieces, its props and its set piece. The reference is the

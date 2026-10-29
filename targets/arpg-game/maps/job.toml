@@ -1,0 +1,96 @@
+# The maps job: a whole outdoor map's layout as one pure, seeded Luau module (a drafted
+# map, systems/DraftedMap), with the landmarks it places itself, dressed by the game's
+# own MapDress and judged offline. Code, not data, so the runs' base gets a platform
+# (the drafted-map contract, its registry, its spec and dresspreview's layout=) plus the
+# Moonwell barrow-glade look from moonwell-zones, so generators write the map alone.
+# Making a draft a real map (a builder, a place, seams, packs) is human-planned work.
+
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+# A layout generator is real code: the kinds job (one module) needed 70 turns.
+max_turns = 100
+tools = ["../zones/tools/explain.luau"]
+
+rules = ["docs/guides/adding-areas.md", "docs/art/bible.md"]
+
+[platform]
+needs = "src/shared/systems/DraftedMap.luau"
+patches = ["docs/map-drafting/0001-drafted-maps.patch"]
+
+[files."src/shared/systems/draftedmaps/{skill}*.luau"]
+mode = "new_file"
+
+[files."src/shared/data/DraftedMaps.luau"]
+mode = "add_lines"
+pattern = '(local {skill}\w* = require\("\.\./systems/draftedmaps/{skill}\w*"\)|{skill}\w* = {skill}\w*,)'
+
+[files."src/shared/data/Sculpts.luau"]
+mode = "add_rows"
+prefix = "{skill_lower}_"
+
+[files."src/shared/data/catalog/World.luau"]
+mode = "add_lines"
+pattern = '(\["sculpt:{skill_lower}_\w+"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),)?|"[^"]{1,160}",|(MOOR|TOWN)|\),|--[^\n]{0,200})'
+
+# A layout module: strict, pure, seeded only by the rng it is given, and its own
+# generator (it may read Heath's types and helpers but not call Heath.generate).
+# Loops are allowed (layouts need them); the specs' time limit catches one that hangs.
+[purity]
+first_line = "--!strict"
+max_lines = 700
+requires = ["../DraftedMap", "../Heath", "../Grid", "../Noise", "../DistanceField", "../../TerrainTypes"]
+forbid = [
+  '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
+  '\btask\.', '\bwait\s*\(', '\bspawn\s*\(', '\bdelay\s*\(', '\bcoroutine\.',
+  '\bos\.', '\bdebug\.', '\bgetfenv\b', '\bsetfenv\b', '\bloadstring\b', '\b_G\b', '\bshared\b',
+  'Heath\.generate', '\bRandom\.new\b', '\bmath\.random\b',
+]
+
+[quotes.contract]
+file = "src/shared/systems/DraftedMap.luau"
+note = "the contract: what a draft is, the problems() every map is checked by, and how it is dressed"
+
+[quotes.heath]
+file = "src/shared/systems/Heath.luau"
+note = "the moor's own layout generator, for reference: how a real one builds a road, outcrops, rims, sites and edges. Don't copy its shape; you may use its types and Heath.onFloor"
+
+[quotes.grid]
+file = "src/shared/systems/Grid.luau"
+note = "the walkable grid"
+
+[quotes.noise]
+file = "src/shared/systems/Noise.luau"
+note = "seeded value noise"
+
+[quotes.distance]
+file = "src/shared/systems/DistanceField.luau"
+note = "distances over the grid, for paths and reachability"
+
+[quotes.terrain_types]
+file = "src/shared/TerrainTypes.luau"
+note = "edge kinds, site kinds and sides"
+
+[[specs]]
+name = "DraftedMaps"
+cmd = "lune run tests DraftedMaps"
+
+[[specs]]
+name = "Sculpt"
+cmd = "lune run tests Sculpt"
+
+[[specs]]
+name = "Catalog"
+cmd = "lune run tests Catalog"
+
+[[specs]]
+name = "ContentCompleteness"
+cmd = "lune run tests ContentCompleteness"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/systems/draftedmaps src/shared/data/DraftedMaps.luau src/shared/data/Sculpts.luau src/shared/data/catalog/World.luau"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/systems/draftedmaps src/shared/data/DraftedMaps.luau src/shared/data/Sculpts.luau src/shared/data/catalog/World.luau"

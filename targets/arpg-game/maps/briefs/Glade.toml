@@ -1,0 +1,25 @@
+# The prefix of the layout module (draftedmaps/Glade<Something>.luau) and its draft name;
+# new sculpt rows use it in lowercase (glade_...).
+skill = "Glade"
+family = "map"
+brief = """
+Lay out the whole map of the Moonwell glade: the drowned glade where an order of
+moon-priestesses kept a sacred well, long abandoned. Its look already exists: the
+`moonwell` tileset (the barrow glade, picked from the last run: dark blue-black woods,
+pale green-grey stone, still black pools, crypts and headstones, a cold silver-teal accent)
+with its sculpts `moonwell_sacred_ring`, `moonwell_crypt`, `moonwell_headstone` and others
+in Sculpts. Your job is the map itself: the shape of the walkable ground, the road a player
+follows from start to exit, the rims that close it in, the sites where ruins and graveyards
+stand, and the landmarks you place.
+
+It must not be the moor's map in new paint. The moor (Heath) is one wide band around a road
+winding west to east. The glade should have a shape of its own that says "a sacred place
+in a wood": for example the road leading in toward the well at the heart and out again,
+glades opening off it, a ring of open ground round the centre, a causeway over drowned
+ground. The landmark is the well: place `moonwell_sacred_ring` (scaled up as you like)
+where the map leads a player to it, and other landmarks if they serve the place.
+
+It is judged from above over three seeds (the whole map) and up close at its first
+landmark, against the moor's layout in the same look. Every seed must be a sound map
+(DraftedMap.problems) inside the phone budget.
+"""
