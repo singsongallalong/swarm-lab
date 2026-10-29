@@ -3,7 +3,7 @@
 **For the arpg-game thread.** This folder holds a prototype of the game-side platform the
 swarm's `kinds` job needs: a way for one pure Luau module to be a new area kind, drawn by
 both the game and the offline preview with no drawing code of its own. It was built and
-tested against arpg-game `edb9b50` (main, 2026-10-29) in swarm-lab's workspace, and never
+tested against arpg-game `41c9339` (main, 2026-10-29 10:45; first built on `edb9b50` and rebased) in swarm-lab's workspace, and never
 pushed. arpg-game is yours: take it, change it, or redo it from the contract.
 
 ## What it is
@@ -22,7 +22,7 @@ Today a new area kind means hand-wiring five places: a `DrawnEffects` type, a br
   shapes of the first pose, and re-poses them by index every 1/30 s until `lasts`, the way
   Flames and Volley already work. `areapreview` has one matching generic branch.
 - **`tests/systems/DraftedKinds.spec.luau`** holds every drafted row to the contract:
-  count fixed across ages and powers and within `PerfBudget.castEffects.parts`, shapes
+  count fixed across ages and powers (over a circle, two cones and a Line) and within `PerfBudget.castEffects.parts`, shapes
   stable by index, pieces near the area, invisible by `lasts`, deterministic per seed.
 - `ShardBloom` is the reference kind (row `ShardBloomExample`, `spare`).
 

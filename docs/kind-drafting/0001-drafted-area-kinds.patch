@@ -1,4 +1,4 @@
-From 4afe56fa8c3ad3dc64636b2aad09d22a476bf8ac Mon Sep 17 00:00:00 2001
+From 5b27de33c3a912d6fb188910a636bd45c5863539 Mon Sep 17 00:00:00 2001
 From: fafwa <gsnchongus@gmail.com>
 Date: Thu, 29 Oct 2026 00:52:30 -0400
 Subject: [PATCH] Drafted area kinds: one pure module draws a new kind in the
@@ -25,18 +25,18 @@ Claude-Session: https://claude.ai/code/session_01LSf2LshVSQPbhUqwjQ2h1n
  src/shared/systems/AreaTint.luau           |   2 +
  src/shared/systems/DraftedKinds.luau       |  10 ++
  src/shared/systems/drafted/ShardBloom.luau | 142 +++++++++++++++
- tests/systems/DraftedKinds.spec.luau       | 191 +++++++++++++++++++++
- 9 files changed, 578 insertions(+), 8 deletions(-)
+ tests/systems/DraftedKinds.spec.luau       | 192 +++++++++++++++++++++
+ 9 files changed, 579 insertions(+), 8 deletions(-)
  create mode 100644 src/shared/DraftedTypes.luau
  create mode 100644 src/shared/systems/DraftedKinds.luau
  create mode 100644 src/shared/systems/drafted/ShardBloom.luau
  create mode 100644 tests/systems/DraftedKinds.spec.luau
 
 diff --git a/scripts/areapreview.luau b/scripts/areapreview.luau
-index adb2b9c..cb7f2f3 100644
+index 43462d3..c3f78a9 100644
 --- a/scripts/areapreview.luau
 +++ b/scripts/areapreview.luau
-@@ -33,6 +33,7 @@ local AreaParticles = require("./render/AreaParticles")
+@@ -54,6 +54,7 @@ local AreaStruck = require("./render/AreaStruck")
  local AreaTint = require("../src/shared/systems/AreaTint")
  local BoltLayout = require("../src/shared/systems/BoltLayout")
  local CameraTuning = require("../src/shared/data/CameraTuning")
@@ -44,7 +44,7 @@ index adb2b9c..cb7f2f3 100644
  local DrawnEffects = require("../src/shared/data/DrawnEffects")
  local EffectPower = require("../src/shared/systems/EffectPower")
  local FlameLayout = require("../src/shared/systems/FlameLayout")
-@@ -276,13 +277,19 @@ assert(
+@@ -325,13 +326,19 @@ assert(
  		or row.kind == "Flames"
  		or row.kind == "Gust"
  		or row.kind == "Arc"
@@ -62,13 +62,13 @@ index adb2b9c..cb7f2f3 100644
 +local isDrafted = row.kind == "Drafted"
 +local layout = if isDrafted then DraftedKinds[(row :: any).layout] else nil
 +assert(not isDrafted or layout, `{name} names layout "{(row :: any).layout}", which systems/DraftedKinds doesn't list`)
+ assert(settings.struck == nil or isArc, "struck= draws an Arc look")
  -- Where an arc's chain hop lands after the first strike.
  local HOP = { 6, 0, 4 }
- -- Where an arc strikes from the player: ahead and to one side, so the leap
-@@ -294,7 +301,15 @@ for p in string.gmatch(settings.powers or "0,4,8", "[^,]+") do
- 	table.insert(powers, power)
+@@ -364,7 +371,15 @@ if scatterDef then
  end
  local radius = tonumber(settings.radius)
+ 	or (if scatterShape then scatterShape.radius else nil)
 -	or (if isBolt then 6 elseif isGust then 14 elseif isVolley then 9 elseif isGround then 14 else 10)
 +	or (
 +		if isBolt
@@ -80,9 +80,9 @@ index adb2b9c..cb7f2f3 100644
 +			else 10
 +	)
  -- A ground look lies over the hit area: a cone `angle` degrees across (a
- -- greataxe's Ground Slam, 70, by default), or a circle with angle=360.
- local angle = tonumber(settings.angle) or 70
-@@ -326,6 +341,15 @@ local times = if isGround
+ -- greataxe's Ground Slam, 70, by default), a circle with angle=360, or a
+ -- Line `width=<studs>` across and `radius` long (P030 PR 5).
+@@ -485,6 +500,15 @@ local times = if scattered
  	elseif isBolt or isArc then TIMES
  	elseif isGust then { 0.03, 0.07, 0.11, 0.17, 0.24 }
  	elseif isVolley then { 0, 0.08, 0.16, 0.3, 0.9 }
@@ -96,9 +96,9 @@ index adb2b9c..cb7f2f3 100644
 +		return out
 +	end)()
  	else { 0.03, 0.1, 0.17, 0.24, 0.32 }
- local stage: { Prim } = {
- 	Scene.box({ 80, 0.2, 80 }, { 0, -0.1, PLAYER }, GROUND),
-@@ -336,7 +360,38 @@ if sunk > 0 then
+ -- `times=0,0.08,...` picks the stills' ages instead, so a held skill's render
+ -- can reach its next ticks (R036 Hew: every=0.4 ended before its second chop).
+@@ -521,7 +545,38 @@ if sunk > 0 then
  	-- those triangles; a patch round the spot hides what lies under it.
  	table.insert(stage, Scene.box({ 24, 0.2, 24 }, { spot[1], -0.1, spot[3] }, GROUND))
  end
@@ -130,54 +130,54 @@ index adb2b9c..cb7f2f3 100644
 +	end
 +	return out
 +end
- local function draw(look: any, age: number, at: { number }): { Prim }
+ local function drawOne(look: any, age: number, at: { number }, strikeSeed: number?): { Prim }
 +	if isDrafted then
 +		return drafted(look, age, at)
 +	end
  	if isGround then
  		return AreaGround.prims(look, shape, age, Random.new(seed) :: any, at, COLOR, NIGHT)
  	end
-@@ -359,7 +414,7 @@ local function draw(look: any, age: number, at: { number }): { Prim }
+@@ -588,7 +643,7 @@ local function draw(look: any, age: number, at: { number }, strikeSeed: number?)
+ 	return prims
  end
- -- The look's particle bursts, laid as draw() lays its pieces.
- local function bursts(look: any, at: { number }): { AreaParticles.Burst }
--	local area: any = if isGround then shape else { type = "Circle", radius = radius }
-+	local area: any = if isGround or isDrafted then shape else { type = "Circle", radius = radius }
+ local function burstsOne(look: any, at: { number }, place: ({ number }) -> { number }): { AreaParticles.Burst }
+-	local area: any = if isGround or flameHalf then shape else { type = "Circle", radius = radius }
++	local area: any = if isGround or flameHalf or isDrafted then shape else { type = "Circle", radius = radius }
  	local function ground(p: any, y: number): { number }
- 		return AreaGround.place(at, p, y)
+ 		return place(AreaGround.place(at, p, y))
  	end
-@@ -417,7 +472,7 @@ for r, power in powers do
+@@ -740,7 +795,7 @@ for r, power in powers do
  	-- middle one.
  	-- A ground look runs ahead of its caster, so it is centred by standing the
  	-- caster half its reach back.
 -	local origin = if isGround and not atTarget then { 0, 0, -radius / 2 } else { 0, 0, 0 }
 +	local origin = if (isGround or isDrafted) and not atTarget then { 0, 0, -radius / 2 } else { 0, 0, 0 }
- 	local sideAge = if isBolt then times[1] elseif isGust then times[2] else times[3]
- 	local prims = draw(look, sideAge, origin)
- 	local scale = if isGust
-@@ -433,7 +488,7 @@ for r, power in powers do
- 		then { -AIM[1], 2.5, -AIM[3] }
+ 	-- `side=<seconds>` picks the side view's age instead (a quick fade is gone
+ 	-- by the third still).
+ 	local sideAge = tonumber(settings.side) or if isBolt then times[1] elseif isGust then times[2] else times[3]
+@@ -761,7 +816,7 @@ for r, power in powers do
  		elseif isVolley then { 0, 2.5, -radius - 1 }
  		elseif atTarget then { 0, 2.5, -radius - 1 }
+ 		elseif atPath then { 0, 2.5, radius / 2 - past }
 -		elseif isGround then { 0, 2.5, -radius / 2 }
 +		elseif isGround or isDrafted then { 0, 2.5, -radius / 2 }
  		else { -radius - 1, 2.5, 0 }
  	Raster.prims(target, frame, { Scene.box({ 1, 5, 1 }, post, { 150, 40, 40 }) })
  	Raster.prims(target, frame, prims)
-@@ -446,8 +501,9 @@ fs.writeFile(
+@@ -774,8 +829,9 @@ fs.writeFile(
  		return serde.compress("zlib", s)
  	end)
  )
--local cost = if isGround
+-local cost: number = if isGround
 -	then GroundLayout.partCost(shape, row :: any, Random.new(seed) :: any)
-+local cost = if isDrafted
++local cost: number = if isDrafted
 +	then (layout :: any).count(row)
 +	elseif isGround then GroundLayout.partCost(shape, row :: any, Random.new(seed) :: any)
  	elseif isGust then GustLayout.partCost(row :: any)
  	elseif isArc then ArcLayout.partCost(row :: any)
  	elseif isBolt then BoltLayout.partCost(row :: any)
 diff --git a/src/client/primitives/AreaFx.luau b/src/client/primitives/AreaFx.luau
-index 4e7609e..25b6e67 100644
+index 034327b..86010fa 100644
 --- a/src/client/primitives/AreaFx.luau
 +++ b/src/client/primitives/AreaFx.luau
 @@ -14,6 +14,7 @@ local AreaBursts = require(ReplicatedStorage.Shared.systems.AreaBursts)
@@ -188,7 +188,7 @@ index 4e7609e..25b6e67 100644
  local Draw = require("./Draw")
  local DrawnEffects = require(ReplicatedStorage.Shared.data.DrawnEffects)
  local EffectPower = require(ReplicatedStorage.Shared.systems.EffectPower)
-@@ -433,6 +434,68 @@ local function volley(frame: CFrame, shape: AreaShape, look: DrawnEffects.Volley
+@@ -470,6 +471,68 @@ local function volley(frame: CFrame, shape: AreaShape, look: DrawnEffects.Volley
  	step()
  end
  
@@ -257,14 +257,14 @@ index 4e7609e..25b6e67 100644
  -- Draws look `name` over `shape` lying on the ground at `ground`, aimed at
  -- `toward`, grown for the skill's `power` (EffectPower). `rng` defaults to a
  -- fresh one; pass a seeded one to repeat a look.
-@@ -497,6 +560,8 @@ function AreaFx.draw(
+@@ -534,6 +597,8 @@ function AreaFx.draw(
  		volley(frame, shape, look, color, random)
  	elseif look.kind == "Gust" then
  		gust(ground, facing, shape, look, color)
 +	elseif look.kind == "Drafted" then
 +		drafted(frame, shape, look, color, random)
  	elseif look.kind == "Arc" then
- 		arc(ground, toward, look, color, random)
+ 		arc(ground, toward, shape, look, color, random)
  	end
 diff --git a/src/shared/DraftedTypes.luau b/src/shared/DraftedTypes.luau
 new file mode 100644
@@ -330,13 +330,13 @@ index 0000000..64e1aac
 +
 +return nil
 diff --git a/src/shared/data/DrawnEffects.luau b/src/shared/data/DrawnEffects.luau
-index 95c2191..cd455e2 100644
+index db5cff8..d2c4171 100644
 --- a/src/shared/data/DrawnEffects.luau
 +++ b/src/shared/data/DrawnEffects.luau
-@@ -121,6 +121,10 @@ export type CastLook = {
- --             struck) to its middle, sparking, then grounding there with a
- --             flash, so even a strike that hits nothing shows where it
- --             landed (systems/ArcLayout).
+@@ -125,6 +125,10 @@ export type CastLook = {
+ --             Over a Cone it is a tendril instead, lashed from the caster
+ --             out along the area to its reach (`wave`, `reach`, `taper`,
+ --             `steady`, `grounds`; R036 Vein Lash).
 +--   Drafted   drawn by a small pure module of its own (systems/drafted, named
 +--             by `layout`, listed in systems/DraftedKinds) from the row's
 +--             other fields, which are that module's own numbers; the game and
@@ -344,7 +344,7 @@ index 95c2191..cd455e2 100644
  export type Fan = {
  	kind: "Fan",
  	about: string,
-@@ -318,7 +322,19 @@ export type Gust = {
+@@ -350,7 +354,19 @@ export type Gust = {
  	perPower: EffectPower.Growth?,
  }
  
@@ -365,7 +365,7 @@ index 95c2191..cd455e2 100644
  
  -- Flight kinds (SkillVfxController draws them):
  --   Lance  a faceted shard `length` studs long and `width` thick pointing
-@@ -624,6 +640,24 @@ local cast: { [string]: CastLook } = {
+@@ -981,6 +997,24 @@ local cast: { [string]: CastLook } = {
  }
  
  local area: { [string]: AreaLook } = {
@@ -391,7 +391,7 @@ index 95c2191..cd455e2 100644
  		kind = "Fan",
  		about = "Seven glowing rays fanned over the area, flashed and faded; the default.",
 diff --git a/src/shared/systems/AreaBursts.luau b/src/shared/systems/AreaBursts.luau
-index 50308f5..3f65c4b 100644
+index 3b596e4..05d4f09 100644
 --- a/src/shared/systems/AreaBursts.luau
 +++ b/src/shared/systems/AreaBursts.luau
 @@ -10,6 +10,7 @@
@@ -600,10 +600,10 @@ index 0000000..f15acb3
 +return table.freeze(ShardBloom)
 diff --git a/tests/systems/DraftedKinds.spec.luau b/tests/systems/DraftedKinds.spec.luau
 new file mode 100644
-index 0000000..d72761e
+index 0000000..8ad3a54
 --- /dev/null
 +++ b/tests/systems/DraftedKinds.spec.luau
-@@ -0,0 +1,191 @@
+@@ -0,0 +1,192 @@
 +--!strict
 +-- Every drafted area kind keeps the contract in DraftedTypes, over every
 +-- DrawnEffects.area row that names one, at power 0 and the top power, over a
@@ -621,6 +621,7 @@ index 0000000..d72761e
 +	{ type = "Circle", radius = 8 },
 +	{ type = "Cone", radius = 14, angle = 70 },
 +	{ type = "Cone", radius = 14, angle = 18 },
++	{ type = "Line", radius = 14, width = 3 },
 +}
 +local SEEDS = { 1, 2, 7 }
 +local SHAPE_NAMES = { Block = true, Wedge = true, Cylinder = true, Ball = true }

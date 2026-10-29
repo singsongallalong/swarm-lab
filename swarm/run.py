@@ -147,9 +147,21 @@ def runtime_argv(p: config.Provider) -> list[str]:
     raise SystemExit(f"runtime {p.runtime!r} isn't built yet (provider {p.name})")
 
 
+CONFIG_DIR = config.ROOT / "runs" / ".claude-config"
+
+
 def runtime_env(t: config.Target, p: config.Provider) -> dict[str, str]:
     env = t.env()
     if p.runtime == "claude-code":
+        # When the harness itself runs inside a Claude Code session (a cloud session,
+        # say), the child `claude` inherits that session's settings, some of which make
+        # it ignore the provider's endpoint and key ("Authentication error"). Generators
+        # start clean: none of the parent's Claude or Anthropic settings, and a config
+        # folder of their own instead of the user's.
+        for k in [k for k in env if k.startswith(("CLAUDE", "CCR_", "ANTHROPIC_"))]:
+            del env[k]
+        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+        env["CLAUDE_CONFIG_DIR"] = str(CONFIG_DIR)
         if p.base_url:
             env["ANTHROPIC_BASE_URL"] = p.base_url
             env["ANTHROPIC_AUTH_TOKEN"] = p.key()
