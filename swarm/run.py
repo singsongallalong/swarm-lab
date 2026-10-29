@@ -138,6 +138,8 @@ def runtime_env(t: config.Target, p: config.Provider) -> dict[str, str]:
         env["ANTHROPIC_MODEL"] = p.model
         env["ANTHROPIC_SMALL_FAST_MODEL"] = p.small_model or p.model
         env["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] = "1"
+    # The provider's own settings last, so they win (providers.toml, `env`).
+    env.update({k: str(v) for k, v in p.env.items()})
     return env
 
 

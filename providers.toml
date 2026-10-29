@@ -10,7 +10,9 @@
 runtime = "claude-code"
 base_url = "https://api.deepseek.com/anthropic"
 key_env = "DEEPSEEK_API_KEY"
-model = "deepseek-flash"          # served by DeepSeek-V4.1-Flash-1017; the only DeepSeek model that reads images
+# Served by DeepSeek-V4.1-Flash-1017, the only DeepSeek model that reads images.
+# "[1m]" tells Claude Code its window is 1M tokens (DeepSeek's Claude Code guide).
+model = "deepseek-flash[1m]"
 small_model = "deepseek-flash"
 price_in = 0.30
 price_cached = 0.03
@@ -18,6 +20,17 @@ price_out = 1.20
 max_turns = 40
 timeout_s = 1500
 budget_tokens = 30_000_000        # whole-run cap across this provider's generators
+
+# From DeepSeek's Claude Code guide (api-docs.deepseek.com/quick_start/agent_integrations/claude_code).
+# Every model slot points at Flash: DeepSeek maps any claude-opus name to V4 Pro, which
+# can't see images, so a generator falling back to an Opus default would go blind.
+[deepseek.env]
+ANTHROPIC_DEFAULT_OPUS_MODEL = "deepseek-flash[1m]"
+ANTHROPIC_DEFAULT_SONNET_MODEL = "deepseek-flash[1m]"
+ANTHROPIC_DEFAULT_HAIKU_MODEL = "deepseek-flash"
+CLAUDE_CODE_SUBAGENT_MODEL = "deepseek-flash"
+CLAUDE_CODE_EFFORT_LEVEL = "max"          # DeepSeek's recommendation; try "high" later to cut output tokens
+CLAUDE_CODE_AUTO_COMPACT_WINDOW = "786432"
 
 [qwen]
 runtime = "claude-code"

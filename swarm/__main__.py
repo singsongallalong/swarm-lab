@@ -38,6 +38,10 @@ def main(argv=None) -> None:
     p = sub.add_parser("apply", help="put a picked candidate on a branch in the game repo")
     p.add_argument("run_dir", type=Path), p.add_argument("letter")
 
+    p = sub.add_parser("probe", help="check a provider works and can see images, with the settings generators get")
+    p.add_argument("provider")
+    p.add_argument("image", nargs="?", type=Path, default=config.ROOT / "tests" / "probe-heavedrocks.png")
+
     a = ap.parse_args(argv)
     if a.cmd == "pack":
         t = config.target(a.target)
@@ -68,6 +72,44 @@ def main(argv=None) -> None:
         report_mod.report(a.run_dir)
     elif a.cmd == "apply":
         apply_mod.apply(a.run_dir, a.letter)
+    elif a.cmd == "probe":
+        probe(a.provider, a.image.resolve())
+
+
+def probe(name: str, image: Path) -> None:
+    """One short call through the same runtime and environment a generator gets."""
+    import json
+    import subprocess
+
+    provs = config.providers()
+    if name not in provs:
+        sys.exit(f"unknown provider {name!r}; known: {', '.join(provs)}")
+    p = provs[name]
+    if p.key_env and not p.key():
+        sys.exit(f"{p.key_env} is empty: put it in {config.ROOT / '.env'}")
+    if not image.is_file():
+        sys.exit(f"no image at {image}")
+    env = run_mod.runtime_env(config.Target(name="probe", dir=config.ROOT, repo="", ref=""), p)
+    question = (f"Read the image {image} and describe what it shows in two sentences. "
+                "If you cannot see the image, say exactly: I CANNOT SEE IMAGES.")
+    argv = ["claude", "-p", question, "--output-format", "json", "--max-turns", "3", "--model", p.model,
+            "--allowedTools", "Read"]
+    print(f"probing {name} ({p.model}) at {p.base_url or 'Anthropic'} ...", flush=True)
+    r = subprocess.run(argv, env=env, text=True, capture_output=True, timeout=300)
+    try:
+        res = json.loads(r.stdout.strip().splitlines()[-1])
+    except (json.JSONDecodeError, IndexError):
+        sys.exit(f"no JSON back (exit {r.returncode}):\n{(r.stdout + r.stderr).strip()[-1500:]}")
+    print("\n" + str(res.get("result", "")).strip() + "\n")
+    usage = res.get("usage", {}) or {}
+    print(f"turns {res.get('num_turns')}, tokens {run_mod.total_tokens(usage):,}, about ${p.cost(usage):.4f}")
+    text = str(res.get("result", "")).lower()
+    if res.get("is_error") or r.returncode != 0:
+        sys.exit("FAILED: the call errored (above).")
+    if "cannot see images" in text:
+        sys.exit("FAILED: the model can't see images through this endpoint; generators would be blind.")
+    print("OK if the description mentions rocks or slabs heaving up around a red post. "
+          "If it describes something else, the image didn't reach the model.")
 
 
 if __name__ == "__main__":

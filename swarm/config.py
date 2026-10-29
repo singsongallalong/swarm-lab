@@ -57,6 +57,7 @@ class Provider:
     timeout_s: int = 1500
     budget_tokens: int = 0
     command: list[str] = field(default_factory=list)  # runtime "exec": argv, for tests
+    env: dict[str, str] = field(default_factory=dict)  # extra variables for the runtime
 
     def key(self) -> str:
         return os.environ.get(self.key_env, "") if self.key_env else ""
