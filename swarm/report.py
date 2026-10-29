@@ -60,6 +60,12 @@ def report(run_dir: Path) -> list[dict]:
         lines += ["", "## Selection", ""] + [f"- **{l}** ({key.get(l, {}).get('provider', '?')}): {sel['reasons'].get(l, '')}" for l in sel.get("picked", [])]
     (run_dir / "report.md").write_text("\n".join(lines) + "\n")
 
+    # Stand-in generators (runtime "exec", the tests') never go in the experiment's record.
+    provs = config.providers()
+    real = [r for r in rows if getattr(provs.get(r["provider"]), "runtime", "exec") != "exec"]
+    if not real:
+        print("\n".join(lines[4:]))
+        return rows
     ledger = config.ROOT / "results" / "ledger.csv"
     ledger.parent.mkdir(exist_ok=True)
     old = []
@@ -72,8 +78,8 @@ def report(run_dir: Path) -> list[dict]:
         for r in rows:
             r["playtest"] = verdicts.get(r["provider"], "")
     with open(ledger, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
+        w = csv.DictWriter(f, fieldnames=FIELDS, lineterminator="\n")
         w.writeheader()
-        w.writerows(old + rows)
+        w.writerows(old + real)
     print("\n".join(lines[4:]))
     return rows
