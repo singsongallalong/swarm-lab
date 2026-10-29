@@ -17,6 +17,8 @@ from .config import Job
 MODES = {
     "owned_row": "only the `{skill}` row may change, or be added if missing",
     "add_rows": "add new rows only; every existing row stays exactly as it is",
+    "new_file": "a new file of your own (its name must match this pattern); never an existing one",
+    "add_lines": "add lines only, each one an entry for your own module; change nothing else",
 }
 
 
@@ -166,16 +168,51 @@ def particles_section(job: Job, repo: Path, skill: str) -> str:
     return "\n\n".join(out).replace("{skill}", skill)
 
 
+def api(src: str, prefix: str) -> str:
+    """Every `function <prefix>...` signature in a module, with the comment lines
+    directly above it: a module's API without its bodies."""
+    lines = src.splitlines()
+    out = []
+    for i, line in enumerate(lines):
+        if line.startswith(f"function {prefix}"):
+            k = i
+            while k > 0 and lines[k - 1].startswith("--"):
+                k -= 1
+            out.extend(lines[k : i + 1])
+            out.append("")
+    if not out:
+        raise KeyError(f"no functions starting {prefix}")
+    return "\n".join(out).rstrip()
+
+
+def quote(spec: dict, read) -> str:
+    """One [quotes.<name>] entry of job.toml: a whole file, a span between markers,
+    one row, or a module's API."""
+    src = read(spec["file"])
+    if "row" in spec:
+        text = luarows.get(src, spec["row"])
+    elif "api" in spec:
+        text = api(src, spec["api"])
+    elif "from" in spec:
+        text = luarows.between(src, spec["from"], spec["to"])
+    else:
+        text = src
+    head = f"From `{spec['file']}`" + (f", {spec['note']}" if spec.get("note") else "") + ":\n\n"
+    return head + _block("lua", text)
+
+
 def build(job: Job, brief: dict, repo: Path) -> str:
     skill = brief["skill"]
     read = lambda rel: (repo / rel).read_text(encoding="utf-8")  # noqa: E731
 
     files = "\n".join(
-        f"   - `{rel}`: {MODES[spec['mode']].format(skill=skill)}" for rel, spec in job.files.items()
+        f"   - `{rel.replace('{skill}', skill)}`: {MODES[spec['mode']].format(skill=skill)}" for rel, spec in job.files.items()
     )
 
     current = []
     for rel, spec in job.files.items():
+        if spec["mode"] not in ("owned_row", "add_rows"):
+            continue  # new files and registries have no current rows to show
         src = read(rel)
         names = [skill] if spec["mode"] == "owned_row" else []
         if brief.get("current_look") and spec["mode"] == "add_rows":
@@ -207,8 +244,11 @@ def build(job: Job, brief: dict, repo: Path) -> str:
     specs = "\n".join(s["cmd"] for s in job.data.get("specs", []))
     ref_cmds, render_cmds = render_commands(brief)
 
+    quotes = {name: quote(spec, read) for name, spec in job.data.get("quotes", {}).items()}
+
     template = Template((job.dir / job.data.get("template", "pack.md")).read_text(encoding="utf-8"))
     return template.substitute(
+        **quotes,
         skill=skill,
         family=brief["family"],
         brief=brief["brief"].strip(),

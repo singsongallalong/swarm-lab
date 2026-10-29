@@ -1,0 +1,14 @@
+# One direction per generator, assigned in order and repeated past the last line.
+# Each names a FORM, so a swarm explores different kinds of drawing instead of
+# converging on one; the brief says what the form must express. A direction is a
+# starting stance: the rules still win. Lines starting with # are ignored.
+Curves: the look is drawn by curved strokes (arcs, crescents, S-bends) built from short straight pieces laid end to end along a curve.
+Spiral: something winds outward or inward around the origin, a spiral arm or a vortex, its pieces placed along the turning path over time.
+Branching growth: forks and branches spreading from the origin like frost on glass or lightning in the ground, each branch splitting as it goes.
+Orbit: pieces circle the origin or each other while the look plays, rising or closing in, so the motion itself is the look.
+Sweep: one or a few long blades or bands sweep across the area like a hand of a clock or a scythe, leaving a fading wake.
+Lattice: a geometric pattern (a web, a grid of facets, a star) unfolds over the area, piece by piece, then shatters or dissolves.
+Rising columns: shafts or pillars of the skill's element rise from the ground in a shaped pattern (not a plain ring), lean, and collapse.
+Tendrils: a few long, thin, jointed tendrils reach out across the area, curling and tapering at their tips, then withdraw or wither.
+Shattering pane: a flat shape forms over the area, then breaks into tumbling shards that fly outward and fall.
+Travelling front: a shaped front (a wedge, a wave crest, a claw mark) travels across the area and turns or bends as it goes.

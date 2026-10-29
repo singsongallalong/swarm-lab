@@ -50,11 +50,17 @@ def check_manifest(wt: Path, skill: str) -> tuple[dict | None, str | None]:
         return m, f"manifest lacks {', '.join(sorted(missing))}"
     if m["skill"] != skill:
         return m, f"manifest is for {m['skill']!r}, not {skill!r}"
+    return m, None
+
+
+def check_renders(wt: Path, m: dict) -> str | None:
+    """Checked after the files and code, so a run whose render crashed on bad code is
+    rejected for the code, which is the reason worth reading."""
     renders = [r for r in m.get("renders", []) if (wt / r).is_file()]
     if not renders:
-        return m, "no rendered image listed in the manifest exists"
+        return "no rendered image listed in the manifest exists"
     m["renders"] = renders
-    return m, None
+    return None
 
 
 def _norm(text: str) -> str:
@@ -63,7 +69,9 @@ def _norm(text: str) -> str:
     return "\n".join(l.rstrip() for l in text.splitlines() if l.strip())
 
 
-def check_rows(rel: str, mode: str, before: str, after: str, skill: str) -> str | None:
+def check_rows(rel: str, mode: str, before: str | None, after: str, skill: str, spec_pattern: str | None = None) -> str | None:
+    if before is None and mode not in ("new_file",):
+        return f"{rel}: is a new file, but this job only lets it be edited"
     if mode == "owned_row":
         if _norm(luarows.without(before, {skill})) != _norm(luarows.without(after, {skill})):
             return f"{rel}: changed something besides the {skill} row"
@@ -82,7 +90,51 @@ def check_rows(rel: str, mode: str, before: str, after: str, skill: str) -> str 
         if _norm(before) != _norm(luarows.without(after, added)):
             return f"{rel}: changed text outside its rows"
         return None
+    if mode == "new_file":
+        if before is not None:
+            return f"{rel}: changed a file that already existed"
+        return None
+    if mode == "add_lines":
+        # Lines may only be added, never changed or removed, and each added line must
+        # match the rule's pattern (a registry entry for this skill's module).
+        old = [l for l in before.splitlines() if l.strip()]
+        new = [l for l in after.splitlines() if l.strip()]
+        it = iter(new)
+        if not all(any(o == n for n in it) for o in old):
+            return f"{rel}: changed or removed an existing line"
+        added = list(new)
+        for o in old:
+            added.remove(o)
+        pattern = (spec_pattern or "").replace("{skill}", re.escape(skill))
+        for line in added:
+            if pattern and not re.fullmatch(pattern, line.strip()):
+                return f"{rel}: added a line that isn't a {skill} entry: {line.strip()[:80]}"
+        return None
     return f"{rel}: unknown mode {mode!r}"
+
+
+def check_code(rel: str, text: str, purity: dict) -> str | None:
+    """A generated module must be strict, small and pure (the game's CLAUDE.md, rule 4):
+    no Roblox services or Instances, no yielding, nothing that loads or escapes code,
+    and requires only from the job's list."""
+    lines = text.splitlines()
+    if purity.get("first_line") and (not lines or lines[0].strip() != purity["first_line"]):
+        return f"{rel}: doesn't start with {purity['first_line']}"
+    if purity.get("max_lines") and len(lines) > purity["max_lines"]:
+        return f"{rel}: {len(lines)} lines, over {purity['max_lines']}"
+    code = "\n".join(l.split("--", 1)[0] for l in lines)  # comments may say anything
+    code = re.sub(r'"(?:[^"\\]|\\.)*"', '""', code)  # nor may strings trip a word
+    for pattern in purity.get("forbid", []):
+        m = re.search(pattern, code)
+        if m:
+            return f"{rel}: uses {m.group(0).strip()!r}, which a pure module mustn't"
+    allowed = set(purity.get("requires", []))
+    for req in re.findall(r'require\(\s*"([^"]+)"\s*\)', text):
+        if req not in allowed:
+            return f"{rel}: requires {req!r}, which isn't on the job's list"
+    if re.search(r"require\(\s*[^\"\s]", text):
+        return f"{rel}: requires something other than a plain path"
+    return None
 
 
 def run_specs(wt: Path, specs: list[dict], env: dict, timeout: int = 600) -> tuple[list[dict], str | None]:
@@ -155,9 +207,8 @@ def check_one(wt: Path, t: config.Target, j: config.Job, meta: dict, gen: dict, 
         return rec
 
     hidden = list(t.hide) + list(t.share)
-    allowed = set(j.files)
     changed = changed_paths(wt, hidden)
-    stray = [p for p in changed if p not in allowed]
+    stray = [p for p in changed if j.rule(p, skill) is None]
     if stray:
         rec["reason"] = f"touched {stray[0]}" + (f" and {len(stray) - 1} more" if len(stray) > 1 else "")
         return rec
@@ -166,15 +217,27 @@ def check_one(wt: Path, t: config.Target, j: config.Job, meta: dict, gen: dict, 
         return rec
 
     for rel in changed:
-        before = _git(["show", f"{base}:{rel}"], wt)
+        rule = j.rule(rel, skill)
+        shown = subprocess.run(["git", "show", f"{base}:{rel}"], cwd=wt, text=True, capture_output=True)
+        before = shown.stdout if shown.returncode == 0 else None
+        if not (wt / rel).exists():
+            rec["reason"] = f"{rel}: deleted"
+            return rec
         after = (wt / rel).read_text(encoding="utf-8")
         try:
-            why = check_rows(rel, j.files[rel]["mode"], before, after, skill)
+            why = check_rows(rel, rule["mode"], before, after, skill, rule.get("pattern"))
         except ValueError as e:
             why = f"{rel}: couldn't read its rows ({e})"
+        if not why and rule["mode"] == "new_file":
+            why = check_code(rel, after, j.data.get("purity", {}))
         if why:
             rec["reason"] = why
             return rec
+
+    why = check_renders(wt, manifest)
+    if why:
+        rec["reason"] = why
+        return rec
 
     if run_specs_too:
         rec["specs"], why = run_specs(wt, j.data.get("specs", []), t.env())
@@ -189,6 +252,9 @@ def check_one(wt: Path, t: config.Target, j: config.Job, meta: dict, gen: dict, 
             return rec
         manifest["renders"] = rendered + [r for r in manifest["renders"] if r not in rendered]
 
+    # New files are untracked, and a plain diff leaves them out; mark them as intended
+    # first so the patch carries a new module whole.
+    _git(["add", "--intent-to-add", "--", *sorted(changed)], wt)
     patch = _git(["diff", base, "--", *sorted(changed)], wt)
     (wt / ".swarm" / "patch.diff").write_text(patch)
     rec["patch"] = str((wt / ".swarm" / "patch.diff").relative_to(wt.parent.parent))

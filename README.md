@@ -49,6 +49,23 @@ python3 -m swarm apply  runs/<run-id> C
 `python3 -m swarm run ... --dry-run` builds the worktrees and packs and prints the
 commands without calling any model.
 
+**The two jobs.** `effects` composes a look from the game's existing kinds: rows only,
+cheap, safe, but the looks tend to converge. `kinds` invents new drawing: each generator
+writes a small pure Luau module (a drafted kind: curves, spirals, branching...) that the
+game and its preview draw generically. Same briefs, same commands:
+
+```bash
+python3 -m swarm run arpg-game kinds ColdSnap --gens deepseek:6 --concurrency 6
+```
+
+Until arpg-game merges the drafted-kinds platform (`docs/kind-drafting/`), a kinds run
+applies it to its own base clone, never to your repo. (`swarm pack ... kinds ...` reads
+your repo as it is, so it needs the platform merged; to see a kinds pack before that,
+use `run --dry-run` and read `runs/<id>/pack.md`.)
+
+Tests: `python3 tests/test_end_to_end.py` (the whole pipeline on a fake game) and
+`python3 tests/test_checks.py` (the code and file rules).
+
 ## Setting up WSL (Ubuntu 22.04)
 
 Work in the Linux home folder (`~/roblox`), not under `/mnt/c`: worktrees and symlinks
@@ -73,7 +90,9 @@ generators unattended.
 | `swarm/` | the harness: `pack`, `run`, `check`, `sheet`, `report`, `apply` |
 | `providers.toml` | endpoints, model ids, prices, caps per provider |
 | `targets/arpg-game/target.toml` | where the game is, its setup, which files are hidden from generators |
-| `targets/arpg-game/effects/` | the effects job: pack template, allowed files, specs, directions, briefs |
+| `targets/arpg-game/effects/` | the effects job: new looks from the existing kinds (rows only), with briefs |
+| `targets/arpg-game/kinds/` | the kinds job: new kinds of drawing, each a pure Luau module (drafted kinds); shares the effects briefs |
+| `docs/kind-drafting/` | the game-side platform the kinds job needs, as a patch and a handoff note |
 | `prompts/select.md` | the orchestrator's selection prompt |
 | `docs/experiment.md` | the experiment plan: arms, metrics, what counts as success |
 | `results/ledger.csv` | one line per finished run, committed: the experiment's record |

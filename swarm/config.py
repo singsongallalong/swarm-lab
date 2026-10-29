@@ -118,6 +118,18 @@ class Job:
     def files(self) -> dict[str, dict]:
         return self.data.get("files", {})
 
+    def rule(self, path: str, skill: str) -> dict | None:
+        """The file rule a changed path falls under: an exact key, or a glob key (which
+        may name the skill as {skill}), as in job.toml's [files]."""
+        import fnmatch
+
+        if path in self.files:
+            return self.files[path]
+        for key, spec in self.files.items():
+            if any(c in key for c in "*?[") and fnmatch.fnmatchcase(path, key.replace("{skill}", skill)):
+                return spec
+        return None
+
     def directions(self) -> list[str]:
         p = self.dir / self.data.get("directions", "directions.txt")
         if not p.exists():
@@ -126,7 +138,8 @@ class Job:
         return [l for l in lines if l and not l.startswith("#")]
 
     def brief(self, name: str) -> dict:
-        b = load_toml(self.dir / "briefs" / f"{name}.toml")
+        # Jobs may share another job's briefs (`briefs = "../effects/briefs"`).
+        b = load_toml(self.dir / self.data.get("briefs", "briefs") / f"{name}.toml")
         b.setdefault("name", name)
         return b
 

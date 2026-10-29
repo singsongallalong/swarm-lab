@@ -43,6 +43,9 @@ def main(argv=None) -> None:
     p.add_argument("image", nargs="?", type=Path, default=config.ROOT / "tests" / "probe-heavedrocks.png")
 
     a = ap.parse_args(argv)
+    if getattr(a, "run_dir", None) is not None:
+        # Paths are reported relative to swarm-lab, so work from an absolute one.
+        a.run_dir = a.run_dir.resolve()
     if a.cmd == "pack":
         t = config.target(a.target)
         j = config.job(t, a.job)

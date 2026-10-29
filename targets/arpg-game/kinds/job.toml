@@ -1,0 +1,135 @@
+# The kinds job: a new area kind, written as one pure Luau module (a "drafted kind",
+# arpg-game's DraftedTypes), plus a row that uses it on the brief's skill. Where the
+# effects job composes existing kinds, this one invents new drawing: curves, arcs,
+# spirals, forks, whatever the brief needs.
+
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+briefs = "../effects/briefs"   # the same briefs as the effects job
+
+rules = ["docs/design/skill-effects.md", "docs/art/bible.md"]
+
+# Until the game merges the drafted-kinds platform, runs apply it to their own base
+# clone (never to your repo). Once main has the file, nothing is applied.
+[platform]
+needs = "src/shared/systems/DraftedKinds.luau"
+patches = ["docs/kind-drafting/0001-drafted-area-kinds.patch"]
+
+# What a generator may change, and how.
+[files."src/shared/systems/drafted/{skill}*.luau"]
+mode = "new_file"              # its module: a new file, named for the skill
+
+[files."src/shared/systems/DraftedKinds.luau"]
+mode = "add_lines"             # one registry line for its module, nothing else
+pattern = '{skill}\w* = require\("\./drafted/{skill}\w*"\),'
+
+[files."src/shared/data/DrawnEffects.luau"]
+mode = "add_rows"              # its Drafted row (named for the skill)
+
+[files."src/shared/data/Emitters.luau"]
+mode = "add_rows"              # its own particle rows, if any
+
+[files."src/shared/data/SkillVisuals.luau"]
+mode = "owned_row"             # point the skill at its new look
+
+# What generated code must be (the game's CLAUDE.md: --!strict, small modules, and
+# shared/systems stays pure). Checked on every new module before any spec runs.
+[purity]
+first_line = "--!strict"
+max_lines = 300
+requires = [
+  "../AreaLayout",
+  "../SculptMath",
+  "../../DraftedTypes",
+  "../../SkillTypes",
+  "../../SculptTypes",
+]
+forbid = [
+  '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
+  '\btask\.', '\bwait\s*\(', '\bspawn\s*\(', '\bdelay\s*\(', '\bcoroutine\.',
+  '\bos\.', '\bdebug\.', '\bgetfenv\b', '\bsetfenv\b', '\bloadstring\b', '\b_G\b', '\bshared\b',
+  '\bwhile\s+true\b', '\brepeat\b',
+]
+
+[kinds.area]
+file = "src/shared/data/DrawnEffects.luau"
+from = "-- Area kinds"
+to = "export type AreaLook"
+
+# Quoted into the pack by name ($contract, $example_module, ...).
+[quotes.contract]
+file = "src/shared/DraftedTypes.luau"
+note = "the contract every drafted kind keeps, and the frame its pieces are in"
+
+[quotes.example_module]
+file = "src/shared/systems/drafted/ShardBloom.luau"
+note = "the reference drafted kind"
+
+[quotes.example_row]
+file = "src/shared/data/DrawnEffects.luau"
+row = "ShardBloomExample"
+note = "the reference kind's row"
+
+[quotes.registry]
+file = "src/shared/systems/DraftedKinds.luau"
+note = "the registry you add one line to"
+
+[quotes.shapes]
+file = "src/shared/SculptTypes.luau"
+from = "-- Roblox's own primitive shapes"
+to = "export type Rotation"
+note = "what each piece shape is, by Roblox's conventions"
+
+[quotes.sculptmath]
+file = "src/shared/systems/SculptMath.luau"
+api = "SculptMath."
+note = "rotations and vectors (signatures and comments; require it as \"../SculptMath\")"
+
+[quotes.arealayout]
+file = "src/shared/systems/AreaLayout.luau"
+api = "AreaLayout."
+note = "the area's geometry (require it as \"../AreaLayout\")"
+
+[quotes.spec]
+file = "tests/systems/DraftedKinds.spec.luau"
+note = "the spec your kind must pass"
+
+[particles]
+file = "src/shared/data/Emitters.luau"
+from = "-- A curve over a particle's life"
+to = "squash: Curve?"
+examples = ["SlamDust", "GustDust"]
+painted = "src/shared/data/EffectTextures.luau"
+render_check_file = "scripts/areapreview.luau"
+render_check = 'AreaParticles|AreaBursts|\bEmitter\b|render/Particles|\bParticles\b'
+guide = "../effects/particles-guide.md"
+
+# Run in order by `check`; the first failure rejects the run.
+[[specs]]
+name = "DraftedKinds"
+cmd = "lune run tests DraftedKinds"
+
+[[specs]]
+name = "DrawnEffects"
+cmd = "lune run tests DrawnEffects"
+
+[[specs]]
+name = "AreaBursts"
+cmd = "lune run tests AreaBursts"
+
+[[specs]]
+name = "AreaTint"
+cmd = "lune run tests AreaTint"
+
+[[specs]]
+name = "ContentCompleteness"
+cmd = "lune run tests ContentCompleteness"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/systems/drafted"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/systems/drafted"

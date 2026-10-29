@@ -105,7 +105,10 @@ def sheet(run_dir: Path, seed: int | None = None) -> Path | None:
     _grid(tiles).save(out)
     (run_dir / "key.json").write_text(json.dumps(key, indent=2))
 
-    prompt = Template((config.ROOT / "prompts" / "select.md").read_text())
+    t = config.target(meta["target"])
+    j = config.job(t, meta["job"])
+    own = j.dir / j.data["select"] if j.data.get("select") else None
+    prompt = Template((own if own and own.is_file() else config.ROOT / "prompts" / "select.md").read_text())
     (run_dir / "select.md").write_text(
         prompt.substitute(
             skill=meta["skill"], family=meta["family"], run=meta["run"], count=len(survivors),
