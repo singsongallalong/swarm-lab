@@ -1,5 +1,17 @@
 --!strict
 -- Particle emitters as data (fixture).
+
+-- A curve over a particle's life: { time 0–1, value } points, times
+-- ascending from 0 to 1 (NumberSequence).
+export type Curve = { { number } }
+
+export type Emitter = {
+	texture: string,
+	count: number,
+	size: Curve,
+	squash: Curve?, -- -3 to 3
+}
+
 local Emitters = {
 	-- Dust kicked out low and wide from a slam, slowing fast and settling.
 	SlamDust = {

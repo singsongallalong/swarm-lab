@@ -44,6 +44,10 @@ $examples
 
 $kinds
 
+## Particles
+
+$particles
+
 ## The rules
 
 These are the art direction's rules, quoted whole. Every finding against your look will
@@ -90,7 +94,8 @@ Write `.swarm/manifest.json`, and then stop:
   "rows_added": ["<every new row name, in any file>"],
   "intent": "<one sentence: what it looks like and how it grows with power>",
   "renders": ["<the paths of your final renders, the reference excluded>"],
-  "revisions": 0
+  "revisions": 0,
+  "requests": ["<optional: a texture or kind the look wanted but couldn't have, one line each>"]
 }
 ```
 

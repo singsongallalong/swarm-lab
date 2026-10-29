@@ -28,9 +28,19 @@ row = "HeavedRocks"
 file = "src/shared/data/SkillVisuals.luau"
 row = "GroundSlam"
 
-[[examples]]
+# Particles: the Emitters row format, the textures already in use, and contrasting
+# example rows. `render_check` is a regex looked for in `render_check_file`: when it
+# matches, the area preview draws particle bursts and the pack says so; until then the
+# pack says bursts show only as rings on the ground (true of arpg-game before the
+# areapreview particle PR).
+[particles]
 file = "src/shared/data/Emitters.luau"
-row = "SlamDust"
+from = "-- A curve over a particle's life"
+to = "squash: Curve?"
+examples = ["SlamDust", "GustDust", "SlamSparks"]
+painted = "src/shared/data/EffectTextures.luau"
+render_check_file = "scripts/areapreview.luau"
+render_check = '\bEmitter\b|render/Particles|\bParticles\b'
 
 # The kind reference quoted for each look family: from the first marker up to the line
 # holding the second.

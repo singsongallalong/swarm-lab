@@ -72,6 +72,18 @@ def main() -> None:
         flight = pack.build(j, j.brief("Sleet"), game)
         assert "flightpreview" in flight and "-- Flight kinds" in flight
 
+        # Particles: the format, the textures, and an honest line about whether renders
+        # draw them, read from the game's own area preview.
+        assert "## Particles" in text and "squash: Curve?" in text and "smoke_main.dds" in text, "particles section incomplete"
+        assert "rbxassetid://124158244676542" in text, "painted textures missing"
+        assert "named `ColdSnap...`" in text, "skill name not filled in"
+        assert "Renders don't draw particles yet" in text
+        preview = game / "scripts" / "areapreview.luau"
+        preview.parent.mkdir(exist_ok=True)
+        preview.write_text('local Emitter = require("./motionlab/Emitter")\n')
+        assert "Renders draw particle bursts" in pack.build(j, j.brief("ColdSnap"), game), "render detection missed"
+        preview.unlink()
+
         run.run(TARGET, "effects", "ColdSnap", "fake:7", run_id="e2e", concurrency=3)
         res = check.check(run_dir)
         by = {g["gid"]: g for g in res["generators"]}

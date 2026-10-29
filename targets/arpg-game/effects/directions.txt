@@ -1,13 +1,17 @@
 # One direction per generator, assigned in order and repeated when there are more
 # generators than lines. A direction is a starting stance, not a constraint on the
 # rules: the pack's rules still win. Lines starting with # are ignored.
+#
+# Changed after the first Cold Snap smoke run (2026-10-28): "built on Ground Slam's
+# structure" gave two recoloured HeavedRocks, so it's gone, and about half the lines
+# now lead with particles (fafwa wanted looks that integrate them).
+Particle-led: an Emitters burst of your own carries most of the look; drawn parts are only a thin bright core that marks the shape of the area.
+Burst then linger: a sharp drawn shape at the instant of the hit, then your own particles drifting and settling for a beat after it fades.
 Thin and fast: a bright, slim core that's gone almost as soon as it lands; growth with power carried by reach and edge.
+Particles for volume: a drawn shape on the ground with a faint particle haze rising off it, so it reads in depth from the side view, not as a flat sheet (SE6).
 Heavy and layered: three clearly separate layers (core, body, haze), each at its own pace; growth carried by the outer layer.
-Built on Ground Slam's structure: the same ripple-to-the-edge timing as HeavedRocks, re-dressed in this skill's element.
-Two-tone: the skill's hue plus one darker shade of it, no third colour; contrast does the work instead of glow.
-Ground-hugging: everything stays below knee height; it reads from the game camera by its shape on the ground.
+Two kinds of particle: one burst that's big and soft, one that's small, sharp and fast, both in your own rows, at different moments of the look.
 Sharp and crystalline: hard edges, faceted pieces, few of them, each big enough to read at pitch 50.
+Ground-hugging: everything stays below knee height; it reads from the game camera by its shape on the ground, with particles kept low too.
 Out-of-plane motion first: tilt, twist and stacked heights before anything else; a flat sheet is the failure to avoid.
-Particles before parts: lean on an Emitters burst for the body of the look, keep drawn parts few.
-Minimal: the fewest pieces that still read as this skill at power 0; spend everything on how it grows to power 8.
-Late bloom: quiet at the instant of the hit, the look peaking a beat later as it spreads to the edge.
+Late bloom: quiet at the instant of the hit, the look peaking a beat later as it spreads to the edge, its particles arriving last.

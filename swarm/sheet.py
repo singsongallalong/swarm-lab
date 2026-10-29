@@ -91,9 +91,11 @@ def sheet(run_dir: Path, seed: int | None = None) -> Path | None:
         key[letter] = {"gid": g["gid"], "provider": g["provider"]}
         tiles.append(_tile(renders[0], letter))
         _grid([_tile(r, f"{letter}  {r.name}") for r in renders]).save(run_dir / f"sheet-{letter}.png")
+        requests = [r for r in g["manifest"].get("requests", []) if isinstance(r, str) and r.strip() and not r.startswith("<")]
         entries.append(
             f"- **{letter}**: {g['manifest']['intent']} Full renders: `sheet-{letter}.png`; "
             f"rows: `gens/{g['gid']}/.swarm/patch.diff`"
+            + (f". It asked for: {'; '.join(requests)}" if requests else "")
         )
 
     out = run_dir / "sheet.png"
