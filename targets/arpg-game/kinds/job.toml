@@ -6,6 +6,9 @@
 template = "pack.md"
 directions = "directions.txt"
 select = "select.md"
+# Writing, testing and revising a module takes more turns than writing rows: in the
+# first DeepSeek kinds run, 1 of 6 ran out at the providers' default of 40.
+max_turns = 70
 briefs = "../effects/briefs"   # the same briefs as the effects job
 
 rules = ["docs/design/skill-effects.md", "docs/art/bible.md"]

@@ -132,12 +132,12 @@ def make_worktree(t: config.Target, run_dir: Path, gid: str, commit: str, pack_t
     return wt
 
 
-def runtime_argv(p: config.Provider) -> list[str]:
+def runtime_argv(p: config.Provider, max_turns: int | None = None) -> list[str]:
     if p.runtime == "claude-code":
         return [
             "claude", "-p", PROMPT,
             "--output-format", "json",
-            "--max-turns", str(p.max_turns),
+            "--max-turns", str(max_turns or p.max_turns),
             "--model", p.model,
             "--permission-mode", "bypassPermissions",
             "--disallowedTools", "WebSearch", "WebFetch", "Task", "Agent", "NotebookEdit",
@@ -199,8 +199,9 @@ def total_tokens(usage: dict) -> int:
     return sum(int(usage.get(k, 0)) for k in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens", "output_tokens"))
 
 
-def run_one(t, p, wt: Path, log_dir: Path, gid: str, budget: Budget, dry: bool) -> dict:
-    argv = runtime_argv(p)
+def run_one(t, p, wt: Path, log_dir: Path, gid: str, budget: Budget, dry: bool, max_turns: int | None = None) -> dict:
+    # A job may need more turns than the provider default (job.toml `max_turns`).
+    argv = runtime_argv(p, max_turns)
     rec = {"gid": gid, "provider": p.name, "model": p.model, "argv": argv}
     if dry:
         rec["status"] = "dry-run"
@@ -281,7 +282,7 @@ def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str
     results = []
     with cf.ThreadPoolExecutor(max_workers=max(1, concurrency)) as pool:
         futs = {
-            pool.submit(run_one, t, provs[g["provider"]], run_dir / "gens" / g["gid"], run_dir / "logs", g["gid"], budget, dry): g
+            pool.submit(run_one, t, provs[g["provider"]], run_dir / "gens" / g["gid"], run_dir / "logs", g["gid"], budget, dry, j.data.get("max_turns")): g
             for g in gens_meta
         }
         for f in cf.as_completed(futs):
