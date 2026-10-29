@@ -1,0 +1,305 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..f134f9d 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -7,6 +7,10 @@ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+ local Chainmail = require("./armourLooks/Chainmail")
++local CourtlyCuffs = require("./armourLooks/CourtlyCuffs")
++local CourtlyGown = require("./armourLooks/CourtlyGown")
++local CourtlyHeaddress = require("./armourLooks/CourtlyHeaddress")
++local CourtlyHem = require("./armourLooks/CourtlyHem")
+ local EmberTalisman = require("./armourLooks/EmberTalisman")
+ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+@@ -36,6 +40,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
+ 	Chainmail = Chainmail,
++	CourtlyCuffs = CourtlyCuffs,
++	CourtlyGown = CourtlyGown,
++	CourtlyHeaddress = CourtlyHeaddress,
++	CourtlyHem = CourtlyHem,
+ 	EmberTalisman = EmberTalisman,
+ 	FenscaleGrips = FenscaleGrips,
+ 	FenscaleHood = FenscaleHood,
+diff --git a/src/shared/data/armourLooks/CourtlyCuffs.luau b/src/shared/data/armourLooks/CourtlyCuffs.luau
+new file mode 100644
+index 0000000..a7dfb35
+--- /dev/null
++++ b/src/shared/data/armourLooks/CourtlyCuffs.luau
+@@ -0,0 +1,34 @@
++--!strict
++-- The courtly cuffs (the Courtly gloves): a fitted rose lower sleeve, from
++-- which a two-ring cascade of bone lace falls at the elbow with two lace
++-- points hanging from it; a black band at the wrist under a ruffle of bone
++-- lace, and near-black gloves. The pale lace at the elbows is the set's other
++-- family cue at the high camera, beside the skirt's pale tiers.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local rose = { 126, 98, 102 }
++local lace = { 150, 140, 122 }
++local ink = { 40, 36, 44 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CourtlyCuffs",
++	slot = "Gloves",
++	parts = {
++		-- The fitted lower sleeve.
++		Kit.box("LowerArm", { 1.02, 1.1, 1.02 }, { 0, 0.08, 0 }, "Fabric", rose),
++		-- The lace cascade at the elbow: two rings and a hanging point.
++		Kit.box("LowerArm", { 1.3, 0.12, 1.3 }, { 0, 0.42, 0 }, "Fabric", c.bone),
++		Kit.box("LowerArm", { 1.4, 0.1, 1.4 }, { 0, 0.3, 0 }, "Fabric", lace, { 0, 8, 0 }),
++		Kit.box("LowerArm", { 0.16, 0.34, 0.12 }, { 0, 0.16, -0.66 }, "Fabric", c.bone, { 12, 0, 0 }),
++		-- The wrist: a black band under a bone lace ruffle.
++		Kit.box("LowerArm", { 1.12, 0.14, 1.12 }, { 0, -0.34, 0 }, "Fabric", ink),
++		Kit.box("LowerArm", { 1.26, 0.12, 1.26 }, { 0, -0.46, 0 }, "Fabric", c.bone, { 0, -6, 0 }),
++		-- The glove.
++		Kit.box("Hand", { 1.04, 0.4, 1.04 }, { 0, 0, 0 }, "Fabric", ink),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CourtlyGown.luau b/src/shared/data/armourLooks/CourtlyGown.luau
+new file mode 100644
+index 0000000..f1e646b
+--- /dev/null
++++ b/src/shared/data/armourLooks/CourtlyGown.luau
+@@ -0,0 +1,93 @@
++--!strict
++-- The courtly gown (the Courtly chest): a faded rose bodice with a pale grey
++-- stomacher laced by a ladder of small black bows, a bone lace collar and a
++-- smaller bow at the throat, a big black bow at the bust, a frilled bustle at
++-- the back, puffed sleeves gathered into a dark band, and the upper skirt.
++-- The skirt is five panels round each thigh, flared hard from the hip so the
++-- hem stands well out: standing, the two legs' panels close into one bell and
++-- only part as the legs stride. It stops above the knee, where the boots' tier
++-- tucks up inside it, so no leg shows between the two.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The gown's cloth: a dusty faded rose, a deeper rose for shadow, pale dove
++-- for the stomacher, bone and lace for the trims, near-black for every bow.
++local rose = { 126, 98, 102 }
++local roseDeep = { 94, 68, 76 }
++local dove = { 148, 142, 146 }
++local lace = { 150, 140, 122 }
++local ink = { 40, 36, 44 }
++
++-- The upper skirt's drop and the radius its panels sit at mid-thigh; a 20
++-- degree outward tilt takes the hem from the hip out to a bell.
++local SKIRT = 1.2
++local SKIRT_Y = 0.12
++local SKIRT_R = 0.72
++local SKIRT_TILT = 20
++local DIAGONAL = 0.51
++local DIAGONAL_TILT = 14
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CourtlyGown",
++	slot = "Chest",
++	parts = {
++		-- The bodice, over the whole torso and cinched by a dark band at the waist.
++		Kit.box("UpperTorso", { 2.1, 1.66, 1.08 }, { 0, 0, 0 }, "Fabric", rose),
++		Kit.box("LowerTorso", { 2.04, 0.36, 1.08 }, { 0, 0.02, 0 }, "Fabric", roseDeep),
++		-- The pale stomacher down the bodice's front.
++		Kit.box("UpperTorso", { 0.66, 1.3, 0.06 }, { 0, 0.08, -0.56 }, "Fabric", dove),
++		-- A bone lace neckline and a ruffled collar standing at the throat.
++		Kit.box("UpperTorso", { 1.7, 0.12, 1.1 }, { 0, 0.74, 0 }, "Fabric", c.bone),
++		Kit.box("UpperTorso", { 1.24, 0.16, 1.24 }, { 0, 0.82, 0 }, "Fabric", c.bone),
++		Kit.box("UpperTorso", { 1.1, 0.12, 1.1 }, { 0, 0.9, 0 }, "Fabric", lace),
++		-- The small bow at the throat.
++		Kit.box("UpperTorso", { 0.22, 0.09, 0.08 }, { 0, 0.83, -0.68 }, "Fabric", ink),
++		Kit.box("UpperTorso", { 0.09, 0.12, 0.09 }, { 0, 0.83, -0.7 }, "Fabric", ink),
++		-- The big bow at the bust: two loops and a knot.
++		Kit.box("UpperTorso", { 0.52, 0.3, 0.14 }, { 0.34, 0.44, -0.62 }, "Fabric", ink, { 0, 0, 18 }),
++		Kit.box("UpperTorso", { 0.52, 0.3, 0.14 }, { -0.34, 0.44, -0.62 }, "Fabric", ink, { 0, 0, -18 }),
++		Kit.box("UpperTorso", { 0.2, 0.24, 0.18 }, { 0, 0.44, -0.64 }, "Fabric", ink),
++		-- The ladder of small bows lacing the stomacher.
++		Kit.box("UpperTorso", { 0.3, 0.09, 0.05 }, { 0, 0.18, -0.6 }, "Fabric", ink),
++		Kit.box("UpperTorso", { 0.09, 0.12, 0.07 }, { 0, 0.18, -0.61 }, "Fabric", ink),
++		Kit.box("UpperTorso", { 0.3, 0.09, 0.05 }, { 0, -0.12, -0.6 }, "Fabric", ink),
++		Kit.box("UpperTorso", { 0.09, 0.12, 0.07 }, { 0, -0.12, -0.61 }, "Fabric", ink),
++		Kit.box("UpperTorso", { 0.3, 0.09, 0.05 }, { 0, -0.42, -0.56 }, "Fabric", ink),
++		Kit.box("UpperTorso", { 0.09, 0.12, 0.07 }, { 0, -0.42, -0.58 }, "Fabric", ink),
++		-- The bustle at the back of the waist, frilled in bone.
++		Kit.box("LowerTorso", { 1.0, 0.36, 0.5 }, { 0, 0.02, 0.62 }, "Fabric", rose),
++		Kit.box("LowerTorso", { 1.06, 0.1, 0.54 }, { 0, -0.12, 0.66 }, "Fabric", c.bone),
++		-- Puffed sleeves: a gathered body, a stepped crown and a dark band.
++		Kit.box("UpperArm", { 1.28, 1.2, 1.28 }, { 0, 0, 0 }, "Fabric", rose),
++		Kit.box("UpperArm", { 1.02, 0.66, 1.02 }, { 0, 0.52, 0 }, "Fabric", rose),
++		Kit.box("UpperArm", { 1.12, 0.16, 1.12 }, { 0, -0.52, 0 }, "Fabric", roseDeep),
++		-- The upper skirt: five panels round each thigh, flared outward.
++		Kit.box("UpperLeg", { 1.02, SKIRT, 0.07 }, { 0.02, SKIRT_Y, -SKIRT_R }, "Fabric", rose, {
++			SKIRT_TILT,
++			0,
++			0,
++		}),
++		Kit.box("UpperLeg", { 0.74, SKIRT, 0.06 }, { DIAGONAL, SKIRT_Y, -DIAGONAL }, "Fabric", rose, {
++			DIAGONAL_TILT,
++			-45,
++			DIAGONAL_TILT,
++		}),
++		Kit.box("UpperLeg", { 0.06, SKIRT, 0.96 }, { SKIRT_R, SKIRT_Y, 0 }, "Fabric", rose, { 0, 0, SKIRT_TILT }),
++		Kit.box("UpperLeg", { 0.74, SKIRT, 0.06 }, { DIAGONAL, SKIRT_Y, DIAGONAL }, "Fabric", rose, {
++			-DIAGONAL_TILT,
++			-135,
++			DIAGONAL_TILT,
++		}),
++		Kit.box("UpperLeg", { 1.02, SKIRT, 0.07 }, { 0.02, SKIRT_Y, SKIRT_R }, "Fabric", rose, {
++			-SKIRT_TILT,
++			0,
++			0,
++		}),
++		-- A darned patch in plainer linen on the bodice's left, where the silk wore.
++		Kit.box("UpperTorso", { 0.28, 0.22, 0.04 }, { -0.58, 0.2, -0.56 }, "Fabric", c.linen, { 0, 0, 6 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CourtlyHeaddress.luau b/src/shared/data/armourLooks/CourtlyHeaddress.luau
+new file mode 100644
+index 0000000..49cf6f3
+--- /dev/null
++++ b/src/shared/data/armourLooks/CourtlyHeaddress.luau
+@@ -0,0 +1,50 @@
++--!strict
++-- The courtly headdress (the Courtly gown's helm): a small tilted cap of
++-- faded rose silk over a wide, dipped brim edged in soft bone lace, a gathered
++-- pouf on top and a large black bow worn to the right. The brim and the bow
++-- are what read from the high camera: a pale disc with a dark knot off one
++-- side. A short lace veil falls at the back of the head.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The gown's own cloth: a dusty faded rose, a darker rose for shadow, and the
++-- near-black of the bows. Kept inside the bible's trim limits (A14).
++local rose = { 126, 98, 102 }
++local roseDeep = { 94, 68, 76 }
++local lace = { 150, 140, 122 }
++local ink = { 40, 36, 44 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CourtlyHeaddress",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The cap, canted to the left so the set is never quite symmetrical.
++		Kit.box("Head", { 1.4, 0.5, 1.4 }, { 0.02, 0.6, 0.02 }, "Fabric", rose, { 0, 0, -7 }),
++		-- The brim: wide, dipped over the right eye, and pale along its edge.
++		Kit.box("Head", { 1.86, 0.12, 1.68 }, { -0.04, 0.36, 0.02 }, "Fabric", roseDeep, { 0, -6, -9 }),
++		Kit.box("Head", { 1.9, 0.06, 1.72 }, { -0.04, 0.3, 0.02 }, "Fabric", c.bone, { 0, -6, -9 }),
++		-- A bone lace band gathered round the cap's foot.
++		Kit.box("Head", { 1.48, 0.12, 1.48 }, { 0.02, 0.44, 0.02 }, "Fabric", c.bone, { 0, 0, -7 }),
++		-- The pouf: a gathered crown, a smaller knot of cloth beside it.
++		Kit.box("Head", { 1.02, 0.44, 1.0 }, { 0.1, 0.86, 0.02 }, "Fabric", rose, { 0, 8, -10 }),
++		Kit.box("Head", { 0.5, 0.34, 0.46 }, { -0.3, 0.9, -0.14 }, "Fabric", roseDeep, { 0, -14, 12 }),
++		-- The big black bow, right of centre: two loops, a knot and two short tails.
++		Kit.box("Head", { 0.24, 0.26, 0.24 }, { 0.78, 0.64, -0.02 }, "Fabric", ink, { 0, 0, -8 }),
++		Kit.box("Head", { 0.48, 0.3, 0.16 }, { 1.05, 0.74, -0.02 }, "Fabric", ink, { 0, 0, 26 }),
++		Kit.box("Head", { 0.42, 0.26, 0.16 }, { 1.02, 0.52, 0.04 }, "Fabric", ink, { 0, 0, -20 }),
++		Kit.box("Head", { 0.13, 0.34, 0.1 }, { 0.86, 0.4, 0.2 }, "Fabric", ink, { 16, 0, -18 }),
++		Kit.box("Head", { 0.12, 0.28, 0.09 }, { 0.96, 0.4, -0.18 }, "Fabric", ink, { -14, 0, 12 }),
++		-- A pale pearl pin at the cap's front, and a thumbed bald patch where the
++		-- silk has worn through to the darker cloth beneath.
++		Kit.box("Head", { 0.14, 0.14, 0.08 }, { -0.44, 0.62, -0.68 }, "Fabric", c.bone, { 0, 0, 20 }),
++		Kit.box("Head", { 0.3, 0.16, 0.04 }, { 0.36, 0.68, -0.66 }, "Fabric", roseDeep, { 0, -6, -12 }),
++		-- The veil, one lace panel falling from the back of the cap to the nape.
++		Kit.box("Head", { 0.94, 0.72, 0.06 }, { 0.04, -0.06, 0.62 }, "Fabric", c.bone, { 10, 0, -4 }),
++		Kit.box("Head", { 0.46, 0.44, 0.05 }, { -0.38, -0.12, 0.66 }, "Fabric", lace, { 8, 10, 0 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CourtlyHem.luau b/src/shared/data/armourLooks/CourtlyHem.luau
+new file mode 100644
+index 0000000..927719f
+--- /dev/null
++++ b/src/shared/data/armourLooks/CourtlyHem.luau
+@@ -0,0 +1,61 @@
++--!strict
++-- The courtly hem (the Courtly boots): the gown's lower skirt, carried on the
++-- shins in five panels that tuck under the chest's tier and flare on down, a
++-- dove grey ruffled hem tier, a bone petticoat edge showing beneath it, then
++-- near-black court shoes with a bone buckle. From the high camera the pale
++-- bands at the hem are the bottom of the gown's bell, under the rose skirt.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local rose = { 126, 98, 102 }
++local roseDeep = { 94, 68, 76 }
++local dove = { 148, 142, 146 }
++local ink = { 40, 36, 44 }
++
++-- The lower skirt's drop and where its panels sit; the top edge is tucked
++-- inside the chest's hem, the bottom runs out wider than it.
++local SKIRT_R = 1.01
++local SKIRT_TILT = 20
++local DIAGONAL = 0.714
++local DIAGONAL_TILT = 14
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CourtlyHem",
++	slot = "Boots",
++	parts = {
++		-- The lower skirt: five panels round each shin, following the bell on.
++		Kit.box("LowerLeg", { 1.04, 1.34, 0.07 }, { 0.02, 0.18, -SKIRT_R }, "Fabric", rose, { SKIRT_TILT, 0, 0 }),
++		Kit.box("LowerLeg", { 0.9, 1.34, 0.06 }, { DIAGONAL, 0.18, -DIAGONAL }, "Fabric", rose, {
++			DIAGONAL_TILT,
++			-45,
++			DIAGONAL_TILT,
++		}),
++		Kit.box("LowerLeg", { 0.06, 1.34, 1.0 }, { SKIRT_R, 0.18, 0 }, "Fabric", rose, { 0, 0, SKIRT_TILT }),
++		Kit.box("LowerLeg", { 0.9, 1.34, 0.06 }, { DIAGONAL, 0.18, DIAGONAL }, "Fabric", rose, {
++			-DIAGONAL_TILT,
++			-135,
++			DIAGONAL_TILT,
++		}),
++		Kit.box("LowerLeg", { 1.04, 1.34, 0.07 }, { 0.02, 0.18, SKIRT_R }, "Fabric", rose, { -SKIRT_TILT, 0, 0 }),
++		-- The dove grey ruffled hem, flared out below the skirt.
++		Kit.box("LowerLeg", { 1.04, 0.2, 0.06 }, { 0.02, -0.48, -1.2 }, "Fabric", dove, { 26, 0, 0 }),
++		Kit.box("LowerLeg", { 0.95, 0.2, 0.06 }, { 0.85, -0.48, -0.85 }, "Fabric", dove, { 18, -45, 18 }),
++		Kit.box("LowerLeg", { 0.06, 0.2, 1.04 }, { 1.2, -0.48, 0 }, "Fabric", dove, { 0, 0, 26 }),
++		Kit.box("LowerLeg", { 0.95, 0.2, 0.06 }, { 0.85, -0.48, 0.85 }, "Fabric", dove, { -18, -135, 18 }),
++		Kit.box("LowerLeg", { 1.04, 0.2, 0.06 }, { 0.02, -0.48, 1.2 }, "Fabric", dove, { -26, 0, 0 }),
++		-- The bone petticoat edge, just showing below the ruffle.
++		Kit.box("LowerLeg", { 1.0, 0.16, 0.05 }, { 0.02, -0.56, -1.16 }, "Fabric", c.bone, { 8, 0, 0 }),
++		Kit.box("LowerLeg", { 0.05, 0.16, 1.0 }, { 1.16, -0.56, 0 }, "Fabric", c.bone, { 0, 0, 8 }),
++		Kit.box("LowerLeg", { 1.0, 0.16, 0.05 }, { 0.02, -0.56, 1.16 }, "Fabric", c.bone, { -8, 0, 0 }),
++		-- The court shoe, its bone buckle and a low heel.
++		Kit.box("Foot", { 1.06, 0.28, 1.28 }, { 0, -0.04, -0.12 }, "Leather", ink),
++		Kit.box("Foot", { 0.32, 0.16, 0.08 }, { 0, 0.04, -0.72 }, "Fabric", c.bone),
++		Kit.box("Foot", { 0.5, 0.2, 0.22 }, { 0, -0.1, 0.58 }, "Leather", ink),
++		-- A scuff gone pale on the right toe.
++		Kit.box("Foot", { 0.24, 0.08, 0.06 }, { 0.28, -0.06, -0.72 }, "Fabric", roseDeep, nil, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..567b332 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,12 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:CourtlyHeaddress"] = row("A small tilted rose silk cap with a bone lace brim and a big black bow."),
++	["armour:CourtlyGown"] = row("A faded rose bodice and wide bell skirt, laced with black bows and ivory lace."),
++	["armour:CourtlyCuffs"] = row(
++		"Rose sleeves with bone lace cascading from the elbows, black wrist bows and gloves."
++	),
++	["armour:CourtlyHem"] = row("The gown's lower skirt: a ruffled hem over a pale petticoat, and black court shoes."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

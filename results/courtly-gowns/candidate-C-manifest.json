@@ -1,0 +1,16 @@
+{
+  "skill": "Courtly",
+  "look": "CourtlyHeaddress,CourtlyGown,CourtlyCuffs,CourtlyHem",
+  "rows_added": ["CourtlyHeaddress", "CourtlyGown", "CourtlyCuffs", "CourtlyHem"],
+  "intent": "A rococo court gown in faded rose and dove grey, laced with black bows and bone lace, reading from the high camera as a fitted bodice over a wide tiered bell skirt beneath a small tilted cap.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A tapered or rounded sleeve piece: a box puff reads as a pauldron, and a Ball left the bare arm showing at its corners.",
+    "A structured pannier for the hips: the wide rococo hip had to be built from flared thigh panels, so it reads as a cone rather than a true shelf."
+  ]
+}

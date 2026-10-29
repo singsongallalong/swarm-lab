@@ -1,0 +1,18 @@
+{
+  "skill": "Courtly",
+  "look": "CourtlyHeaddress,CourtlyGown,CourtlyCuffs,CourtlyHem",
+  "rows_added": ["CourtlyHeaddress", "CourtlyGown", "CourtlyCuffs", "CourtlyHem"],
+  "intent": "A gothic-lolita court gown in near-black cloth with bone and ivory lace: a fitted bodice under a pale collar and a great chest bow, puffed shoulders, and a wide bell skirt over a black flounce, a pale grey band and a bone petticoat edge, so from the high camera the widest black bell in the game, ringed in pale lace and crowned by a tall black hair bow, reads as a gown before any detail does.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A translucent fabric for the veil: parts are opaque, so it is a solid black panel rather than gauze.",
+    "A round hem ring or wedge circle: the hem tiers are boxes, so the skirt's corners read square from above.",
+    "A puff shape that hides the upper arm's corners: a ball let the bare arm show through, so the puff is a cylinder.",
+    "A paler, cooler ivory: the bone trim warms and brightens under the moon preset more than the brief's soft ivory."
+  ]
+}

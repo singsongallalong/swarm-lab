@@ -1,0 +1,17 @@
+{
+  "skill": "Courtly",
+  "look": "CourtlyHeaddress,CourtlyGown,CourtlyCuffs,CourtlyHem",
+  "rows_added": ["CourtlyHeaddress", "CourtlyGown", "CourtlyCuffs", "CourtlyHem"],
+  "intent": "A late-medieval court gown in deep plum with bone lace and black bows: a tall wimpled hennin, a high-belted velvet bodice with puffed sleeves trailing long drapes, and a full tiered skirt with a fur band and pale petticoat hem that reads as one bell around the legs from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A cone or tapered-cylinder primitive, so the hennin reads as one clean taper instead of four stepped cylinders.",
+    "A sheer or translucent fabric material, so the veil can read as gauze rather than a solid pale panel.",
+    "A cheaper way to draw mirrored skirt panels: the count doubles each thigh and shin panel, so the lower bell's flare is carried by wide tier boxes rather than more cloth panels."
+  ]
+}

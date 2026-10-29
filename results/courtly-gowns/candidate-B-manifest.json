@@ -1,0 +1,16 @@
+{
+  "skill": "Courtly",
+  "look": "CourtlyHeaddress,CourtlyGown,CourtlyCuffs,CourtlyHem",
+  "rows_added": ["CourtlyHeaddress", "CourtlyGown", "CourtlyCuffs", "CourtlyHem"],
+  "intent": "A baroque court gown in deep wine brocade with bone lace, black bows and dull gilt, reading from the high camera as a fitted waist, a lace-collared head under a wide black hair bow, and a full flared bell skirt with a pale petticoat edge.",
+  "renders": [
+    ".swarm/out/armour-set-final.png",
+    ".swarm/out/armour-set-close-final.png",
+    ".swarm/out/armour-set-fit-final.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A shared deep-wine brocade colour in Kit.colors so all four gown looks keep one palette without local colour tables.",
+    "A lace or ivory trim material that reads finer than flat bone colour; the lace ruffles are silhouette only."
+  ]
+}

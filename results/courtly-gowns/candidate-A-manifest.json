@@ -1,0 +1,12 @@
+{
+  "skill": "Courtly",
+  "look": "CourtlyHeaddress,CourtlyGown,CourtlyCuffs,CourtlyHem",
+  "rows_added": ["CourtlyHeaddress", "CourtlyGown", "CourtlyCuffs", "CourtlyHem"],
+  "intent": "A Victorian mourning gown in black wool and slate trimmed with bone lace: a veiled broad-brimmed hat with a big bow, a high-necked bodice over a bustled waist and a wide tiered bell skirt, which reads from the high camera as a black bell under a hat, edged with pale collar, cuffs and petticoat.",
+  "renders": [".swarm/out/armour-set-r3.png", ".swarm/out/armour-set-close-r3.png", ".swarm/out/armour-set-fit-r3.png"],
+  "revisions": 2,
+  "requests": [
+    "A translucent net or lace material for the veil, so the face reads through it instead of a solid black box.",
+    "A tapered cone shape for a smooth bell skirt; boxes can only step the flare."
+  ]
+}
