@@ -1,0 +1,17 @@
+{
+  "skill": "Classic",
+  "look": "ClassicHeaddress,ClassicDress,ClassicSleeves,ClassicHem",
+  "rows_added": ["ClassicHeaddress", "ClassicDress", "ClassicSleeves", "ClassicHem"],
+  "intent": "A Victorian clockwork gothic-lolita gown for the classic blocky body: a deep black bodice and full tiered bell skirt trimmed in deep crimson and soft bone lace, with a clock-face waist bow, a brass key at the hip and a crowned bow with a tiny clock, which from the high camera reads as a narrow black top over a wide red-banded bell.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A pale cream lace that stays bright inside the bible's trim value limit; soft bone is the brightest cloth available and still reads grey at night.",
+    "A chain or cord part for a hanging pocket watch; with only boxes, cylinders, wedges and balls the hip key hangs from a flat ribbon.",
+    "A black cloth that stays deep while still separating from another black piece; the skirt tiers use a lighter charcoal so the black bell sleeves read against them."
+  ]
+}

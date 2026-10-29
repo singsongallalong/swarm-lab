@@ -1,0 +1,16 @@
+{
+  "skill": "Classic",
+  "look": "ClassicHeaddress,ClassicDress,ClassicSleeves,ClassicHem",
+  "rows_added": ["ClassicHeaddress", "ClassicDress", "ClassicSleeves", "ClassicHem"],
+  "intent": "An old-catalogue gothic lolita gown: a black bodice laced in crimson with a big crimson bow at the back waist and a full tiered skirt edged in cream lace, which reads from the high camera as a narrow black top over a wide crimson-banded bell, crowned by a crimson lace band and side bow with a tiny brass clock.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A pale bone lace that stays warm under the silver-blue ambient: the cream reads cool and greyish at the night camera.",
+    "A gold or brass that catches the moon without specular light, for the clock and its rim."
+  ]
+}

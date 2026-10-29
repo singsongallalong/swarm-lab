@@ -1,0 +1,15 @@
+{
+  "skill": "Classic",
+  "look": "ClassicHeaddress,ClassicDress,ClassicSleeves,ClassicHem",
+  "rows_added": ["ClassicHeaddress", "ClassicDress", "ClassicSleeves", "ClassicHem"],
+  "intent": "A mourning gothic-lolita court gown for the classic blocky body, in deep black with blood crimson and bone lace: from the high camera a bowed, clock-pinned headdress and short black veil sit on a narrow-shouldered, red-banded bodice over a tiered black bell skirt to the ankles.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A translucent cloth material for the mourning veil; Fabric makes it a solid black panel."
+  ]
+}

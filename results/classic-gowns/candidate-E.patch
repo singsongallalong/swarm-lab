@@ -1,0 +1,344 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..a119d27 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -7,6 +7,10 @@ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+ local Chainmail = require("./armourLooks/Chainmail")
++local ClassicDress = require("./armourLooks/ClassicDress")
++local ClassicHeaddress = require("./armourLooks/ClassicHeaddress")
++local ClassicHem = require("./armourLooks/ClassicHem")
++local ClassicSleeves = require("./armourLooks/ClassicSleeves")
+ local EmberTalisman = require("./armourLooks/EmberTalisman")
+ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+@@ -36,6 +40,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
+ 	Chainmail = Chainmail,
++	ClassicDress = ClassicDress,
++	ClassicHeaddress = ClassicHeaddress,
++	ClassicHem = ClassicHem,
++	ClassicSleeves = ClassicSleeves,
+ 	EmberTalisman = EmberTalisman,
+ 	FenscaleGrips = FenscaleGrips,
+ 	FenscaleHood = FenscaleHood,
+diff --git a/src/shared/data/armourLooks/ClassicDress.luau b/src/shared/data/armourLooks/ClassicDress.luau
+new file mode 100644
+index 0000000..164779a
+--- /dev/null
++++ b/src/shared/data/armourLooks/ClassicDress.luau
+@@ -0,0 +1,135 @@
++--!strict
++-- The stitched doll's dress (the ClassicDress look): a black bodice laced in
++-- crimson under a bone lace collar, with a small lopsided bow at the throat
++-- and a big one at each side of the waist; the full black overskirt hangs from
++-- the thighs in mismatched panels, trimmed with a thin crimson stripe, sewn
++-- with big bone cross-stitches and patched with a bone heart.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	black = { 26, 23, 28 },
++	blackPatch = { 34, 29, 33 },
++	blackWarm = { 31, 26, 26 },
++	crimson = { 102, 38, 42 },
++	crimsonDeep = { 86, 32, 37 },
++	cream = { 188, 176, 150 },
++	creamDull = { 170, 158, 136 },
++}
++
++-- How far the overskirt runs down each thigh from just above its top. It stops
++-- a little above the knee, where the Boots look's tiers carry it on down.
++local SKIRT_TOP = 0.7
++local SKIRT_LENGTH = 1.2
++local SKIRT_MID = SKIRT_TOP - SKIRT_LENGTH / 2
++
++-- A heart's lobe: a squashed ball sewn flat against a skirt panel.
++local function ball(
++	on: ArmourLookTypes.BodyPart,
++	size: { number },
++	at: { number },
++	material: string,
++	color: { number },
++	side: ArmourLookTypes.Side?
++): ArmourLookTypes.ArmourPart
++	return { on = on, side = side, shape = "Ball", size = size, at = at, material = material, color = color }
++end
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ClassicDress",
++	slot = "Chest",
++	parts = Kit.join({
++		{
++			-- The bodice, a patch sewn over the left front with bone stitches.
++			Kit.box("UpperTorso", { 2.06, 1.64, 1.06 }, { 0, 0, 0 }, "Fabric", c.black),
++			Kit.box("UpperTorso", { 0.62, 0.64, 0.05 }, { -0.52, 0.28, -0.55 }, "Fabric", c.blackPatch, { 0, 0, -3 }),
++			Kit.box("UpperTorso", { 0.06, 0.18, 0.04 }, { -0.52, 0.28, -0.585 }, "Fabric", c.cream, { 0, 0, 40 }),
++			Kit.box("UpperTorso", { 0.06, 0.18, 0.04 }, { -0.52, 0.28, -0.585 }, "Fabric", c.cream, { 0, 0, -40 }),
++			-- A bone lace collar round the neck.
++			Kit.box("UpperTorso", { 1.5, 0.14, 1.3 }, { 0, 0.78, 0 }, "Fabric", c.cream),
++			-- The small crimson bow at the throat, its left loop lower.
++			Kit.box("UpperTorso", { 0.18, 0.16, 0.14 }, { 0, 0.6, -0.66 }, "Fabric", c.crimson),
++			Kit.box("UpperTorso", { 0.3, 0.22, 0.1 }, { -0.22, 0.64, -0.66 }, "Fabric", c.crimsonDeep, { 0, 0, 16 }),
++			Kit.box("UpperTorso", { 0.34, 0.24, 0.1 }, { 0.24, 0.65, -0.66 }, "Fabric", c.crimson, { 0, 0, -12 }),
++			Kit.box("UpperTorso", { 0.12, 0.32, 0.08 }, { 0.18, 0.46, -0.6 }, "Fabric", c.crimsonDeep, { 0, 0, 6 }),
++			-- The crimson lacing: two eyelet strips and two crossed pairs.
++			Kit.box("UpperTorso", { 0.05, 1.16, 0.05 }, { -0.12, 0, -0.552 }, "Fabric", c.crimsonDeep),
++			Kit.box("UpperTorso", { 0.05, 1.16, 0.05 }, { 0.12, 0, -0.552 }, "Fabric", c.crimsonDeep),
++			Kit.box("UpperTorso", { 0.06, 0.4, 0.06 }, { 0, 0.24, -0.555 }, "Fabric", c.crimson, { 0, 0, 32 }),
++			Kit.box("UpperTorso", { 0.06, 0.4, 0.06 }, { 0, 0.24, -0.555 }, "Fabric", c.crimson, { 0, 0, -32 }),
++			Kit.box("UpperTorso", { 0.06, 0.4, 0.06 }, { 0, -0.24, -0.555 }, "Fabric", c.crimson, { 0, 0, 32 }),
++			Kit.box("UpperTorso", { 0.06, 0.4, 0.06 }, { 0, -0.24, -0.555 }, "Fabric", c.crimson, { 0, 0, -32 }),
++			-- The waist: black band, a proud crimson sash, a dipping bodice point.
++			Kit.box("LowerTorso", { 2.06, 0.4, 1.06 }, { 0, 0, 0 }, "Fabric", c.black),
++			Kit.box("LowerTorso", { 2.12, 0.2, 1.3 }, { 0, 0.04, 0 }, "Fabric", c.crimson),
++			Kit.box("LowerTorso", { 0.34, 0.34, 0.07 }, { 0, 0.1, -0.675 }, "Fabric", c.black, { 0, 0, 45 }),
++			-- The front waist bow, lopsided, its tails hung from the right thigh.
++			Kit.box("LowerTorso", { 0.24, 0.24, 0.18 }, { 0, 0.06, -0.7 }, "Fabric", c.crimson),
++			Kit.box("LowerTorso", { 0.4, 0.28, 0.14 }, { -0.32, 0.12, -0.69 }, "Fabric", c.crimsonDeep, { 0, 0, 16 }),
++			Kit.box("LowerTorso", { 0.48, 0.32, 0.14 }, { 0.36, 0.17, -0.69 }, "Fabric", c.crimson, { 0, 0, -13 }),
++			Kit.box(
++				"UpperLeg",
++				{ 0.16, 0.8, 0.08 },
++				{ 0.2, 0.34, -0.62 },
++				"Fabric",
++				c.crimsonDeep,
++				{ 0, 0, 6 },
++				"Right"
++			),
++			Kit.box("UpperLeg", { 0.13, 0.62, 0.08 }, { 0.02, 0.42, -0.6 }, "Fabric", c.crimson, { 0, 0, -4 }, "Right"),
++			-- The back waist bow, bigger and lopsided the other way, its tail
++			-- hung down both back panels so it swings with the legs.
++			Kit.box("LowerTorso", { 0.2, 0.22, 0.16 }, { 0, 0.06, 0.68 }, "Fabric", c.crimson),
++			Kit.box("LowerTorso", { 0.42, 0.3, 0.12 }, { -0.33, 0.13, 0.66 }, "Fabric", c.crimsonDeep, { 0, 0, -14 }),
++			Kit.box("LowerTorso", { 0.5, 0.34, 0.12 }, { 0.35, 0.18, 0.66 }, "Fabric", c.crimson, { 0, 0, 12 }),
++			Kit.box("UpperLeg", { 0.16, 0.9, 0.08 }, { 0.12, 0.3, 0.62 }, "Fabric", c.crimsonDeep, { 0, 0, -5 }),
++			-- The upper sleeves stay close to the arm; the right one is patched.
++			Kit.box("UpperArm", { 1.22, 1.2, 1.22 }, { 0, 0, 0 }, "Fabric", c.black),
++			Kit.box("UpperArm", { 0.44, 0.44, 0.05 }, { 0.18, 0.08, -0.625 }, "Fabric", c.blackWarm, nil, "Right"),
++			-- The overskirt: three mismatched panels and the thin crimson stripe.
++			Kit.box(
++				"UpperLeg",
++				{ 1.5, SKIRT_LENGTH, 0.09 },
++				{ 0.28, SKIRT_MID, -0.56 },
++				"Fabric",
++				c.black,
++				{ 4, 0, 0 }
++			),
++			Kit.box(
++				"UpperLeg",
++				{ 1.5, SKIRT_LENGTH, 0.09 },
++				{ 0.28, SKIRT_MID, 0.56 },
++				"Fabric",
++				c.blackWarm,
++				{ -4, 0, 0 }
++			),
++			Kit.box(
++				"UpperLeg",
++				{ 0.09, SKIRT_LENGTH, 1.04 },
++				{ 0.75, SKIRT_MID, 0 },
++				"Fabric",
++				c.blackPatch,
++				{ 0, 0, -4 }
++			),
++			Kit.box("UpperLeg", { 1.62, 0.1, 1.32 }, { 0.28, -0.37, 0 }, "Fabric", c.crimson),
++			-- Big bone cross-stitches down the front seam.
++			Kit.box("UpperLeg", { 0.06, 0.28, 0.09 }, { -0.3, -0.1, -0.63 }, "Fabric", c.cream, { 4, 0, 40 }),
++			Kit.box("UpperLeg", { 0.06, 0.28, 0.09 }, { -0.3, -0.1, -0.63 }, "Fabric", c.cream, { 4, 0, -40 }),
++			-- A bone heart patch sewn on the right thigh's panel: two round
++			-- lobes and a diamond point.
++			ball("UpperLeg", { 0.28, 0.24, 0.08 }, { 0.6, 0.15, -0.62 }, "Fabric", c.creamDull, "Right"),
++			ball("UpperLeg", { 0.28, 0.24, 0.08 }, { 0.8, 0.15, -0.62 }, "Fabric", c.creamDull, "Right"),
++			Kit.box(
++				"UpperLeg",
++				{ 0.28, 0.28, 0.08 },
++				{ 0.7, 0.01, -0.62 },
++				"Fabric",
++				c.creamDull,
++				{ 0, 0, 45 },
++				"Right"
++			),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ClassicHeaddress.luau b/src/shared/data/armourLooks/ClassicHeaddress.luau
+new file mode 100644
+index 0000000..6e511fc
+--- /dev/null
++++ b/src/shared/data/armourLooks/ClassicHeaddress.luau
+@@ -0,0 +1,68 @@
++--!strict
++-- The stitched doll's headdress (the ClassicHeaddress look): a crimson lace
++-- ribbon laid across the crown and down to the hairline with bone lace at its
++-- edges, a big bow cocked to the right of the head and its two tails down the
++-- back, a tiny brass clock pinned to the band, and one bone cross-stitch where
++-- the ribbon was patched.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	crimson = { 102, 38, 42 },
++	crimsonDeep = { 86, 32, 37 },
++	cream = { 188, 176, 150 },
++	black = { 26, 23, 28 },
++	brass = { 128, 104, 68 },
++	clockFace = { 205, 196, 172 },
++}
++
++-- A round clock face, its own Y run along the head's front.
++local function disc(
++	on: ArmourLookTypes.BodyPart,
++	size: { number },
++	at: { number },
++	material: string,
++	color: { number },
++	turn: { number }
++): ArmourLookTypes.ArmourPart
++	return {
++		on = on,
++		shape = "Cylinder",
++		size = size,
++		at = at,
++		turn = turn,
++		material = material,
++		color = color,
++	}
++end
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ClassicHeaddress",
++	slot = "Helm",
++	parts = {
++		-- A ribbon over the front of the crown, bone lace along both long edges.
++		Kit.box("Head", { 1.36, 0.18, 0.6 }, { 0, 0.54, -0.28 }, "Fabric", c.crimson),
++		Kit.box("Head", { 1.38, 0.06, 0.08 }, { 0, 0.45, -0.56 }, "Fabric", c.cream),
++		Kit.box("Head", { 1.38, 0.06, 0.08 }, { 0, 0.45, 0 }, "Fabric", c.cream),
++		-- The band comes down to the hairline, a bone lace edge under it.
++		Kit.box("Head", { 1.34, 0.24, 0.1 }, { 0, 0.34, -0.63 }, "Fabric", c.crimsonDeep),
++		Kit.box("Head", { 1.36, 0.06, 0.1 }, { 0, 0.2, -0.64 }, "Fabric", c.cream),
++		-- The bow, cocked to the right and lopsided: the outer loop bigger and
++		-- higher than the inner one.
++		Kit.box("Head", { 0.18, 0.2, 0.16 }, { 0.52, 0.66, 0.02 }, "Fabric", c.crimson),
++		Kit.box("Head", { 0.34, 0.26, 0.13 }, { 0.28, 0.68, 0 }, "Fabric", c.crimsonDeep, { 0, 30, 12 }),
++		Kit.box("Head", { 0.52, 0.3, 0.13 }, { 0.84, 0.74, 0 }, "Fabric", c.crimson, { 0, -32, -8 }),
++		-- Its two tails down the back of the head.
++		Kit.box("Head", { 0.12, 0.44, 0.07 }, { 0.66, 0.42, 0.65 }, "Fabric", c.crimsonDeep, { -10, 0, 8 }),
++		Kit.box("Head", { 0.1, 0.34, 0.07 }, { 0.44, 0.48, 0.66 }, "Fabric", c.crimson, { -8, 0, -10 }),
++		-- The tiny clock pinned to the front of the band.
++		disc("Head", { 0.28, 0.1, 0.28 }, { -0.28, 0.34, -0.72 }, "Metal", c.brass, { 90, 0, 0 }),
++		disc("Head", { 0.18, 0.04, 0.18 }, { -0.28, 0.34, -0.78 }, "Metal", c.clockFace, { 90, 0, 0 }),
++		Kit.box("Head", { 0.02, 0.1, 0.03 }, { -0.28, 0.36, -0.812 }, "Metal", c.black, { 0, 0, 30 }),
++		-- A bone cross-stitch where the band was pieced.
++		Kit.box("Head", { 0.06, 0.16, 0.04 }, { 0.02, 0.34, -0.69 }, "Fabric", c.cream, { 0, 0, 40 }),
++		Kit.box("Head", { 0.06, 0.16, 0.04 }, { 0.02, 0.34, -0.69 }, "Fabric", c.cream, { 0, 0, -40 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ClassicHem.luau b/src/shared/data/armourLooks/ClassicHem.luau
+new file mode 100644
+index 0000000..07db673
+--- /dev/null
++++ b/src/shared/data/armourLooks/ClassicHem.luau
+@@ -0,0 +1,42 @@
++--!strict
++-- The stitched doll's hem (the ClassicHem look): the skirt carried on down
++-- each shin to just below the knee — a bone petticoat edge under the black
++-- overskirt, a crimson tier and a deeper mismatched ruffle, one patched panel
++-- with bone cross-stitch — then long dark stockings, pale ruffles at the
++-- ankles, and black shoes with crimson straps.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	blackPatch = { 34, 29, 33 },
++	crimson = { 102, 38, 42 },
++	crimsonDeep = { 86, 32, 37 },
++	cream = { 188, 176, 150 },
++	creamDull = { 170, 158, 136 },
++	stocking = { 40, 37, 44 },
++	shoe = { 20, 18, 22 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ClassicHem",
++	slot = "Boots",
++	parts = {
++		-- The tiers, each a little wider and set a little further out.
++		Kit.box("LowerLeg", { 1.5, 0.24, 1.08 }, { 0.28, 0.6, 0 }, "Fabric", c.cream),
++		Kit.box("LowerLeg", { 1.64, 0.22, 1.14 }, { 0.33, 0.39, 0 }, "Fabric", c.crimson),
++		Kit.box("LowerLeg", { 1.78, 0.12, 1.22 }, { 0.4, 0.24, 0 }, "Fabric", c.crimsonDeep),
++		-- A patched panel and bone cross-stitch on the right tier.
++		Kit.box("LowerLeg", { 0.5, 0.22, 0.1 }, { 0.34, 0.39, -0.61 }, "Fabric", c.blackPatch, nil, "Right"),
++		Kit.box("LowerLeg", { 0.06, 0.22, 0.05 }, { 0.34, 0.39, -0.665 }, "Fabric", c.cream, { 0, 0, 40 }, "Right"),
++		Kit.box("LowerLeg", { 0.06, 0.22, 0.05 }, { 0.34, 0.39, -0.665 }, "Fabric", c.cream, { 0, 0, -40 }, "Right"),
++		-- The long dark stocking, then the pale ruffles at the ankles.
++		Kit.box("LowerLeg", { 1.04, 0.78, 1.04 }, { 0.02, -0.19, 0 }, "Fabric", c.stocking),
++		Kit.box("LowerLeg", { 1.16, 0.14, 1.16 }, { 0.08, -0.5, 0 }, "Fabric", c.cream),
++		Kit.box("LowerLeg", { 1.24, 0.14, 1.24 }, { 0.12, -0.57, 0 }, "Fabric", c.creamDull),
++		-- The shoe: a chunky dark shoe with a crimson strap over the instep.
++		Kit.box("Foot", { 1.06, 0.44, 1.3 }, { 0.03, 0, -0.14 }, "Leather", c.shoe),
++		Kit.box("Foot", { 1.14, 0.1, 0.22 }, { 0.03, 0.22, -0.32 }, "Fabric", c.crimson),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ClassicSleeves.luau b/src/shared/data/armourLooks/ClassicSleeves.luau
+new file mode 100644
+index 0000000..bbad771
+--- /dev/null
++++ b/src/shared/data/armourLooks/ClassicSleeves.luau
+@@ -0,0 +1,34 @@
++--!strict
++-- The stitched doll's sleeves (the ClassicSleeves look): black bell sleeves
++-- that flare from the elbow in a mismatched second panel to a bone lace rim
++-- and a crimson lining hanging past the wrist, with crimson gloves buttoned
++-- under a bone lace wrist band.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	black = { 26, 23, 28 },
++	blackPatch = { 34, 29, 33 },
++	crimson = { 102, 38, 42 },
++	crimsonDeep = { 86, 32, 37 },
++	cream = { 188, 176, 150 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ClassicSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The bell: a crimson seam at the elbow, then widening black cloth.
++		Kit.box("LowerArm", { 1.3, 0.16, 1.3 }, { 0, 0.52, 0 }, "Fabric", c.crimsonDeep),
++		Kit.box("LowerArm", { 1.36, 0.4, 1.36 }, { 0, 0.24, 0 }, "Fabric", c.black),
++		Kit.box("LowerArm", { 1.7, 0.42, 1.7 }, { 0, -0.16, 0 }, "Fabric", c.blackPatch),
++		-- A bone lace rim, then the crimson lining hanging past the wrist.
++		Kit.box("LowerArm", { 1.8, 0.14, 1.8 }, { 0, -0.43, 0 }, "Fabric", c.cream),
++		Kit.box("LowerArm", { 1.74, 0.16, 1.74 }, { 0, -0.55, 0 }, "Fabric", c.crimsonDeep),
++		-- The crimson glove and the bone lace band buttoning its wrist.
++		Kit.box("Hand", { 1.36, 0.44, 1.36 }, { 0, 0, 0 }, "Fabric", c.crimson),
++		Kit.box("Hand", { 1.42, 0.1, 1.42 }, { 0, 0.08, 0 }, "Fabric", c.cream),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..1831ee9 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:ClassicHeaddress"] = row("A crimson lace crown ribbon with a lopsided bow and a tiny pinned clock."),
++	["armour:ClassicDress"] = row("A black laced doll's bodice and full tiered skirt, patched and cross-stitched."),
++	["armour:ClassicSleeves"] = row("Black bell sleeves with bone lace cuffs and crimson doll gloves."),
++	["armour:ClassicHem"] = row("A crimson skirt hem over dark stockings, with pale ankle ruffles and black shoes."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

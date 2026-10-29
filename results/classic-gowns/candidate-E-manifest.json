@@ -1,0 +1,16 @@
+{
+  "skill": "Classic",
+  "look": "ClassicHeaddress,ClassicDress,ClassicSleeves,ClassicHem",
+  "rows_added": ["ClassicHeaddress", "ClassicDress", "ClassicSleeves", "ClassicHem"],
+  "intent": "A stitched-doll gothic lolita gown of deep black with blood-crimson bows, bone lace and cross-stitched patches, cut for the blocky toy body so it reads from the high camera as a narrow laced bodice over a full tiered skirt, with hanging bell sleeves and a lopsided crown bow.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A scalloped or pointed lace edge piece: with only boxes, wedges, cylinders and balls, the bone lace can only read as a straight band.",
+    "A tapered skirt panel: the bell flare has to be stepped from stacked boxes, so the overskirt is chunkier than a sewn cloth tier."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "skill": "Classic",
+  "look": "ClassicHeaddress,ClassicDress,ClassicSleeves,ClassicHem",
+  "rows_added": ["ClassicHeaddress", "ClassicDress", "ClassicSleeves", "ClassicHem"],
+  "intent": "A classic-catalog gothic lolita gown with the colours inverted: a deep crimson bodice laced in black and a bell-sleeved, tiered crimson skirt trimmed in black lace and bone, with black bows and a clock-pinned headdress, reading from the high camera as a narrow-shouldered crimson bell under a bowed head.",
+  "renders": [
+    ".swarm/out/armour-set-final.png",
+    ".swarm/out/armour-set-close-final.png",
+    ".swarm/out/armour-set-fit-final.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A cone or tapered cylinder shape, so a full skirt can flare smoothly in one part instead of stacked round drums."
+  ]
+}
