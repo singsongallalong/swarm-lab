@@ -1,0 +1,118 @@
+# The zones job: a new area's whole look as data, judged offline before it has a map.
+# A generator writes a new outdoor tileset (derived from Field or Moor, as Field2 derives
+# from Field), the props it needs as sculpt rows, a theme and an environment set piece
+# (its signature effect), and catalog rows. dresspreview's tileset= dresses the moor's
+# layouts in it, so the look is judged on real layouts. Lighting presets aren't table
+# rows and no offline render shows lighting, so a tileset picks an existing preset; a
+# new preset, placing the set piece on a map, and a field or map of its own are later,
+# human-planned work (arpg-game docs/guides/adding-areas.md).
+
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+# Five files, three data tables, two catalogs, seven renders and revisions.
+max_turns = 100
+
+# Helpers copied into each worktree's .swarm/tools/: explain runs a spec and prints what a
+# failing check found, where the game's runner only says "expected tables to be deeply equal".
+tools = ["tools/explain.luau"]
+
+rules = [
+  "docs/guides/adding-areas.md",
+  "docs/guides/set-pieces.md",
+  "docs/art/bible.md",
+]
+
+[files."src/shared/data/outdoorTilesets/{skill}.luau"]
+mode = "new_file"
+
+[files."src/shared/data/OutdoorTilesets.luau"]
+mode = "add_lines"
+# Its require line, and its entry in the table under its lowercase key.
+pattern = '(local {skill} = require\("\./outdoorTilesets/{skill}"\)|{skill_lower} = {skill},)'
+
+[files."src/shared/data/Sculpts.luau"]
+mode = "add_rows"
+prefix = "{skill_lower}_"
+
+[files."src/shared/data/EnvThemes.luau"]
+mode = "add_rows"
+prefix = "{skill_lower}"
+
+[files."src/shared/data/SetPieces.luau"]
+mode = "add_rows"
+prefix = "{skill_lower}_"
+
+[files."src/shared/data/catalog/World.luau"]
+mode = "add_lines"
+# Catalog rows for its sculpts and its tileset: on one line, or as the formatter wraps a
+# long one (`["sculpt:x"] = row(`, the quoted description, `MOOR`, `),`).
+pattern = '(\["(sculpt:{skill_lower}_\w+|outdoor:{skill_lower})"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),)?|"[^"]{1,160}",|(MOOR|TOWN)|\),)'
+
+# The tileset file is data: strict, and requiring only what a derived tileset needs.
+[purity]
+first_line = "--!strict"
+max_lines = 300
+requires = ["./Field", "./Moor", "../LightingPresets", "../../OutdoorTypes", "../Sculpts"]
+forbid = [
+  '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
+  '\btask\.', '\bwait\s*\(', '\bspawn\s*\(', '\bdelay\s*\(', '\bcoroutine\.',
+  '\bos\.', '\bdebug\.', '\bgetfenv\b', '\bsetfenv\b', '\bloadstring\b', '\b_G\b', '\bshared\b',
+  '\bwhile\b', '\brepeat\b',
+]
+
+[quotes.example_tileset]
+file = "src/shared/data/outdoorTilesets/Field2.luau"
+note = "the Ashfields' tileset, derived from Field's: copy its shape (the with() helper, cloned props, edges, ground, mist)"
+
+[quotes.types]
+file = "src/shared/OutdoorTypes.luau"
+note = "what a tileset is"
+
+[quotes.sculpt_types]
+file = "src/shared/SculptTypes.luau"
+note = "what a sculpt recipe is: the kinds are fixed code, a recipe picks one and its size, colours and options"
+
+[quotes.setpiece_types]
+file = "src/shared/SetPieceTypes.luau"
+note = "what a set piece and a theme are"
+
+[quotes.themes]
+file = "src/shared/data/EnvThemes.luau"
+note = "the themes: a new one goes in this table. Its kit may only name textures already in this file (no new uploads)"
+
+[quotes.setpieces]
+file = "src/shared/data/SetPieces.luau"
+note = "the set piece recipes: a new one goes in the `recipes` table"
+
+[quotes.registry]
+file = "src/shared/data/OutdoorTilesets.luau"
+note = "the registry: add a require line and an entry for your tileset"
+
+[[specs]]
+name = "OutdoorTilesets"
+cmd = "lune run tests OutdoorTilesets"
+
+[[specs]]
+name = "Sculpt"
+cmd = "lune run tests Sculpt"
+
+[[specs]]
+name = "SetPiece"
+cmd = "lune run tests SetPiece"
+
+[[specs]]
+name = "Catalog"
+cmd = "lune run tests Catalog"
+
+[[specs]]
+name = "ContentCompleteness"
+cmd = "lune run tests ContentCompleteness"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/data/outdoorTilesets src/shared/data/OutdoorTilesets.luau src/shared/data/Sculpts.luau src/shared/data/EnvThemes.luau src/shared/data/SetPieces.luau src/shared/data/catalog/World.luau"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/data/outdoorTilesets src/shared/data/OutdoorTilesets.luau src/shared/data/Sculpts.luau src/shared/data/EnvThemes.luau src/shared/data/SetPieces.luau src/shared/data/catalog/World.luau"

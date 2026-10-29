@@ -61,6 +61,13 @@ def main() -> None:
     expect("registry: existing line changed", check_rows("r", "add_lines", reg, added.replace("ShardBloom = ", "Shard = "), "ColdSnap", pattern), "changed or removed")
     expect("registry: existing line removed", check_rows("r", "add_lines", reg, 'local K = {\n\tColdSnapSpiral = require("./drafted/ColdSnapSpiral"),\n}\n', "ColdSnap", pattern), "changed or removed")
 
+    # Snake_case data: a rule's prefix with {skill_lower} names rows moonwell_...
+    sc = "local S = {\n\tash_stump = {\n\t\tkind = \"tree\",\n\t},\n}\n"
+    sc2 = sc.replace("\n}\n", "\n\tmoonwell_arch = {\n\t\tkind = \"arch\",\n\t},\n}\n")
+    expect("prefixed row with the lowercase name", check_rows("s", "add_rows", sc, sc2, "Moonwell", None, "{skill_lower}_"), None)
+    expect("row without the prefix", check_rows("s", "add_rows", sc, sc2.replace("moonwell_arch", "arch"), "Moonwell", None, "{skill_lower}_"), "doesn't start with moonwell_")
+    expect("lowercase pattern in add_lines", check_rows("r", "add_lines", "x\n", "x\nmoonwell = Moonwell,\n", "Moonwell", r"{skill_lower} = {skill},"), None)
+
     j = config.job(config.target("arpg-game"), "kinds")
     expect("glob rule matches the skill's module", j.rule(f, "ColdSnap") and "matched", "matched")
     expect("glob rule refuses another skill's module", j.rule("src/shared/systems/drafted/SleetX.luau", "ColdSnap"), None)

@@ -126,7 +126,8 @@ class Job:
         if path in self.files:
             return self.files[path]
         for key, spec in self.files.items():
-            if any(c in key for c in "*?[") and fnmatch.fnmatchcase(path, key.replace("{skill}", skill)):
+            pat = key.replace("{skill_lower}", skill.lower()).replace("{skill}", skill)
+            if path == pat or (any(c in key for c in "*?[") and fnmatch.fnmatchcase(path, pat)):
                 return spec
         return None
 

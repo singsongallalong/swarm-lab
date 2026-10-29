@@ -16,7 +16,7 @@ from .config import Figure, Job
 
 MODES = {
     "owned_row": "only the `{skill}` row may change, or be added if missing",
-    "add_rows": "add new rows only; every existing row stays exactly as it is",
+    "add_rows": "add new rows only, each named starting with `{prefix}`; every existing row stays exactly as it is",
     "new_file": "a new file of your own (its name must match this pattern); never an existing one",
     "add_lines": "add lines only, each one an entry for your own module; change nothing else",
 }
@@ -28,6 +28,25 @@ def _rgb(c) -> str:
 
 def _block(lang: str, text: str) -> str:
     return f"```{lang}\n{text.rstrip()}\n```"
+
+
+def _fill(template: str, skill: str) -> str:
+    return template.replace("{skill_lower}", skill.lower()).replace("{skill}", skill)
+
+
+# Placeholders a family's render commands may use, each filled from the manifest's
+# field of that name (<YourLook> from `look`, as ever).
+PLACEHOLDERS = {"<YourLook>": "look", "<Tileset>": "tileset", "<SetPiece>": "setpiece", "<Sculpts>": "sculpts"}
+
+
+def fill_placeholders(cmd: str, manifest: dict) -> str:
+    for ph, key in PLACEHOLDERS.items():
+        if ph in cmd:
+            val = manifest.get(key)
+            if isinstance(val, list):
+                val = ",".join(val)
+            cmd = cmd.replace(ph, str(val or ""))
+    return cmd
 
 
 def render_commands(brief: dict) -> tuple[str, str]:
@@ -42,6 +61,24 @@ def render_commands(brief: dict) -> tuple[str, str]:
             "lune run scripts/armourpreview <YourLook> .swarm/out/armour-set-r1.png",
             "lune run scripts/armourpreview <YourLook> .swarm/out/armour-set-close-r1.png close",
             "lune run scripts/armourpreview <YourLook> .swarm/out/armour-set-fit-r1.png fit",
+        ]
+        return "\n".join(ref), "\n".join(mine)
+    if brief["family"] == "zone":
+        # A whole area's look: its tileset dressing the moor's layouts (dresspreview's
+        # tileset=), its pieces, its props and its set piece. The reference is the
+        # Ashfields, the newest area, in the same views.
+        ref = [
+            "lune run scripts/dresspreview whole .swarm/out/ref-whole-field2.png 1 1 tileset=field2",
+            "lune run scripts/dresspreview pool .swarm/out/ref-pool-field2.png 2 1 tileset=field2",
+        ]
+        mine = [
+            "lune run scripts/dresspreview whole .swarm/out/zone-whole-r1.png 1 1 tileset=<Tileset>",
+            "lune run scripts/dresspreview pool .swarm/out/zone-pool-r1.png 2 1 tileset=<Tileset>",
+            "lune run scripts/dresspreview ruin .swarm/out/zone-ruin-r1.png 2 1 tileset=<Tileset>",
+            "lune run scripts/tilesetpreview <Tileset> .swarm/out/zone-tileset-r1.png",
+            "lune run scripts/tilesetpreview <Tileset> .swarm/out/zone-tileset-eye-r1.png eye",
+            "lune run scripts/sculptpreview <Sculpts> .swarm/out/zone-sculpts-r1.png 3",
+            "lune run scripts/setpiecepreview <SetPiece> .swarm/out/zone-setpiece-r1.png",
         ]
         return "\n".join(ref), "\n".join(mine)
     if brief["family"] == "area":
@@ -216,7 +253,8 @@ def build(job: Job, brief: dict, repo: Path, figures: list[Figure] | tuple = ())
     read = lambda rel: (repo / rel).read_text(encoding="utf-8")  # noqa: E731
 
     files = "\n".join(
-        f"   - `{rel.replace('{skill}', skill)}`: {MODES[spec['mode']].format(skill=skill)}" for rel, spec in job.files.items()
+        f"   - `{_fill(rel, skill)}`: {MODES[spec['mode']].format(skill=skill, prefix=_fill(spec.get('prefix', '{skill}'), skill))}"
+        for rel, spec in job.files.items()
     )
 
     current = []
@@ -232,7 +270,11 @@ def build(job: Job, brief: dict, repo: Path, figures: list[Figure] | tuple = ())
                 current.append(f"`{rel}`, row `{name}`:\n\n" + _block("lua", luarows.get(src, name)))
             except KeyError:
                 pass  # not every file holds every name; checked below
-    if not current and any(spec["mode"] in ("owned_row", "add_rows") for spec in job.files.values()):
+    # A row to show is expected when the job owns one, or the brief names a current look;
+    # a job that only adds new rows (zones) has none.
+    wants = any(spec["mode"] == "owned_row" for spec in job.files.values()) or (
+        brief.get("current_look") and any(spec["mode"] == "add_rows" for spec in job.files.values()))
+    if not current and wants:
         raise KeyError(f"none of the job's files has a row for {skill} or its current look")
 
     examples = []
@@ -269,6 +311,7 @@ def build(job: Job, brief: dict, repo: Path, figures: list[Figure] | tuple = ())
     return template.substitute(
         **quotes,
         skill=skill,
+        skill_lower=skill.lower(),
         family=brief["family"],
         brief=brief_text,
         current_look=brief.get("current_look", "none"),

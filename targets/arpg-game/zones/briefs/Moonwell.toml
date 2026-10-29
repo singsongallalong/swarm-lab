@@ -1,0 +1,28 @@
+# The prefix of the tileset file (Moonwell.luau); rows and keys use it in lowercase
+# (moonwell, moonwell_arch, moonwell_wisps).
+skill = "Moonwell"
+family = "zone"
+brief = """
+A drowned glade where an order of moon-priestesses once kept a sacred well, long abandoned.
+Think of the night-elf forests of the old Warcraft games (moonlit glades, a glowing well of
+pale water at the heart of a ring of carved stone, ancient trees leaning over ruined
+shrines), but as this game's own place and in this game's style: no names, symbols or
+shapes from that game.
+
+The area is a quieter, colder, more sacred place than the Ashfields' burning violet waste:
+dark blue-black woods, pale stone gone green-grey with age, still black water, and one
+muted accent hue that belongs to it, the well's cold silver-teal light (desaturated; the
+bible caps it). The well's light is the only cool glow; amber lamps, if any, are the
+priestesses' last few lanterns. The landmark is the moonwell itself, or what guards it:
+from the high camera, a player should see a ring of pale stone round a pool of cold light
+and want to walk to it.
+
+The signature effect is the well's light leaving it: motes or wisps rising off the water,
+a slow coil of light over the stones, or a thin stream of light winding through the
+trees toward the well. It must read from the game camera, so it stays low.
+
+Make: the tileset (`Moonwell.luau`, registered as `moonwell`), the props it needs as
+sculpts (`moonwell_...`: shrines, standing stones, arches, columns, trees, pools; existing
+kinds only), one theme (`moonwell`) and one or two set pieces (`moonwell_...`), and their
+catalog rows. Looks only: no new map, field, monsters or lighting preset.
+"""

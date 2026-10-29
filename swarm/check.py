@@ -69,7 +69,14 @@ def _norm(text: str) -> str:
     return "\n".join(l.rstrip() for l in text.splitlines() if l.strip())
 
 
-def check_rows(rel: str, mode: str, before: str | None, after: str, skill: str, spec_pattern: str | None = None) -> str | None:
+def fill(template: str, skill: str) -> str:
+    """A rule's text with the brief's name filled in: {skill} as written (ColdSnap) and
+    {skill_lower} for data whose names are snake_case (moonwell_ in moonwell_arch)."""
+    return template.replace("{skill_lower}", skill.lower()).replace("{skill}", skill)
+
+
+def check_rows(rel: str, mode: str, before: str | None, after: str, skill: str, spec_pattern: str | None = None,
+               prefix: str | None = None) -> str | None:
     if before is None and mode not in ("new_file",):
         return f"{rel}: is a new file, but this job only lets it be edited"
     if mode == "owned_row":
@@ -84,9 +91,10 @@ def check_rows(rel: str, mode: str, before: str | None, after: str, skill: str, 
             if row.text(before) != new[name].text(after):
                 return f"{rel}: changed the existing row {name}"
         added = set(new) - set(old)
-        bad = sorted(n for n in added if not n.startswith(skill))
+        start = fill(prefix, skill) if prefix else skill
+        bad = sorted(n for n in added if not n.startswith(start))
         if bad:
-            return f"{rel}: new row {bad[0]} doesn't start with {skill}"
+            return f"{rel}: new row {bad[0]} doesn't start with {start}"
         if _norm(before) != _norm(luarows.without(after, added)):
             return f"{rel}: changed text outside its rows"
         return None
@@ -105,7 +113,7 @@ def check_rows(rel: str, mode: str, before: str | None, after: str, skill: str, 
         added = list(new)
         for o in old:
             added.remove(o)
-        pattern = (spec_pattern or "").replace("{skill}", re.escape(skill))
+        pattern = (spec_pattern or "").replace("{skill_lower}", re.escape(skill.lower())).replace("{skill}", re.escape(skill))
         for line in added:
             if pattern and not re.fullmatch(pattern, line.strip()):
                 return f"{rel}: added a line that isn't a {skill} entry: {line.strip()[:80]}"
@@ -181,7 +189,7 @@ def render_final(wt: Path, t: config.Target, meta: dict, manifest: dict) -> tupl
     for cmd in cmds.splitlines():
         if not cmd.strip() or cmd.lstrip().startswith("#"):
             continue
-        cmd = cmd.replace("<YourLook>", manifest["look"]).replace("-r1.png", "-final.png")
+        cmd = pack.fill_placeholders(cmd, manifest).replace("-r1.png", "-final.png")
         r = subprocess.run(cmd, cwd=wt, env=t.env(), shell=True, text=True, capture_output=True, timeout=300)
         if r.returncode != 0:
             return out, f"its look didn't render ({(r.stdout + r.stderr).strip()[-200:]})"
@@ -232,7 +240,7 @@ def check_one(wt: Path, t: config.Target, j: config.Job, meta: dict, gen: dict, 
             return rec
         after = (wt / rel).read_text(encoding="utf-8")
         try:
-            why = check_rows(rel, rule["mode"], before, after, skill, rule.get("pattern"))
+            why = check_rows(rel, rule["mode"], before, after, skill, rule.get("pattern"), rule.get("prefix"))
         except ValueError as e:
             why = f"{rel}: couldn't read its rows ({e})"
         if not why and rule["mode"] == "new_file":

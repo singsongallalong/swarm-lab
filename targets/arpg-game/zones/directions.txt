@@ -1,0 +1,9 @@
+# One direction per generator, assigned in order and repeated past the last line. Each
+# names a different take on the moonwell glade, so the swarm explores six places, not six
+# versions of one. Lines starting with # are ignored.
+The sacred ring: the well at the heart of a ring of tall pale arches and columns, untouched by time but for moss; the woods around dark and orderly, and the effect pale motes rising off the water like breath on a cold night.
+The swallowed temple: the trees have won; roots and leaning trunks crowd the shrines and break the columns, the ruins only half seen through heavy woods, and the effect a thin stream of light threading between the trees toward the well.
+The barrow glade: the priestesses lie in low crypts and standing stones around a well gone almost dry, a field of graves more than a garden; the effect a slow coil of cold light turning over the barrows.
+The drowned glade: the water rose; pools everywhere, the ground half under still black water, causeways of stone between, lanterns long out, and the effect wisps drifting low over the flooded ground.
+The watch of towers: slender ruined towers of the order ring the glade on its rims, each a dead lantern, the well below them; the effect light crackling faintly between the stones of the well's ring.
+The fading well: the well is dying; its light flickers, the stone is cracked and pale with frost, the trees dead and silver, and the effect a weak pulsing glow that swells and fades as if the well still breathes.

@@ -123,7 +123,7 @@ def render_reference(t: config.Target, brief: dict, run_dir: Path, log) -> None:
 
 
 def make_worktree(t: config.Target, run_dir: Path, gid: str, commit: str, pack_text: str, direction: str,
-                  figures: list[config.Figure] | tuple = ()) -> Path:
+                  figures: list[config.Figure] | tuple = (), tools: list[Path] | tuple = ()) -> Path:
     base = run_dir / "base"
     wt = run_dir / "gens" / gid
     if wt.exists():
@@ -145,6 +145,10 @@ def make_worktree(t: config.Target, run_dir: Path, gid: str, commit: str, pack_t
     (sw / "out").mkdir(parents=True, exist_ok=True)
     (sw / "PACK.md").write_text(pack_text)
     (sw / "DIRECTION.md").write_text(pack.direction_file(direction))
+    # A job's own helper tools (job.toml `tools`), for generators to run from .swarm/tools/.
+    for src in tools:
+        (sw / "tools").mkdir(exist_ok=True)
+        shutil.copy2(src, sw / "tools" / src.name)
     for f in figures:
         dst = wt / f.wt_dir()
         dst.mkdir(parents=True, exist_ok=True)
@@ -361,7 +365,7 @@ def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str
     for i, prov in enumerate(plan):
         gid = f"g{i:02d}"
         d = directions[i % len(directions)]
-        make_worktree(t, run_dir, gid, commit, pack_text, d, figs)
+        make_worktree(t, run_dir, gid, commit, pack_text, d, figs, [j.dir / rel for rel in j.data.get("tools", [])])
         gens_meta.append({"gid": gid, "provider": prov, "model": provs[prov].model, "direction": d})
 
     meta = {
