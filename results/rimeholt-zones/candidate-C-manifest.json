@@ -1,0 +1,49 @@
+{
+  "skill": "Rimeholt",
+  "look": "rimeholt",
+  "tileset": "rimeholt",
+  "sculpts": [
+    "rimeholt_ice",
+    "rimeholt_runestones",
+    "rimeholt_barrow",
+    "rimeholt_pine",
+    "rimeholt_pine_snapped",
+    "rimeholt_boulder",
+    "rimeholt_fell_grass",
+    "rimeholt_hillfire",
+    "rimeholt_marker"
+  ],
+  "setpiece": "rimeholt_underice",
+  "rows_added": [
+    "rimeholt_ice",
+    "rimeholt_runestones",
+    "rimeholt_barrow",
+    "rimeholt_pine",
+    "rimeholt_pine_snapped",
+    "rimeholt_boulder",
+    "rimeholt_fell_grass",
+    "rimeholt_hillfire",
+    "rimeholt_marker",
+    "rimeholt",
+    "rimeholt_underice",
+    "rimeholt_drift"
+  ],
+  "intent": "A frozen highland at night: blue-grey snow under a faint moon, black rimed pines and grey granite, hollows filled with sheets of pale ice whose cold light breathes underneath, the hill-folk's runestone rings and great barrows across the heath, and the last amber hill-fires along the road.",
+  "renders": [
+    ".swarm/out/zone-whole-final.png",
+    ".swarm/out/zone-pool-final.png",
+    ".swarm/out/zone-ruin-final.png",
+    ".swarm/out/zone-tileset-final.png",
+    ".swarm/out/zone-tileset-eye-final.png",
+    ".swarm/out/zone-sculpts-final.png",
+    ".swarm/out/zone-setpiece-final.png",
+    ".swarm/out/zone-drift-final.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A barrow or mound sculpt kind: an earthen mound with a stone door, so the great barrow reads as a hill-folk grave rather than a stone vault.",
+    "A pine or conifer tree kind: the tree kind builds bare branches, so the highland's pines read as dead broadleaf trees.",
+    "A way to place a tileset's set piece on the pools system's water, so the under-ice glow can sit on the real lake in a site and not only on the scattered prop tarns.",
+    "A snow-cover or rime overlay for props, so pines, stones and barrows carry their own caps of snow."
+  ]
+}

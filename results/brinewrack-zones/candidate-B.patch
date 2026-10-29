@@ -1,0 +1,613 @@
+diff --git a/src/shared/data/EnvThemes.luau b/src/shared/data/EnvThemes.luau
+index e92d57b..5dfad84 100644
+--- a/src/shared/data/EnvThemes.luau
++++ b/src/shared/data/EnvThemes.luau
+@@ -44,6 +44,27 @@ local themes: { [string]: Theme } = {
+ 			braid = "rbxassetid://99282949776586", -- assets/vfx/worm-braid.png (OpenArt, A19-D15)
+ 		},
+ 	},
++	-- Brinewrack's drowned coast (the direction: green phosphorescence in the
++	-- pools between the wrecks): a cold sea-green glow in the kelp, pale and
++	-- dim, its core green rather than white so the line never reads grey, and
++	-- paler sparks. Quite unlike the Ashfields' violet and the Moonwell's
++	-- silver-teal.
++	brinewrack = {
++		about = "Brinewrack's tide-glow: a cold sea-green phosphorescence, pale as light in kelp.",
++		colors = {
++			-- Not white: the line reads sea-green even where the glow is
++			-- thinnest, and the sparks the palest of it.
++			core = { 120, 238, 184 },
++			glow = { 56, 196, 140 },
++			spray = { 110, 232, 172 },
++			spark = { 200, 255, 226 },
++		},
++		kit = {
++			wisp = "rbxassetid://113245411673535", -- assets/vfx/worm-wisp.png (OpenArt, A19-D15)
++			veil = "rbxassetid://116287069271100", -- assets/vfx/worm-veil.png (OpenArt, A19-D15)
++			ribbon = "rbxassetid://91161104794799", -- assets/vfx/worm-ribbon.png (OpenArt, A19-D15)
++		},
++	},
+ }
+ 
+ return table.freeze(themes)
+diff --git a/src/shared/data/OutdoorTilesets.luau b/src/shared/data/OutdoorTilesets.luau
+index 104cc30..adc1a3e 100644
+--- a/src/shared/data/OutdoorTilesets.luau
++++ b/src/shared/data/OutdoorTilesets.luau
+@@ -1,5 +1,6 @@
+ --!strict
+ -- Every outdoor tileset by name (docs/guides/map-tools.md).
++local Brinewrack = require("./outdoorTilesets/Brinewrack")
+ local Field = require("./outdoorTilesets/Field")
+ local Field2 = require("./outdoorTilesets/Field2")
+ local Moor = require("./outdoorTilesets/Moor")
+@@ -9,6 +10,7 @@ local OutdoorTilesets: { [string]: OutdoorTypes.OutdoorTileset } = {
+ 	moor = Moor,
+ 	field = Field,
+ 	field2 = Field2,
++	brinewrack = Brinewrack,
+ }
+ 
+ return table.freeze(OutdoorTilesets)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index b945ab9..13cc05f 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -433,6 +433,87 @@ local Sculpts: { [string]: Recipe } = {
+ 			{ width = 36, depth = 38, rise = 12, steps = 8 },
+ 		},
+ 	},
++	-- Brinewrack, the drowned coast: the wrack that lines the shingle, the
++	-- bleached ribs of wrecked hulls lying like the ribs of dead beasts,
++	-- grey-brown driftwood, the pale tide-pools, and the dead lighthouse on its
++	-- headland. Its one accent (bible B8) is the cold sea-green of
++	-- phosphorescence in kelp, carried by the sparse last colour of the wrack
++	-- and the marker's rag; every other colour stays inside the trim limits.
++	brinewrack_wrack = {
++		kind = "tuft",
++		size = { 4.2, 2.2, 4.2 },
++		material = "Grass",
++		colors = { { 40, 50, 45 }, { 46, 56, 50 }, { 36, 44, 40 }, { 66, 96, 80 } },
++		maxPrims = 12,
++		blades = 2,
++		body = 0.6,
++		rounded = true,
++		-- Strewn by the hundred along the shingle, so each clump is one union.
++		merge = 12,
++	},
++	-- Silvered planks of driftwood, washed flat and long by the sea, not a
++	-- crate: low, grey-brown, a tangle of a few pieces.
++	brinewrack_driftwood = {
++		kind = "boulder",
++		size = { 7.4, 1.6, 3 },
++		material = "Wood",
++		colors = { { 78, 70, 60 }, { 68, 62, 53 }, { 86, 78, 66 } },
++		maxPrims = 8,
++		chunks = 5,
++		tilt = 10,
++	},
++	brinewrack_wreck_ribs = {
++		kind = "bones",
++		size = { 24, 9, 13 },
++		material = "Wood",
++		colors = { { 100, 96, 86 }, { 92, 89, 80 }, { 84, 82, 74 } },
++		maxPrims = 36,
++		ribs = 5,
++	},
++	brinewrack_wreck_arch = {
++		kind = "arch",
++		size = { 15, 9.5, 3 },
++		material = "Wood",
++		colors = { { 100, 96, 86 }, { 92, 89, 80 }, { 84, 82, 74 } },
++		maxPrims = 12,
++		span = 9,
++		snapped = true,
++	},
++	brinewrack_lighthouse = {
++		kind = "tower",
++		size = { 13, 36, 2.4 },
++		material = "Slate",
++		colors = { { 96, 96, 98 }, { 88, 88, 92 }, { 100, 100, 102 } },
++		maxPrims = 20,
++	},
++	brinewrack_marker = {
++		kind = "marker",
++		size = { 3.4, 7, 1.8 },
++		material = "Slate",
++		colors = { { 80, 84, 86 }, { 72, 76, 80 } },
++		accent = { 70, 100, 86 },
++		maxPrims = 9,
++	},
++	brinewrack_tide_pool = {
++		kind = "pool",
++		size = { 24, 0.1, 24 },
++		material = "Glass",
++		colors = { { 46, 56, 55 }, { 50, 60, 58 } },
++		reflectance = 0.35,
++		maxPrims = 4,
++	},
++	-- A driftwood post, worked and long since silvered, with the game's amber
++	-- lantern hung under its arm (bible B2–B3: warm light, rare).
++	brinewrack_lamppost = {
++		kind = "lamppost",
++		size = { 3, 8, 0.5 },
++		material = "Wood",
++		colors = { { 64, 56, 46 }, { 56, 49, 41 } },
++		maxPrims = 6,
++		reach = 2.2,
++		arm = 7.5,
++		drop = 0.7,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index b2b50eb..653914a 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -420,6 +420,106 @@ local recipes: { [string]: Recipe } = {
+ 			},
+ 		},
+ 	},
++	-- Brinewrack's signature effect (the direction: green phosphorescence in
++	-- the pools between the wrecks): the sea's own light left on the shingle, a
++	-- slow green glow crawling along the tideline in long swells, phosphorescent
++	-- spray drifting up off the wrack, and small cold sparks popping in it. Kept
++	-- low, on the ground, where the game camera can see it (a sky piece is never
++	-- seen in play): the worm wanders the shingle rather than rising. A phone
++	-- draws at most 3 lights and 10 emitters of set pieces, so the lights are
++	-- capped at 2 and the spray's emitters are wide and few.
++	brinewrack_tideglow = {
++		about = "Brinewrack's tide-glow: a slow sea-green glow crawling along the tideline, with phosphorescent spray drifting up off the wrack.",
++		theme = "brinewrack",
++		radius = 180,
++		path = { kind = "worm", length = 140, step = 4, bend = 16, climb = 3, round = 2 },
++		layers = {
++			{
++				name = "core",
++				look = { kind = "neon", width = 0.32, segment = 4, transparency = 0.3, color = "core" },
++				motion = {
++					kind = "flow",
++					wavelength = 26,
++					speed = 5,
++					depth = 0.75,
++					swell = { wavelength = 90, speed = 4, depth = 0.6 },
++				},
++				priority = 1,
++			},
++			{
++				name = "glow",
++				look = { kind = "neon", width = 1.1, segment = 5, transparency = 0.55, color = "glow" },
++				motion = {
++					kind = "flow",
++					wavelength = 34,
++					speed = 4.4,
++					depth = 0.7,
++					swell = { wavelength = 90, speed = 4, depth = 0.6 },
++				},
++				priority = 2,
++			},
++			{
++				name = "spray",
++				look = {
++					kind = "stream",
++					every = 28,
++					thick = 3,
++					lift = 0.5,
++					toward = "up",
++					rise = 1.5,
++					life = { 2.5, 4 },
++					rate = 3.5,
++					size = 1.5,
++					tall = 2.6,
++					transparency = 0.6,
++					color = "spray",
++					texture = "wisp",
++					lean = 16,
++					vary = 0.35,
++				},
++				motion = { kind = "sway", amplitude = 0.7, tilt = 10, span = 26, periods = { 7, 4.6 } },
++				priority = 3,
++			},
++			{
++				name = "haze",
++				look = {
++					kind = "stream",
++					every = 44,
++					thick = 5,
++					lift = 1,
++					toward = "up",
++					rise = 0.6,
++					life = { 4, 6.5 },
++					rate = 1.3,
++					size = 9,
++					tall = 1.5,
++					transparency = 0.9,
++					color = "glow",
++					texture = "veil",
++					lean = 24,
++					vary = 0.4,
++				},
++				motion = { kind = "sway", amplitude = 1, tilt = 12, span = 30, periods = { 8, 5.3 } },
++				priority = 4,
++			},
++			{
++				name = "sparks",
++				look = { kind = "arcs", every = 18, pieces = 3, reach = 0.6, span = 2, width = 0.05, color = "spark" },
++				motion = {
++					kind = "crackle",
++					every = 0.5,
++					swell = { wavelength = 90, speed = 4, depth = 0.6 },
++				},
++				priority = 5,
++			},
++			{
++				name = "lights",
++				look = { kind = "light", every = 40, max = 2, range = 14, brightness = 0.8, color = "glow" },
++				motion = { kind = "pulse", period = 7, depth = 0.3 },
++				priority = 6,
++			},
++		},
++	},
+ }
+ 
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 3e038c4..8574cfd 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -177,6 +177,43 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- Brinewrack (data/Sculpts, data/OutdoorTilesets)
++	["sculpt:brinewrack_wrack"] = row(
++		"A clump of dark kelp wrack washed up the shingle, a few pale sea-green tips among it.",
++		MOOR
++	),
++	["sculpt:brinewrack_driftwood"] = row(
++		"A low heap of silvered grey-brown driftwood, littered along the drowned coast.",
++		MOOR
++	),
++	["sculpt:brinewrack_wreck_ribs"] = row(
++		"The bleached ribs of a wrecked hull lying on the shingle like the ribs of a dead beast.",
++		MOOR
++	),
++	["sculpt:brinewrack_wreck_arch"] = row(
++		"A snapped frame of a wrecked hull, its broken timbers standing on the shore.",
++		MOOR
++	),
++	["sculpt:brinewrack_lighthouse"] = row(
++		"The drowned coast's dead lighthouse, a pale tower on its headland with a last lamp burning for nobody.",
++		MOOR
++	),
++	["sculpt:brinewrack_marker"] = row(
++		"A standing stone with a kelp-green rag tied round it, at the mouth of each cleft on the drowned coast.",
++		MOOR
++	),
++	["sculpt:brinewrack_tide_pool"] = row(
++		"A thin pale tide-pool left in a hollow of the shingle by a tide that never went out.",
++		MOOR
++	),
++	["sculpt:brinewrack_lamppost"] = row(
++		"A silvered driftwood lamp post with an arm and a hanging lantern along the drowned coast's road.",
++		MOOR
++	),
++	["outdoor:brinewrack"] = row(
++		"The drowned coast: slate-grey shingle and black rock, bleached wreck ribs, pale tide-pools, a dead lighthouse and sea-green phosphorescence.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/data/outdoorTilesets/Brinewrack.luau b/src/shared/data/outdoorTilesets/Brinewrack.luau
+new file mode 100644
+index 0000000..09862d2
+--- /dev/null
++++ b/src/shared/data/outdoorTilesets/Brinewrack.luau
+@@ -0,0 +1,305 @@
++--!strict
++-- Brinewrack, the drowned coast: a fishing country that went under the sea,
++-- its tide never fully out. Wet slate-grey shingle and black rock, grey-brown
++-- driftwood, the bleached ribs of wrecked hulls lying on the shingle like the
++-- ribs of dead beasts, pale tide-pools, and the dead lighthouse on its
++-- headland. One muted accent (bible B8): the cold sea-green of phosphorescence
++-- in kelp, quite unlike the Ashfields' violet or the Moonwell's silver-teal.
++-- Derived from the field's tileset the way Field2 is, so it costs what a field
++-- costs: the same pieces, every ground repainted by terrain material, the
++-- field's warm town and living green put out, and the rim thickets turned into
++-- banks of wrecks.
++local Field = require("./Field")
++local OutdoorTypes = require("../../OutdoorTypes")
++local Sculpts = require("../Sculpts")
++
++local function with<T>(base: T, changes: { [string]: any }): T
++	local out = table.clone(base :: any)
++	for key, value in changes do
++		out[key] = value
++	end
++	return table.freeze(out) :: any
++end
++
++-- The coast by terrain material, as Field paints its living ground: Terrain
++-- keeps one colour per material, so every look on a material keeps one colour
++-- here too (OutdoorTilesets.spec). Wet shingle, black rock, wet black sand
++-- under the wrack, the salt-meadow margin behind the rim, and the sea-black of
++-- the drowned deep past every drop.
++local SEA: { [string]: { number } } = {
++	Grass = { 58, 63, 63 }, -- wet slate shingle; Roblox's blades take it
++	Ground = { 56, 58, 58 },
++	LeafyGrass = { 46, 51, 51 }, -- the salt-meadow margin under the rim walls
++	Mud = { 40, 42, 42 }, -- wet black sand under the wrack
++	Basalt = { 46, 50, 54 }, -- black rock
++	Slate = { 18, 20, 22 }, -- the drowned deep, and the abyss past the rim
++	Cobblestone = { 62, 65, 68 }, -- the village's wet paved way, pale enough to read
++}
++
++local function sea(look: OutdoorTypes.GroundLook): OutdoorTypes.GroundLook
++	local color = SEA[look.material]
++	return if color then with(look, { color = color }) else look
++end
++
++-- The cliffs and outcrops are generated meshes painted, not textured: dark
++-- black rock, but not so dark their facets go (Moor's lesson).
++local ROCK = { 54, 57, 62 }
++
++local function painted(pieces: { OutdoorTypes.PieceLook }): { OutdoorTypes.PieceLook }
++	local out = table.clone(pieces)
++	for i, piece in pieces do
++		out[i] = with(piece, { color = ROCK })
++	end
++	return table.freeze(out)
++end
++
++-- Lamps and flames stay the game's saturated amber (bible B3): the one warmth
++-- on the coast, and always a pool someone lit.
++local WARM = { 255, 168, 88 }
++local LAMPPOST = Sculpts.brinewrack_lamppost
++local LANTERN_CAGE = 0.9
++local LANTERN: OutdoorTypes.PieceLook = {
++	name = "DriftwoodLamp",
++	size = LAMPPOST.size,
++	sculpt = "brinewrack_lamppost",
++	light = {
++		color = WARM,
++		range = 20,
++		brightness = 1.5,
++		-- Under the chain: the cage's middle hangs half its height below it.
++		height = (LAMPPOST.arm :: number) - (LAMPPOST.drop :: number) - LANTERN_CAGE * 1.3 / 2,
++		reach = LAMPPOST.reach,
++		cage = LANTERN_CAGE,
++		pulse = { style = "flicker", depth = 0.12, period = 1.3 },
++	},
++}
++
++local props: { [string]: OutdoorTypes.PropSet } = {}
++for name, set in Field.props do
++	-- The moor's HighMoor furniture has no place on a coast: the drowned
++	-- lighthouse is this tileset's one tower.
++	if name ~= "watchtower" and name ~= "stone_circles" then
++		props[name] = set
++	end
++end
++-- The heather becomes wrack: dark kelp clumps washed up the shingle, a few
++-- pale sea-green tips among them (the coast's accent, scattered by the tide).
++props.heather = with(props.heather, {
++	perHundredCells = 4,
++	pieces = { { name = "Wrack", size = Sculpts.brinewrack_wrack.size, sculpt = "brinewrack_wrack" } },
++})
++-- Lonelier than the field's road: long dark walks between the lamps.
++props.lanterns = with(props.lanterns, { pieces = { LANTERN }, spacing = 120 })
++-- A drowned village's waysides: its well and its cross, no hay out here.
++props.waysides = with(props.waysides, {
++	pieces = {
++		{ name = "Well", size = Sculpts.field_well.size, sculpt = "field_well" },
++		{ name = "WaysideCross", size = Sculpts.field_cross.size, sculpt = "field_cross" },
++	},
++	count = 3,
++})
++-- The boulders are painted meshes like the cliffs: the same black rock.
++props.boulders = with(props.boulders, { pieces = painted(props.boulders.pieces) })
++-- The wreck graveyard (the direction): hulls lie everywhere on the shingle
++-- like the ribs of dead beasts. A few big ones out on the open heath, well
++-- clear of the road and the fights, quiet so they never stand in a pack.
++local wrecks: OutdoorTypes.PropSet = {
++	pieces = {
++		{ name = "WreckRibs", size = Sculpts.brinewrack_wreck_ribs.size, sculpt = "brinewrack_wreck_ribs" },
++		{
++			name = "WreckFrame",
++			size = Sculpts.brinewrack_wreck_arch.size,
++			sculpt = "brinewrack_wreck_arch",
++			weight = 0.6,
++		},
++	},
++	perHundredCells = 0,
++	count = 6,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	spacing = 80,
++	clearance = 3,
++	quiet = true,
++	scale = { 0.75, 1.35 },
++	sink = 0.9,
++}
++props.wrecks = table.freeze(wrecks)
++-- Driftwood: low silvered heaps of it all along the shingle, the tide's own
++-- litter, turned grey-brown by salt.
++local driftwood: OutdoorTypes.PropSet = {
++	pieces = { { name = "Driftwood", size = Sculpts.brinewrack_driftwood.size, sculpt = "brinewrack_driftwood" } },
++	perHundredCells = 1.2,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	spacing = 40,
++	scale = { 0.8, 1.4 },
++	sink = 0.4,
++}
++props.driftwood = table.freeze(driftwood)
++-- The landmark (B11): one dead lighthouse on its headland, far off, a pale
++-- tower over the dark shingle. A last lamp burns for nobody in its lantern
++-- room (B7), the one warm point on the whole coast, so the eye finds it from
++-- across the map.
++local lighthouse: OutdoorTypes.PropSet = {
++	pieces = {
++		{
++			name = "DrownedLighthouse",
++			size = Sculpts.brinewrack_lighthouse.size,
++			sculpt = "brinewrack_lighthouse",
++			light = {
++				color = { 255, 150, 78 },
++				range = 36,
++				brightness = 1.4,
++				height = 30,
++				cage = 2.8,
++				ember = 0.8,
++				pulse = { style = "breathe", depth = 0.18, period = 5 },
++			},
++		},
++	},
++	perHundredCells = 0,
++	count = 1,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	spacing = 200,
++	clearance = 6,
++	scale = { 1, 1.05 },
++	sink = 0.5,
++}
++props.lighthouse = table.freeze(lighthouse)
++
++local brinewrack = table.clone(Field) :: OutdoorTypes.OutdoorTileset
++brinewrack.name = "brinewrack"
++brinewrack.palette = "wet slate-grey shingle, black basalt rock, grey-brown driftwood, bleached wreck ribs, "
++	.. "pale sea-green tide-pools, desaturated, matte, no highlights"
++-- The moor's cold silver-blue night, not the field's warm one: a drowned coast
++-- under a faint moon.
++brinewrack.lighting = "mood"
++brinewrack.props = table.freeze(props)
++-- Sea fog: heavier than the field's, but wide and few, so the phone pays for
++-- few sheets (data/PerfBudget). A cold sea-green hint in it, the accent's
++-- light caught in the haze.
++brinewrack.groundMist = with(Field.groundMist, {
++	color = { 112, 128, 132 },
++	perHundredCells = 0.5,
++	spacing = 46,
++	size = 28,
++	transparency = 0.85,
++})
++
++-- The old paved road out of the drowned village, wet and pale enough to read
++-- as the way on from above.
++brinewrack.ground = with(Field.ground, {
++	heath = sea(Field.ground.heath),
++	ruin = sea(Field.ground.ruin),
++	road = sea(Field.ground.road),
++})
++
++-- The rim thickets become banks of wrecks: broken hull frames and ribcages
++-- leaning along every edge, the same bleached timber as the wrecks out on the
++-- shingle, so the coast's edge is a wall of dead ships seen from above.
++local edges: { [string]: OutdoorTypes.EdgeLook } = table.clone(Field.edges :: any)
++edges["thicket"] = with(edges["thicket"], {
++	pieces = {
++		{ name = "WreckRibs", size = Sculpts.brinewrack_wreck_ribs.size, sculpt = "brinewrack_wreck_ribs" },
++		{
++			name = "WreckFrame",
++			size = Sculpts.brinewrack_wreck_arch.size,
++			sculpt = "brinewrack_wreck_arch",
++			weight = 0.7,
++		},
++		{ name = "Driftwood", size = Sculpts.brinewrack_driftwood.size, sculpt = "brinewrack_driftwood", weight = 0.8 },
++	},
++	spacing = 12,
++	scale = { 1, 1.5 },
++	sink = 1,
++})
++edges["cliff"] = with(edges["cliff"], { pieces = painted(edges["cliff"].pieces) })
++for kind, edge in edges do
++	if edge.ground then
++		edges[kind] = with(edge, { ground = sea(edge.ground) })
++	end
++end
++brinewrack.edges = table.freeze(edges) :: any
++
++-- The rock islands inside the heath: the same black rock as the cliffs.
++local outcrop: OutdoorTypes.EdgeLook = with(Field.outcrop, { pieces = painted(Field.outcrop.pieces) })
++local outcropGround = Field.outcrop.ground
++if outcropGround then
++	outcrop = with(outcrop, { ground = sea(outcropGround) })
++end
++brinewrack.outcrop = outcrop
++
++-- Standing water in the hollows: pale tide-pools left by a tide that never
++-- went out, on the same wet black sand as the ruins.
++local pools = assert(Field.pools, "the field has pools")
++brinewrack.pools = with(pools, {
++	sheet = { name = "TidePool", size = Sculpts.brinewrack_tide_pool.size, sculpt = "brinewrack_tide_pool" },
++	bed = sea(pools.bed),
++})
++
++-- The bluffs' wall backing is the cliffs' black rock, not the moor's slate,
++-- so Slate keeps one colour: the sea-black of the abyss.
++local bluff = assert(Field.bluff, "the field has bluffs")
++brinewrack.bluff = with(bluff, {
++	backing = { material = "Basalt", color = SEA.Basalt },
++	rock = sea(assert(bluff.rock, "the field's bluff has rock")),
++})
++
++-- Past the rim: shingle banks rising a little, then open black sea under two
++-- sheets of fog. No hills, so the water runs to the horizon the way a coast's
++-- does; the abyss and its mist are what stop the map floating.
++brinewrack.beyond = with(Field.beyond, {
++	ground = sea(Field.beyond.ground),
++	rock = sea(Field.beyond.rock),
++	abyss = sea(Field.beyond.abyss),
++	abyssDepth = 110,
++	mist = { color = { 56, 68, 72 }, transparency = 0.42, depth = 26, layers = 2, spacing = 12 },
++})
++
++-- A drowned village's map ends: the way on is marked by the old stone gate, its
++-- marker stone wearing a rag of kelp-green (the accent), not the moor's
++-- oxblood.
++local thresholds = assert(Field.thresholds, "the field has thresholds")
++brinewrack.thresholds = with(thresholds, {
++	lamp = LANTERN,
++	marker = {
++		name = "TideMarker",
++		size = Sculpts.brinewrack_marker.size,
++		sculpt = "brinewrack_marker",
++		solid = true,
++	},
++})
++
++-- The ruins keep a few doors lit (B2: a light that means someone, or
++-- something, is there) - fewer than the field's, and only in the manor.
++local litWindows = assert(Field.litWindows, "the field has lit windows")
++brinewrack.litWindows = with(litWindows, { kinds = { "manor" }, count = 1, chance = 0.4 })
++brinewrack.wallLights = with(Field.wallLights, { chance = 0.35 })
++
++-- No town out here, and no timber homes: a drowned fishing village's stone.
++brinewrack.town = nil
++brinewrack.kits = nil
++
++-- The coast's landmarks (B11): the great wreck in place of the giants' bones,
++-- the drowned lighthouse on its headland in place of the fort, and the
++-- headland's own grass and rock repainted with the rest.
++local landmarks = assert(Field.landmarks, "the field has landmarks")
++local coastLandmarks = table.clone(landmarks) :: OutdoorTypes.LandmarkLook
++coastLandmarks.bones = {
++	name = "GreatWreck",
++	size = Sculpts.brinewrack_wreck_ribs.size,
++	sculpt = "brinewrack_wreck_ribs",
++}
++coastLandmarks.fort = {
++	name = "DrownedLighthouse",
++	size = Sculpts.brinewrack_lighthouse.size,
++	sculpt = "brinewrack_lighthouse",
++	solid = true,
++}
++coastLandmarks.rock = sea(landmarks.rock)
++coastLandmarks.headland = sea(landmarks.headland)
++-- The seam's lamps are the coast's own driftwood posts, not the moor's.
++coastLandmarks.seamLamp = LANTERN
++-- The Labyrinth's gate belongs to the Ashfields' road, not this shore.
++coastLandmarks.labyrinthGate = nil
++brinewrack.landmarks = table.freeze(coastLandmarks)
++
++return table.freeze(brinewrack)

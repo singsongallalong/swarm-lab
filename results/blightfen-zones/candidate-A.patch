@@ -1,0 +1,555 @@
+diff --git a/src/shared/data/EnvThemes.luau b/src/shared/data/EnvThemes.luau
+index 424ee67..64db8a3 100644
+--- a/src/shared/data/EnvThemes.luau
++++ b/src/shared/data/EnvThemes.luau
+@@ -99,6 +99,24 @@ local themes: { [string]: Theme } = {
+ 			wisp = "rbxassetid://113245411673535", -- assets/vfx/worm-wisp.png (A19-D15)
+ 		},
+ 	},
++	-- The Blightfen (a plague bog): the sickness hanging over its standing
++	-- water. Bile yellow-green, kept desaturated so it reads as rot and not
++	-- as magic -- nothing here glows like a spell. The aurora's soft
++	-- textures, shared, so it costs no new art.
++	blightfen = {
++		about = "The Blightfen's sickness: a low bile yellow-green miasma off its standing water, and the foul lights rising out of it.",
++		colors = {
++			pale = { 176, 186, 148 },
++			miasma = { 132, 150, 92 },
++			haze = { 96, 106, 74 },
++			glow = { 158, 178, 92 },
++		},
++		kit = {
++			veil = "rbxassetid://116287069271100", -- assets/vfx/worm-veil.png (the aurora's)
++			smoke = "rbxassetid://118279823035826", -- assets/vfx/worm-smoke.png (the aurora's)
++			wisp = "rbxassetid://113245411673535", -- assets/vfx/worm-wisp.png (the aurora's)
++		},
++	},
+ }
+ 
+ return table.freeze(themes)
+diff --git a/src/shared/data/OutdoorTilesets.luau b/src/shared/data/OutdoorTilesets.luau
+index 463945c..22d46ac 100644
+--- a/src/shared/data/OutdoorTilesets.luau
++++ b/src/shared/data/OutdoorTilesets.luau
+@@ -1,5 +1,6 @@
+ --!strict
+ -- Every outdoor tileset by name (docs/guides/map-tools.md).
++local Blightfen = require("./outdoorTilesets/Blightfen")
+ local ChainedGorge = require("./outdoorTilesets/ChainedGorge")
+ local CharnelQuarry = require("./outdoorTilesets/CharnelQuarry")
+ local Field = require("./outdoorTilesets/Field")
+@@ -15,6 +16,7 @@ local OutdoorTilesets: { [string]: OutdoorTypes.OutdoorTileset } = {
+ 	wasteland = Wasteland,
+ 	chainedGorge = ChainedGorge,
+ 	charnelQuarry = CharnelQuarry,
++	blightfen = Blightfen,
+ }
+ 
+ return table.freeze(OutdoorTilesets)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index 8c5939e..9011ec6 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -433,6 +433,98 @@ local Sculpts: { [string]: Recipe } = {
+ 			{ width = 36, depth = 38, rise = 12, steps = 8 },
+ 		},
+ 	},
++	-- The Blightfen (a drowned farmland gone to plague-bog): its reeds, its
++	-- dead orchard trees, the farms' rotten waysides, its own gravestones and
++	-- sick pools, and the drowned chapel tower that is the zone's landmark.
++	-- Bog-stained paint throughout; the one saturated note is the bile
++	-- yellow-green the plague left, on the reeds' tips and the threshold rag
++	-- (bible B8, the zone's one muted accent).
++	blightfen_reeds = {
++		kind = "tuft",
++		-- Tall and thin above Roblox's grass blades, so a clump reads as
++		-- reeds rather than as another tuft of grass.
++		size = { 3.2, 4.6, 3.2 },
++		material = "Grass",
++		-- Dead straw-grey, the last colour the sparse bile tips.
++		colors = { { 88, 90, 74 }, { 78, 80, 66 }, { 96, 94, 78 }, { 94, 100, 62 } },
++		maxPrims = 18,
++		blades = 12,
++		-- A low bushy root under the blades, so the clump stands over the
++		-- grass rather than vanishing among it.
++		body = 0.45,
++		-- Strewn by the hundred over the heath, so each clump is one union.
++		merge = 12,
++	},
++	blightfen_dead_tree = {
++		kind = "tree",
++		size = { 5, 10, 5 },
++		material = "Wood",
++		colors = { { 56, 50, 44 }, { 48, 43, 38 }, { 64, 58, 50 } },
++		maxPrims = 32,
++		segments = 4,
++		branches = 3,
++		bend = 18,
++	},
++	blightfen_headstone = {
++		kind = "headstone",
++		size = { 2.7, 4.2, 0.9 },
++		material = "Slate",
++		-- Stained green-grey, the wet stone of the bog.
++		colors = { { 78, 84, 76 }, { 70, 76, 68 } },
++		maxPrims = 4,
++		top = "round",
++		lean = 12,
++	},
++	-- The farms' well, its stone stained and its roof timber gone rotten.
++	-- Colours { stone, stone, timber, hay } (systems/sculpts/Waysides).
++	blightfen_well = {
++		kind = "wayside",
++		form = "well",
++		size = { 6, 7, 6 },
++		material = "Slate",
++		colors = { { 78, 84, 76 }, { 70, 76, 68 }, { 58, 50, 42 }, { 92, 88, 62 } },
++		materials = { [3] = "WoodPlanks", [4] = "Fabric" },
++		maxPrims = 8,
++	},
++	blightfen_haystack = {
++		kind = "wayside",
++		form = "haystack",
++		size = { 10, 6, 6 },
++		material = "Slate",
++		-- Mouldy straw on a rotten cart: the colour of the field's hay gone grey.
++		colors = { { 78, 84, 76 }, { 70, 76, 68 }, { 58, 50, 42 }, { 92, 88, 62 } },
++		materials = { [3] = "WoodPlanks", [4] = "Fabric" },
++		maxPrims = 10,
++	},
++	blightfen_marker = {
++		kind = "marker",
++		size = { 3.4, 7, 1.8 },
++		material = "Slate",
++		colors = { { 78, 84, 76 }, { 70, 76, 68 } },
++		-- The zone's accent: a rag dyed the bile yellow-green of the sickness.
++		accent = { 84, 94, 52 },
++		maxPrims = 9,
++	},
++	blightfen_pool = {
++		kind = "pool",
++		size = { 24, 0.1, 24 },
++		material = "Glass",
++		-- Sick green standing water: a shade above black, so the moon shows in it.
++		colors = { { 54, 68, 42 }, { 48, 62, 38 } },
++		reflectance = 0.22,
++		maxPrims = 4,
++	},
++	-- A drowned chapel's broken tower: the bog's landmark, seen from across
++	-- the map (bible B11). Plain masonry, no glass or cross it can't carry.
++	blightfen_chapel = {
++		kind = "tower",
++		size = { 18, 30, 2.4 },
++		material = "Slate",
++		-- Pale moonlit stone, so the tower stands out of the bog from across
++		-- the map (B11) rather than reading as one more dark silhouette.
++		colors = { { 96, 98, 86 }, { 88, 92, 80 }, { 100, 100, 90 } },
++		maxPrims = 16,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 226674a..2a9ff4e 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -862,6 +862,86 @@ local recipes: { [string]: Recipe } = {
+ 			},
+ 		},
+ 	},
++	-- The Blightfen's signature (a plague bog): the sickness lying on the
++	-- standing water, drifting off it in a slow low worm. Three layers: the
++	-- bile-green miasma itself, a fainter green haze under it, and foul
++	-- lights bubbling up out of the water. Made for the game camera (pitch
++	-- 50, which sees nothing above the horizon): the whole piece stays under
++	-- about five studs, so it reads as a stain on the pools, not a fog bank.
++	-- Placed on the pools by the tileset's own `setPieces` row.
++	blightfen_miasma = {
++		about = "The Blightfen's sickness: a low bile-green miasma drifting off its standing water, with foul lights rising out of it.",
++		theme = "blightfen",
++		path = { kind = "worm", length = 46, step = 4, bend = 6, climb = 1, round = 2 },
++		layers = {
++			{
++				name = "miasma",
++				look = {
++					kind = "stream",
++					every = 16,
++					thick = 8,
++					lift = 0.6,
++					toward = "along",
++					rise = 2.2,
++					life = { 5, 8 },
++					rate = 4,
++					size = 6,
++					tall = 1.1,
++					transparency = 0.86,
++					color = "miasma",
++					texture = "veil",
++					lean = 8,
++					vary = 0.6,
++				},
++				motion = { kind = "sway", amplitude = 2.5, tilt = 5, span = 22, periods = { 9, 13 } },
++				priority = 1,
++			},
++			{
++				name = "lights",
++				look = {
++					kind = "stream",
++					every = 14,
++					thick = 1.6,
++					lift = 0.2,
++					toward = "up",
++					rise = 1.4,
++					life = { 2.5, 4 },
++					rate = 2.5,
++					size = 0.6,
++					tall = 1,
++					transparency = 0.3,
++					color = "glow",
++					texture = "wisp",
++					lean = 10,
++					vary = 0.5,
++				},
++				motion = { kind = "sway", amplitude = 0.4, tilt = 8, span = 8, periods = { 3, 5 } },
++				priority = 2,
++			},
++			{
++				name = "haze",
++				look = {
++					kind = "stream",
++					every = 24,
++					thick = 12,
++					lift = 1.6,
++					toward = "along",
++					rise = 1.8,
++					life = { 9, 13 },
++					rate = 1.5,
++					size = 12,
++					tall = 0.9,
++					transparency = 0.92,
++					color = "haze",
++					texture = "smoke",
++					lean = 6,
++					vary = 0.5,
++				},
++				motion = { kind = "sway", amplitude = 4, tilt = 8, span = 36, periods = { 15, 21 } },
++				priority = 3,
++			},
++		},
++	},
+ }
+ 
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d1a7b7c..f7b02d6 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -251,6 +251,34 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The Blightfen, a plague bog (a concept place)
++	["sculpt:blightfen_reeds"] = row(
++		"A clump of dead grey-olive reeds, its tips stained the plague's bile green, across the bog.",
++		MOOR
++	),
++	["sculpt:blightfen_dead_tree"] = row(
++		"A bare dead orchard tree, its bark waterlogged, standing out on the bog's heath.",
++		MOOR
++	),
++	["sculpt:blightfen_headstone"] = row("A leaning round-topped headstone stained green-grey by the bog.", MOOR),
++	["sculpt:blightfen_well"] = row(
++		"A drowned farm's stone well, its roof timber rotten, by the bog's old road.",
++		MOOR
++	),
++	["sculpt:blightfen_haystack"] = row("A mouldy haystack and its rotten cart, left standing in the bog.", MOOR),
++	["sculpt:blightfen_marker"] = row(
++		"A standing marker stone with a rag dyed the Blightfen's bile green at a cleft between reaches.",
++		MOOR
++	),
++	["sculpt:blightfen_pool"] = row("A thin sheet of sick green standing water in the bog's hollows.", MOOR),
++	["sculpt:blightfen_chapel"] = row(
++		"A drowned chapel's broken tower, the bog's landmark seen from across the map.",
++		MOOR
++	),
++	["outdoor:blightfen"] = row(
++		"The Blightfen: a plague bog of drowned farmland, dead orchards and sick green water under a low miasma.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/data/outdoorTilesets/Blightfen.luau b/src/shared/data/outdoorTilesets/Blightfen.luau
+new file mode 100644
+index 0000000..0d91bb3
+--- /dev/null
++++ b/src/shared/data/outdoorTilesets/Blightfen.luau
+@@ -0,0 +1,268 @@
++--!strict
++-- The Blightfen: a plague bog at night, farmland drowned and poisoned after a
++-- sickness emptied it. The moor's generated layouts in the bog's paint: its
++-- heath dead grey-olive grass over brown-black mud, its cliffs, outcrops and
++-- the bluff wet stained rock, its thickets dead orchard trees, its road the
++-- farms' track between drowned fields, and standing water gone sick green
++-- under a low miasma. Its heath dressing is the farmland's own: reeds in the
++-- wet hollows, rotten wells and haystacks by the way, dead orchard trees out
++-- on the open ground, and one drowned chapel tower standing clear of them
++-- all as the landmark that pulls a player across it (bible B11). Its one
++-- muted accent (B8) is the bile yellow-green the sickness left, on the
++-- reeds' tips, the pool water and the threshold stone's rag; the only warmth
++-- is the few amber lamps the living left.
++-- Deriving from Moor keeps its cliffs, drops and site layouts, so this look
++-- works over any seed the same way the moor's does.
++local Moor = require("./Moor")
++local OutdoorTypes = require("../../OutdoorTypes")
++local Sculpts = require("../Sculpts")
++
++local function with<T>(base: T, changes: { [string]: any }): T
++	local out = table.clone(base :: any)
++	for key, value in changes do
++		out[key] = value
++	end
++	return table.freeze(out) :: any
++end
++
++-- The bog's ground by terrain material, as Field paints its living ground:
++-- Terrain keeps one colour per material, so every look on a material moves
++-- together (OutdoorTilesets.spec). All inside the bible's large-surface caps
++-- (20% saturation, 35% value).
++local BOG: { [string]: { number } } = {
++	Grass = { 62, 61, 53 }, -- dead grey-olive grass; Roblox's blades take it
++	Ground = { 64, 60, 52 }, -- brown mud, packed on the farms' old track
++	LeafyGrass = { 50, 52, 44 }, -- the wet margin under the rim
++	Mud = { 42, 40, 34 }, -- bare bog mud: ruins, thicket floors, pool beds
++	Basalt = { 48, 52, 46 }, -- wet stained rock: cliffs, outcrops, the bluff
++	Slate = { 18, 20, 18 }, -- the abyss
++}
++
++local function bogged(look: OutdoorTypes.GroundLook): OutdoorTypes.GroundLook
++	local color = BOG[look.material]
++	return if color then with(look, { color = color }) else look
++end
++
++-- Palette paint for the pieces. Unpainted meshes sit near the top of the
++-- bible's value range as the moor's do: darker, and they lose their facets
++-- under the mood preset.
++local WET_ROCK = { 58, 63, 54 }
++local ROTTEN_BARK = { 52, 47, 41 }
++
++-- The rim's cliffs, the moor's own generated meshes in the bog's wet rock.
++local CLIFF_PIECES: { OutdoorTypes.PieceLook } = {
++	{
++		name = "BogCliff_A",
++		solid = true,
++		size = { 11.5, 14.1, 11.2 },
++		mesh = "rbxassetid://88803966022882",
++		material = "Basalt",
++		color = WET_ROCK,
++	},
++	{
++		name = "BogCliff_C",
++		solid = true,
++		size = { 11.9, 13.9, 11 },
++		mesh = "rbxassetid://107901875206013",
++		material = "Basalt",
++		color = WET_ROCK,
++	},
++	{
++		name = "BogCliff_B",
++		solid = true,
++		size = { 10.9, 13.2, 11 },
++		mesh = "rbxassetid://135099886431080",
++		material = "Basalt",
++		color = WET_ROCK,
++		weight = 0.5,
++	},
++}
++
++-- The thickets: the moor's dead trees, waterlogged, among them a few of the
++-- orchard's own bare sculpt trees.
++local TREE_PIECES: { OutdoorTypes.PieceLook } = {
++	{
++		name = "DeadTree_A",
++		size = { 7, 8.5, 6.3 },
++		mesh = "rbxassetid://135311611772489",
++		material = "Wood",
++		color = ROTTEN_BARK,
++	},
++	{
++		name = "DeadTree_B",
++		size = { 7, 10, 4.5 },
++		mesh = "rbxassetid://138056933645574",
++		material = "Wood",
++		color = ROTTEN_BARK,
++	},
++	{ name = "OrchardTree", size = Sculpts.blightfen_dead_tree.size, sculpt = "blightfen_dead_tree", weight = 0.4 },
++}
++
++local MOOR_EDGES: { [string]: OutdoorTypes.EdgeLook } = Moor.edges :: any
++local MOOR_PROPS: { [string]: OutdoorTypes.PropSet } = Moor.props :: any
++
++-- The rim, the thickets and the old field walls, their ground in the bog's
++-- mud and rock.
++local edges: { [string]: OutdoorTypes.EdgeLook } = table.clone(MOOR_EDGES)
++edges.cliff = with(MOOR_EDGES.cliff, { pieces = CLIFF_PIECES })
++edges.thicket = with(MOOR_EDGES.thicket, { pieces = TREE_PIECES })
++-- The farms' dry-stone walls, not the field's town wall.
++edges.ruin_wall = with(MOOR_EDGES.ruin_wall, { run = "moor_field_wall" })
++for kind, edge in edges do
++	if edge.ground then
++		edges[kind] = with(edge, { ground = bogged(edge.ground) })
++	end
++end
++
++local props: { [string]: OutdoorTypes.PropSet } = table.clone(MOOR_PROPS)
++-- Reeds where the moor's heather stood: dead grey-olive clumps, each one
++-- union, standing over the grass blades.
++props.heather = with(MOOR_PROPS.heather, {
++	pieces = { { name = "Reeds", size = Sculpts.blightfen_reeds.size, sculpt = "blightfen_reeds" } },
++	perHundredCells = 3.5,
++	scale = { 0.85, 1.25 },
++	sink = 0.3,
++})
++-- The graveyards' stones stained by the water.
++props.headstones = with(MOOR_PROPS.headstones, {
++	pieces = {
++		{ name = "BogHeadstone", size = Sculpts.blightfen_headstone.size, sculpt = "blightfen_headstone" },
++	},
++})
++-- Fewer grave lanterns than the moor's: someone still tends the dead, barely.
++props.candles = with(MOOR_PROPS.candles, { perHundredCells = 4 })
++-- The road's lamps farther apart: an emptier land, and fewer lights.
++props.lanterns = with(MOOR_PROPS.lanterns, { perHundredCells = 1.8, spacing = 90 })
++-- The farms' well and haystack rotting by the way: the drowned farmsteads'
++-- own furniture, turned to the road (FaceRoad), one of them at least.
++local waysides: OutdoorTypes.PropSet = {
++	pieces = {
++		{ name = "DrownedWell", size = Sculpts.blightfen_well.size, sculpt = "blightfen_well" },
++		{ name = "RottenHaystack", size = Sculpts.blightfen_haystack.size, sculpt = "blightfen_haystack" },
++	},
++	perHundredCells = 0,
++	count = 4,
++	on = { "roadside" :: OutdoorTypes.PropGround },
++	spacing = 110,
++	faceRoad = true,
++	quiet = true,
++	least = 1,
++	scale = { 0.95, 1.1 },
++	sink = 0.3,
++}
++props.waysides = table.freeze(waysides)
++-- The dead orchards: bare fruit trees standing where the rows were, out on
++-- the open heath, well off the road and the fights.
++local orchards: OutdoorTypes.PropSet = {
++	pieces = {
++		{ name = "OrchardTree", size = Sculpts.blightfen_dead_tree.size, sculpt = "blightfen_dead_tree" },
++	},
++	perHundredCells = 0,
++	count = 8,
++	spacing = 30,
++	clearance = 2,
++	quiet = true,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	scale = { 0.9, 1.2 },
++	sink = 0.5,
++}
++props.orchards = table.freeze(orchards)
++-- The zone's landmark: one drowned chapel tower on the open ground, clear of
++-- the way and the walls (B11), so it shows from across the whole bog.
++local chapel: OutdoorTypes.PropSet = {
++	pieces = { { name = "DrownedChapel", size = Sculpts.blightfen_chapel.size, sculpt = "blightfen_chapel" } },
++	perHundredCells = 0,
++	count = 1,
++	clearance = 5,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	scale = { 1, 1.1 },
++	sink = 1,
++}
++props.chapel = table.freeze(chapel)
++props.boulders = with(MOOR_PROPS.boulders, {
++	pieces = {
++		{
++			name = "Boulder_B",
++			solid = true,
++			size = { 4.7, 4.2, 4.3 },
++			mesh = "rbxassetid://122358673773444",
++			material = "Basalt",
++			color = WET_ROCK,
++		},
++	},
++})
++-- No banked fires in the ruins: the bog's warmth is the road's lamps and the
++-- grave lanterns alone. No cave mouths either: the drowned farms' way down
++-- was their cellars.
++local looseProps: any = props
++looseProps.embers = nil
++looseProps.caves = nil
++-- The High Moor's tower and stone circles are the moor's own landmarks; the
++-- chapel stands in their place here.
++looseProps.watchtower = nil
++looseProps.stone_circles = nil
++
++local blightfen = table.clone(Moor) :: OutdoorTypes.OutdoorTileset
++blightfen.name = "blightfen"
++blightfen.palette = "brown-black bog mud, dead grey-olive reeds and grass, rotten grey-brown timber, "
++	.. "wet stained slate and basalt, sick yellow-green standing water, few amber lamps, "
++	.. "desaturated, matte, no highlights"
++blightfen.lighting = "mood"
++blightfen.ground = with(Moor.ground, {
++	heath = bogged(Moor.ground.heath),
++	road = bogged(Moor.ground.road),
++	ruin = bogged(Moor.ground.ruin),
++})
++blightfen.edges = table.freeze(edges) :: any
++blightfen.outcrop = with(Moor.outcrop, { pieces = CLIFF_PIECES, ground = bogged(Moor.outcrop.ground) })
++blightfen.props = table.freeze(props)
++-- Low and wide over the bog, green-grey off the standing water rather than
++-- the moor's blue (B9).
++blightfen.groundMist = with(Moor.groundMist, {
++	color = { 118, 126, 104 },
++	perHundredCells = 0.9,
++	spacing = 42,
++	size = 26,
++	transparency = 0.83,
++})
++-- The milestone at each cleft carries the bog's own rag, in the zone accent.
++blightfen.thresholds = with(Moor.thresholds :: any, {
++	marker = {
++		name = "BlightMarker",
++		size = Sculpts.blightfen_marker.size,
++		sculpt = "blightfen_marker",
++		solid = true,
++	},
++})
++local moorPools = Moor.pools
++if moorPools then
++	blightfen.pools = with(moorPools, {
++		sheet = { name = "SickPool", size = Sculpts.blightfen_pool.size, sculpt = "blightfen_pool" },
++		bed = bogged(moorPools.bed),
++	})
++end
++local bluff = Moor.bluff
++local bluffRock = bluff and bluff.rock
++if bluff and bluffRock then
++	blightfen.bluff = with(bluff, {
++		-- The wall's rubble core, wet green-grey behind the stones.
++		backing = { material = "Slate", color = { 66, 72, 62 } },
++		rock = bogged(bluffRock),
++	})
++end
++-- Past every edge the bog climbs away in low hills and runs on into the
++-- haze, so no edge shows sky.
++blightfen.beyond = with(Moor.beyond, {
++	ground = bogged(Moor.beyond.ground),
++	rock = bogged(Moor.beyond.rock),
++	abyss = bogged(Moor.beyond.abyss),
++	mist = with(Moor.beyond.mist, { color = { 82, 92, 76 } }),
++	hills = table.freeze({ reach = 70, chunk = 10, height = table.freeze({ 12, 26 }), lane = 4, laneReach = 12 }),
++})
++-- The sickness hanging low over the standing water (systems/TilesetPieces):
++-- a few pools across the map, each far from the next.
++blightfen.setPieces = {
++	{ recipe = "blightfen_miasma", along = "pieces", on = "pool", every = 70, count = 4, lift = 0.3 },
++}
++
++return table.freeze(blightfen)

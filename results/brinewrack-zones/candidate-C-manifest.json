@@ -1,0 +1,49 @@
+{
+  "skill": "Brinewrack",
+  "look": "brinewrack",
+  "tileset": "brinewrack",
+  "sculpts": [
+    "brinewrack_wrack",
+    "brinewrack_driftwood",
+    "brinewrack_stumps",
+    "brinewrack_wreck",
+    "brinewrack_lighthouse",
+    "brinewrack_tide",
+    "brinewrack_cross",
+    "brinewrack_lamppost",
+    "brinewrack_marker"
+  ],
+  "setpiece": "brinewrack_tideline",
+  "rows_added": [
+    "brinewrack_wrack",
+    "brinewrack_driftwood",
+    "brinewrack_stumps",
+    "brinewrack_wreck",
+    "brinewrack_lighthouse",
+    "brinewrack_tide",
+    "brinewrack_cross",
+    "brinewrack_lamppost",
+    "brinewrack_marker",
+    "brinewrack",
+    "brinewrack_tideline",
+    "brinewrack_spray"
+  ],
+  "intent": "A drowned fishing coast of wet slate-grey shingle, black rock and bleached driftwood, with pale sea-green tide-pools and kelp, a dead lighthouse and a great wreck for landmarks, reading from the high camera as a cold grey shore broken by cold sea-green phosphorescence.",
+  "renders": [
+    ".swarm/out/zone-whole-r2.png",
+    ".swarm/out/zone-whole-seed2-r2.png",
+    ".swarm/out/zone-whole-seed3-r2.png",
+    ".swarm/out/zone-pool-r2.png",
+    ".swarm/out/zone-ruin-r2.png",
+    ".swarm/out/zone-tileset-r2.png",
+    ".swarm/out/zone-tileset-eye-r2.png",
+    ".swarm/out/zone-sculpts-r2.png",
+    ".swarm/out/zone-setpiece-r2.png",
+    ".swarm/out/zone-setpiece-spray-r2.png"
+  ],
+  "revisions": 1,
+  "requests": [
+    "A wreck kind: a beached hull's curved ribs, since the bones kind always grows a horned skull and so the great wreck reads partly as a sea-beast.",
+    "A water or flood ground material, or a way to lay tide-pools over open heath: pools only appear where the terrace rules hollow the ground, so the half-tide-pool ground can't be painted."
+  ]
+}

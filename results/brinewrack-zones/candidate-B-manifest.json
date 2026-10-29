@@ -1,0 +1,44 @@
+{
+  "skill": "Brinewrack",
+  "look": "brinewrack",
+  "tileset": "brinewrack",
+  "sculpts": [
+    "brinewrack_wrack",
+    "brinewrack_driftwood",
+    "brinewrack_wreck_ribs",
+    "brinewrack_wreck_arch",
+    "brinewrack_lighthouse",
+    "brinewrack_marker",
+    "brinewrack_tide_pool",
+    "brinewrack_lamppost"
+  ],
+  "setpiece": "brinewrack_tideglow",
+  "rows_added": [
+    "brinewrack_wrack",
+    "brinewrack_driftwood",
+    "brinewrack_wreck_ribs",
+    "brinewrack_wreck_arch",
+    "brinewrack_lighthouse",
+    "brinewrack_marker",
+    "brinewrack_tide_pool",
+    "brinewrack_lamppost",
+    "brinewrack",
+    "brinewrack_tideglow"
+  ],
+  "intent": "A drowned coast where the tide never went out: slate-grey shingle and black rock strewn with bleached wreck ribs and silvered driftwood, dark sea-green wrack and pale tide-pools, and one dead lighthouse burning its last amber lamp, so from the high camera it reads as pale bone ribs and green flecks across a cold grey-blue shore.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A hull sculpt kind for a half-buried ship, planks and ribs and a broken deck as one form; the bones and arch kinds can only suggest it.",
+    "A sea-green phosphorescence particle texture of Brinewrack's own; the theme borrows the aurora kit's wisp and veil.",
+    "A cold moonlit sea lighting preset; the mood preset is the closest, but a colder, hazier night over the water was wanted."
+  ]
+}

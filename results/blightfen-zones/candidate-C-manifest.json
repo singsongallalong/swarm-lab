@@ -1,0 +1,56 @@
+{
+  "skill": "Blightfen",
+  "look": "blightfen",
+  "tileset": "blightfen",
+  "sculpts": [
+    "blightfen_reed",
+    "blightfen_dead_tree",
+    "blightfen_headstone",
+    "blightfen_headstone_broken",
+    "blightfen_gibbet",
+    "blightfen_crypt",
+    "blightfen_pit_ring",
+    "blightfen_bones",
+    "blightfen_chapel",
+    "blightfen_well",
+    "blightfen_pool",
+    "blightfen_marker",
+    "blightfen_barrow"
+  ],
+  "setpiece": "blightfen_miasma",
+  "rows_added": [
+    "blightfen_reed",
+    "blightfen_dead_tree",
+    "blightfen_headstone",
+    "blightfen_headstone_broken",
+    "blightfen_gibbet",
+    "blightfen_crypt",
+    "blightfen_pit_ring",
+    "blightfen_bones",
+    "blightfen_chapel",
+    "blightfen_well",
+    "blightfen_pool",
+    "blightfen_marker",
+    "blightfen_barrow",
+    "blightfen",
+    "blightfen_miasma",
+    "blightfen_well_mist"
+  ],
+  "intent": "A plague bog at night: drowned grey-olive reed fields over brown-black mud, rotten orchards and stained stone, gibbets and poisoned wells on the road, a great ring of leaning headstones at the plague pit breathing sickly yellow-green light, and a drowned chapel lit on the skyline.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png",
+    ".swarm/out/zone-wellmist-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A pit or hollow sculpt kind (or a terrain sink) so the plague pit can be an actual sunken hollow rather than a ring of stones on flat ground.",
+    "A gallows/gibbet sculpt kind that can hang a cage or body from its arm; the lamppost kind's arm and chain had to stand in for one.",
+    "A chapel or steeple sculpt/building kind for a drowned chapel silhouette; the plain tower kind had to stand in for one."
+  ]
+}

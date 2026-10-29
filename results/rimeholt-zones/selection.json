@@ -1,0 +1,15 @@
+{
+  "picked": [
+    "C",
+    "B"
+  ],
+  "reasons": {
+    "C": "The frozen lake: ice pools across the map, a ring of runestones with ice-blue glints, and a cold glow under the ice; the most complete idea of the area.",
+    "B": "The barrow field: barrow mounds across the snow and drifting snow motes that read as snow from the camera."
+  },
+  "fixes": {
+    "C": "The under-ice glow is a thin line; widen it into a glow under each pool.",
+    "B": "Barrows read as plain boxes; give them the runestones C made."
+  },
+  "notes": "A, the pine wood, has good rimed pines but reads as the field in snow."
+}

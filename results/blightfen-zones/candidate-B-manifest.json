@@ -1,0 +1,44 @@
+{
+  "skill": "Blightfen",
+  "look": "blightfen",
+  "tileset": "blightfen",
+  "sculpts": [
+    "blightfen_reeds",
+    "blightfen_orchard_tree",
+    "blightfen_headstone",
+    "blightfen_chapel",
+    "blightfen_chapel_arch",
+    "blightfen_waystone",
+    "blightfen_pool"
+  ],
+  "setpiece": "blightfen_wisps",
+  "rows_added": [
+    "blightfen_reeds",
+    "blightfen_orchard_tree",
+    "blightfen_headstone",
+    "blightfen_chapel",
+    "blightfen_chapel_arch",
+    "blightfen_waystone",
+    "blightfen_pool",
+    "blightfen",
+    "blightfen_wisps",
+    "blightfen_fen_bubbles"
+  ],
+  "intent": "A drowned plague bog at night: brown-black mud, dead grey-olive reeds and a dead orchard of brown-black trees, sick-green pools and one bile yellow-green accent, reading olive-grey from the high camera against a pale drowned chapel tower over the wood and a low bile-green miasma drifting between the trunks.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-graveyard-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A gibbet kind (a frame with a hanging iron cage): the brief's ring of gibbets needs one, and no existing kind builds it.",
+    "A plague-pit kind (a sunken mass grave ringed with stones): the drowned chapel had to stand as the landmark instead.",
+    "A sick-green water material or pool sheen that reads at the high camera without looking neon: the pool sculpt's flat glass is the only water the kit offers."
+  ]
+}

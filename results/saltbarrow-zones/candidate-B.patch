@@ -1,0 +1,581 @@
+diff --git a/src/shared/data/EnvThemes.luau b/src/shared/data/EnvThemes.luau
+index e92d57b..9578eef 100644
+--- a/src/shared/data/EnvThemes.luau
++++ b/src/shared/data/EnvThemes.luau
+@@ -44,6 +44,26 @@ local themes: { [string]: Theme } = {
+ 			braid = "rbxassetid://99282949776586", -- assets/vfx/worm-braid.png (OpenArt, A19-D15)
+ 		},
+ 	},
++	-- The Saltbarrow's wind and tombs (a dead inland sea's bed): pale salt
++	-- dust blowing low, and a dim ochre glow, the light of the kings' graves.
++	-- Its one accent hue is that dusty ochre; the dust itself stays a moonlit
++	-- grey-beige, never warm enough to compete with the lamps.
++	saltbarrow = {
++		about = "The Saltbarrow's wind: pale salt dust and a faint ochre glow, the light of the tombs.",
++		colors = {
++			dust = { 216, 202, 176 },
++			haze = { 170, 156, 134 },
++			ember = { 255, 196, 128 },
++			pale = { 236, 228, 208 },
++		},
++		kit = {
++			-- The softest of the aurora's worm sprites, so a grain of salt has
++			-- no hard edge and no seam on its particle.
++			veil = "rbxassetid://116287069271100", -- assets/vfx/worm-veil.png (OpenArt, A19-D15)
++			smoke = "rbxassetid://118279823035826", -- assets/vfx/worm-smoke.png (OpenArt, A19-D15)
++			wisp = "rbxassetid://113245411673535", -- assets/vfx/worm-wisp.png (OpenArt, A19-D15)
++		},
++	},
+ }
+ 
+ return table.freeze(themes)
+diff --git a/src/shared/data/OutdoorTilesets.luau b/src/shared/data/OutdoorTilesets.luau
+index 104cc30..2a1482f 100644
+--- a/src/shared/data/OutdoorTilesets.luau
++++ b/src/shared/data/OutdoorTilesets.luau
+@@ -4,11 +4,13 @@ local Field = require("./outdoorTilesets/Field")
+ local Field2 = require("./outdoorTilesets/Field2")
+ local Moor = require("./outdoorTilesets/Moor")
+ local OutdoorTypes = require("../OutdoorTypes")
++local Saltbarrow = require("./outdoorTilesets/Saltbarrow")
+ 
+ local OutdoorTilesets: { [string]: OutdoorTypes.OutdoorTileset } = {
+ 	moor = Moor,
+ 	field = Field,
+ 	field2 = Field2,
++	saltbarrow = Saltbarrow,
+ }
+ 
+ return table.freeze(OutdoorTilesets)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index b945ab9..b582e8e 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -433,6 +433,97 @@ local Sculpts: { [string]: Recipe } = {
+ 			{ width = 36, depth = 38, rise = 12, steps = 8 },
+ 		},
+ 	},
++	-- The Saltbarrow (a dead inland sea's bed): the colossal skeleton that
++	-- gives the area its landmark, the broken tombs of its kings, its
++	-- bleached scrub and grave slabs, and the dark basalt standing out of
++	-- the pan. Bone is Limestone, weathered pale without going past the
++	-- surface cap; the ochre is the zone's one accent (B8).
++	saltbarrow_colossus = {
++		kind = "bones",
++		size = { 122, 44, 58 },
++		material = "Limestone",
++		colors = { { 102, 99, 92 }, { 94, 91, 85 }, { 86, 84, 79 } },
++		maxPrims = 68,
++		ribs = 9,
++	},
++	saltbarrow_ribs = {
++		kind = "bones",
++		size = { 26, 11, 14 },
++		material = "Limestone",
++		colors = { { 100, 97, 90 }, { 92, 89, 83 }, { 84, 82, 77 } },
++		maxPrims = 30,
++		ribs = 4,
++	},
++	-- A king's vault cut into the bone, its iron door ochre with old gilding.
++	saltbarrow_tomb = {
++		kind = "crypt",
++		size = { 10, 7, 6.5 },
++		material = "Limestone",
++		colors = { { 100, 96, 88 }, { 90, 87, 80 }, { 82, 80, 75 } },
++		accent = { 102, 88, 62 },
++		maxPrims = 14,
++	},
++	saltbarrow_gravestone = {
++		kind = "headstone",
++		size = { 2.6, 4, 0.8 },
++		material = "Limestone",
++		colors = { { 96, 93, 86 }, { 88, 85, 79 } },
++		maxPrims = 4,
++		top = "round",
++		lean = 11,
++	},
++	saltbarrow_gravestone_broken = {
++		kind = "headstone",
++		size = { 2.9, 3.3, 0.9 },
++		material = "Limestone",
++		colors = { { 92, 89, 83 }, { 84, 82, 77 } },
++		maxPrims = 4,
++		top = "broken",
++		lean = 14,
++	},
++	-- Dark basalt columns, the outcrops the flats break on.
++	saltbarrow_column = {
++		kind = "columns",
++		size = { 11, 15, 8 },
++		material = "Basalt",
++		colors = { { 58, 59, 64 }, { 52, 53, 58 }, { 64, 64, 68 } },
++		maxPrims = 24,
++		jag = 0.35,
++	},
++	-- Salt scrub: dry clumps bleached grey, the last colour a sparse ochre
++	-- bloom. Strewn by the hundred, so each clump is one union.
++	saltbarrow_scrub = {
++		kind = "tuft",
++		size = { 3.5, 3.2, 3.5 },
++		material = "Grass",
++		colors = { { 88, 84, 76 }, { 78, 74, 66 }, { 66, 64, 58 }, { 102, 88, 62 } },
++		maxPrims = 10,
++		blades = 2,
++		body = 0.75,
++		rounded = true,
++		merge = 12,
++	},
++	-- A dead tree bleached white as bone, for the old shore's treeline.
++	saltbarrow_dead_tree = {
++		kind = "tree",
++		size = { 4, 8, 4 },
++		material = "Wood",
++		colors = { { 96, 93, 86 }, { 86, 83, 77 }, { 101, 98, 90 } },
++		maxPrims = 30,
++		segments = 4,
++		branches = 2,
++		bend = 12,
++		snapped = true,
++	},
++	-- The threshold's marker stone, its rag the zone's dusty ochre (B8).
++	saltbarrow_marker = {
++		kind = "marker",
++		size = { 3.4, 7, 1.8 },
++		material = "Limestone",
++		colors = { { 94, 91, 84 }, { 86, 83, 77 } },
++		accent = { 102, 88, 62 },
++		maxPrims = 9,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index b2b50eb..99bfffc 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -420,6 +420,120 @@ local recipes: { [string]: Recipe } = {
+ 			},
+ 		},
+ 	},
++	-- The Saltbarrow's wind (its signature effect): a worm of pale salt dust
++	-- streaming low over the dead sea's bed, with a wide fainter haze drifting
++	-- under it. Grown from a marker into a long wandering tube held within a
++	-- couple of degrees of the ground, since the game camera (pitch 50) sees
++	-- nothing above the horizon; it sways across its own line rather than
++	-- running along it, and long slow swells fade stretches in and out so the
++	-- wind never looks like a fixed beam. Two layers, six emitters: a phone's
++	-- share is ten.
++	saltbarrow_dust = {
++		about = "A low worm of pale salt dust streaming over the Saltbarrow's flats, with a fainter haze drifting under it.",
++		theme = "saltbarrow",
++		radius = 600,
++		path = { kind = "worm", length = 280, step = 8, bend = 7, climb = 1.5, round = 8 },
++		layers = {
++			{
++				name = "drift",
++				look = {
++					kind = "stream",
++					every = 70,
++					thick = 1.2,
++					lift = 0.8,
++					toward = "along",
++					rise = 26,
++					life = { 4, 6 },
++					rate = 10,
++					size = 13,
++					tall = 0.55,
++					transparency = 0.6,
++					color = "dust",
++					texture = "veil",
++					lean = 3,
++					vary = 0.3,
++				},
++				motion = {
++					kind = "worm",
++					amplitude = 3,
++					across = 1,
++					periods = { 13, 8 },
++					twist = 4,
++					swell = { wavelength = 190, speed = 16, depth = 0.65 },
++				},
++				priority = 1,
++			},
++			{
++				name = "haze",
++				look = {
++					kind = "stream",
++					every = 140,
++					thick = 3,
++					lift = 1.8,
++					toward = "along",
++					rise = 18,
++					life = { 6, 9 },
++					rate = 4,
++					size = 44,
++					tall = 0.34,
++					transparency = 0.76,
++					color = "haze",
++					texture = "smoke",
++					lean = 4,
++					vary = 0.35,
++				},
++				motion = {
++					kind = "worm",
++					amplitude = 5,
++					across = 1,
++					periods = { 17, 11 },
++					twist = 6,
++					swell = { wavelength = 190, speed = 16, depth = 0.65 },
++				},
++				priority = 2,
++			},
++		},
++	},
++	-- The tombs' glow, the other half of the Saltbarrow's weather: a slow
++	-- ochre light climbing off the kings' graves, thin wisps rising from the
++	-- bone. A short worm from the marker, so a tomb is lit in one place and
++	-- not washed; two lights and three emitters.
++	saltbarrow_tombglow = {
++		about = "A slow ochre glow rising from the Saltbarrow's tombs, thin wisps climbing off the bone.",
++		theme = "saltbarrow",
++		radius = 260,
++		path = { kind = "worm", length = 30, step = 4, bend = 26, climb = 10, round = 3 },
++		layers = {
++			{
++				name = "wisps",
++				look = {
++					kind = "stream",
++					every = 12,
++					thick = 3,
++					lift = 0,
++					toward = "up",
++					rise = 5,
++					life = { 3, 5 },
++					rate = 4,
++					size = 3,
++					tall = 2.5,
++					transparency = 0.8,
++					color = "ember",
++					texture = "wisp",
++					lean = 8,
++					vary = 0.3,
++				},
++				motion = { kind = "sway", amplitude = 1.5, tilt = 6, span = 10, periods = { 7, 4 } },
++				priority = 1,
++			},
++			{
++				name = "glow",
++				look = { kind = "light", every = 14, max = 2, range = 22, brightness = 1.1, color = "ember" },
++				motion = { kind = "pulse", period = 6.5, depth = 0.35 },
++				priority = 3,
++			},
++		},
++	},
+ }
+ 
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 3e038c4..7af1784 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -177,6 +177,29 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The Saltbarrow: a dead inland sea's bed and the kings buried in its bones.
++	["sculpt:saltbarrow_colossus"] = row(
++		"A colossal ribcage half sunk in the Saltbarrow's salt pan: the area's landmark from the high camera.",
++		MOOR
++	),
++	["sculpt:saltbarrow_ribs"] = row("A broken ribcage lying half buried out on the Saltbarrow's flats.", MOOR),
++	["sculpt:saltbarrow_tomb"] = row("A king's tomb cut into the bone, its iron door ochre with old gilding.", MOOR),
++	["sculpt:saltbarrow_gravestone"] = row("A round-topped grave slab of bleached limestone in the salt.", MOOR),
++	["sculpt:saltbarrow_gravestone_broken"] = row("A broken grave slab of bleached limestone in the salt.", MOOR),
++	["sculpt:saltbarrow_column"] = row("A dark basalt column standing out of the Saltbarrow's flats.", MOOR),
++	["sculpt:saltbarrow_scrub"] = row("A clump of dry salt scrub with a sparse muted ochre bloom.", MOOR),
++	["sculpt:saltbarrow_dead_tree"] = row(
++		"A dead tree bleached white as bone, along the old shore of the Saltbarrow.",
++		MOOR
++	),
++	["sculpt:saltbarrow_marker"] = row(
++		"A pale marker stone with a dusty ochre rag, at the mouth of each cleft between reaches.",
++		MOOR
++	),
++	["outdoor:saltbarrow"] = row(
++		"A pale salt pan under a colossal ribcage, dark basalt crags, bleached bone and dusty ochre, with dust streaming over the flats.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/data/outdoorTilesets/Saltbarrow.luau b/src/shared/data/outdoorTilesets/Saltbarrow.luau
+new file mode 100644
+index 0000000..0768919
+--- /dev/null
++++ b/src/shared/data/outdoorTilesets/Saltbarrow.luau
+@@ -0,0 +1,265 @@
++--!strict
++-- Saltbarrow: the bed of a dead inland sea. Something enormous died here and
++-- the kings of a vanished people were buried in its bones, so the look is a
++-- pale salt pan, grey-beige dust and cracked mud under a colossal ribcage,
++-- with dark basalt crags standing out of it and one dusty ochre accent (B8)
++-- on the threshold stones and in the tombs' glow. Derived from Field the way
++-- Field2 is: the field's pieces and rules, repainted. Field's living green
++-- and warm earth are its own alone, so every ground here is salt; the old
++-- paved road runs on, cracked and darker than the pan so it reads from the
++-- game camera. The landmark is the colossus in its hollow (B11), with tombs
++-- set among its ribs, and the wind's low dust is the area's set piece.
++local Field = require("./Field")
++local OutdoorTypes = require("../../OutdoorTypes")
++local Sculpts = require("../Sculpts")
++
++local function with<T>(base: T, changes: { [string]: any }): T
++	local out = table.clone(base :: any)
++	for key, value in changes do
++		out[key] = value
++	end
++	return table.freeze(out) :: any
++end
++
++-- Salt ground by terrain material, as Field paints its living ground: Terrain
++-- keeps one colour per material, so every look on a material moves together.
++-- The pan sits at the top of the bible's value range: it is the brightest
++-- large surface in the game, and still a moonlit grey, never white.
++local SALT: { [string]: { number } } = {
++	Grass = { 88, 85, 78 }, -- the salt crust, which Roblox's grass blades take
++	Ground = { 78, 73, 63 }, -- wind-drifted dust
++	LeafyGrass = { 70, 66, 58 }, -- the banks climbing away past the rim
++	Mud = { 66, 61, 53 }, -- cracked dry mud under the ruins and along the rim
++	Basalt = { 54, 55, 60 }, -- the skirt of the dark outcrops
++}
++
++local function salted(look: OutdoorTypes.GroundLook): OutdoorTypes.GroundLook
++	local color = SALT[look.material]
++	return if color then with(look, { color = color }) else look
++end
++
++-- Dark basalt: the outcrops, rim crags and boulders that stand out of the
++-- pale flats, colder and darker than the moor's own rock.
++local BASALT_ROCK = { 54, 55, 60 }
++-- The dead shore's trees, bleached white as bone: the same paint as the
++-- snapped sculpt, so meshes and sculpts stay one colour (the moor's rule).
++local BLEACHED = Sculpts.saltbarrow_dead_tree.colors[1]
++
++local function repainted(pieces: { OutdoorTypes.PieceLook }, color: { number }): { OutdoorTypes.PieceLook }
++	local out = table.clone(pieces)
++	for i, piece in out do
++		out[i] = with(piece, { color = color })
++	end
++	return table.freeze(out)
++end
++
++local props = table.clone(Field.props)
++-- Salt scrub: a few bleached clumps on a flat that is empty by design, so
++-- fewer than the field's gorse. Still above the 2–3 stud grass blades.
++props.heather = with(props.heather, {
++	perHundredCells = 2,
++	pieces = { { name = "SaltScrub", size = Sculpts.saltbarrow_scrub.size, sculpt = "saltbarrow_scrub" } },
++})
++-- A lonelier road than the field's: farther between the lantern pools.
++props.lanterns = with(props.lanterns, { spacing = 120 })
++-- The waysides of a dead land: the well a caravan watered at, and the cross
++-- that marked the way. No haystack out here.
++props.waysides = with(props.waysides, {
++	pieces = {
++		{ name = "Well", size = Sculpts.field_well.size, sculpt = "field_well" },
++		{ name = "WaysideCross", size = Sculpts.field_cross.size, sculpt = "field_cross" },
++	},
++	count = 3,
++})
++-- The graves of the kings' people, in bleached stone.
++props.headstones = with(props.headstones, {
++	perHundredCells = 26,
++	pieces = {
++		{ name = "Gravestone", size = Sculpts.saltbarrow_gravestone.size, sculpt = "saltbarrow_gravestone" },
++		{
++			name = "GravestoneBroken",
++			size = Sculpts.saltbarrow_gravestone_broken.size,
++			sculpt = "saltbarrow_gravestone_broken",
++			weight = 0.6,
++		},
++	},
++})
++-- The moor's boulder mesh in dark basalt, with a basalt column among them now
++-- and then: the outcrops the flats break on. Both are stone you can see, so
++-- both are solid (the spec's own rule).
++local boulders = table.clone(props.boulders)
++local boulderPieces = table.clone(boulders.pieces)
++for i, piece in boulderPieces do
++	boulderPieces[i] = with(piece, { color = BASALT_ROCK })
++end
++table.insert(boulderPieces, {
++	name = "BasaltColumn",
++	size = Sculpts.saltbarrow_column.size,
++	sculpt = "saltbarrow_column",
++	solid = true,
++	weight = 0.7,
++})
++boulders.pieces = table.freeze(boulderPieces)
++props.boulders = table.freeze(boulders)
++
++-- The landmark (B11): one colossal ribcage half sunk in the salt, its ribs
++-- three times a man's height, to pull players across the flats from the high
++-- camera. Quiet, so it never stands on the road or in a pack's ground.
++local colossus: OutdoorTypes.PropSet = {
++	pieces = {
++		{ name = "Colossus", size = Sculpts.saltbarrow_colossus.size, sculpt = "saltbarrow_colossus" },
++	},
++	perHundredCells = 0,
++	count = 1,
++	spacing = 220,
++	clearance = 6,
++	quiet = true,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	scale = { 1, 1.1 },
++	sink = 2,
++}
++props.colossus = table.freeze(colossus)
++-- Ribs half buried out on the open pan, so the flat itself is bone strewn.
++local ribs: OutdoorTypes.PropSet = {
++	pieces = { { name = "Ribs", size = Sculpts.saltbarrow_ribs.size, sculpt = "saltbarrow_ribs" } },
++	perHundredCells = 0,
++	count = 3,
++	spacing = 130,
++	clearance = 3,
++	quiet = true,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	scale = { 0.9, 1.3 },
++	sink = 1.2,
++}
++props.ribs = table.freeze(ribs)
++-- The kings' tombs, cut into the bone: a few vaults out on the heath.
++local tombs: OutdoorTypes.PropSet = {
++	pieces = { { name = "Tomb", size = Sculpts.saltbarrow_tomb.size, sculpt = "saltbarrow_tomb" } },
++	perHundredCells = 0,
++	count = 2,
++	spacing = 140,
++	clearance = 4,
++	quiet = true,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	scale = { 0.9, 1.1 },
++	sink = 0.6,
++}
++props.tombs = table.freeze(tombs)
++
++local saltbarrow = table.clone(Field) :: OutdoorTypes.OutdoorTileset
++saltbarrow.name = "saltbarrow"
++saltbarrow.palette = "pale salt crust, grey-beige dust, cracked dry mud, sun-bleached bone, "
++	.. "dark basalt, one dusty ochre accent, desaturated, matte, no highlights"
++saltbarrow.lighting = "mood"
++saltbarrow.props = table.freeze(props)
++
++local edges: { [string]: OutdoorTypes.EdgeLook } = table.clone(Field.edges :: any)
++edges["cliff"] = with(edges["cliff"], { pieces = repainted(edges["cliff"].pieces, BASALT_ROCK) })
++-- The dead shore (the thicket's edge): the trees that grew here died when
++-- the sea did, and bleached white as bone. Meshes stay meshes, a part apiece,
++-- so the rim costs what the moor's did.
++local trees = table.clone(edges["thicket"].pieces)
++for i, piece in trees do
++	if piece.sculpt then
++		trees[i] = with(piece, {
++			sculpt = "saltbarrow_dead_tree",
++			name = "SaltDeadTree",
++			size = Sculpts.saltbarrow_dead_tree.size,
++			weight = 0.4,
++		})
++	else
++		trees[i] = with(piece, { color = BLEACHED })
++	end
++end
++edges["thicket"] = with(edges["thicket"], { pieces = trees, spacing = 8, scale = { 2.4, 3.6 } })
++-- The old dry-stone walls of the vanished people, not the town's curtain wall.
++edges["ruin_wall"] = with(edges["ruin_wall"], { run = "moor_field_wall" })
++for kind, edge in edges do
++	if edge.ground then
++		edges[kind] = with(edge, { ground = salted(edge.ground) })
++	end
++end
++saltbarrow.edges = table.freeze(edges) :: any
++
++-- The salt pan, the trodden mud of the ruins, and the old paved road cracked
++-- and dust-filled: darker than the pan, or it vanished into it from above.
++saltbarrow.ground = with(Field.ground, {
++	heath = salted(Field.ground.heath),
++	ruin = salted(Field.ground.ruin),
++	road = { material = "Cobblestone", color = { 74, 70, 62 } },
++})
++if Field.outcrop.ground then
++	saltbarrow.outcrop = with(Field.outcrop, {
++		ground = salted(Field.outcrop.ground),
++		pieces = repainted(Field.outcrop.pieces, BASALT_ROCK),
++	})
++end
++local bluffRock = Field.bluff and Field.bluff.rock
++if bluffRock then
++	saltbarrow.bluff = with(Field.bluff, {
++		rock = salted(bluffRock),
++		-- The rubble core between the stones, the rock face's own dark.
++		backing = { material = "Slate", color = { 56, 56, 60 } },
++	})
++end
++if Field.pools then
++	-- Brine in the hollows: the sheet stays near-black, its bed is dry mud.
++	saltbarrow.pools = with(Field.pools, { bed = salted(Field.pools.bed) })
++end
++-- Closed all round: pale banks climb away behind the rim, hills run on past
++-- the map's own into the haze, and the abyss under it keeps its mist.
++saltbarrow.beyond = with(Field.beyond, {
++	ground = salted(Field.beyond.ground),
++	rock = salted(Field.beyond.rock),
++	hills = table.freeze({ reach = 70, chunk = 10, height = table.freeze({ 12, 26 }), lane = 4, laneReach = 12 }),
++	mist = with(Field.beyond.mist, { color = { 100, 104, 118 } }),
++})
++-- Low mist over the pan: pale, broad and thin, so the flats read as a sea of
++-- mist and the bone rises out of it.
++saltbarrow.groundMist = with(Field.groundMist, {
++	color = { 158, 162, 174 },
++	perHundredCells = 0.4,
++	spacing = 48,
++	size = 30,
++	transparency = 0.87,
++})
++
++-- No town out on the salt; the manor's ruin still keeps a lit window.
++saltbarrow.town = nil
++saltbarrow.kits = nil
++saltbarrow.litWindows = with(Field.litWindows :: any, { kinds = { "manor" }, count = 1, chance = 0.4 })
++saltbarrow.wallLights = with(Field.wallLights, { chance = 0.35 })
++-- A vault of the kings at the back of each graveyard, in pale stone.
++saltbarrow.graveyard = with(Field.graveyard :: any, {
++	crypt = { name = "Tomb", size = Sculpts.saltbarrow_tomb.size, sculpt = "saltbarrow_tomb" },
++})
++-- The thresholds' marker stone carries the zone's own dusty ochre rag.
++local thresholds = Field.thresholds
++if thresholds then
++	saltbarrow.thresholds = with(thresholds, {
++		marker = {
++			name = "ThresholdMarker",
++			size = Sculpts.saltbarrow_marker.size,
++			sculpt = "saltbarrow_marker",
++			solid = true,
++		},
++	})
++end
++
++-- The field's landmarks, repainted: its giant bones are the colossus now, and
++-- the Labyrinth's gate stays the Ashfields' own way on.
++local landmarks = Field.landmarks
++if landmarks then
++	local boneLandmarks = table.clone(landmarks) :: OutdoorTypes.LandmarkLook
++	boneLandmarks.bones = {
++		name = "Colossus",
++		size = Sculpts.saltbarrow_colossus.size,
++		sculpt = "saltbarrow_colossus",
++	}
++	boneLandmarks.rock = salted(landmarks.rock)
++	boneLandmarks.headland = salted(landmarks.headland)
++	boneLandmarks.labyrinthGate = nil
++	saltbarrow.landmarks = table.freeze(boneLandmarks)
++end
++
++return table.freeze(saltbarrow)

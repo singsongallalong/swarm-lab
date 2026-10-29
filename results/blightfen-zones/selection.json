@@ -1,0 +1,15 @@
+{
+  "picked": [
+    "C",
+    "B"
+  ],
+  "reasons": {
+    "C": "The plague pit: the clearest sickly yellow-green miasma rising from the pools, over brown-black bog and dead trees.",
+    "B": "The dead orchard: rows of dead trees give the ground a texture none of the others has, with yellow-green wisps among them."
+  },
+  "fixes": {
+    "C": "Make the pit itself the landmark: a ring of headstones and crypts round one pool.",
+    "B": "Its wisps are faint."
+  },
+  "notes": "A, the drowned farmsteads, is close to C but plainer."
+}

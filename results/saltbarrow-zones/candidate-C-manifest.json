@@ -1,0 +1,62 @@
+{
+  "skill": "Saltbarrow",
+  "look": "saltbarrow",
+  "tileset": "saltbarrow",
+  "sculpts": [
+    "saltbarrow_king_bones",
+    "saltbarrow_bones",
+    "saltbarrow_broken_column",
+    "saltbarrow_salt_spire",
+    "saltbarrow_grave",
+    "saltbarrow_grave_slab",
+    "saltbarrow_salt_tuft",
+    "saltbarrow_lantern_post",
+    "saltbarrow_tomb",
+    "saltbarrow_king_tomb",
+    "saltbarrow_bone_arch",
+    "saltbarrow_exit_arch",
+    "saltbarrow_marker",
+    "saltbarrow_waystones",
+    "saltbarrow_watchtower",
+    "saltbarrow_tomb_mouth"
+  ],
+  "setpiece": "saltbarrow_tomb_glow",
+  "rows_added": [
+    "saltbarrow_king_bones",
+    "saltbarrow_bones",
+    "saltbarrow_broken_column",
+    "saltbarrow_salt_spire",
+    "saltbarrow_grave",
+    "saltbarrow_grave_slab",
+    "saltbarrow_salt_tuft",
+    "saltbarrow_lantern_post",
+    "saltbarrow_tomb",
+    "saltbarrow_king_tomb",
+    "saltbarrow_bone_arch",
+    "saltbarrow_exit_arch",
+    "saltbarrow_marker",
+    "saltbarrow_waystones",
+    "saltbarrow_watchtower",
+    "saltbarrow_tomb_mouth",
+    "saltbarrow",
+    "saltbarrow_tomb_glow",
+    "saltbarrow_dust_wind"
+  ],
+  "intent": "A pale salt pan at night under dark basalt rims, crossed by the kings' tomb road: a dark causeway of pale broken columns, lesser graves and bone-white tombs, with the king's colossal ribcage as the landmark and a dusty ochre glow breathing out of the tombs.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png",
+    ".swarm/out/zone-dustwind-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A pillar/column sculpt kind: the columns kind builds chunky cliff chunks, so a slender broken column had to be a single tall block.",
+    "An ossuary/skull prop kind, so the royal tomb and its landmark could read as a king rather than only a ribcage.",
+    "A run recipe for a processional colonnade of broken columns, so tomb-road arches and colonnades could line the road at run cost instead of prop cost."
+  ]
+}

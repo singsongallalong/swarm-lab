@@ -1,0 +1,50 @@
+{
+  "skill": "Saltbarrow",
+  "look": "saltbarrow",
+  "tileset": "saltbarrow",
+  "sculpts": [
+    "saltbarrow_colossus",
+    "saltbarrow_ribs",
+    "saltbarrow_tomb",
+    "saltbarrow_gravestone",
+    "saltbarrow_gravestone_broken",
+    "saltbarrow_column",
+    "saltbarrow_scrub",
+    "saltbarrow_dead_tree",
+    "saltbarrow_marker"
+  ],
+  "setpiece": "saltbarrow_dust",
+  "rows_added": [
+    "saltbarrow_colossus",
+    "saltbarrow_ribs",
+    "saltbarrow_tomb",
+    "saltbarrow_gravestone",
+    "saltbarrow_gravestone_broken",
+    "saltbarrow_column",
+    "saltbarrow_scrub",
+    "saltbarrow_dead_tree",
+    "saltbarrow_marker",
+    "saltbarrow",
+    "saltbarrow_dust",
+    "saltbarrow_tombglow"
+  ],
+  "intent": "A pale salt pan under a colossal bleached ribcage, ringed by bone-white dead trees and dark basalt crags, with ochre tombs and a low worm of dust streaming over the flats, so from the high camera it reads as a bright, empty sea bed broken by bone and black rock.",
+  "renders": [
+    ".swarm/out/zone-whole-r2.png",
+    ".swarm/out/zone-pool-r2.png",
+    ".swarm/out/zone-ruin-r2.png",
+    ".swarm/out/zone-tileset-r2.png",
+    ".swarm/out/zone-tileset-eye-r2.png",
+    ".swarm/out/zone-sculpts-r2.png",
+    ".swarm/out/zone-setpiece-r2.png",
+    ".swarm/out/zone-setpiece-tombglow-r2.png",
+    ".swarm/out/zone-graveyard-r2.png",
+    ".swarm/out/zone-whole-seed2.png",
+    ".swarm/out/zone-whole-seed3.png"
+  ],
+  "revisions": 1,
+  "requests": [
+    "A skull or spine sculpt kind: `bones` builds only ribcages, so the colossus has no skull to read as one creature.",
+    "A cloth or banner kind for the zone accent: the dusty ochre lives only on the marker's rag and the tomb's door, so it is barely visible from the high camera."
+  ]
+}

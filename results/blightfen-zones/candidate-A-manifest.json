@@ -1,0 +1,44 @@
+{
+  "skill": "Blightfen",
+  "look": "blightfen",
+  "tileset": "blightfen",
+  "sculpts": [
+    "blightfen_reeds",
+    "blightfen_dead_tree",
+    "blightfen_headstone",
+    "blightfen_well",
+    "blightfen_haystack",
+    "blightfen_marker",
+    "blightfen_pool",
+    "blightfen_chapel"
+  ],
+  "setpiece": "blightfen_miasma",
+  "rows_added": [
+    "blightfen_reeds",
+    "blightfen_dead_tree",
+    "blightfen_headstone",
+    "blightfen_well",
+    "blightfen_haystack",
+    "blightfen_marker",
+    "blightfen_pool",
+    "blightfen_chapel",
+    "blightfen",
+    "blightfen_miasma"
+  ],
+  "intent": "A drowned farmland gone to a plague bog, reading from the high camera as brown-grey mud and dead grey-olive reed clumps inside wet stained cliffs, its old road lined with rotten wells and haystacks, sick green pools joined by pale causeways and dead orchards on the open heath, with one pale broken chapel tower standing clear as the landmark and the bile-green miasma lying low over the water.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A gibbet or hanging-cage prop kind, so the brief's ring of gibbets could stand at a crossroads instead of the watchtower-shaped chapel carrying the landmark alone.",
+    "An orchard prop set that plants in rows along a line (props scatter), so the dead orchards read as the farms' planted rows rather than as scattered trees.",
+    "A chapel or spire building kind: the tower kind is a broken round watchtower, close to a drowned chapel tower but without a nave or spire to read it as one."
+  ]
+}

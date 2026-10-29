@@ -1,0 +1,55 @@
+{
+  "skill": "Rimeholt",
+  "look": "rimeholt",
+  "tileset": "rimeholt",
+  "sculpts": [
+    "rimeholt_barrow",
+    "rimeholt_barrow_low",
+    "rimeholt_great_barrow",
+    "rimeholt_runestone",
+    "rimeholt_runestone_ring",
+    "rimeholt_crypt",
+    "rimeholt_headstone",
+    "rimeholt_pine",
+    "rimeholt_pine_snapped",
+    "rimeholt_sedge",
+    "rimeholt_ice",
+    "rimeholt_cross",
+    "rimeholt_shrine"
+  ],
+  "setpiece": "rimeholt_snowdrift",
+  "rows_added": [
+    "rimeholt_barrow",
+    "rimeholt_barrow_low",
+    "rimeholt_great_barrow",
+    "rimeholt_runestone",
+    "rimeholt_runestone_ring",
+    "rimeholt_crypt",
+    "rimeholt_headstone",
+    "rimeholt_pine",
+    "rimeholt_pine_snapped",
+    "rimeholt_sedge",
+    "rimeholt_ice",
+    "rimeholt_cross",
+    "rimeholt_shrine",
+    "rimeholt",
+    "rimeholt_snowdrift",
+    "rimeholt_barrow_glow"
+  ],
+  "intent": "A frozen highland at night: blue-grey snow over dark frozen earth, black pines rimed pale round the rims, dark granite barrows and runestone rings scattered across the field, pale ice in the hollows and sparse amber hill-fires along the road, with snow drifting low over the barrows.",
+  "renders": [
+    ".swarm/out/zone-whole-r2.png",
+    ".swarm/out/zone-pool-r2.png",
+    ".swarm/out/zone-ruin-r2.png",
+    ".swarm/out/zone-tileset-r2.png",
+    ".swarm/out/zone-tileset-eye-r2.png",
+    ".swarm/out/zone-sculpts-r2.png",
+    ".swarm/out/zone-setpiece-r2.png",
+    ".swarm/out/zone-barrow-glow-r2.png"
+  ],
+  "revisions": 1,
+  "requests": [
+    "A lake/marsh ground feature: tileset pools only dress small terrace hollows, so the frozen lake reads as scattered ice pools rather than one lake",
+    "A conifer/mound prop kind: the tree and boulder sculpts give bare-branched pines and slab-like barrows, not needled pines and rounded turf mounds"
+  ]
+}

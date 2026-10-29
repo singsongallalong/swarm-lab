@@ -1,0 +1,15 @@
+{
+  "picked": [
+    "B",
+    "A"
+  ],
+  "reasons": {
+    "B": "The wreck graveyard: hull ribs built from the bones kind and driftwood strewn on blue-slate shingle, and the strongest effect of the area, a sea-green tideglow coiling over the pools.",
+    "A": "The lighthouse headland: the only true landmark (a dead lighthouse from the tower kind) and green spray off the cliffs; the map reads plainer."
+  },
+  "fixes": {
+    "B": "Give it a landmark: borrow A's lighthouse.",
+    "A": "The spray is faint from the game camera."
+  },
+  "notes": "C, the drowned village, has the right idea but its tideline effect is a thin line."
+}

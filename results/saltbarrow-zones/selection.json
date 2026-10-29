@@ -1,0 +1,15 @@
+{
+  "picked": [
+    "B",
+    "C"
+  ],
+  "reasons": {
+    "B": "The giant's ribcage: a colossal skeleton and royal tombs on pale salt, the brief's landmark exactly.",
+    "C": "The tomb road: the best effect of the area, an ochre glow coiling up out of the tombs, along a road of broken columns."
+  },
+  "fixes": {
+    "B": "Its dust effect sits off to one side of the game camera; bring it in, or use C's tomb glow.",
+    "C": "Its bones are smaller than B's colossus."
+  },
+  "notes": "A, the cracked basin, is a fine palette but no landmark."
+}

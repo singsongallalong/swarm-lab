@@ -1,0 +1,46 @@
+{
+  "skill": "Brinewrack",
+  "look": "brinewrack",
+  "tileset": "brinewrack",
+  "sculpts": [
+    "brinewrack_lighthouse",
+    "brinewrack_wreck_ribs",
+    "brinewrack_stack",
+    "brinewrack_boulder",
+    "brinewrack_driftwood",
+    "brinewrack_sea_grass",
+    "brinewrack_tidepool",
+    "brinewrack_marker"
+  ],
+  "setpiece": "brinewrack_spray",
+  "rows_added": [
+    "brinewrack_lighthouse",
+    "brinewrack_wreck_ribs",
+    "brinewrack_stack",
+    "brinewrack_boulder",
+    "brinewrack_driftwood",
+    "brinewrack_sea_grass",
+    "brinewrack_tidepool",
+    "brinewrack_marker",
+    "brinewrack",
+    "brinewrack_spray",
+    "brinewrack_tideline"
+  ],
+  "intent": "Brinewrack is a drowned coast of wet slate-blue shingle and black rock under a dead pale lighthouse, its shoreline stranded with bleached wreck ribs, grey driftwood and pale tide-pools, so from the high camera it reads as a cold blue-grey headland with bone-pale landmarks and one thin sea-green accent.",
+  "renders": [
+    ".swarm/out/zone-whole-r2.png",
+    ".swarm/out/zone-pool-r2.png",
+    ".swarm/out/zone-ruin-r2.png",
+    ".swarm/out/zone-tileset-r2.png",
+    ".swarm/out/zone-tileset-eye-r2.png",
+    ".swarm/out/zone-sculpts-r2.png",
+    ".swarm/out/zone-setpiece-r2.png",
+    ".swarm/out/zone-setpiece-tideline-r2b.png"
+  ],
+  "revisions": 1,
+  "requests": [
+    "A solid tower prop: the tileset's solidity rule only lets `boulders` be solid, so the lighthouse is walk-through.",
+    "A lamp-room or gallery option on the `tower` kind, so a dead lighthouse reads as one rather than a plain tapered tower.",
+    "A sea-spray or foam sprite for the theme kit; only the aurora's ribbon, veil and wisp textures exist to borrow."
+  ]
+}

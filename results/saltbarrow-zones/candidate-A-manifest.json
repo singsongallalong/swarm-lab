@@ -1,0 +1,60 @@
+{
+  "skill": "Saltbarrow",
+  "look": "saltbarrow",
+  "tileset": "saltbarrow",
+  "sculpts": [
+    "saltbarrow_saltbush",
+    "saltbarrow_boulder",
+    "saltbarrow_small_bones",
+    "saltbarrow_ribcage",
+    "saltbarrow_colossus",
+    "saltbarrow_headstone",
+    "saltbarrow_headstone_broken",
+    "saltbarrow_watchtower",
+    "saltbarrow_lamppost",
+    "saltbarrow_waystones",
+    "saltbarrow_arch",
+    "saltbarrow_marker",
+    "saltbarrow_tomb",
+    "saltbarrow_barrow",
+    "saltbarrow_tomb_gate"
+  ],
+  "setpiece": "saltbarrow_dust_devil",
+  "rows_added": [
+    "saltbarrow_saltbush",
+    "saltbarrow_boulder",
+    "saltbarrow_small_bones",
+    "saltbarrow_ribcage",
+    "saltbarrow_colossus",
+    "saltbarrow_headstone",
+    "saltbarrow_headstone_broken",
+    "saltbarrow_watchtower",
+    "saltbarrow_lamppost",
+    "saltbarrow_waystones",
+    "saltbarrow_arch",
+    "saltbarrow_marker",
+    "saltbarrow_tomb",
+    "saltbarrow_barrow",
+    "saltbarrow_tomb_gate",
+    "saltbarrow",
+    "saltbarrow_dust_devil",
+    "saltbarrow_tomb_glow"
+  ],
+  "intent": "The dry bed of a dead inland sea: a broad pale grey salt flat strewn with bleached bones and dark basalt islands, a colossal ribcage and a lone watchtower as landmarks, with a slow ochre-tinged dust devil turning over it; from the high camera it reads as an open pale basin whose dark rock and warm bone stand against the salt.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png",
+    ".swarm/out/zone-setpiece-tomb-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A Salt (or cracked mud plate) Terrain material for the flats: Sand carries the pale crust, but the plates only read on the road.",
+    "A funnel or twister set-piece motion (or a stream look that tapers along its path), so a dust devil narrows toward the top instead of reading as a rising plume.",
+    "A bone-spire sculpt kind (standing ribs or vertebrae) for the kings' stone rings; waystones in bone colours are doing that work."
+  ]
+}

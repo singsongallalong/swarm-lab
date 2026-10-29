@@ -1,0 +1,53 @@
+{
+  "skill": "Rimeholt",
+  "look": "rimeholt",
+  "tileset": "rimeholt",
+  "sculpts": [
+    "rimeholt_pine",
+    "rimeholt_pine_bent",
+    "rimeholt_pine_snapped",
+    "rimeholt_frostscrub",
+    "rimeholt_boulder",
+    "rimeholt_runestones",
+    "rimeholt_barrow",
+    "rimeholt_barrow_door",
+    "rimeholt_fort_tower",
+    "rimeholt_ice",
+    "rimeholt_standing_stone"
+  ],
+  "setpiece": "rimeholt_coldmist",
+  "rows_added": [
+    "rimeholt_pine",
+    "rimeholt_pine_bent",
+    "rimeholt_pine_snapped",
+    "rimeholt_frostscrub",
+    "rimeholt_boulder",
+    "rimeholt_runestones",
+    "rimeholt_barrow",
+    "rimeholt_barrow_door",
+    "rimeholt_fort_tower",
+    "rimeholt_ice",
+    "rimeholt_standing_stone",
+    "rimeholt",
+    "rimeholt_coldmist",
+    "rimeholt_runeglow"
+  ],
+  "intent": "A frozen highland under old snow: blue-grey snow, a rimed black pine wood over the hill-folk's runestone rings, barrow mounds and a broken hill-fort tower, an ice sheet in every hollow and a thin ice-blue mist threading low between the trunks, reading from the high camera as dark pines and grey stone over pale snow with one cold green-blue accent.",
+  "renders": [
+    ".swarm/out/zone-whole-r3.png",
+    ".swarm/out/zone-pool-r3.png",
+    ".swarm/out/zone-ruin-r3.png",
+    ".swarm/out/zone-tileset-r3.png",
+    ".swarm/out/zone-tileset-eye-r3.png",
+    ".swarm/out/zone-sculpts-r3.png",
+    ".swarm/out/zone-setpiece-r3.png",
+    ".swarm/out/zone-setpiece-runeglow-r3.png",
+    ".swarm/out/zone-stones-r3.png",
+    ".swarm/out/zone-tower-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A conifer/pine sculpt kind: the wood's black pines are tree sculpts, since only a bare-branched tree kind exists and a new kind is code.",
+    "A way to place the frozen lake as a named landmark: the ice sheet only appears in terrace hollows through systems/Pools, so the lake cannot be the zone's draw from afar."
+  ]
+}
