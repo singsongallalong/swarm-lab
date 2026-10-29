@@ -1,0 +1,11 @@
+# One direction per generator, assigned in order and repeated past the last line. Each
+# names a SILHOUETTE or a material story, so a swarm explores different sets instead of
+# six versions of one. The brief and the rules still win. Lines starting with # are ignored.
+Asymmetric: one heavy shoulder (a single great pauldron or a beast's skull) and the other arm bare, so the outline is lopsided from above.
+Big furs: a thick fur mantle across the shoulders is the silhouette; everything else lean, wrapped and strapped.
+Trophies: bones, teeth, horns and skulls of what they've killed, worked into the pieces; the helm is the trophy that reads first.
+Scavenged iron: mismatched plates torn from other armour, lashed onto hide with rope and rawhide, dented and rusting.
+Bare and painted: as little cover as the slots allow, leather straps and bracers, with war paint (a strong but muted colour) carrying the family read.
+Horned: the helm's horns or antlers make the outline from the high camera; the rest is heavy hide and wide belts.
+Layered hide: overlapping hide panels and lacing, thick and quilted, broad at the shoulders and hips, like a beast's own hide.
+Chain and hide: short scraps of mail and chains wound over furs, the iron catching the moon at the edges.

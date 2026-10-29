@@ -1,0 +1,17 @@
+# The prefix every file, look and catalog key of the set starts with.
+skill = "Reaver"
+family = "armour"
+brief = """
+A barbarian's set for the Reaver: the Strength and Agility class that starts on a
+greataxe, whose subclasses are the Berserker and the Dervish. A warrior who fights
+half-armoured on purpose, trading protection for reach and fury: hides, furs and
+leather with a few hard pieces of iron or bone taken from what they've killed, worn
+and patched, never polished. It must read as its own family from the high camera,
+apart from iron (grey and broad), leather (brown and slim), studded (oxblood with
+brass), linen (pale oatmeal) and fenscale (grey-green), and still sit in the same
+gothic world: muted, worn, night-lit.
+
+Make all four slots: Helm, Chest, Gloves, Boots. Name them ReaverHelm, ReaverChest,
+ReaverGloves and ReaverBoots unless your idea calls for better names (keep the Reaver
+prefix). The set is looks only: no base, numbers or drop weight.
+"""

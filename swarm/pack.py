@@ -32,8 +32,18 @@ def _block(lang: str, text: str) -> str:
 
 def render_commands(brief: dict) -> tuple[str, str]:
     """(reference commands, your-look commands) for the brief's family."""
-    skill, color = brief["skill"], _rgb(brief["color"])
+    skill, color = brief["skill"], _rgb(brief.get("color", (0, 0, 0)))
     current = brief.get("current_look", "")
+    if brief["family"] == "armour":
+        # A whole set worn at once, as armourpreview draws a comma list: the set's
+        # looks replace <YourLook>, in slot order. The reference is every family's set.
+        ref = ["lune run scripts/armourpreview sets .swarm/out/ref-sets.png"]
+        mine = [
+            "lune run scripts/armourpreview <YourLook> .swarm/out/armour-set-r1.png",
+            "lune run scripts/armourpreview <YourLook> .swarm/out/armour-set-close-r1.png close",
+            "lune run scripts/armourpreview <YourLook> .swarm/out/armour-set-fit-r1.png fit",
+        ]
+        return "\n".join(ref), "\n".join(mine)
     if brief["family"] == "area":
         shape = f"angle={brief['angle']} radius={brief['radius']}"
         ref = [
@@ -222,7 +232,7 @@ def build(job: Job, brief: dict, repo: Path) -> str:
                 current.append(f"`{rel}`, row `{name}`:\n\n" + _block("lua", luarows.get(src, name)))
             except KeyError:
                 pass  # not every file holds every name; checked below
-    if not current:
+    if not current and any(spec["mode"] in ("owned_row", "add_rows") for spec in job.files.values()):
         raise KeyError(f"none of the job's files has a row for {skill} or its current look")
 
     examples = []
@@ -230,9 +240,9 @@ def build(job: Job, brief: dict, repo: Path) -> str:
         examples.append(f"`{ex['file']}`, row `{ex['row']}`:\n\n" + _block("lua", luarows.get(read(ex["file"]), ex["row"])))
 
     kinds_spec = job.data.get("kinds", {}).get(brief["family"])
-    if kinds_spec is None:
+    if kinds_spec is None and "kinds" in job.data:
         raise KeyError(f"job has no kinds for family {brief['family']!r}")
-    kinds = _block("lua", luarows.between(read(kinds_spec["file"]), kinds_spec["from"], kinds_spec["to"]))
+    kinds = _block("lua", luarows.between(read(kinds_spec["file"]), kinds_spec["from"], kinds_spec["to"])) if kinds_spec else ""
 
     rules = []
     for rel in job.data.get("rules", []):
@@ -253,7 +263,7 @@ def build(job: Job, brief: dict, repo: Path) -> str:
         family=brief["family"],
         brief=brief["brief"].strip(),
         current_look=brief.get("current_look", "none"),
-        color=_rgb(brief["color"]),
+        color=_rgb(brief.get("color", (0, 0, 0))),
         files_section=files,
         current_rows="\n\n".join(current),
         examples="\n\n".join(examples),

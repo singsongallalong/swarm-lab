@@ -1,2 +1,3 @@
 run,skill,provider,model,gens,finished,survived,with_particles,picked,tokens,cost_usd,median_s,top_reject,playtest
 coldsnap-kinds,ColdSnap,deepseek,deepseek-flash[1m],6,3,3,3,2,21231561,1.227,404.7,generator exit 1,
+armour-check,Reaver,fake,fake-armour,5,5,2,0,0,1710000,0.162,2.8,spec ArmourLooks failed,

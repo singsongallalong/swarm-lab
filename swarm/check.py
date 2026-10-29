@@ -174,7 +174,8 @@ def render_final(wt: Path, t: config.Target, meta: dict, manifest: dict) -> tupl
     j = config.job(t, meta["job"])
     manifest.pop("counts", None)  # only the harness's own render counts, never the generator's say-so
     brief = dict(j.brief(meta["brief"]))
-    brief["color"] = skill_color(wt, meta["skill"], brief["color"])
+    if "color" in brief:
+        brief["color"] = skill_color(wt, meta["skill"], brief["color"])
     _, cmds = pack.render_commands(brief)
     out = []
     for cmd in cmds.splitlines():
