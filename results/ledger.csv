@@ -5,3 +5,7 @@ courtly-gowns,Courtly,deepseek,deepseek-flash[1m],6,4,5,0,3,48038541,2.9096,1072
 classic-gowns,Classic,deepseek,deepseek-flash[1m],6,6,6,0,3,78671467,3.9317,1156.1,,
 moonwell-zones,Moonwell,deepseek,deepseek-flash[1m],6,6,6,0,3,61293016,2.5765,589.8,,
 glade-maps,Glade,deepseek,deepseek-flash[1m],6,6,6,0,3,90573369,3.9263,1075.2,,
+brinewrack-zones,Brinewrack,deepseek,deepseek-flash[1m],3,3,3,0,0,30427248,1.2891,543.0,,
+saltbarrow-zones,Saltbarrow,deepseek,deepseek-flash[1m],3,2,2,0,0,39518827,1.6109,696.7,generator exit 1,
+blightfen-zones,Blightfen,deepseek,deepseek-flash[1m],3,1,1,0,0,40887184,1.603,591.7,generator exit 1,
+rimeholt-zones,Rimeholt,deepseek,deepseek-flash[1m],3,2,2,0,0,36788341,1.4796,708.5,generator exit 1,

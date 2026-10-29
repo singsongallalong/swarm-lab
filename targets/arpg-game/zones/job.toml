@@ -10,8 +10,9 @@
 template = "pack.md"
 directions = "directions.txt"
 select = "select.md"
-# Five files, three data tables, two catalogs, seven renders and revisions.
-max_turns = 100
+# Five files, three data tables, two catalogs, seven renders and revisions. In the four-area
+# run (2026-10-29), four of twelve ran out at 100, so a run gets 130.
+max_turns = 130
 
 # Helpers copied into each worktree's .swarm/tools/: explain runs a spec and prints what a
 # failing check found, where the game's runner only says "expected tables to be deeply equal".
