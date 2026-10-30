@@ -5,7 +5,7 @@ ref = "origin/claude/domain-tileset"
 skill = "Domain"
 family = "feature"
 example = "MoorBarrowRing"
-directions = "directions-domain.txt"
+directions = "directions-domain-2.txt"
 brief = """
 Make one feature for **the Eternal Domain**: the game's endgame area, the domain of the gods,
 a vast Valhalla-like realm of ivory stone and gold in holy light, standing on a sea of cloud.
@@ -28,4 +28,15 @@ Your direction names a kind of heavenly place. Make it **unmistakably that place
 kit or new sculpts of your own, and its own light (glow, set pieces). One structure: small (up
 to 16 cells a side) or medium (up to 32); a centrepiece up to 56 if the direction is vast. If
 the road runs through it, it is a `crossing`.
+
+**Lessons from the first Domain run** (domain-features-1, a blind critic):
+- Stone must be **ivory or pale marble**, never mid grey: grey read as weathered moor stone.
+- The kit's `domain_brazier` (a tripod) reads as a stool. Make your own lamp as an assembly
+  (a pedestal and bowl) if your place needs one.
+- Cloud can't be drawn offline: a drop reads best as a clean, straight brink.
+
+**New: shapes as data.** A sculpt with `kind = "assembly"` lists its own parts, groups,
+mirrors, rings, rows, stacks and seeded variants, so you can make any shape (a throne, a
+statue, a bell, a ship's prow) as data. Its types are in the sculpt types below and a full
+example is in "Writing an assembly" below. Name assembly sculpts `domain_<something>`.
 """

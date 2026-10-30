@@ -3,8 +3,7 @@
 # the game. It replaces the `features` job's swarm-lab platform (0003-0005). fafwa: "try out
 # a bunch of radical new feature types. My idea is that deepseek can generate small
 # features like this and then a claude builder can assemble them."
-# Pinned to the contract's branch until PR #936 merges; then drop `ref`.
-ref = "origin/claude/map-features-contract"
+# The contract merged (#936); briefs may still pin a branch (the Domain's tileset).
 template = "pack.md"
 directions = "directions.txt"
 select = "select.md"
@@ -54,6 +53,12 @@ note = "what your own cell kinds can look like (CellLook), and the rules they ke
 [quotes.example]
 file = "src/shared/systems/features/MoorBarrowRing.luau"
 note = "the worked example, a henge for the moor. Yours must be a different kind of place, not this one varied"
+
+[quotes.assembly]
+file = "docs/guides/map-tools.md"
+from = "### Writing an assembly"
+to = "### Preview offline"
+note = "how to write an assembly sculpt, with a complete example, and the traps (type casts on node lists, cylinders along X, wedges rising to +Z, copies in the parent's frame)"
 
 [quotes.sculpt_types]
 file = "src/shared/SculptTypes.luau"

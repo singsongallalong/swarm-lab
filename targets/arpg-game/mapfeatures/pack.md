@@ -108,6 +108,8 @@ $example
 
 $sculpt_types
 
+$assembly
+
 $setpiece_types
 
 $setpieces
