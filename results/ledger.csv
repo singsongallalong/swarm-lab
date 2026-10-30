@@ -18,3 +18,4 @@ rimeholt-features,Rimeholt,deepseek,deepseek-flash[1m],12,11,10,0,6,295720537,4.
 task-hash-spec,HashSpec,deepseek,deepseek-flash[1m],3,3,0,0,0,1118768,0.116,139.6,"tests/systems/Hash.spec.luau: requires '../../src/shared/systems/Hash', which isn't on the job's list",
 rimeholt-features-2,Rimeholt,deepseek,deepseek-flash[1m],12,9,8,0,0,412219263,5.8475,1574.5,no rendered image listed in the manifest exists,
 smash-whole-1,Smash,deepseek,deepseek-flash[1m],6,6,6,0,0,32353475,1.1152,721.2,,
+relickeys-1,RelicKeys,deepseek,deepseek-flash[1m],4,4,4,0,0,2520949,0.2263,214.7,,

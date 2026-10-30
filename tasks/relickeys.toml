@@ -1,0 +1,76 @@
+# relickeys-1 (2026-10-30): the second worker test on relics (stream docs/streams/relics.md,
+# step 1). The RelicKeys pure core and its rows to a contract Claude wrote
+# (src/shared/RelicKeyTypes.luau on the local base commit), with a held-out spec of the
+# contract's edge cases. Nothing lands in the game.
+title = "RelicKeys: the Eternal Domain's key rules and rows"
+name = "RelicKeys"
+repo = "../arpg-game"
+ref = "relickeys-1-base"
+workers = 4
+model = "flash"
+turns = 60
+brief = '''
+Relics are a proposed endgame power layer; they drop in the Eternal Domain, a keyed endgame
+dungeon. A key has a tier, I to V. Build the keys' pure rules and their data rows, exactly to
+the contract in `src/shared/RelicKeyTypes.luau` (quoted below; read all of its comments: they
+say what every function returns, on bad input too). The visible spec
+`tests/systems/RelicKeys.spec.luau` (quoted) is a check; the reviewer also runs more tests of
+the contract's edge cases that you won't see, so meet every sentence of the contract, not just
+the spec.
+
+Write two new files:
+
+1. `src/shared/systems/RelicKeys.luau`: `--!strict`, requires only `../RelicKeyTypes`, and
+   returns a table with exactly the six functions the contract lists, with explicit parameter
+   and return types. Pure: no Roblox API, no yielding, no math.random or Random.new (all
+   randomness from the rng passed in), and no state outside the functions. It takes the data
+   as an argument; it must not require `data/RelicKeys`.
+
+2. `src/shared/data/RelicKeys.luau`: `--!strict`, requires only `../RelicKeyTypes`, returns a
+   `RelicKeyTypes.Data`. Every number is a PLACEHOLDER for the numbers designer; say so in a
+   comment at the top.
+   - Five tiers. Tier I's grade weights are Lesser 80, Greater 18, Exalted 2 (from the design).
+     Each tier after it has a lower Lesser weight, a higher Exalted weight, at least as many
+     rolls, a higher levelBonus and at least as high a twoChance. Tier V pays more rolls than I.
+   - A pool of 10 to 14 run modifiers in the spirit of the design's examples, "burning floors"
+     and "slain monsters rise once": things that make a run harder or stranger, each a
+     PascalCase name (equal to its key), a short title and a one-line `about`. At least four
+     allowed from tier I, at least one only from tier IV or V, and at least two exclusion pairs
+     that make sense (two that contradict or stack unfairly). Modifiers are text only for now:
+     don't name stats, statuses, monsters, skills or files, and don't add fields the contract
+     doesn't have.
+
+Change nothing else.
+'''
+read = ["src/shared/RelicKeyTypes.luau", "tests/systems/RelicKeys.spec.luau", "src/shared/systems/Flask.luau"]
+checks = [
+  "lune run tests RelicKeys.spec",
+  "stylua --check src/shared/systems/RelicKeys.luau src/shared/data/RelicKeys.luau",
+  "selene src/shared/systems/RelicKeys.luau src/shared/data/RelicKeys.luau",
+]
+directions = [
+  "Write each function as directly as the contract reads, one small local helper where two functions share a rule.",
+  "Before you write code, list every bad input the contract names for each function, and make sure each one is handled.",
+  "Keep the module short and plain; a reviewer should be able to check it against the contract line by line.",
+  "Treat the data rows as the main craft: make the modifiers and their exclusions worth reading, then write the system plainly.",
+]
+[[files]]
+path = "src/shared/systems/RelicKeys.luau"
+mode = "new_file"
+[[files]]
+path = "src/shared/data/RelicKeys.luau"
+mode = "new_file"
+[purity]
+first_line = "--!strict"
+max_lines = 300
+requires = ["../RelicKeyTypes"]
+forbid = [
+  '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
+  '\btask\.', '\bwait\s*\(', '\bspawn\s*\(', '\bdelay\s*\(', '\bcoroutine\.',
+  '\bos\.', '\bdebug\.', '\bgetfenv\b', '\bsetfenv\b', '\bloadstring\b', '\b_G\b', '\bshared\b',
+  '\bRandom\.new\b', '\bmath\.random\b',
+]
+[[held_out]]
+file = "~/.swarm-heldout/relickeys/RelicKeysHeldOut.spec.luau"
+dest = "tests/systems/RelicKeysHeldOut.spec.luau"
+cmd = "lune run tests RelicKeysHeldOut"

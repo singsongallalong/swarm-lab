@@ -1,0 +1,37 @@
+{
+  "scale": "0-10 per axis; total = (4*correct + 3*fit + 3*rows)/10. correct traced by hand against RelicKeyTypes.luau, including inputs the visible spec skips: tier NaN/+-inf/2.5/0/6, memberCount NaN/+-inf/2.9/0.5/-1, progress <0, >1, +-inf, NaN with cleared true/false, exclusions from either side, unknown names, draw order (count, first, then second only when a candidate exists), fresh tables, no mutation.",
+  "A": {
+    "correct": 10,
+    "fit": 9,
+    "rows": 6,
+    "total": 8.5,
+    "bugs": [],
+    "why": "System: no contract deviations found. tierDef checks NaN explicitly (tier ~= tier) before range and wholeness, and the comment says why. allowed sorts a fresh list; excludes reads both sides through one small helper; rollModifiers draws count, then first, then second only when candidates exist, indexing the sorted list; runPay handles NaN, then clamps (so +inf pays as 1.0, -inf as 0); partyShare rejects NaN/+-inf before flooring. Clean, typed, aliases at top, comments explain why. Rows: tiers monotone (rolls 2-7, levelBonus 0-12, Tier I 80/18/2). 13 modifiers, but two make a run easier or emptier rather than harder: EmptyHalls ('Nothing stirs here but you') and QuietGraves ('Nothing that falls here ever gets up again'); two of the three exclusions exist only to pair those easing rows with their opposites (EmptyHalls/PackedHalls, QuietGraves/GraveEcho). FloodedHalls/BurningFloors is a real contradiction. ThirstingDark and MirrorHall are vague."
+  },
+  "B": {
+    "correct": 10,
+    "fit": 8,
+    "rows": 7,
+    "total": 8.5,
+    "bugs": [],
+    "why": "System: no contract deviations found; logic is the same as A's. tierDef leans on NaN ~= floor(NaN) and says so. Every function has a doc comment, but the excludes comment is muddled ('A name not in the pool excludes nothing but itself, unlike a real modifier, which always excludes itself' reads as if unknown names behave differently, which they don't). The module and its comments are a bit long. Rows: steepest, best-shaped tiers (levelBonus 0/3/7/12/18; Greater overtakes Lesser at IV). The 12 modifiers all make a run harder or stranger, with evocative text. Exclusions are listed on both sides (redundant, but the contract allows it). BurningFloors/LingeringFrost contradict; SlipperyStone/SquallingWind stack unfairly (good); ThickDark/FallingStars is a loose contradiction; SlainRise/UnmakingHour has no clear rationale. Title 'Slain Rise Once' with the key SlainRise is awkward."
+  },
+  "C": {
+    "correct": 10,
+    "fit": 8.5,
+    "rows": 6,
+    "total": 8.35,
+    "bugs": [],
+    "why": "System: no contract deviations found. tierDef puts the wholeness test first (NaN ~= floor(NaN) gives nil, inf passes it and fails the range), which is correct, but nothing says NaN is covered, so a reader has to work it out. Compact: a pick() helper, a one-expression excludes, rolled[2] set only when candidates exist. Short comments; the draw-order comment is good. Rows: tiers monotone, twoChance 0 to 1 (Tier V always rolls two, which is defensible). Text is terse. 'Slain monsters rise once' names monsters generically. Quickening ('Everything moves faster, you included') is effectively a speed stat and not clearly harder. QuietGrave makes the run easier (an easing row created to justify its exclusion with RisingDead). HeavyAir/Quickening and BurningFloors/DrownedHalls are real contradictions. SappingMist is vague."
+  },
+  "D": {
+    "correct": 10,
+    "fit": 8,
+    "rows": 7.5,
+    "total": 8.65,
+    "bugs": [],
+    "why": "System: no contract deviations found. tierDef floors first and compares (NaN stays NaN and is rejected; the comment explains it). partyShare floors before its NaN/inf check: correct (floor(NaN) is NaN, floor(-inf) is -inf, caught by < 1) but the order takes more thought than it should. rollModifiers calls allowed() before checking def, which is harmless because allowed returns {} on a bad tier. excludes duplicates the scan loop instead of using a helper; there are no type aliases, so signatures are long; three public functions have no doc comment. runPay clamps only in the non-NaN branch, which is fine. Rows: tiers monotone but conservative (Exalted only 25 at V, levelBonus 0-10). All 13 modifiers make a run harder or stranger, and every exclusion is well motivated as an unfair stack: TightCorridors/SwarmingHorde, BurningFloors/GlassedGround (keep moving vs heavy steps crack), GildedCurse/BitterHarvest. Risks: BitterHarvest ('a share is taken back') and DoubleOrNothing ('twice the gain') promise reward changes that runPay doesn't model, so the text would mislead until a system backs it; 'wardens' in SilentKeepers edges toward naming a monster kind."
+  },
+  "ranking": ["D", "A", "B", "C"],
+  "notes": "All four systems are functionally equivalent: same draw order, same clamps, fresh tables, no mutation, both-side exclusions, NaN/inf/fraction handling all correct by trace. No bugs found in any. The ranking therefore comes from fit and rows, and the spread is small (8.35-8.65). For main: take A's system (explicit NaN check, a single helper, tidiest), and D's rows as the base (best-motivated exclusions, nothing easing), with BitterHarvest and DoubleOrNothing reworded so they don't promise reward changes, plus B's steeper tier curve (levelBonus 0/3/7/12/18, Exalted to 30) if Rhodri wants a stronger top end, and B's SlipperyStone/SquallingWind pair as a good extra unfair-stack exclusion."
+}
