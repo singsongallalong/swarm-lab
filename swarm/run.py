@@ -289,8 +289,8 @@ RESUME_PROMPT = (
 
 
 REWORK_PROMPT = (
-    "A critic who saw only your map's renders wrote notes on it in .swarm/CRITIQUE.md. Read "
-    "them, then rework your map to answer them: keep what they praise, change what they "
+    "A critic who saw only your renders wrote notes on it in .swarm/CRITIQUE.md. Read "
+    "them, then rework your work to answer them: keep what they praise, change what they "
     "fault. Re-render, look at every render, run the checks in .swarm/PACK.md's Commands and "
     "fix what fails, update .swarm/manifest.json (revisions + 1, renders, intent), and stop."
 )
