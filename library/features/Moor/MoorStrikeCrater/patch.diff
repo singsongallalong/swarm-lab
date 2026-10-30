@@ -1,0 +1,1061 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..077f2562 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -4,10 +4,12 @@
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
++local MoorStrikeCrater = require("../systems/features/MoorStrikeCrater")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	MoorStrikeCrater = MoorStrikeCrater,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..c702d399 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -940,5 +940,63 @@ Sculpts.parish_bell_tower = {
+ 	accent = PARISH_MOSS,
+ 	maxPrims = 34,
+ }
++-- The strike crater (map feature MoorStrikeCrater). What a fresh fall leaves on the
++-- moor: impact glass, cold and black, so these sit darker than the moor's basalt while
++-- staying inside the bible's trim limits; the tuft is what the blast burnt in place.
++Sculpts.moor_slag_heap = {
++	kind = "boulder",
++	size = { 5, 3.2, 4 },
++	material = "Basalt",
++	colors = { { 40, 38, 42 }, { 34, 33, 37 }, { 48, 44, 46 } },
++	maxPrims = 8,
++	chunks = 5,
++	tilt = 30,
++}
++Sculpts.moor_impact_shards = {
++	kind = "columns",
++	-- Two rows of columns, so each column is a splinter and not a slab.
++	size = { 4.5, 5.5, 5.5 },
++	material = "Basalt",
++	colors = { { 44, 42, 48 }, { 38, 36, 42 }, { 52, 49, 54 } },
++	maxPrims = 12,
++	columns = 3,
++	jag = 0.7,
++	lean = 5,
++}
++Sculpts.moor_impact_core = {
++	kind = "columns",
++	-- The heart's great splintered mass: taller than a man and cleft down the middle.
++	size = { 10, 13, 7 },
++	material = "Basalt",
++	colors = { { 44, 41, 46 }, { 38, 36, 41 }, { 52, 48, 50 } },
++	maxPrims = 24,
++	columns = 4,
++	jag = 0.8,
++	split = true,
++	lean = 7,
++}
++Sculpts.moor_cinder_snag = {
++	kind = "tree",
++	-- A tree the blast killed: a black stump, snapped off, with two bare arms.
++	size = { 4.5, 7.5, 4.5 },
++	material = "Wood",
++	colors = { { 30, 27, 26 }, { 26, 24, 23 }, { 38, 34, 31 } },
++	maxPrims = 30,
++	segments = 3,
++	branches = 2,
++	bend = 12,
++	snapped = true,
++}
++Sculpts.moor_cinder_tuft = {
++	kind = "tuft",
++	-- Dead bents burnt black at the base of the rim, with a rusty seed head or two.
++	size = { 2.4, 2.2, 2.4 },
++	material = "Grass",
++	colors = { { 40, 38, 34 }, { 34, 32, 30 }, { 46, 43, 38 }, { 58, 48, 40 } },
++	maxPrims = 10,
++	blades = 3,
++	body = 0.35,
++	merge = 6,
++}
+ 
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..805157b3 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,88 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The strike crater (map feature MoorStrikeCrater). Its heart is still hot: embers
++-- come up off the glass in a thin bright scatter, slower coals glow among them, and a
++-- slow column of smoke leans away over both. Kept close to the ground and fed from a
++-- short worm, so it rises out of the bowl rather than hanging over it.
++recipes.moor_crater_embers = {
++	about = "Embers and ash drifting up off a strike crater's glassy heart into a slow leaning column of smoke.",
++	theme = "quarry",
++	path = { kind = "worm", length = 10, step = 2, bend = 18, climb = 6, round = 2 },
++	layers = {
++		{
++			name = "embers",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 2.5,
++				lift = 0.4,
++				toward = "up",
++				rise = 4.2,
++				life = { 1.6, 3 },
++				rate = 6,
++				size = 0.3,
++				tall = 2.2,
++				transparency = 0.25,
++				color = "ember",
++				texture = "wisp",
++				lean = 6,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 8, span = 8, periods = { 2.7, 4.1 } },
++			priority = 1,
++		},
++		{
++			name = "coals",
++			look = {
++				kind = "stream",
++				every = 7,
++				thick = 3,
++				lift = 0.3,
++				toward = "up",
++				rise = 1.8,
++				life = { 2.5, 4.5 },
++				rate = 2.5,
++				size = 1.1,
++				tall = 1,
++				transparency = 0.68,
++				color = "ember",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1.4, tilt = 12, span = 10, periods = { 5.3, 3.4 } },
++			priority = 2,
++		},
++		{
++			name = "smoke",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 5,
++				lift = 1.8,
++				toward = "up",
++				rise = 1.4,
++				life = { 6, 9 },
++				rate = 1.6,
++				size = 6,
++				tall = 1.4,
++				transparency = 0.9,
++				color = "smoke",
++				texture = "smoke",
++				lean = 10,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2.2, tilt = 12, span = 16, periods = { 9, 13 } },
++			priority = 3,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 12, max = 1, range = 12, brightness = 0.7, color = "ember" },
++			motion = { kind = "pulse", period = 3.2, depth = 0.35 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..cbc0d2a0 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -317,6 +317,24 @@ local rows: { [string]: Row } = {
+ 		MOOR
+ 	),
+ 	["sculpt:parish_reeds"] = row("A clump of reeds in the Drowned Parish's sodden grass.", MOOR),
++	-- The strike crater (MoorStrikeCrater), a map feature of the moor.
++	["sculpt:moor_slag_heap"] = row("A heap of black slag thrown out of the strike crater's rim.", MOOR),
++	["sculpt:moor_impact_shards"] = row(
++		"A cluster of jagged black impact-glass shards standing out of the crater's rim.",
++		MOOR
++	),
++	["sculpt:moor_impact_core"] = row(
++		"The strike crater's heart: a great splintered mass of black impact glass.",
++		MOOR
++	),
++	["sculpt:moor_cinder_snag"] = row(
++		"A tree killed and burnt black by the strike, snapped off, on the crater's apron.",
++		MOOR
++	),
++	["sculpt:moor_cinder_tuft"] = row(
++		"A clump of dead bents burnt black at the foot of the strike crater's rim.",
++		MOOR
++	),
+ 	["run:parish_churchyard_wall"] = row(
+ 		"The Drowned Parish's raised churchyard wall: wet dry stone, three courses, slipped here and there.",
+ 		MOOR
+diff --git a/src/shared/systems/features/MoorStrikeCrater.luau b/src/shared/systems/features/MoorStrikeCrater.luau
+new file mode 100644
+index 00000000..c415e534
+--- /dev/null
++++ b/src/shared/systems/features/MoorStrikeCrater.luau
+@@ -0,0 +1,848 @@
++--!strict
++-- A map feature for the moor: a fresh meteor strike. A bowl of black impact glass with
++-- red still in its cracks, ringed by a raised rim of shattered basalt and a scorched
++-- apron streaked with pale ejecta rays; embers drift off its heart. The moor has barrows,
++-- henges, graves and ruins; it has nothing that fell out of the sky.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first, then
++-- look). The first draws choose the structure, the rest only dress it:
++--   1. the form: a single bowl, a twin strike of two overlapping bowls, a low gouge from
++--      a grazing hit, or a ringed crater with a raised inner ring;
++--   2. its heart: a mound of standing glass shards, a glowing rift, a pool of melt, or a
++--      vent hole sunk into the ground;
++--   3. the rim's state: intact (only the road's breaches), breached in extra places, or
++--      slumped in one long arc;
++--   4. the footprint's size and the bowl's reach, stretch and turn, and the road's way in
++--      and out;
++--   5. then the rim's height, the ejecta rays, the shards, the burnt trees and boulders.
++-- Everything stands on the game's own moor kit (moor_* sculpts and the quarry embers).
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++type Gap = { a: number, h: number }
++
++-- One crater's frame: its centre, its stretch and turn, and how deep its bowl runs.
++type Crater = {
++	cx: number,
++	cz: number,
++	cos: number,
++	sin: number,
++	rx: number,
++	rz: number,
++	minAxis: number,
++	rimW: number,
++	depth: number,
++	flat: number,
++}
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- Radians between two angles, 0..pi.
++local function apart(a: number, b: number): number
++	return math.abs((a - b + math.pi) % (2 * math.pi) - math.pi)
++end
++
++local SHAPES = { "bowl", "twin", "gouge", "ringed" }
++local HEARTS = { "spire", "rift", "melt", "vent" }
++local RIMS = { "intact", "breached", "slumped" }
++
++-- Ground: surfaces only, inside the bible's limits (saturation 0.50, value 0.40). The
++-- hot ground is warm but never a lamp; the light is the glow and the embers.
++-- RIM takes the moor's own basalt colour (Moor.luau BASALT_GROUND), so the rim is made
++-- of the same stone as the heath's outcrops; the rest are materials the moor leaves free.
++local APRON = { material = "Sandstone", color = { 82, 77, 70 } }
++local RAY = { material = "Marble", color = { 100, 96, 90 } }
++local CINDER = { material = "Concrete", color = { 34, 31, 29 } }
++local RIM = { material = "Basalt", color = { 52, 54, 62 } }
++local GLASS = { material = "Rock", color = { 28, 26, 30 } }
++local MELT = { material = "CrackedLava", color = { 50, 30, 26 } }
++-- Red-orange, saturated on purpose: the cracks are light, not surface (B2).
++local EMBER = { 255, 96, 52 }
++
++local function newCrater(
++	cx: number,
++	cz: number,
++	radius: number,
++	stretch: number,
++	turn: number,
++	rimW: number,
++	depth: number
++): Crater
++	local rx, rz = radius * stretch, radius / stretch
++	local minAxis = math.min(rx, rz)
++	return {
++		cx = cx,
++		cz = cz,
++		cos = math.cos(turn),
++		sin = math.sin(turn),
++		rx = rx,
++		rz = rz,
++		minAxis = minAxis,
++		rimW = rimW,
++		depth = depth,
++		-- The bowl runs from the rim down to a flat floor over this many cells.
++		flat = minAxis * 0.82,
++	}
++end
++
++-- Signed distance from the crater's rim in cells: negative inside the bowl. Its
++-- gradient stays at or under 1, so a bowl built on it steps at most `depth / flat`.
++local function craterDist(c: Crater, x: number, z: number): number
++	local dx, dz = x - c.cx, z - c.cz
++	local lx, lz = dx * c.cos + dz * c.sin, -dx * c.sin + dz * c.cos
++	local u = math.sqrt((lx / c.rx) ^ 2 + (lz / c.rz) ^ 2)
++	return (u - 1) * c.minAxis
++end
++
++local function craterAngle(c: Crater, x: number, z: number): number
++	return math.atan2(z - c.cz, x - c.cx)
++end
++
++-- The bowl's height at `dist` from the rim: 0 at the rim, -depth on the flat floor.
++local function bowlHeight(c: Crater, dist: number): number
++	if dist >= 0 then
++		return 0
++	end
++	return -c.depth * math.min(1, -dist / c.flat)
++end
++
++-- A point `extra` cells outside the rim along world angle `a` (fractional cells).
++local function rimPoint(c: Crater, a: number, extra: number): Point
++	local ux, uz = math.cos(a), math.sin(a)
++	local lx, lz = ux * c.cos + uz * c.sin, -ux * c.sin + uz * c.cos
++	local u = math.sqrt((lx / c.rx) ^ 2 + (lz / c.rz) ^ 2)
++	local k = (c.minAxis + extra) / (u * c.minAxis)
++	return { x = c.cx + ux * k, z = c.cz + uz * k }
++end
++
++local function inGap(a: number, gaps: { Gap }): boolean
++	for _, g in gaps do
++		if apart(a, g.a) < g.h then
++			return true
++		end
++	end
++	return false
++end
++
++-- A point along a segment of a broken line, `w` cells wide either side.
++local function nearLine(px: number, pz: number, points: { Point }, w: number): boolean
++	for k = 2, #points do
++		local a, b = points[k - 1], points[k]
++		local vx, vz = b.x - a.x, b.z - a.z
++		local len = vx * vx + vz * vz
++		local t = if len > 1e-9 then math.clamp(((px - a.x) * vx + (pz - a.z) * vz) / len, 0, 1) else 0
++		local qx, qz = a.x + vx * t, a.z + vz * t
++		if (px - qx) ^ 2 + (pz - qz) ^ 2 < w * w then
++			return true
++		end
++	end
++	return false
++end
++
++-- A centre coordinate that keeps `need` cells clear of both borders.
++local function spanFor(rng: Random, n: number, need: number): number
++	local lo, hi = need, n + 1 - need
++	if hi <= lo then
++		return (n + 1) / 2
++	end
++	return between(rng, lo, hi)
++end
++
++local feature: MapFeature.Feature = {
++	name = "MoorStrikeCrater",
++	about = "A fresh meteor strike on the moor: a bowl of black impact glass with red in its cracks, a raised broken rim and a scorched apron, embers drifting off its heart.",
++	tileset = "moor",
++	scale = "medium",
++	role = "crossing",
++	mood = { "fresh", "impact", "scorched", "glowing", "unearthly" },
++	cells = {
++		-- The scorched blanket thrown clear of the rim, thick with slag and dead bents.
++		apron = {
++			ground = APRON,
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "moor_slag_heap", every = 10, scale = { 0.45, 0.85 }, sink = 0.35 },
++				{ sculpt = "moor_cinder_tuft", every = 9, scale = { 0.7, 1.1 }, sink = 0.1 },
++			},
++		},
++		-- A pale ray of fresh ejecta laid over the apron and out across the heath.
++		ray = {
++			ground = RAY,
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "moor_impact_shards", every = 16, scale = { 0.3, 0.6 }, sink = 0.4 },
++				{ sculpt = "moor_slag_heap", every = 9, scale = { 0.4, 0.8 }, sink = 0.3 },
++			},
++		},
++		-- The burnt ring at the rim's foot, where the blast lay longest.
++		cinder = {
++			ground = CINDER,
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "moor_cinder_tuft", every = 4, scale = { 0.6, 0.95 }, sink = 0.1 },
++				{ sculpt = "moor_slag_heap", every = 12, scale = { 0.35, 0.7 }, sink = 0.3 },
++			},
++		},
++		-- The thrown-up bank: broken basalt with glass shards standing in it.
++		rim = {
++			ground = RIM,
++			clear = true,
++			props = {
++				{ sculpt = "moor_impact_shards", every = 7, scale = { 0.5, 1.0 }, sink = 0.2 },
++				{ sculpt = "moor_slag_heap", every = 6, scale = { 0.4, 0.8 }, sink = 0.3 },
++			},
++		},
++		-- The bowl floor: glassy black, with a few red cracks still lit.
++		glass = {
++			ground = GLASS,
++			lift = 0.25,
++			clear = true,
++			props = {
++				{ sculpt = "moor_impact_shards", every = 16, scale = { 0.35, 0.7 }, sink = 0.3 },
++				{ sculpt = "moor_slag_heap", every = 14, scale = { 0.4, 0.7 }, sink = 0.4 },
++			},
++		},
++		-- The hot heart's ground, and the cracks running out of it: glowing along its seams.
++		melt = {
++			ground = MELT,
++			lift = 0.3,
++			clear = true,
++			glow = { color = EMBER, range = 13, brightness = 1.5, every = 14, height = 0.35 },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: what kind of strike this was, what its heart is, and what its rim did.
++		local shape = SHAPES[whole(rng, 1, #SHAPES)]
++		local heart = HEARTS[whole(rng, 1, #HEARTS)]
++		local rimState = RIMS[whole(rng, 1, #RIMS)]
++
++		-- 4: the frame. A ringed crater needs room for its ring, a gouge is long and low.
++		local w, d = whole(rng, 28, 32), whole(rng, 28, 32)
++		local rimW = between(rng, 1.7, 2.4)
++		local stretch = if shape == "gouge" then between(rng, 1.28, 1.46) else between(rng, 0.94, 1.06)
++		local wide = math.max(stretch, 1 / stretch)
++		local maxR = (math.min(w, d) / 2 - rimW - 2.0) / wide
++		local R = if shape == "ringed"
++			then between(rng, 8.0, math.max(8.05, math.min(9.4, maxR)))
++			else between(rng, 6.2, math.min(9.4, maxR))
++		local turn = between(rng, 0, math.pi)
++		local depth = between(rng, 4.4, 1.65 * R * 0.82)
++		local cx, cz = spanFor(rng, w, R * wide + rimW + 1.4), spanFor(rng, d, R * wide + rimW + 1.4)
++		local main = newCrater(cx, cz, R, stretch, turn, rimW, depth)
++		local craters: { Crater } = { main }
++
++		-- A twin strike: a second, smaller bowl overlapping the first. Their bowls share
++		-- one floor wherever they cross; where they do not, each throws its own rim up.
++		if shape == "twin" then
++			local R2 = R * between(rng, 0.42, 0.6)
++			local a2 = between(rng, 0, 2 * math.pi)
++			local reach = math.min(R * between(rng, 0.95, 1.05) + R2 * between(rng, 0.4, 0.65), R + R2 - 1.6)
++			local need2 = R2 + rimW + 1.4
++			local x2 = math.clamp(cx + math.cos(a2) * reach, need2, w + 1 - need2)
++			local z2 = math.clamp(cz + math.sin(a2) * reach, need2, d + 1 - need2)
++			local dx, dz = x2 - cx, z2 - cz
++			local got = math.sqrt(dx * dx + dz * dz)
++			local most = R + R2 - 1.6
++			if got > most and got > 1e-6 then
++				x2 = cx + dx / got * most
++				z2 = cz + dz / got * most
++			end
++			table.insert(
++				craters,
++				newCrater(
++					x2,
++					z2,
++					R2,
++					between(rng, 0.9, 1.1),
++					between(rng, 0, math.pi),
++					rimW * 0.85,
++					depth * between(rng, 0.45, 0.7)
++				)
++			)
++		end
++
++		-- The road's way: in at one border, out at the other, round the heart inside.
++		local inAt = between(rng, 0, 2 * math.pi)
++		local outAt = inAt + math.pi + between(rng, -0.4, 0.4)
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++		local passAngle = inAt + side * math.pi / 2
++
++		-- Gaps through the rims: the road's two, then what the rim state adds.
++		local gapHalf = between(rng, 1.1, 1.7) / (R + rimW / 2)
++		local gaps: { { Gap } } = { { { a = inAt, h = gapHalf }, { a = outAt, h = gapHalf } } }
++		for k = 2, #craters do
++			gaps[k] = {}
++			for _ = 1, whole(rng, 0, 2) do
++				table.insert(
++					gaps[k],
++					{ a = between(rng, 0, 2 * math.pi), h = between(rng, 0.9, 1.6) / (craters[k].minAxis + rimW) }
++				)
++			end
++		end
++		local slumpA, slumpH = 0, 0
++		if rimState == "breached" then
++			for _ = 1, whole(rng, 1, 2) do
++				local a = between(rng, 0, 2 * math.pi)
++				if apart(a, inAt) > 0.7 and apart(a, outAt) > 0.7 then
++					table.insert(gaps[1], { a = a, h = between(rng, 0.9, 1.5) / (R + rimW / 2) })
++				end
++			end
++		elseif rimState == "slumped" then
++			slumpA = between(rng, 0, 2 * math.pi)
++			if apart(slumpA, inAt) < 0.8 then
++				slumpA += 2.2
++			end
++			if apart(slumpA, outAt) < 0.8 then
++				slumpA += 2.2
++			end
++			slumpH = between(rng, 0.55, 0.95)
++		end
++
++		-- The ringed form: a raised ring standing on the bowl floor, broken on one side.
++		local ringR, ringW = 0, 0
++		local ringGapA, ringGapH = 0, 0
++		if shape == "ringed" then
++			ringR = main.minAxis * between(rng, 0.4, 0.46)
++			ringW = between(rng, 0.85, 1.15)
++			ringGapA = between(rng, 0, 2 * math.pi)
++			ringGapH = between(rng, 0.3, 0.5)
++		end
++
++		-- The heart's size first, so the road can keep clear of it.
++		local heartR = if heart == "spire"
++			then between(rng, 1.3, 2.1)
++			elseif heart == "melt" then between(rng, 1.6, 2.6)
++			elseif heart == "vent" then between(rng, 0.9, 1.6)
++			else 0
++		local heartClear = if heart == "rift" then 2.7 else heartR + 1.6
++		local ringOuter = if shape == "ringed" then ringR + ringW / 2 + 1.4 else 0
++		local passR = math.min(math.max(heartClear, ringOuter, 2.8), main.minAxis - 1.2)
++
++		-- The ground's bands, before the craters are laid over them.
++		local ejecta = between(rng, 3.4, 5.0)
++		local rayCount = whole(rng, 2, 5)
++		local rayBase = between(rng, 0, 2 * math.pi)
++		local rays: { { a: number, h: number, outer: number } } = {}
++		for k = 1, rayCount do
++			table.insert(rays, {
++				a = rayBase + (k - 1) * between(rng, 0.16, 0.3) + between(rng, -0.12, 0.12),
++				h = between(rng, 0.18, 0.36),
++				outer = R * wide + between(rng, 7.0, 13.0),
++			})
++		end
++
++		local walk: { boolean } = table.create(w * d, true)
++		local heights: { number } = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local depthMost = 0
++		for _, cr in craters do
++			depthMost = math.max(depthMost, cr.depth)
++		end
++
++		-- Phase one: the bowls, their rims and the ring.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local dists: { number } = {}
++				local dmin = math.huge
++				for k, cr in craters do
++					dists[k] = craterDist(cr, x, z)
++					dmin = math.min(dmin, dists[k])
++				end
++				if dmin < 0 then
++					-- Inside a bowl: its floor, walking down from the rim. The upper wall is
++					-- broken rock; the melt pooled in the bottom and set as black glass.
++					local h = 0
++					for k, cr in craters do
++						h = math.min(h, bowlHeight(cr, dists[k]))
++					end
++					heights[i] = h
++					kinds[i] = if h > -depthMost * 0.55 then "cinder" else "glass"
++					-- The ringed form's inner ridge stands on the floor.
++					if shape == "ringed" then
++						local dx, dz = x - main.cx, z - main.cz
++						local rc = math.sqrt(dx * dx + dz * dz)
++						if math.abs(rc - ringR) < ringW / 2 and apart(craterAngle(main, x, z), ringGapA) > ringGapH then
++							walk[i] = false
++							kinds[i] = "rim"
++							lifts[i] = between(rng, 2.6, 4.2)
++						end
++					end
++				else
++					-- Outside every bowl: walk on the apron unless a rim stands here.
++					local blocked = false
++					for k, cr in craters do
++						local dist = dists[k]
++						if dist < cr.rimW then
++							local covered = false
++							for k2 in craters do
++								if k2 ~= k and dists[k2] < 0 then
++									covered = true
++									break
++								end
++							end
++							if not covered then
++								local a = craterAngle(cr, x, z)
++								if inGap(a, gaps[k]) then
++									-- A breach: the notch is floored with glass.
++									kinds[i] = "glass"
++									lifts[i] = 0.2
++								elseif k == 1 and slumpH > 0 and apart(a, slumpA) < slumpH then
++									-- The rim slumped: a low, walkable ramp into the bowl.
++									kinds[i] = "rim"
++									lifts[i] = 0.2
++									heights[i] = -1.2 * math.min(1, dist / cr.rimW)
++								else
++									walk[i] = false
++									kinds[i] = "rim"
++									-- A crest across the rim's width, uneven round the ring.
++									local across = 0.55 + 0.45 * math.sin(math.pi * math.min(1, dist / cr.rimW))
++									local base = 5.0 + 1.8 * math.sin(3 * a + turn) + 0.9 * math.sin(5 * a - turn)
++									lifts[i] = math.clamp(base, 2.8, 8.4) * across
++								end
++								blocked = true
++								break
++							end
++						end
++					end
++					if not blocked then
++						-- Clear of the rims: the scorched bands and the ejecta rays.
++						heights[i] = 0
++						local ray = false
++						for _, r in rays do
++							local dx, dz = x - cx, z - cz
++							if
++								dmin > rimW + 0.4
++								and math.sqrt(dx * dx + dz * dz) < r.outer
++								and apart(math.atan2(dz, dx), r.a) < r.h
++							then
++								ray = true
++								break
++							end
++						end
++						if ray then
++							kinds[i] = "ray"
++						elseif dmin < rimW + 1.3 then
++							kinds[i] = "cinder"
++						elseif dmin < rimW + ejecta then
++							kinds[i] = "apron"
++						end
++					end
++				end
++			end
++		end
++
++		-- Phase two: the heart, on the main crater's centre.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local function inBowl(x: number, z: number): boolean
++			return craterDist(main, x, z) < 0
++		end
++		if heart == "spire" then
++			for z = 1, d do
++				for x = 1, w do
++					local dx, dz = x - cx, z - cz
++					local rr = math.sqrt(dx * dx + dz * dz)
++					local i = at(x, z)
++					if rr < heartR and walk[i] and inBowl(x, z) then
++						walk[i] = false
++						kinds[i] = "glass"
++						lifts[i] = 0.9 + 3.2 * (1 - rr / heartR)
++					end
++				end
++			end
++			table.insert(marks, {
++				sculpt = "moor_impact_core",
++				x = cx,
++				z = cz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.9, 1.15),
++				sink = 0.2,
++				solid = true,
++			})
++			for _ = 1, whole(rng, 3, 6) do
++				local a = between(rng, 0, 2 * math.pi)
++				local rr = between(rng, heartR * 0.4, heartR * 0.95)
++				table.insert(marks, {
++					sculpt = "moor_impact_shards",
++					x = cx + math.cos(a) * rr,
++					z = cz + math.sin(a) * rr,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.7, 1.15),
++					sink = -0.2,
++					solid = true,
++				})
++			end
++			local pa = between(rng, 0, 2 * math.pi)
++			local off = heartR + 1.2
++			for k = -1, 1, 2 do
++				table.insert(effects, {
++					recipe = "moor_crater_embers",
++					x = cx + math.cos(pa) * off * k,
++					z = cz + math.sin(pa) * off * k,
++					lift = 0.6,
++				})
++			end
++		elseif heart == "rift" then
++			-- A fissure from the far rim in toward the centre, left of the road's way.
++			local ra = passAngle + math.pi + between(rng, -0.5, 0.5)
++			local points: { Point } = {}
++			for k = 1, 4 do
++				local a = ra + between(rng, -0.2, 0.2)
++				local rr = (0.98 - (k - 1) * 0.26) * main.minAxis
++				table.insert(points, { x = cx + math.cos(a) * rr, z = cz + math.sin(a) * rr })
++			end
++			for z = 1, d do
++				for x = 1, w do
++					local i = at(x, z)
++					if walk[i] and inBowl(x, z) and nearLine(x, z, points, 0.62) then
++						walk[i] = false
++						kinds[i] = "melt"
++						lifts[i] = 0.25
++						heights[i] -= 1.3
++					end
++				end
++			end
++			for k = 2, 3 do
++				table.insert(marks, {
++					sculpt = "moor_impact_shards",
++					x = points[k].x + between(rng, -0.4, 0.4),
++					z = points[k].z + between(rng, -0.4, 0.4),
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.55, 0.95),
++					sink = 0.3,
++					solid = true,
++				})
++			end
++			for k = 2, 3 do
++				table.insert(effects, { recipe = "moor_crater_embers", x = points[k].x, z = points[k].z, lift = 0.5 })
++			end
++		elseif heart == "melt" then
++			for z = 1, d do
++				for x = 1, w do
++					local dx, dz = x - cx, z - cz
++					local i = at(x, z)
++					if walk[i] and inBowl(x, z) and dx * dx + dz * dz < heartR * heartR then
++						kinds[i] = "melt"
++					end
++				end
++			end
++			for _ = 1, whole(rng, 2, 4) do
++				local a = between(rng, 0, 2 * math.pi)
++				table.insert(marks, {
++					sculpt = "moor_impact_shards",
++					x = cx + math.cos(a) * (heartR + 0.3),
++					z = cz + math.sin(a) * (heartR + 0.3),
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.5, 0.85),
++					sink = 0.3,
++					solid = true,
++				})
++			end
++			table.insert(effects, { recipe = "moor_crater_embers", x = cx, z = cz, lift = 0.8 })
++		else
++			-- The vent: a hole sunk into the floor, still breathing.
++			for z = 1, d do
++				for x = 1, w do
++					local dx, dz = x - cx, z - cz
++					local i = at(x, z)
++					if walk[i] and inBowl(x, z) and dx * dx + dz * dz < heartR * heartR then
++						walk[i] = false
++						kinds[i] = "melt"
++						lifts[i] = 0.25
++						heights[i] -= 4.5
++					end
++				end
++			end
++			for _ = 1, whole(rng, 2, 3) do
++				local a = between(rng, 0, 2 * math.pi)
++				table.insert(marks, {
++					sculpt = "moor_impact_shards",
++					x = cx + math.cos(a) * (heartR + 0.4),
++					z = cz + math.sin(a) * (heartR + 0.4),
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.55, 0.9),
++					sink = 0.35,
++					solid = true,
++				})
++			end
++			table.insert(effects, { recipe = "moor_crater_embers", x = cx, z = cz, lift = 0.9 })
++		end
++
++		-- Phase three: the cracks. Seams of melt still open in the bowl floor, running
++		-- out of the heart, so the red in the glass is a shape and not just a speckle.
++		for _ = 1, whole(rng, 3, 6) do
++			local a0 = between(rng, 0, 2 * math.pi)
++			local far = main.minAxis * between(rng, 0.4, 0.9)
++			local turnCrack = between(rng, -0.4, 0.4)
++			local steps = math.max(2, math.ceil(far))
++			for s = 0, steps do
++				local t = s / steps
++				local a = a0 + turnCrack * t
++				local rr = (0.12 + (far / main.minAxis - 0.12) * t) * main.minAxis
++				local x = math.floor(cx + math.cos(a) * rr + 0.5)
++				local z = math.floor(cz + math.sin(a) * rr + 0.5)
++				if x >= 1 and x <= w and z >= 1 and z <= d then
++					local i = at(x, z)
++					if walk[i] and kinds[i] == "glass" then
++						kinds[i] = "melt"
++					end
++				end
++			end
++		end
++
++		-- Phase four: the rim's standing shards and what the blast threw clear.
++		for _ = 1, whole(rng, 4, 8) do
++			local a = between(rng, 0, 2 * math.pi)
++			if not inGap(a, gaps[1]) then
++				local p = rimPoint(main, a, rimW * between(rng, 0.3, 0.65))
++				table.insert(marks, {
++					sculpt = "moor_impact_shards",
++					x = p.x,
++					z = p.z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.9, 1.45),
++					sink = 0.25,
++					solid = true,
++				})
++			end
++		end
++		local function onPad(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= w and z <= d
++		end
++		for _ = 1, whole(rng, 0, 3) do
++			local a = between(rng, 0, 2 * math.pi)
++			local rr = main.minAxis + rimW + between(rng, 2.0, 5.0)
++			local x, z = cx + math.cos(a) * rr, cz + math.sin(a) * rr
++			if onPad(x, z) then
++				table.insert(marks, {
++					sculpt = "moor_cinder_snag",
++					x = x,
++					z = z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.8, 1.1),
++					sink = 0.3,
++					solid = true,
++				})
++			end
++		end
++		for _ = 1, whole(rng, 0, 2) do
++			local a = between(rng, 0, 2 * math.pi)
++			local rr = main.minAxis + rimW + between(rng, 2.6, 5.4)
++			local x, z = cx + math.cos(a) * rr, cz + math.sin(a) * rr
++			if onPad(x, z) then
++				table.insert(marks, {
++					sculpt = "moor_cliff_low",
++					x = x,
++					z = z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.45, 0.7),
++					sink = 1.0,
++					solid = true,
++				})
++			end
++		end
++		-- One last column of embers on the apron, downwind of the bowl.
++		local smokeA = between(rng, 0, 2 * math.pi)
++		local smokeP = rimPoint(main, smokeA, rimW + between(rng, 2.2, 4.0))
++		table.insert(effects, {
++			recipe = "moor_crater_embers",
++			x = math.clamp(smokeP.x, 0.7, w + 0.3),
++			z = math.clamp(smokeP.z, 0.7, d + 0.3),
++			lift = 0.2,
++		})
++
++		-- The road: in over the apron, down through a breach, round the heart, and out.
++		local function border(a: number): Point
++			local c, s = math.cos(a), math.sin(a)
++			local tx = if c > 1e-6 then (w - cx) / c elseif c < -1e-6 then (1 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d - cz) / s elseif s < -1e-6 then (1 - cz) / s else math.huge
++			local t = math.min(tx, tz)
++			local x = math.clamp(math.floor(cx + c * t + 0.5), 1, w)
++			local z = math.clamp(math.floor(cz + s * t + 0.5), 1, d)
++			if tx <= tz then
++				x = if c > 0 then w else 1
++			else
++				z = if s > 0 then d else 1
++			end
++			return { x = x, z = z }
++		end
++		local function ringAt(a: number, rr: number): Point
++			return { x = cx + math.cos(a) * rr, z = cz + math.sin(a) * rr }
++		end
++		local road: { Point } = { border(inAt) }
++		table.insert(road, rimPoint(main, inAt, rimW + 1.6))
++		table.insert(road, rimPoint(main, inAt, rimW * 0.5))
++		table.insert(road, ringAt(inAt, passR + 0.6))
++		for k = 1, 3 do
++			local a = inAt + side * (0.35 + (k - 1) * 0.55)
++			table.insert(road, ringAt(a, passR))
++		end
++		table.insert(road, ringAt(outAt, passR + 0.6))
++		table.insert(road, rimPoint(main, outAt, rimW * 0.5))
++		table.insert(road, rimPoint(main, outAt, rimW + 1.6))
++		table.insert(road, border(outAt))
++		-- Keep every point on walkable ground: nudge it off a wall if it landed on one.
++		for _, p in road do
++			for _ = 1, 10 do
++				local px, pz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++				if px >= 1 and px <= w and pz >= 1 and pz <= d and walk[at(px, pz)] then
++					break
++				end
++				local found = false
++				for ring = 1, 8 do
++					for k = 0, 7 do
++						local a = k * math.pi / 4
++						local x, z = p.x + math.cos(a) * ring * 0.5, p.z + math.sin(a) * ring * 0.5
++						local qx, qz = math.floor(x + 0.5), math.floor(z + 0.5)
++						if qx >= 1 and qx <= w and qz >= 1 and qz <= d and walk[at(qx, qz)] then
++							p.x, p.z = x, z
++							found = true
++							break
++						end
++					end
++					if found then
++						break
++					end
++				end
++				if not found then
++					break
++				end
++			end
++		end
++
++		-- One walkable ground: should a rare draw close a pocket, crack a glassy way in.
++		local g = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		local regions = Grid.regions(g)
++		if #regions > 1 then
++			local mainRegion = regions[1]
++			for r = 2, #regions do
++				local bestA, bestB, bestD = regions[r][1], mainRegion[1], math.huge
++				for _, a in regions[r] do
++					local ax, az = Grid.coords(g, a)
++					for _, b in mainRegion do
++						local bx, bz = Grid.coords(g, b)
++						local dd = (ax - bx) ^ 2 + (az - bz) ^ 2
++						if dd < bestD then
++							bestD, bestA, bestB = dd, a, b
++						end
++					end
++				end
++				local ax, az = Grid.coords(g, bestA)
++				local bx, bz = Grid.coords(g, bestB)
++				local ha, hb = heights[bestA], heights[bestB]
++				-- A cell-by-cell path, so the crack is walkable end to end (4-connected).
++				local path: { number } = {}
++				local px, pz = ax, az
++				table.insert(path, at(px, pz))
++				while px ~= bx or pz ~= bz do
++					if math.abs(bx - px) >= math.abs(bz - pz) then
++						px += if bx > px then 1 else -1
++					else
++						pz += if bz > pz then 1 else -1
++					end
++					table.insert(path, at(px, pz))
++				end
++				for k, i in path do
++					if not walk[i] then
++						walk[i] = true
++						kinds[i] = "glass"
++						lifts[i] = 0.2
++						heights[i] = ha + (hb - ha) * ((k - 1) / math.max(1, #path - 1))
++					end
++				end
++			end
++			for i, ok in walk do
++				g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++			end
++		end
++		-- The contract's step rule: no two walkable neighbours more than two studs apart
++		-- (just under two, so float rounding never reads as two and a hair).
++		local STEP = 1.9
++		for _ = 1, 4 do
++			for i, ok in walk do
++				if ok then
++					local x, z = Grid.coords(g, i)
++					local lo, hi = -math.huge, math.huge
++					for _, nb in Grid.NEIGHBOURS do
++						local j = Grid.index(g, x + nb[1], z + nb[2])
++						if Grid.inBounds(g, x + nb[1], z + nb[2]) and walk[j] then
++							lo = math.max(lo, heights[j] - STEP)
++							hi = math.min(hi, heights[j] + STEP)
++						end
++					end
++					if lo <= hi then
++						heights[i] = math.clamp(heights[i], lo, hi)
++					else
++						heights[i] = (heights[i] + lo + hi) / 3
++					end
++				end
++			end
++		end
++
++		-- The photographs: a high three-quarter over the whole fall, and a low shot from
++		-- inside the bowl where the road comes down to the heart.
++		local heroA = between(rng, 0, 2 * math.pi)
++		if apart(heroA, inAt) < 0.7 then
++			heroA += 1.1
++		end
++		if apart(heroA, outAt) < 0.7 then
++			heroA += 1.1
++		end
++		local hero = rimPoint(main, heroA, rimW + between(rng, 5.5, 7.0))
++		-- The pad is ten cells wide round the footprint: keep the camera inside it.
++		local pad = MapFeature.PAD
++		hero = {
++			x = math.clamp(hero.x, 1 - pad + 0.6, w + pad - 0.6),
++			z = math.clamp(hero.z, 1 - pad + 0.6, d + pad - 0.6),
++		}
++		local insideA = passAngle + between(rng, -0.5, 0.5)
++		local insideR = math.min(heartClear + between(rng, 1.0, 2.5), main.minAxis - 1.5)
++		local inside = { x = cx + math.cos(insideA) * insideR, z = cz + math.sin(insideA) * insideR }
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "the whole fall",
++					from = { x = hero.x, z = hero.z, lift = between(rng, 20, 26) },
++					to = { x = cx, z = cz, lift = 1.4 },
++					fov = 66,
++				},
++				{
++					name = "inside the bowl",
++					from = { x = inside.x, z = inside.z, lift = between(rng, 2.4, 3.4) },
++					to = { x = cx, z = cz, lift = between(rng, 2.4, 4.0) },
++					fov = 68,
++				},
++			},
++		}
++	end,
++}
++
++return feature

@@ -1,0 +1,823 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..50004786 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -4,10 +4,12 @@
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
++local MoorHillfort = require("../systems/features/MoorHillfort")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	MoorHillfort = MoorHillfort,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..7c020fbb 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -433,6 +433,53 @@ local Sculpts: { [string]: Recipe } = {
+ 			{ width = 36, depth = 38, rise = 12, steps = 8 },
+ 		},
+ 	},
++	-- The hillfort on the moor (systems/features/MoorHillfort): its timber gate
++	-- fallen across the gate cut, two posts of stacked timber with one left short
++	-- and the lintel down along the bank (systems/sculpts/Waymarks, the arch), so
++	-- the road runs through what is left of it. Cut in dark dead wood.
++	moor_fort_gate = {
++		kind = "arch",
++		size = { 20, 7.6, 3.2 },
++		material = "Wood",
++		-- Weather-bleached oak, a shade paler than the moor's dead wood, so the
++		-- fallen frame reads against the dark turf at night.
++		colors = { { 98, 88, 78 }, { 86, 76, 66 }, { 92, 82, 72 } },
++		maxPrims = 14,
++		span = 12,
++		snapped = true,
++	},
++	-- A hut circle on the hillfort's crown: a low ring of stone footing broken
++	-- down on one side, its fallen stones heaped outside (the tower's low,
++	-- thick-walled form).
++	moor_fort_hut = {
++		kind = "tower",
++		size = { 6.4, 2.3, 0.9 },
++		material = "Slate",
++		colors = { { 84, 84, 88 }, { 76, 77, 82 }, { 92, 92, 96 } },
++		maxPrims = 20,
++	},
++	-- The hillfort's well on its crown: a low ring of stone under a little
++	-- timber roof on two posts, with the windlass beam across (the wayside's
++	-- well), dry these years.
++	moor_fort_well = {
++		kind = "wayside",
++		form = "well",
++		size = { 5.2, 4.8, 4.8 },
++		material = "Slate",
++		colors = { { 84, 84, 88 }, { 76, 77, 82 }, { 56, 47, 40 }, { 92, 88, 72 } },
++		materials = { [3] = "Wood" },
++		maxPrims = 12,
++	},
++	-- The hillfort's signal beacon on its crown: a broad iron brazier on three
++	-- legs, its coals heaped proud and still warm (systems/sculpts/Quarry's
++	-- brazier). Its fire and smoke are the moor_fort_beacon_fire set piece.
++	moor_fort_beacon = {
++		kind = "brazier",
++		size = { 6.5, 7, 6.5 },
++		material = "Slate",
++		colors = { { 84, 84, 88 }, { 76, 77, 82 }, { 92, 92, 96 }, { 62, 60, 58 }, { 78, 56, 48 } },
++		maxPrims = 8,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..9e22a78e 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,90 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The hillfort's signal beacon, still burning for nobody (MoorHillfort,
++-- systems/features/MoorHillfort): a tall column of embers and smoke off the
++-- crown, guttering and leaning in the wind, breathing a warm light over the
++-- ramparts. Embers climb fast and thin off the coals in a bright core, a slower
++-- ember glow among them gives the fire a body, and the smoke rises wide and
++-- slow above both, wandering as it goes. A single light at the brazier's foot
++-- pulses with the same slow breath, so the fort reads from across the moor.
++recipes.moor_fort_beacon_fire = {
++	about = "The hillfort's beacon still burning for nobody: a tall column of embers and smoke off the crown, breathing warm light over the ramparts.",
++	theme = "quarry",
++	path = { kind = "worm", length = 5, step = 2, bend = 12, climb = 70, round = 1 },
++	layers = {
++		{
++			name = "sparks",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 2.8,
++				lift = 0.3,
++				toward = "up",
++				rise = 7,
++				life = { 2, 3.2 },
++				rate = 9,
++				size = 0.35,
++				tall = 3.5,
++				transparency = 0.18,
++				color = "ember",
++				lean = 12,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 9, span = 9, periods = { 2.7, 3.9 } },
++			priority = 1,
++		},
++		{
++			name = "glow",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 1.8,
++				lift = 0.2,
++				toward = "up",
++				rise = 3.2,
++				life = { 1.8, 2.6 },
++				rate = 5,
++				size = 2.4,
++				tall = 1.6,
++				transparency = 0.58,
++				color = "ember",
++				texture = "wisp",
++				lean = 10,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 10, span = 8, periods = { 3.4, 5.1 } },
++			priority = 2,
++		},
++		{
++			name = "smoke",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 3,
++				lift = 1.6,
++				toward = "up",
++				rise = 2.4,
++				life = { 7, 9 },
++				rate = 2.6,
++				size = 7,
++				tall = 1.7,
++				transparency = 0.84,
++				color = "smoke",
++				texture = "smoke",
++				lean = 14,
++				vary = 0.3,
++			},
++			motion = { kind = "sway", amplitude = 1.8, tilt = 16, span = 14, periods = { 7, 10 } },
++			priority = 3,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 6, max = 1, range = 22, brightness = 1.1, color = "ember" },
++			motion = { kind = "pulse", period = 3.2, depth = 0.35 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..6354218c 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,23 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The hillfort on the moor (systems/features/MoorHillfort)
++	["sculpt:moor_fort_gate"] = row(
++		"The hillfort's fallen timber gate: two posts of stacked timber, one left short, and its lintel down along the bank.",
++		MOOR
++	),
++	["sculpt:moor_fort_hut"] = row(
++		"A hut circle on the hillfort's crown: a low broken ring of stone footing with its fallen stones heaped outside.",
++		MOOR
++	),
++	["sculpt:moor_fort_well"] = row(
++		"The hillfort's well: a low stone ring under a little timber roof on two posts, its windlass beam across.",
++		MOOR
++	),
++	["sculpt:moor_fort_beacon"] = row(
++		"The hillfort's signal beacon: a broad iron brazier on three legs with its coals heaped proud and still warm.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/MoorHillfort.luau b/src/shared/systems/features/MoorHillfort.luau
+new file mode 100644
+index 00000000..3f560ee8
+--- /dev/null
++++ b/src/shared/systems/features/MoorHillfort.luau
+@@ -0,0 +1,619 @@
++--!strict
++-- A hillfort on the moor (docs/guides/map-features.md): concentric turf ramparts and
++-- their ditches ringing a high flat crown. The road climbs in through one deep gate cut
++-- whose timber gate has fallen, crosses the crown, and leaves by a narrow postern on
++-- the far side. Hut circles and a well stand on the crown, and the fort's signal beacon
++-- still burns for nobody.
++--
++-- The moor has heath, outcrops, hollows and the odd standing stone; it has no place of
++-- earthworks and walls that people raised to hold a hill. Its seeds differ in kind, not
++-- only in detail (fafwa, 2026-10-30: topology first, then look). The first draws choose
++-- the structure, the rest only dress it:
++--   1. the number of ramparts: two, three (the common), or four;
++--   2. the hill's shape: round, an oval, or lobed like a hill's own contours;
++--   3. the gate: one straight cut through, a dog-legged cut whose gaps turn as they
++--      climb, or a flank postern, the road crossing the crown cornerwise;
++--   4. the ruin: sound ramparts, one breach, or two or three slumped in;
++--   5. then the crown's size, the ring widths, the gate's width, the huts and the
++--      beacon's place.
++-- Everything stands on the moor's own kit (moor_* sculpts) and four cut for the fort:
++-- its fallen gate, its hut circles, its well and its beacon.
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++local Noise = require("../Noise")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- Radians between two angles, 0..pi.
++local function apart(a: number, b: number): number
++	return math.abs((a - b + math.pi) % (2 * math.pi) - math.pi)
++end
++
++-- The angle halfway between two close ones, round the short way.
++local function midAngle(a: number, b: number): number
++	return math.atan2(math.sin(a) + math.sin(b), math.cos(a) + math.cos(b))
++end
++
++-- The moor's own turf and trodden earth (Moor.luau), its wet basalt, and a rubble for
++-- the slumped spans; `Ground` is the tileset's road earth, so the track reads as one way
++-- through the gate, the crown and out.
++local TURF = { material = "LeafyGrass", color = { 50, 53, 45 } }
++local CROWN_GROUND = { material = "Ground", color = { 68, 62, 56 } }
++local WAY = { material = "Cobblestone", color = { 88, 86, 82 } }
++local DITCH = { material = "Cobblestone", color = { 26, 25, 24 } }
++local RUBBLE = { material = "Cobblestone", color = { 60, 58, 54 } }
++local HEARTH = { material = "Cobblestone", color = { 26, 25, 24 } }
++-- The bible's lamp amber (section 3): the beacon is the one warm light here.
++local AMBER = { 255, 170, 100 }
++-- The crown stands this many studs over the ground outside, and the ditches sink this
++-- far under it; a causeway crossing a ditch keeps the road level (two studs, the step
++-- a walker takes).
++local CROWN = 2
++local DITCH_FLOOR = -2
++
++local feature: MapFeature.Feature = {
++	name = "MoorHillfort",
++	about = "A hillfort: concentric turf ramparts and ditches ringing a high flat crown, the road climbing through a gate cut whose timber gate has fallen, huts and a well inside, and a beacon still burning.",
++	tileset = "moor",
++	scale = "medium",
++	role = "crossing",
++	mood = { "ancient", "defended", "high", "windswept", "beacon-lit" },
++	cells = {
++		crown = {
++			ground = CROWN_GROUND,
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "moor_heather", every = 14, scale = { 0.5, 0.75 } },
++				{ sculpt = "moor_boulder", every = 40, scale = { 0.4, 0.6 }, sink = 0.5 },
++			},
++		},
++		rampart = {
++			ground = TURF,
++			clear = true,
++			props = {
++				{ sculpt = "moor_heather", every = 8, scale = { 0.5, 0.8 } },
++				{ sculpt = "moor_boulder", every = 30, scale = { 0.4, 0.7 }, sink = 0.5 },
++			},
++		},
++		ditch = {
++			ground = DITCH,
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "moor_heather", every = 12, scale = { 0.45, 0.7 } },
++				{ sculpt = "moor_boulder", every = 20, scale = { 0.4, 0.7 }, sink = 0.4 },
++			},
++		},
++		way = { ground = WAY, lift = 0.2, clear = true },
++		breach = {
++			ground = RUBBLE,
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "moor_boulder", every = 4, scale = { 0.5, 0.9 }, sink = 0.4 },
++				{ sculpt = "moor_heather", every = 6, scale = { 0.5, 0.8 } },
++			},
++		},
++		hearth = {
++			ground = HEARTH,
++			lift = 0.2,
++			clear = true,
++			glow = { color = AMBER, range = 18, brightness = 1.5, every = 1, height = 5.8 },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-4: the structure, first.
++		local RING_COUNTS = { 2, 3, 3, 4 }
++		local rings = RING_COUNTS[whole(rng, 1, #RING_COUNTS)]
++		local shapeRoll = rng:NextNumber()
++		local shape = if shapeRoll < 0.32 then "round" elseif shapeRoll < 0.68 then "oval" else "lobed"
++		local gateRoll = rng:NextNumber()
++		local gate = if gateRoll < 0.42 then "straight" elseif gateRoll < 0.78 then "bent" else "flank"
++		local ruinRoll = rng:NextNumber()
++		local ruin = if ruinRoll < 0.3 then "sound" elseif ruinRoll < 0.7 then "weathered" else "broken"
++
++		-- 5: the footprint and the hill's shape.
++		local w, d = whole(rng, 30, 32), whole(rng, 30, 32)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		local stretch = if shape == "oval" then between(rng, 0.82, 0.94) else between(rng, 0.95, 1.09)
++		local turn = between(rng, 0, math.pi)
++		local lobes = if shape == "lobed" then whole(rng, 3, 6) else whole(rng, 2, 4)
++		local lobeAmp = if shape == "lobed" then between(rng, 0.06, 0.11) else between(rng, 0.008, 0.03)
++		local lobePhase = between(rng, 0, 2 * math.pi)
++		local fineAmp = if shape == "lobed" then between(rng, 0.012, 0.03) else 0
++		local fineLobes = whole(rng, 6, 9)
++		local finePhase = between(rng, 0, 2 * math.pi)
++		local wobMax = 1 + lobeAmp + fineAmp
++		-- The largest elliptical radius whose ground still lands a good margin inside the
++		-- footprint on every side, with the oval's stretch taken out.
++		local fit = (math.min(w, d) / 2 - 1.4) / math.max(stretch, 1 / stretch)
++		local Rmax = fit / wobMax - 0.3
++		local R = Rmax - between(rng, 0, 1.0)
++		local crownR = if rings == 2
++			then between(rng, 4.1, 5.8)
++			elseif rings == 3 then between(rng, 3.2, 5.0)
++			else between(rng, 2.6, 3.8)
++		if crownR + rings * 2.2 > R then
++			crownR = math.max(2.5, R - rings * 2.2)
++		end
++		local bandWidth = (R - crownR) / rings
++		local bankShare = between(rng, 0.56, 0.68)
++		local cs, sn = math.cos(turn), math.sin(turn)
++		local function metric(dx: number, dz: number): number
++			local lx, lz = dx * cs + dz * sn, -dx * sn + dz * cs
++			return math.sqrt((lx / stretch) ^ 2 + (lz * stretch) ^ 2)
++		end
++		local function along(a: number, u: number): Point
++			local k = metric(math.cos(a), math.sin(a))
++			return { x = cx + math.cos(a) * u / k, z = cz + math.sin(a) * u / k }
++		end
++		-- The rings' own uneven edge: no hilltop is a circle.
++		local function wobble(a: number): number
++			return 1 + lobeAmp * math.sin(lobes * a + lobePhase) + fineAmp * math.sin(fineLobes * a + finePhase)
++		end
++
++		-- The bands from the crown out: bank, ditch, bank, ditch... Each ring's widths
++		-- differ a little, and each bank's crest takes its own height.
++		local innerBias = between(rng, -1, 1)
++		local bands = {}
++		local tops = {}
++		local r = crownR
++		for i = 1, rings do
++			local tb = bandWidth * math.clamp(bankShare + between(rng, -0.05, 0.05), 0.5, 0.8)
++			table.insert(bands, { bank = true, i = i, rIn = r, rOut = r + tb })
++			r += tb
++			table.insert(bands, { bank = false, i = i, rIn = r, rOut = r + bandWidth - tb })
++			r = r + bandWidth - tb
++			tops[i] =
++				math.clamp(CROWN + between(rng, 3, 4.6) + innerBias * (rings - i) * 0.45, CROWN + 2.6, CROWN + 5.6)
++		end
++		local R_outer = r
++
++		-- The two ways in: the gate, and the postern the road leaves by. A bent gate
++		-- turns each inner gap from the last, so the cut climbs in a dog-leg; a flank
++		-- postern is set round the hill rather than opposite, and the road crosses the
++		-- crown cornerwise.
++		local gA = between(rng, 0, 2 * math.pi)
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++		local bend = if gate == "bent" then side * between(rng, 0.16, 0.34) else 0
++		local pA = gA + (if gate == "flank" then side * between(rng, 1.9, 2.7) else math.pi + between(rng, -0.22, 0.22))
++		local gateHalf = between(rng, 1.45, 1.9)
++		local postHalf = between(rng, 0.9, 1.25)
++		local gapA, postGapA = {}, {}
++		for i = 1, rings do
++			gapA[i] = gA + (rings - i) * bend
++			postGapA[i] = pA
++		end
++
++		-- The ruin: breaches are slumps through a rampart, its stones down the bank.
++		local breachCount = if ruin == "sound" then 0 elseif ruin == "weathered" then 1 else whole(rng, 2, 3)
++		local breaches = {}
++		for _ = 1, breachCount do
++			for _ = 1, 24 do
++				local b = whole(rng, 1, rings)
++				local a = between(rng, 0, 2 * math.pi)
++				local ok = true
++				for i = 1, rings do
++					ok = ok and apart(a, gapA[i]) > 0.3 and apart(a, postGapA[i]) > 0.3
++				end
++				for _, o in breaches do
++					ok = ok and apart(a, o.a) > 0.42
++				end
++				if ok then
++					table.insert(breaches, { bank = b, a = a, half = between(rng, 0.9, 1.5) })
++					break
++				end
++			end
++		end
++
++		local function inCut(a: number, u: number, bank: number): boolean
++			return u * apart(a, gapA[bank]) <= gateHalf
++		end
++		local function inPostern(a: number, u: number, bank: number): boolean
++			return u * apart(a, postGapA[bank]) <= postHalf
++		end
++		local function inBreach(a: number, u: number, bank: number): boolean
++			for _, b in breaches do
++				if b.bank == bank and u * apart(a, b.a) <= b.half then
++					return true
++				end
++			end
++			return false
++		end
++		-- A ditch is carried level across each way through, so the road walks a causeway
++		-- rather than dipping into every trench.
++		local function causeway(a: number, u: number, ditch: number, gaps: { number }, half: number): boolean
++			local inner = gaps[ditch]
++			local outer = if ditch < rings then gaps[ditch + 1] else gaps[ditch]
++			local mid = midAngle(inner, outer)
++			local spread = half + u * apart(inner, outer) * 0.5 + 0.2
++			return u * apart(a, mid) <= spread
++		end
++
++		-- Lay the hill out cell by cell.
++		local field = Noise.field(rng)
++		local walk, heights, kinds, lifts = table.create(w * d, true), table.create(w * d, 0), {}, {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local dx, dz = x - cx, z - cz
++				local u = metric(dx, dz)
++				local a = math.atan2(dz, dx)
++				local v = u / wobble(a)
++				if v < crownR then
++					heights[i] = CROWN
++					kinds[i] = "crown"
++				else
++					local hit = nil
++					for _, band in bands do
++						if v >= band.rIn and v < band.rOut then
++							hit = band
++							break
++						end
++					end
++					if hit == nil then
++						heights[i] = 0 -- the apron, keeping the moor's own ground
++					elseif hit.bank then
++						if inCut(a, u, hit.i) or inPostern(a, u, hit.i) then
++							heights[i] = 0
++							kinds[i] = "way"
++						elseif inBreach(a, u, hit.i) then
++							heights[i] = 0
++							kinds[i] = "breach"
++						else
++							walk[i] = false
++							kinds[i] = "rampart"
++							-- The crest rounds off from foot to foot, unevenly.
++							local t = (v - hit.rIn) / (hit.rOut - hit.rIn)
++							local crest = tops[hit.i] * (0.66 + 0.34 * math.sin(t * math.pi))
++								+ Noise.sample(field, x * 0.33, z * 0.33) * 0.55
++							lifts[i] = math.max(1.2, math.floor(crest * 2 + 0.5) / 2)
++						end
++					elseif causeway(a, u, hit.i, gapA, gateHalf) or causeway(a, u, hit.i, postGapA, postHalf) then
++						heights[i] = 0
++						kinds[i] = "way"
++					else
++						heights[i] = DITCH_FLOOR
++						kinds[i] = "ditch"
++					end
++				end
++			end
++		end
++		-- A thin ring or a diagonal cut rasterises to a few cells touching only at a
++		-- corner; the walkable ground must join up, so those strays become fallen
++		-- rubble. (A rampart's slumped stones fill the odd patch of ditch, too.)
++		local check = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			check.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		local strays = Grid.regions(check)
++		for k = 2, #strays do
++			for _, i in strays[k] do
++				walk[i] = false
++				kinds[i] = "breach"
++				lifts[i] = 1.2
++			end
++		end
++
++		-- The road: in off the border, through the gate's gaps, across the crown, and
++		-- out through the postern's.
++		local function border(a: number): Point
++			local c, s = math.cos(a), math.sin(a)
++			local tx = if c > 1e-6 then (w - cx) / c elseif c < -1e-6 then (1 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d - cz) / s elseif s < -1e-6 then (1 - cz) / s else math.huge
++			local t = math.min(tx, tz)
++			local x, z = math.clamp(math.floor(cx + c * t + 0.5), 1, w), math.clamp(math.floor(cz + s * t + 0.5), 1, d)
++			if tx <= tz then
++				x = if c > 0 then w else 1
++			else
++				z = if s > 0 then d else 1
++			end
++			return { x = x, z = z }
++		end
++		local function bankAt(k: number): { rIn: number, rOut: number }
++			return bands[(k - 1) * 2 + 1]
++		end
++		local gateIn = along(gapA[1], crownR - 0.8)
++		local postIn = along(postGapA[1], crownR - 0.8)
++		local road: { Point } = { border(gA) }
++		for k = rings, 1, -1 do
++			local b = bankAt(k)
++			table.insert(road, along(gapA[k], b.rOut + 0.35))
++			table.insert(road, along(gapA[k], b.rIn - 0.35))
++		end
++		table.insert(road, gateIn)
++		table.insert(road, postIn)
++		for k = 1, rings do
++			local b = bankAt(k)
++			table.insert(road, along(postGapA[k], b.rIn - 0.35))
++			table.insert(road, along(postGapA[k], b.rOut + 0.35))
++		end
++		table.insert(road, border(pA))
++
++		local function cellOf(p: Point): (number, number)
++			return math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++		end
++		local function walkableAt(p: Point): boolean
++			local x, z = cellOf(p)
++			return x >= 1 and x <= w and z >= 1 and z <= d and walk[at(x, z)]
++		end
++		-- Keep every road point on walkable ground: nudge one that fell on a wall (or
++		-- just off the footprint) to the nearest walkable cell.
++		for _, p in road do
++			if not walkableAt(p) then
++				local bx, bz = cellOf(p)
++				local best, bestD = nil, math.huge
++				for oz = -2, 2 do
++					for ox = -2, 2 do
++						local qx, qz = bx + ox, bz + oz
++						if qx >= 1 and qx <= w and qz >= 1 and qz <= d and walk[at(qx, qz)] then
++							local dd = ox * ox + oz * oz
++							if dd < bestD then
++								best, bestD = { x = qx, z = qz }, dd
++							end
++						end
++					end
++				end
++				if best then
++					p.x, p.z = best.x, best.z
++				end
++			end
++		end
++		-- Hold the ends on the border, where a map's road joins the feature.
++		for _, k in { 1, #road } do
++			local p = road[k]
++			local x, z = cellOf(p)
++			local toW, toE, toN, toS = math.abs(x - 1), math.abs(x - w), math.abs(z - 1), math.abs(z - d)
++			local least = math.min(toW, toE, toN, toS)
++			if least == toW then
++				p.x = 1
++			elseif least == toE then
++				p.x = w
++			elseif least == toN then
++				p.z = 1
++			else
++				p.z = d
++			end
++		end
++
++		local function roadDistance(px: number, pz: number): number
++			local best = math.huge
++			for k = 2, #road do
++				local a, b = road[k - 1], road[k]
++				local vx, vz = b.x - a.x, b.z - a.z
++				local len2 = vx * vx + vz * vz
++				local t = if len2 > 0 then math.clamp(((px - a.x) * vx + (pz - a.z) * vz) / len2, 0, 1) else 0
++				local qx, qz = a.x + vx * t, a.z + vz * t
++				local dd = (px - qx) ^ 2 + (pz - qz) ^ 2
++				if dd < best then
++					best = dd
++				end
++			end
++			return math.sqrt(best)
++		end
++
++		-- The way itself, trodden pale across the crown and out at both ends.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] and heights[i] > DITCH_FLOOR + 0.5 and roadDistance(x, z) <= 1.15 then
++					kinds[i] = "way"
++				end
++			end
++		end
++
++		-- The crown's own places: the beacon by the road's side, the well across from it,
++		-- and huts round the crown's edge. All of them clear of the way through.
++		local function crownFit(p: Point, margin: number): boolean
++			return metric(p.x - cx, p.z - cz) <= crownR - margin
++		end
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++
++		local mvx, mvz = postIn.x - gateIn.x, postIn.z - gateIn.z
++		local mlen = math.sqrt(mvx * mvx + mvz * mvz)
++		local mx, mz = (gateIn.x + postIn.x) / 2, (gateIn.z + postIn.z) / 2
++		local nx, nz = -mvz / mlen, mvx / mlen
++		local beaconSide = if rng:NextNumber() < 0.5 then 1 else -1
++		local function sideSpot(want: number, margin: number, roadMin: number): Point?
++			for _, s in { beaconSide, -beaconSide } do
++				for _, f in { 1, 0.82, 0.62, 0.45 } do
++					local p = { x = mx + nx * want * f * s, z = mz + nz * want * f * s }
++					if crownFit(p, margin) and roadDistance(p.x, p.z) > roadMin then
++						return p
++					end
++				end
++			end
++			return nil
++		end
++		local function scanSpot(
++			margin: number,
++			roadMin: number,
++			lo: number,
++			hi: number,
++			away: Point?,
++			awayMin: number
++		): Point?
++			local least = if away then awayMin * awayMin else 0
++			for _ = 1, 120 do
++				local a = between(rng, 0, 2 * math.pi)
++				local rr = between(rng, lo, hi)
++				local p = { x = cx + math.cos(a) * rr, z = cz + math.sin(a) * rr }
++				local far = away == nil or (p.x - away.x) ^ 2 + (p.z - away.z) ^ 2 > least
++				if far and crownFit(p, margin) and roadDistance(p.x, p.z) > roadMin then
++					return p
++				end
++			end
++			return nil
++		end
++
++		-- The beacon sits on the crown's heart, a step off the road, so its fire is seen
++		-- down every ring; the cell under it is burnt bare and keeps the glow.
++		local beacon = sideSpot(math.min(between(rng, 1.5, 2.3), crownR * 0.5), 1.0, 1.7)
++			or scanSpot(1.0, 1.7, crownR * 0.2, crownR * 0.55, nil, 0)
++			or { x = cx, z = cz }
++		local bx, bz = math.floor(beacon.x + 0.5), math.floor(beacon.z + 0.5)
++		if bz >= 1 and bz <= d and bx >= 1 and bx <= w and walk[at(bx, bz)] then
++			beacon.x, beacon.z = bx, bz
++			kinds[at(bx, bz)] = "hearth"
++		end
++		local beaconScale = between(rng, 0.85, 1.05) * math.clamp(crownR / 4.2, 0.8, 1.1)
++		table.insert(marks, {
++			sculpt = "moor_fort_beacon",
++			x = beacon.x,
++			z = beacon.z,
++			yaw = between(rng, 0, 360),
++			scale = beaconScale,
++			sink = 0.2,
++			solid = true,
++		})
++		table.insert(effects, {
++			recipe = "moor_fort_beacon_fire",
++			x = beacon.x,
++			z = beacon.z,
++			lift = 6 * beaconScale,
++		})
++
++		-- The well, well across the way from the fire.
++		local well = sideSpot(math.min(between(rng, 1.2, 2), crownR * 0.48), 0.7, 1.3)
++		if well and (well.x - beacon.x) ^ 2 + (well.z - beacon.z) ^ 2 < 8 then
++			well = nil
++		end
++		well = well or scanSpot(0.7, 1.3, crownR * 0.3, crownR * 0.6, beacon, 2.9)
++		if well then
++			local wellScale = between(rng, 0.85, 1) * math.clamp(crownR / 4.2, 0.8, 1.1)
++			table.insert(marks, {
++				sculpt = "moor_fort_well",
++				x = well.x,
++				z = well.z,
++				yaw = between(rng, 0, 360),
++				scale = wellScale,
++				sink = 0.2,
++				solid = true,
++			})
++		end
++
++		-- Hut circles round the crown's edge, clear of the way and of each other.
++		local hutCount = math.clamp(math.floor(crownR - 0.8), 1, 4)
++		hutCount = whole(rng, math.max(1, hutCount - 1), hutCount)
++		for _ = 1, hutCount do
++			for _ = 1, 120 do
++				local a = between(rng, 0, 2 * math.pi)
++				local rr = between(rng, crownR * 0.4, crownR * 0.85)
++				local p = { x = cx + math.cos(a) * rr, z = cz + math.sin(a) * rr }
++				local clear = crownFit(p, 0.65) and roadDistance(p.x, p.z) > 1.5
++				clear = clear
++					and (p.x - beacon.x) ^ 2 + (p.z - beacon.z) ^ 2 > 4.4
++					and (well == nil or (p.x - well.x) ^ 2 + (p.z - well.z) ^ 2 > 4.4)
++				for _, m in marks do
++					clear = clear and (p.x - m.x) ^ 2 + (p.z - m.z) ^ 2 > 4.4
++				end
++				if clear then
++					table.insert(marks, {
++						sculpt = "moor_fort_hut",
++						x = p.x,
++						z = p.z,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 0.75, 1) * math.clamp(crownR / 4.2, 0.78, 1.12),
++						sink = 0.25,
++						solid = true,
++					})
++					break
++				end
++			end
++		end
++
++		-- The gate itself, fallen across the outer cut: its posts stand, its lintel lies
++		-- along the bank, and the road runs through what is left of it.
++		local gateBand = bankAt(rings)
++		local gateSpot = along(gapA[rings], (gateBand.rIn + gateBand.rOut) / 2)
++		table.insert(marks, {
++			sculpt = "moor_fort_gate",
++			x = gateSpot.x,
++			z = gateSpot.z,
++			yaw = 90 - math.deg(gapA[rings]),
++			scale = between(rng, 0.9, 1.05),
++			sink = 0.3,
++			solid = true,
++		})
++
++		-- Never leave two walkable cells more than a step apart: lower the higher of a
++		-- pair where a band has thinned to nothing, so the ground always joins up.
++		for _ = 1, 8 do
++			local changed = false
++			for z = 1, d do
++				for x = 1, w do
++					local i = at(x, z)
++					if not walk[i] then
++						continue
++					end
++					local cap = math.huge
++					for _, nb in Grid.NEIGHBOURS do
++						local qx, qz = x + nb[1], z + nb[2]
++						if qx >= 1 and qx <= w and qz >= 1 and qz <= d then
++							local j = at(qx, qz)
++							if walk[j] then
++								cap = math.min(cap, heights[j] + 2)
++							end
++						end
++					end
++					if cap < heights[i] then
++						heights[i] = cap
++						changed = true
++					end
++				end
++			end
++			if not changed then
++				break
++			end
++		end
++
++		-- The photographs: up the gate cut from the road outside, and the rings from
++		-- above the postern.
++		local gateU = (gateBand.rIn + gateBand.rOut) / 2
++		local gateTo = along(gA, gateU)
++		local heroFrom = along(gA, R_outer + 5)
++		local heroTo = along(gA, crownR * 0.6)
++		local crownFrom = along(pA, crownR * 0.95)
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "the hillfort over its gate",
++					from = { x = heroFrom.x, z = heroFrom.z, lift = 15 },
++					to = { x = heroTo.x, z = heroTo.z, lift = 2.5 },
++					fov = 52,
++				},
++				{
++					name = "the rings from the crown",
++					from = { x = crownFrom.x, z = crownFrom.z, lift = 7 },
++					to = { x = gateTo.x, z = gateTo.z, lift = 3.5 },
++					fov = 55,
++				},
++			},
++		}
++	end,
++}
++
++return feature

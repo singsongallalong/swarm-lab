@@ -1,0 +1,28 @@
+{
+  "letter": "E",
+  "generator": "g05",
+  "run": "moor-features-1",
+  "intent": "A worked peat cutting: straight trenches cut into the bog in rows with black water standing in them between sheer peat faces, baulks and a cart track across, turves stacked to dry, a broken sledge and a black bog oak, and a new set piece of cold bog-mist with a breathing marsh-light seeping off the water.",
+  "variation": [
+    "cut: rows of parallel trenches / a main drain with branches off it / a lattice of crossing cuts / a fan of cuts draining into a sump",
+    "rows: along X / along Z / slanted 20-35 degrees",
+    "trenches: 1-4 cuts, 1-2 cells wide, each running off the footprint or stopping inside to leave a headland (0-4 wall islands)",
+    "road: across the rows on baulks / along a bank / at a slant, always on walkable ground",
+    "water and banks: cuts 2-5 studs deep with or without a sump pit, banks flat / rolling / heaped with spoil, a drying yard or none"
+  ],
+  "critic": {
+    "own_idea": 6,
+    "photograph": 6,
+    "topology": 8,
+    "look": 6,
+    "game_camera": 6,
+    "usable": 6,
+    "total": 6.4,
+    "best_shot": "feature-shots seed 2, down the long cut",
+    "why": "A man-made pattern of water trenches with real variety between seeds, but the props are weak and it is big.",
+    "reads_as_itself": "yes: parallel water-filled cuts with stacks and a sledge-like wreck, though the browns read a little like farm plots",
+    "size": "large"
+  },
+  "why": "A man-made pattern of water trenches that splits up open ground, best where there's a large clear patch.",
+  "notes": "# E, notes to its builder\n\nKeep: the long straight water-filled trenches between brown faces, a man-made pattern in the bog that no other feature has, and its layouts really do change from seed to seed.\n\n1. Fix the props. The sledge reads as a broken boat, and the bog oak reads as a small stump. Make the turf stacks bigger and more numerous along the baulks: they are the cue that says \"peat\", and they give the eye-level shot a foreground.\n2. Darken and sharpen the cut faces. Brown boards against green turf read as a garden or a paddy field. Taller, near-black faces and blacker water would make it a bog.\n3. It is large, a big rectangle of heath. A version with two or three short cuts would fit the generator far more often.\n"
+}

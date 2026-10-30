@@ -1,0 +1,1166 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..56a6d6ee 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -4,10 +4,12 @@
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
++local MoorSplitBarrow = require("../systems/features/MoorSplitBarrow")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	MoorSplitBarrow = MoorSplitBarrow,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..6f630d77 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -433,6 +433,44 @@ local Sculpts: { [string]: Recipe } = {
+ 			{ width = 36, depth = 38, rise = 12, steps = 8 },
+ 		},
+ 	},
++	-- The MoorSplitBarrow's kit (map features): the open chamber's standing slabs,
++	-- the capstones thrown off it, the dead left lying in it and the coffer they
++	-- were buried with. The moor's own grave slate and old bone, with the coffer in
++	-- its dead wood.
++	moor_barrow_slab = {
++		kind = "headstone",
++		size = { 3.2, 6, 1.1 },
++		material = "Slate",
++		colors = { { 90, 90, 94 }, { 82, 83, 88 } },
++		maxPrims = 4,
++		top = "broken",
++		lean = 4,
++	},
++	moor_barrow_capstone = {
++		kind = "boulder",
++		size = { 10, 2.4, 7 },
++		material = "Slate",
++		colors = { { 90, 90, 94 }, { 82, 83, 88 }, { 74, 75, 80 } },
++		maxPrims = 3,
++		chunks = 2,
++		tilt = 10,
++	},
++	moor_barrow_bones = {
++		kind = "bones",
++		size = { 7, 2.6, 4.5 },
++		material = "Limestone",
++		colors = { { 96, 94, 86 }, { 88, 86, 78 }, { 80, 78, 72 } },
++		maxPrims = 30,
++		ribs = 3,
++	},
++	moor_barrow_coffer = {
++		kind = "furniture",
++		form = "chest",
++		size = { 3, 2.4, 2.2 },
++		material = "Wood",
++		colors = { { 56, 47, 40 }, { 48, 41, 35 }, { 64, 54, 46 } },
++		maxPrims = 6,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..3ee02f42 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,87 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The split barrow's breath (map feature MoorSplitBarrow): the chamber stands open
++-- to the sky, so the grave's cold dust sifts down into it, a fine pale fall from
++-- the capstone rim to the flagstones, while the grave-light rises off the floor
++-- and a low haze lies in the breach. The feature places it in the chamber.
++recipes.moor_barrow_dust = {
++	about = "Grave dust sifting down into an opened barrow's chamber, pale grave-light rising off its floor and a low haze lying in the breach.",
++	theme = "barrow",
++	path = { kind = "worm", length = 26, step = 4, bend = 30, climb = 1, round = 2 },
++	layers = {
++		{
++			name = "dust",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 6,
++				lift = 7,
++				toward = "down",
++				rise = 1.6,
++				life = { 4, 6 },
++				rate = 4,
++				size = 0.45,
++				tall = 3,
++				transparency = 0.5,
++				color = "core",
++				texture = "wisp",
++				lean = 4,
++				vary = 0.8,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 3, span = 14, periods = { 6.5, 9.5 } },
++			priority = 1,
++		},
++		{
++			name = "light",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 4,
++				lift = 0.4,
++				toward = "up",
++				rise = 0.5,
++				life = { 7, 9 },
++				rate = 1.2,
++				size = 2.4,
++				tall = 1.2,
++				transparency = 0.8,
++				color = "body",
++				texture = "smoke",
++				lean = 10,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1.5, tilt = 8, span = 12, periods = { 9, 13 } },
++			priority = 2,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 13,
++				thick = 10,
++				lift = 0.2,
++				toward = "up",
++				rise = 0.25,
++				life = { 12, 16 },
++				rate = 0.5,
++				size = 10,
++				tall = 0.5,
++				transparency = 0.9,
++				color = "haze",
++				texture = "veil",
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 4, span = 20, periods = { 15, 11 } },
++			priority = 3,
++		},
++		{
++			name = "glow",
++			look = { kind = "light", every = 12, max = 2, range = 14, brightness = 0.7, color = "body" },
++			motion = { kind = "pulse", period = 5, depth = 0.4 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..4cee76e0 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,14 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The MoorSplitBarrow (map feature): its chamber's stone, its dead and its coffer.
++	["sculpt:moor_barrow_slab"] = row("A broken-topped standing slab from an opened barrow's chamber wall.", MOOR),
++	["sculpt:moor_barrow_capstone"] = row(
++		"A great capstone thrown off an opened barrow's chamber, cracked in two.",
++		MOOR
++	),
++	["sculpt:moor_barrow_bones"] = row("The bones of the dead left lying in an opened barrow's chamber.", MOOR),
++	["sculpt:moor_barrow_coffer"] = row("A robbed coffer of grave goods in an opened barrow's chamber.", MOOR),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/MoorSplitBarrow.luau b/src/shared/systems/features/MoorSplitBarrow.luau
+new file mode 100644
+index 00000000..be3e5ff9
+--- /dev/null
++++ b/src/shared/systems/features/MoorSplitBarrow.luau
+@@ -0,0 +1,983 @@
++--!strict
++-- A long barrow split open for the moor (docs/guides/map-features.md): the mound
++-- the robbers cut into and never roofed again, its stone chamber standing open to
++-- the sky, a stepped way down into the dark, and the capstones thrown off round the
++-- breach with the dead's goods still lying where they fell. The moor has graves,
++-- standing stones and barrows; it has no opened one you can walk down into.
++--
++-- Seeds differ in kind before detail (fafwa, 2026-10-30). The first draws choose
++--   1. the mound's plan: a straight long ridge, a sickle bent round its forecourt,
++--      two lobes joined at a narrow waist, or one broad end tapering to a tail;
++--   2. where it is opened: a robber's trench from the long flank, the barrow's own
++--      end torn open along its spine, a trench cut clean across it, or a gash
++--      begun on the crown itself;
++--   3. the chamber: a cist, a long passage, or two chambers side by side;
++--   4. the drop into the dark, the crown's height, the trench's width, the road's side;
++--   5. then only its dress: the standing slabs, the capstones, the dead, the coffer,
++--      the spoil thrown out of the breach.
++-- Its ground is the moor's own (Moor.luau) and worked stone the moor leaves free;
++-- its kit is the barrow's sculpts and its effect the grave-light of the `barrow` theme.
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++-- One arm of the cut: a stepped trench from a mouth on the mound to the chamber.
++type Leg = {
++	ax: number,
++	az: number,
++	bx: number,
++	bz: number,
++	reach: number, -- cells either side of the line
++	mouthH: number, -- studs at the mouth
++	endH: number, -- studs where it meets the chamber
++	steps: number, -- treads from mouth to chamber
++}
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function oneOf(rng: Random, list: { string }): string
++	return list[whole(rng, 1, #list)]
++end
++
++-- Half-stud steps: fine enough to round a mound, and a rounded pair never leaves
++-- more than Terrain's 2-stud step between walkable neighbours (the repair pass
++-- below catches the steepest cells all the same).
++local function graded(h: number): number
++	return math.floor(h * 2 + 0.5) / 2
++end
++
++-- The moor's own turf and earth, and the stone the moor leaves free (FeatureLook's
++-- free list); all inside the bible's ground limits (saturation 0.5, value 0.4).
++local TURF = { material = "LeafyGrass", color = { 50, 53, 45 } } -- Moor.luau beyond.ground
++local EARTH = { material = "Mud", color = { 40, 37, 34 } } -- Moor.luau pools.bed
++local SPOIL = { material = "Ground", color = { 68, 62, 56 } } -- the road's earth, thrown out paler
++local FLAG = { material = "Cobblestone", color = { 76, 74, 70 } } -- worked stone, free to the moor
++local STONE = { material = "Rock", color = { 54, 55, 60 } } -- the chamber's standing stone
++local SARCEN = { material = "Limestone", color = { 86, 83, 76 } } -- the pale capstone course
++
++local FORMS = { "long", "bent", "twin", "wedge" }
++local SPLITS = { "side", "end", "cross", "crown" }
++local CHAMBERS = { "cist", "passage", "double" }
++
++local feature: MapFeature.Feature = {
++	name = "MoorSplitBarrow",
++	about = "A long barrow split open: a turf mound cut down to its bare stone chamber, a stepped way into the dark, capstones thrown off and grave goods scattered round the breach.",
++	tileset = "moor",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "ancient", "robbed", "sunken", "cold" },
++	cells = {
++		turf = {
++			ground = TURF,
++			clear = true,
++			props = {
++				{ sculpt = "moor_heather", every = 4, scale = { 0.9, 1.35 }, sink = 0.3 },
++				{ sculpt = "moor_boulder", every = 30, scale = { 0.18, 0.32 }, sink = 0.4 },
++			},
++		},
++		-- The breach's earth: the trench floor and the cut faces above it.
++		cut = { ground = EARTH, clear = true },
++		-- The barrow's own stone stair, where the cut breaks into it.
++		step = { ground = FLAG, lift = 0.2, clear = true },
++		-- The chamber floor, with the grave-light lying on it.
++		chamber = {
++			ground = FLAG,
++			lift = 0.2,
++			clear = true,
++			glow = { color = { 150, 168, 150 }, range = 12, brightness = 0.9, every = 9, height = 1.4 },
++		},
++		-- The pale capstone course ringing the open chamber, and the old kerb stones
++		-- round the barrow's foot.
++		rim = { ground = SARCEN, clear = true },
++		kerb = { ground = SARCEN, clear = true },
++		-- A broken partition between the two chambers.
++		wall = { ground = STONE, clear = true },
++		-- The worn earth where the mound's foot meets the heath.
++		skirt = {
++			ground = SPOIL,
++			clear = true,
++			props = { { sculpt = "moor_boulder", every = 22, scale = { 0.2, 0.4 }, sink = 0.5 } },
++		},
++		-- Earth heaved out of the breach.
++		spoil = {
++			ground = SPOIL,
++			clear = true,
++			props = { { sculpt = "moor_boulder", every = 18, scale = { 0.3, 0.5 }, sink = 0.5 } },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, before any dressing.
++		local form = oneOf(rng, FORMS)
++		local split = oneOf(rng, SPLITS)
++		local chamberKind = oneOf(rng, CHAMBERS)
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++		-- 4: the footprint and its levels.
++		local w = whole(rng, 30, 32)
++		local d = whole(rng, 28, 32)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		-- The mound stands where it likes in its ground, so no two seeds share a mass.
++		local mcx, mcz = cx + whole(rng, -1, 1), cz + whole(rng, -1, 1)
++		local chamberH = -whole(rng, 4, 7) -- the chamber's floor, studs under it
++		-- A long barrow's own profile: a flat crown on steep turf sides, the sides at
++		-- the walkable limit so the mound reads as a mound from the game camera.
++		local halfLen = ((w - 8) / 2) * between(rng, 0.85, 1)
++		local halfW = math.clamp(((d - 8) / 2) * between(rng, 0.8, 1), 6.2, 9)
++		-- A crown no higher than its sides can climb to.
++		local top = math.min(whole(rng, 7, 10), math.floor(1.9 * (halfW - 3)))
++		local bow = if form == "bent" then side * between(rng, 2.5, 5) else 0
++		local trenchHalf = 1.3 + between(rng, 0, 0.9) -- a 3- to 5-cell trench
++		local wallHeight = whole(rng, 6, 8)
++		local wallTop = chamberH + wallHeight
++		local SIDE = 1.9 -- studs the mound climbs a cell at its flanks
++
++		-- The mound's plan: its spine across Z at `u` along the mound (-1..1), its
++		-- width and its crest there.
++		local function spineAt(u: number): number
++			if form == "bent" then
++				return mcz + bow * (u * u - 0.5)
++			end
++			return mcz
++		end
++		local function halfWidthAt(u: number): number
++			if form == "twin" then
++				-- A waist two stones wide between two lobes.
++				return halfW * (1 - 0.5 * math.exp(-((u / 0.2) ^ 2)))
++			elseif form == "wedge" then
++				return halfW * (1 - 0.35 * u)
++			end
++			return halfW
++		end
++		local function crestAt(u: number): number
++			if form == "twin" then
++				return top * (1 - 0.4 * math.exp(-((u / 0.16) ^ 2)))
++			elseif form == "wedge" then
++				return top * (1 - 0.28 * u)
++			end
++			return top
++		end
++		-- The mound's surface at a point: a level crown, its sides climbing SIDE studs
++		-- a cell from the foot; 0 outside it.
++		local function moundAt(x: number, z: number): number
++			local u = (x - mcx) / halfLen
++			if math.abs(u) >= 1 then
++				return 0
++			end
++			local hw = halfWidthAt(u)
++			if hw < 0.5 then
++				return 0
++			end
++			local v = (z - spineAt(u)) / hw
++			if math.abs(v) >= 1 then
++				return 0
++			end
++			local edge = math.min((1 - math.abs(u)) * halfLen, (1 - math.abs(v)) * hw)
++			return math.min(crestAt(u), SIDE * edge)
++		end
++
++		-- The mound's foot and the mouth outside it keep clear of the footprint's
++		-- border, where the pad's own ground has to meet the map's; a mound that
++		-- would not fit gives up its width, never its ways in.
++		local reachX, reachZ = halfLen, 0
++		for x = 1, w do
++			local u = (x - mcx) / halfLen
++			if math.abs(u) < 1 then
++				reachZ = math.max(reachZ, math.abs(spineAt(u) - mcz) + halfWidthAt(u))
++			end
++		end
++		local roomX = math.min(mcx - 0.5, w - mcx - 0.5) - 2.5
++		local roomZ = math.min(mcz - 0.5, d - mcz - 0.5) - 2.5
++		if reachX > roomX then
++			halfLen *= roomX / reachX
++		end
++		if reachZ > roomZ then
++			local k = roomZ / reachZ
++			halfW *= k
++			bow *= k
++		end
++
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function coords(i: number): (number, number)
++			return (i - 1) % w + 1, (i - 1) // w + 1
++		end
++		local function inField(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= w and z <= d
++		end
++
++		-- The mound's surface, walkable everywhere it stands.
++		local walk, heights = table.create(w * d, true), table.create(w * d, 0)
++		for z = 1, d do
++			for x = 1, w do
++				heights[at(x, z)] = graded(moundAt(x, z))
++			end
++		end
++
++		-- The chamber: a cist, a long passage (along the cut), or two rooms.
++		local cw, cd
++		if chamberKind == "passage" then
++			if split == "side" or split == "cross" then
++				cw, cd = 2, whole(rng, 5, 7)
++			else
++				cw, cd = whole(rng, 5, 7), 2
++			end
++		elseif chamberKind == "double" then
++			cw, cd = 7, 4
++		else
++			cw, cd = whole(rng, 3, 4), whole(rng, 3, 4)
++		end
++		local uCh = if form == "twin"
++			then side * between(rng, 0.24, 0.36)
++			elseif split == "end" then -side * between(rng, 0.1, 0.32)
++			else between(rng, -0.16, 0.16)
++		local chX = mcx + uCh * halfLen
++		local chZ = spineAt(uCh)
++		local x0 = math.floor(chX - (cw - 1) / 2 + 0.5)
++		local z0 = math.floor(chZ - (cd - 1) / 2 + 0.5)
++		local x1, z1 = x0 + cw - 1, z0 + cd - 1
++		local cxm, czm = (x0 + x1) / 2, (z0 + z1) / 2
++
++		-- The cut's arms, from a mouth on the mound's edge into the chamber's heart.
++		local legs: { Leg } = {}
++		local function legTo(ax: number, az: number, mouthH: number, bx: number?, bz: number?, endH: number?)
++			local tx, tz = bx or cxm, bz or czm
++			local th = endH or chamberH
++			local run = math.sqrt((tx - ax) ^ 2 + (tz - az) ^ 2)
++			local drop = math.max(0.5, mouthH - th)
++			-- A tread never falls more than 1.75 studs, and never runs under a cell.
++			local steps = math.max(1, math.min(math.ceil(drop / 1.75), math.floor(run)))
++			table.insert(legs, {
++				ax = ax,
++				az = az,
++				bx = tx,
++				bz = tz,
++				reach = trenchHalf,
++				mouthH = mouthH,
++				endH = th,
++				steps = steps,
++			})
++		end
++		local mouth: Point
++		local outward: Point
++		if split == "side" or split == "cross" then
++			outward = { x = 0, z = side }
++			mouth = { x = cxm, z = spineAt(uCh) + side * (halfWidthAt(uCh) + 2) }
++			legTo(mouth.x, mouth.z, 0)
++			if split == "cross" then
++				legTo(cxm, spineAt(uCh) - side * (halfWidthAt(uCh) + 2), 0)
++			end
++		elseif split == "end" then
++			outward = { x = side, z = 0 }
++			mouth = { x = mcx + side * (halfLen + 2), z = spineAt(side) }
++			legTo(mouth.x, mouth.z, 0)
++		else
++			-- The gash begins on the crown itself, where the mound stands at its own height.
++			local crownU = side * between(rng, 0.66, 0.78)
++			local mx = mcx + crownU * halfLen
++			local mz = spineAt(crownU)
++			legTo(mx, mz, graded(moundAt(mx, mz)))
++			outward = { x = 0, z = side }
++			mouth = { x = mx, z = mz }
++		end
++		-- Now and then a second, blind cut: a robber's trial trench that stopped
++		-- short, its floor a shallow pit in the mound's other flank.
++		if rng:NextNumber() < 0.45 then
++			local bu = math.clamp(uCh + side * between(rng, 0.34, 0.52), -0.72, 0.72)
++			local bx, bz
++			if split == "end" then
++				bx = mcx + side * (halfLen + 2)
++				bz = spineAt(bu)
++				legTo(
++					bx,
++					bz,
++					0,
++					bx - side * between(rng, 2.5, 4.5),
++					spineAt(bu) - between(rng, 1, 2.5),
++					-whole(rng, 1, 2)
++				)
++			else
++				bx = mcx + bu * halfLen
++				bz = spineAt(bu) - side * (halfWidthAt(bu) + 2)
++				legTo(
++					bx,
++					bz,
++					0,
++					bx + between(rng, -1.5, 1.5),
++					spineAt(bu) + side * between(rng, 2, 4),
++					-whole(rng, 1, 2)
++				)
++			end
++		end
++
++		-- The floor each cut cell takes: the lowest arm that reaches it, so the arms
++		-- that meet at the chamber agree.
++		local cutFloor: { [number]: number } = {}
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				for _, leg in legs do
++					local dx, dz = leg.bx - leg.ax, leg.bz - leg.az
++					local l2 = dx * dx + dz * dz
++					local t = ((x - leg.ax) * dx + (z - leg.az) * dz) / l2
++					if t >= -0.15 and t <= 1 then
++						local px, pz = leg.ax + dx * t, leg.az + dz * t
++						if (x - px) ^ 2 + (z - pz) ^ 2 <= leg.reach * leg.reach then
++							local q = math.floor(math.clamp(t, 0, 1) * leg.steps + 1e-6)
++							local floorH = graded(leg.mouthH + (leg.endH - leg.mouthH) * (q / leg.steps))
++							if cutFloor[i] == nil or floorH < cutFloor[i] then
++								cutFloor[i] = floorH
++							end
++						end
++					end
++				end
++			end
++		end
++
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++
++		-- The trench floor, then the chamber laid at the bottom of it.
++		for i, f in cutFloor do
++			heights[i] = f
++			walk[i] = true
++		end
++		for z = z0, z1 do
++			for x = x0, x1 do
++				local i = at(x, z)
++				heights[i] = chamberH
++				walk[i] = true
++				kinds[i] = "chamber"
++			end
++		end
++		-- The pale capstone course round the chamber; where the cut crosses it, the
++		-- breach is the way in.
++		for z = z0 - 1, z1 + 1 do
++			for x = x0 - 1, x1 + 1 do
++				local inside = x >= x0 and x <= x1 and z >= z0 and z <= z1
++				if not inside and inField(x, z) then
++					local i = at(x, z)
++					if cutFloor[i] == nil then
++						walk[i] = false
++						kinds[i] = "rim"
++						heights[i] = chamberH
++						lifts[i] = wallTop + between(rng, -0.5, 0.5) - chamberH
++					end
++				end
++			end
++		end
++		-- A broken partition between the two rooms of a double chamber.
++		if chamberKind == "double" then
++			local px = x0 + 3
++			local gap = z0 + whole(rng, 1, cd - 2)
++			local partitionTop = chamberH + whole(rng, 2, 4)
++			for z = z0, z1 do
++				if z ~= gap then
++					local i = at(px, z)
++					walk[i] = false
++					kinds[i] = "wall"
++					heights[i] = chamberH
++					lifts[i] = partitionTop - chamberH
++				end
++			end
++		end
++		-- The trench's own ground: earth above, the barrow's stone stair below it.
++		for i, f in cutFloor do
++			if kinds[i] == nil then
++				kinds[i] = if f < -0.4 then "step" else "cut"
++			end
++		end
++
++		-- The mound's cut faces: any walkable cell standing more than a step over
++		-- the breach becomes the face above it, based at the floor it overhangs.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] and cutFloor[i] == nil and kinds[i] ~= "chamber" then
++					local low: number? = nil
++					for _, nb in Grid.NEIGHBOURS do
++						if inField(x + nb[1], z + nb[2]) then
++							local f = cutFloor[at(x + nb[1], z + nb[2])]
++							if f ~= nil then
++								low = if low == nil then f else math.min(low, f)
++							end
++						end
++					end
++					if low ~= nil and heights[i] - low > 2 then
++						walk[i] = false
++						kinds[i] = "cut"
++						lifts[i] = heights[i] - low
++						heights[i] = low
++					end
++				end
++			end
++		end
++
++		-- The road runs along the foot of the mound on the side the breach opens to.
++		local zMin, zMax = math.huge, -math.huge
++		for x = 1, w do
++			local u = (x - mcx) / halfLen
++			if math.abs(u) < 1 then
++				zMin = math.min(zMin, spineAt(u) - halfWidthAt(u))
++				zMax = math.max(zMax, spineAt(u) + halfWidthAt(u))
++			end
++		end
++		local alongX = split ~= "end"
++		local roadRow = if alongX
++			then (if side > 0 then math.min(d - 2, math.ceil(zMax + 2.5)) else math.max(2, math.floor(zMin - 2.5)))
++			else (if side > 0
++				then math.min(w - 2, math.ceil(mcx + halfLen + 3))
++				else math.max(2, math.floor(mcx - halfLen - 3)))
++		local function onRoad(x: number, z: number): boolean
++			return if alongX then math.abs(z - roadRow) <= 1 else math.abs(x - roadRow) <= 1
++		end
++		local road: { Point } = {}
++		local wobble = whole(rng, 0, 1)
++		if alongX then
++			table.insert(road, { x = 1, z = roadRow })
++			table.insert(road, { x = math.floor(w * 0.35), z = math.clamp(roadRow + side * wobble, 2, d - 1) })
++			table.insert(road, { x = math.floor(w * 0.65), z = roadRow })
++			table.insert(road, { x = w, z = math.clamp(roadRow + side * wobble, 2, d - 1) })
++			if rng:NextNumber() < 0.5 then
++				table.insert(road, 3, { x = mouth.x, z = roadRow })
++			end
++		else
++			table.insert(road, { x = roadRow, z = 1 })
++			table.insert(road, { x = math.clamp(roadRow + side * wobble, 2, w - 1), z = math.floor(d * 0.35) })
++			table.insert(road, { x = roadRow, z = math.floor(d * 0.65) })
++			table.insert(road, { x = math.clamp(roadRow + side * wobble, 2, w - 1), z = d })
++		end
++
++		-- Lesser barrows at the mound's flanks: one now and then, two in a good year,
++		-- rounder and lower than the long one, so the barrow reads as one of a group.
++		for _ = 1, whole(rng, 0, 2) do
++			local placed = false
++			for _ = 1, 8 do
++				if not placed then
++					local su = between(rng, -0.5, 0.5)
++					local flank = if rng:NextNumber() < 0.5 then 1 else -1
++					local satX = mcx + su * halfLen + between(rng, -1.5, 1.5)
++					local satZ = spineAt(su) + flank * (halfWidthAt(su) + between(rng, 2.5, 5))
++					local satR = between(rng, 2.4, 4.6)
++					local satTop = between(rng, 2, 4)
++					local fits = satZ - satR > 2.5 and satZ + satR < d - 2.5 and satX - satR > 2 and satX + satR < w - 2
++					if fits then
++						for z = math.max(1, math.floor(satZ - satR)), math.min(d, math.ceil(satZ + satR)) do
++							for x = math.max(1, math.floor(satX - satR)), math.min(w, math.ceil(satX + satR)) do
++								local i = at(x, z)
++								local dd = ((x - satX) ^ 2 + (z - satZ) ^ 2) / (satR * satR)
++								if dd < 1 and (onRoad(x, z) or cutFloor[i] ~= nil or kinds[i] ~= nil) then
++									fits = false
++								end
++							end
++						end
++					end
++					if fits then
++						for z = math.max(2, math.floor(satZ - satR)), math.min(d - 1, math.ceil(satZ + satR)) do
++							for x = math.max(2, math.floor(satX - satR)), math.min(w - 1, math.ceil(satX + satR)) do
++								local i = at(x, z)
++								local dd = ((x - satX) ^ 2 + (z - satZ) ^ 2) / (satR * satR)
++								if dd < 1 then
++									heights[i] = math.max(heights[i], graded(satTop * (1 - dd)))
++									if heights[i] > 0.4 then
++										kinds[i] = "turf"
++									end
++								end
++							end
++						end
++						placed = true
++					end
++				end
++			end
++		end
++
++		-- The barrow's kerb: a revetment of standing stones holding the mound's foot,
++		-- a ring in most seeds and an arc in others, two stones thick when the wall
++		-- still stands and one where it has fallen away, broken where the breach
++		-- opens and worn through elsewhere. Laid as wall cells, it is the mound's own
++		-- wall, with its ways in.
++		local kerb = oneOf(rng, { "arc", "ring", "ring" })
++		if kerb ~= "none" then
++			local function edgePoint(a: number): Point
++				local u = math.cos(a)
++				return { x = mcx + u * halfLen, z = spineAt(u) + halfWidthAt(u) * math.sin(a) }
++			end
++			local arcStart = if kerb == "ring" then 0 else between(rng, 0, 2 * math.pi)
++			local arcSpan = if kerb == "ring" then 2 * math.pi else between(rng, 1.6, 3.2)
++			local gaps = if kerb == "ring" then whole(rng, 3, 4) else whole(rng, 1, 2)
++			local thick = if kerb == "ring" then whole(rng, 1, 2) else 1
++			local seen: { [number]: boolean } = {}
++			local kerbCells: { number } = {}
++			for k = 0, 95 do
++				local p = edgePoint(arcStart + arcSpan * k / 96)
++				local gx, gz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++				if inField(gx, gz) then
++					local i = at(gx, gz)
++					if not seen[i] then
++						seen[i] = true
++						table.insert(kerbCells, i)
++					end
++				end
++			end
++			local gapAt: { [number]: boolean } = {}
++			local gapEvery = math.max(2, math.floor(#kerbCells / (gaps + 1)))
++			for g = 1, gaps do
++				gapAt[g * gapEvery] = true
++			end
++			local function kerbStone(i: number)
++				local gx, gz = coords(i)
++				if inField(gx, gz) and cutFloor[i] == nil and kinds[i] == nil and moundAt(gx, gz) < 2.2 then
++					walk[i] = false
++					kinds[i] = "kerb"
++					heights[i] = 0
++					lifts[i] = moundAt(gx, gz) + between(rng, 0.8, 2)
++				end
++			end
++			for k, i in kerbCells do
++				local gx, gz = coords(i)
++				local nearMouth = (gx - mouth.x) ^ 2 + (gz - mouth.z) ^ 2 < 12
++				if not gapAt[k] and not nearMouth and not onRoad(gx, gz) then
++					kerbStone(i)
++					-- The stone behind it, up the mound's slope, when the wall stands thick.
++					if thick == 2 and not gapAt[k - 1] then
++						local best, bestH = nil, -1
++						for _, nb in Grid.NEIGHBOURS do
++							if inField(gx + nb[1], gz + nb[2]) then
++								local j = at(gx + nb[1], gz + nb[2])
++								if walk[j] and cutFloor[j] == nil and kinds[j] == nil then
++									local h = moundAt(gx + nb[1], gz + nb[2])
++									if h > bestH then
++										best, bestH = j, h
++									end
++								end
++							end
++						end
++						if best ~= nil then
++							kerbStone(best)
++						end
++					end
++				end
++			end
++		end
++
++		-- Lesser graves: small stone cists sunk into the crown, their lids long gone,
++		-- one side broken open. Each is its own little rimmed pit in the turf.
++		local cistCount = whole(rng, 0, 2)
++		local cists = 0
++		for _ = 1, 16 do
++			if cists >= cistCount then
++				break
++			end
++			local u = between(rng, -0.6, 0.6)
++			local gx = math.floor(mcx + u * halfLen + 0.5)
++			local gz = math.floor(spineAt(u) + between(rng, -0.5, 0.5) * halfWidthAt(u) + 0.5)
++			local localH = graded(moundAt(gx, gz))
++			local free = localH >= top * 0.6
++			for dz = -1, 2 do
++				for dx = -1, 2 do
++					if free then
++						if not inField(gx + dx, gz + dz) then
++							free = false
++						else
++							local i = at(gx + dx, gz + dz)
++							free = walk[i] and kinds[i] == nil and cutFloor[i] == nil
++						end
++					end
++				end
++			end
++			-- Its one way in has to open onto open crown, or the pit is a sealed jar.
++			if free then
++				if not inField(gx, gz - 2) then
++					free = false
++				else
++					local i = at(gx, gz - 2)
++					free = walk[i] and kinds[i] == nil and cutFloor[i] == nil
++				end
++			end
++			if free then
++				for dz = 0, 1 do
++					for dx = 0, 1 do
++						local i = at(gx + dx, gz + dz)
++						heights[i] = localH - 2
++						walk[i] = true
++						kinds[i] = "step"
++					end
++				end
++				for dz = -1, 2 do
++					for dx = -1, 2 do
++						local inside = dx >= 0 and dx <= 1 and dz >= 0 and dz <= 1
++						if not inside then
++							local i = at(gx + dx, gz + dz)
++							if dx == 0 and dz == -1 then
++								heights[i] = localH - 1
++								kinds[i] = "step"
++							else
++								walk[i] = false
++								kinds[i] = "rim"
++								heights[i] = localH - 2
++								lifts[i] = 3
++							end
++						end
++					end
++				end
++				cists += 1
++			end
++		end
++
++		-- Spoil heaved out of the breach: pale banks of it about the mouth, clear of
++		-- the trench, the road and the heather.
++		local heaps = whole(rng, 0, 2)
++		local placed = 0
++		for _ = 1, 30 do
++			if placed >= heaps then
++				break
++			end
++			local hx = math.floor(mouth.x + 0.5) + whole(rng, -3, 3) + math.floor(outward.x)
++			local hz = math.floor(mouth.z + 0.5) + whole(rng, -3, 3) + math.floor(outward.z)
++			local heap: { number } = {}
++			local ok = true
++			for dz = 0, 1 do
++				for dx = 0, 2 do
++					local x, z = hx + dx, hz + dz
++					if not inField(x, z) or onRoad(x, z) then
++						ok = false
++					else
++						local i = at(x, z)
++						if cutFloor[i] ~= nil or kinds[i] ~= nil or not walk[i] or moundAt(x, z) > 0.6 then
++							ok = false
++						else
++							table.insert(heap, i)
++						end
++					end
++				end
++			end
++			if ok and #heap == 6 then
++				for _, i in heap do
++					walk[i] = false
++					kinds[i] = "spoil"
++					heights[i] = 0
++					lifts[i] = between(rng, 1.5, 2.5)
++				end
++				placed += 1
++			end
++		end
++
++		-- The border has to meet the ground round the feature, which is 0.
++		for z = 1, d do
++			for x = 1, w do
++				if x == 1 or z == 1 or x == w or z == d then
++					local i = at(x, z)
++					if walk[i] then
++						heights[i] = math.clamp(heights[i], -2, 2)
++					end
++				end
++			end
++		end
++
++		-- Rounded half-studs can leave a steep pair: lower the higher cell until no
++		-- walkable neighbours are more than Terrain's step apart.
++		local function gradeSteps()
++			for _ = 1, 8 do
++				local fixed = 0
++				for z = 1, d do
++					for x = 1, w do
++						local i = at(x, z)
++						if walk[i] then
++							for _, nb in Grid.NEIGHBOURS do
++								if inField(x + nb[1], z + nb[2]) then
++									local j = at(x + nb[1], z + nb[2])
++									if walk[j] and heights[i] - heights[j] > 2 then
++										heights[i] = heights[j] + 2
++										fixed += 1
++									end
++								end
++							end
++						end
++					end
++				end
++				if fixed == 0 then
++					break
++				end
++			end
++		end
++		gradeSteps()
++
++		-- The ground must join up: a kerb arc closing against a bank, or a cist sealed
++		-- by its own rim, leaves a pocket. Open each pocket to the greatest region
++		-- through the lowest wall between them, or fill it with stone if there is none.
++		for _ = 1, 5 do
++			local g = Grid.new(w, d, Grid.WALL)
++			for i, ok in walk do
++				g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++			end
++			local regions = Grid.regions(g)
++			if #regions <= 1 then
++				break
++			end
++			table.sort(regions, function(a: { number }, b: { number }): boolean
++				return #a > #b
++			end)
++			local main: { [number]: boolean } = {}
++			for _, i in regions[1] do
++				main[i] = true
++			end
++			local opened = false
++			for r = 2, #regions do
++				local here: { [number]: boolean } = {}
++				for _, i in regions[r] do
++					here[i] = true
++				end
++				local did = false
++				for _, i in regions[r] do
++					local x, z = coords(i)
++					for _, nb in Grid.NEIGHBOURS do
++						local jx, jz = x + nb[1], z + nb[2]
++						if not did and inField(jx, jz) then
++							local j = at(jx, jz)
++							local lo, hi = heights[i], heights[i]
++							local touches = false
++							if not walk[j] then
++								for _, nb2 in Grid.NEIGHBOURS do
++									if inField(jx + nb2[1], jz + nb2[2]) then
++										local k2 = at(jx + nb2[1], jz + nb2[2])
++										if main[k2] and walk[k2] then
++											touches = true
++											lo = math.min(lo, heights[k2])
++											hi = math.max(hi, heights[k2])
++										end
++									end
++								end
++							end
++							if touches and hi - lo <= 2 then
++								walk[j] = true
++								heights[j] = graded((hi + lo) / 2)
++								kinds[j] = if heights[j] < -0.5 then "step" else "turf"
++								lifts[j] = nil
++								did = true
++								opened = true
++							end
++						end
++					end
++					if did then
++						break
++					end
++				end
++				if not did then
++					for _, i in regions[r] do
++						walk[i] = false
++						kinds[i] = "rim"
++						heights[i] = 0
++						lifts[i] = 2
++					end
++				end
++			end
++			if not opened then
++				break
++			end
++		end
++		gradeSteps()
++
++		-- Everything walkable on the mound that is not painted yet is its turf, with
++		-- a worn band of earth where its foot meets the heath.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] and kinds[i] == nil then
++					local h = moundAt(x, z)
++					if h > 0.1 and h < top * 0.45 then
++						kinds[i] = "skirt"
++					elseif h >= top * 0.45 then
++						kinds[i] = "turf"
++					end
++				end
++			end
++		end
++
++		-- 5: the dress. Standing slabs along the chamber's walls.
++		local marks: { FeatureDress.Landmark } = {}
++		local taken: { [number]: boolean } = {}
++		local function edgePoint(k: number, f: number): { x: number, z: number, yaw: number }
++			if k == 1 then
++				return { x = x0 + f * (cw - 1), z = z0 + 0.3, yaw = 0 }
++			elseif k == 2 then
++				return { x = x0 + f * (cw - 1), z = z1 - 0.3, yaw = 0 }
++			elseif k == 3 then
++				return { x = x0 + 0.3, z = z0 + f * (cd - 1), yaw = 90 }
++			end
++			return { x = x1 - 0.3, z = z0 + f * (cd - 1), yaw = 90 }
++		end
++		for _ = 1, whole(rng, 3, 6) do
++			local p = edgePoint(whole(rng, 1, 4), between(rng, 0.08, 0.92))
++			local cxr = math.clamp(math.floor(p.x + 0.5), x0, x1)
++			local czr = math.clamp(math.floor(p.z + 0.5), z0, z1)
++			local i = at(cxr, czr)
++			if walk[i] and not taken[i] then
++				taken[i] = true
++				table.insert(marks, {
++					sculpt = "moor_barrow_slab",
++					x = p.x,
++					z = p.z,
++					yaw = p.yaw + between(rng, -7, 7),
++					scale = between(rng, 0.9, 1.25),
++					sink = 0.4,
++				})
++			end
++		end
++
++		-- Capstones thrown off the rim: down the stair and out on the crown.
++		local cutSpots, crownSpots = {}, {}
++		for z = 2, d - 1 do
++			for x = 2, w - 1 do
++				local i = at(x, z)
++				if cutFloor[i] ~= nil and kinds[i] ~= "chamber" and heights[i] <= -0.5 and heights[i] >= -4 then
++					table.insert(cutSpots, i)
++				elseif kinds[i] == "turf" and heights[i] > top * 0.5 then
++					local beside = false
++					for _, nb in Grid.NEIGHBOURS do
++						if cutFloor[at(x + nb[1], z + nb[2])] ~= nil then
++							beside = true
++						end
++					end
++					if beside then
++						table.insert(crownSpots, i)
++					end
++				end
++			end
++		end
++		for _ = 1, whole(rng, 2, 4) do
++			local pool = if #cutSpots > #crownSpots or (#cutSpots > 0 and rng:NextNumber() < 0.6)
++				then cutSpots
++				else crownSpots
++			if #pool > 0 then
++				local i = table.remove(pool, whole(rng, 1, #pool))
++				local x, z = coords(i)
++				taken[i] = true
++				table.insert(marks, {
++					sculpt = "moor_barrow_capstone",
++					x = x,
++					z = z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.75, 1.1),
++					sink = 0.4,
++					solid = true,
++				})
++			end
++		end
++
++		-- The dead, and the coffer the robbers broke open, on the chamber floor.
++		local floorCells: { number } = {}
++		for z = z0, z1 do
++			for x = x0, x1 do
++				local i = at(x, z)
++				if walk[i] then
++					table.insert(floorCells, i)
++				end
++			end
++		end
++		for _ = 1, whole(rng, 1, 3) do
++			if #floorCells > 0 then
++				local i = table.remove(floorCells, whole(rng, 1, #floorCells))
++				local x, z = coords(i)
++				taken[i] = true
++				table.insert(marks, {
++					sculpt = "moor_barrow_bones",
++					x = x,
++					z = z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.8, 1.1),
++					sink = 0.3,
++				})
++			end
++		end
++		if #floorCells > 0 and rng:NextNumber() < 0.75 then
++			local i = table.remove(floorCells, whole(rng, 1, #floorCells))
++			local x, z = coords(i)
++			table.insert(marks, {
++				sculpt = "moor_barrow_coffer",
++				x = x,
++				z = z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.9, 1.15),
++				sink = 0.2,
++			})
++		end
++
++		-- Kerb stones at the mound's foot, the moor's own boulders.
++		for _ = 1, whole(rng, 2, 4) do
++			local a = between(rng, 0, 2 * math.pi)
++			local x = math.floor(mcx + math.cos(a) * (halfLen + between(rng, 0.4, 2)) + 0.5)
++			local z = math.floor(mcz + math.sin(a) * (halfW + between(rng, 0.4, 2)) + 0.5)
++			if inField(x, z) and x >= 2 and z >= 2 and x <= w - 1 and z <= d - 1 then
++				local i = at(x, z)
++				if walk[i] and cutFloor[i] == nil and kinds[i] == "turf" then
++					table.insert(marks, {
++						sculpt = "moor_boulder",
++						x = x,
++						z = z,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 0.6, 0.9),
++						sink = 0.6,
++						solid = true,
++					})
++				end
++			end
++		end
++
++		-- The breach's breath: grave dust sifting down into the open chamber, and
++		-- now and then the barrow's old pall lying about its foot.
++		local effects: { FeatureDress.Effect } = {
++			{ recipe = "moor_barrow_dust", x = cxm, z = czm, lift = wallHeight + 1 },
++		}
++		if rng:NextNumber() < 0.5 then
++			table.insert(effects, { recipe = "barrow_pall", x = mouth.x, z = mouth.z, lift = 1 })
++		end
++
++		-- The photograph: the breach seen from the road's side, up over the mouth
++		-- and down the stair, and the split seen along its length from the far flank,
++		-- the mound's two halves standing either side of the gash.
++		local axisX, axisZ = cxm - mouth.x, czm - mouth.z
++		local axisLen = math.sqrt(axisX * axisX + axisZ * axisZ)
++		axisX, axisZ = axisX / axisLen, axisZ / axisLen
++		local perpX, perpZ = -axisZ, axisX
++		local cameras: { MapFeature.Shot } = {
++			{
++				name = "the breach from the road",
++				from = {
++					x = mouth.x + outward.x * 2.5 + perpX * 3.5,
++					z = mouth.z + outward.z * 2.5 + perpZ * 3.5,
++					lift = top + 6,
++				},
++				to = { x = cxm - axisX * 0.5, z = czm - axisZ * 0.5, lift = wallHeight * 0.5 },
++				fov = 60,
++			},
++			{
++				name = "along the split",
++				from = { x = cxm + axisX * 6.5, z = czm + axisZ * 6.5, lift = top + 8 },
++				to = { x = cxm - axisX * 1, z = czm - axisZ * 1, lift = 2 },
++				fov = 62,
++			},
++		}
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

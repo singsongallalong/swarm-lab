@@ -1,0 +1,28 @@
+{
+  "letter": "H",
+  "generator": "g07",
+  "run": "moor-features-1",
+  "intent": "A fresh meteor strike on the moor: a bowl of black impact glass still glowing red in its cracks, ringed by a thrown-up basalt rim and a pale ejecta blanket, with embers drifting off its heart - a kind of place the heath has never had.",
+  "variation": [
+    "form: one bowl / a twin strike of two overlapping bowls / a low grazing gouge (long oval) / a ringed crater with an inner peak ring",
+    "heart: a mound of standing glass shards / a glowing rift running in from the rim / a pool of melt / a vent hole sunk into the floor",
+    "rim: intact (only the road's two breaches) / breached in one or two more places / slumped in one long arc",
+    "ejecta: 2 to 5 rays, their width, spread and reach",
+    "frame: footprint 28-32 cells, bowl reach 6-9.4 cells, depth 4.4-12 studs, stretch, turn, and the road's in and out angles"
+  ],
+  "critic": {
+    "own_idea": 8,
+    "photograph": 6,
+    "topology": 4,
+    "look": 5,
+    "game_camera": 8,
+    "usable": 6,
+    "total": 6.25,
+    "best_shot": "feature-shots seed 1, inside the bowl",
+    "why": "The boldest new thing (glowing cracks, embers, black glass) and very legible from above, but every seed is the same oval, and the core is lost.",
+    "reads_as_itself": "yes: a crater with an ejecta apron and a glowing cracked floor",
+    "size": "medium to large"
+  },
+  "why": "The moor's only hot colour: a glowing strike crater that reads from the game camera, a strong once-per-map landmark despite its size.",
+  "notes": "# H, notes to its builder\n\nKeep: the glowing red cracks in the black floor, inside a rubble rim and pale ejecta. It is the boldest new idea in the run, and it reads instantly from the game camera.\n\n1. Vary the topology. Every seed is one oval bowl with the road skirting or crossing it, and the ejecta sometimes thrown to one side. Try a gouged, elongated strike with the rock at the far end, a broken rim the road runs through, or twin craters.\n2. Make the centre a real object. The impact core and shards are small dark lumps that vanish against the black floor. A bigger, jagged glassy core with the brightest cracks radiating from it would give the photograph a subject.\n3. Make the bowl shallower at the edges and steeper toward the centre, and keep the size down. It already takes a medium-to-large piece of heath.\n"
+}

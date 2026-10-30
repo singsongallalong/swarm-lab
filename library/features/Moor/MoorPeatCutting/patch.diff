@@ -1,0 +1,968 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..331a8d48 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -4,10 +4,12 @@
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
++local MoorPeatCutting = require("../systems/features/MoorPeatCutting")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	MoorPeatCutting = MoorPeatCutting,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..84dfd141 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -941,4 +941,75 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- The peat cutting's own kit (a moor map feature, MoorPeatCutting): squared turves
++-- stacked to dry on the bank, bricks laid out flat, the pale heads of cottongrass in
++-- the wet ground, the black stump of a bog oak the cut uncovered, and the thin sheet of
++-- black water that stands in a trench. All in dark peat browns at the bottom of the
++-- bible's trim range, so the working sits in the moor's night.
++Sculpts.moor_peat_stack = {
++	kind = "blocks",
++	-- Low and wide: a stack of cut turves settling as it dries, a wedge offcut leaning
++	-- on it. One bright edge in the third colour, so the bricks read from the camera.
++	size = { 4.6, 2.4, 2.8 },
++	material = "Ground",
++	colors = { { 74, 60, 48 }, { 62, 50, 40 }, { 82, 68, 54 } },
++	maxPrims = 8,
++}
++Sculpts.moor_peat_brick = {
++	kind = "blocks",
++	-- A short row of bricks turned out to dry, one laid over the joins. Merged: a
++	-- drying yard scatters hundreds, and each is one part.
++	size = { 3.6, 0.9, 1.5 },
++	material = "Ground",
++	colors = { { 70, 57, 45 }, { 60, 48, 39 }, { 78, 64, 50 } },
++	maxPrims = 8,
++	merge = 6,
++}
++Sculpts.moor_cottongrass = {
++	kind = "tuft",
++	-- Pale cotton heads on a low olive body, standing clear of the grass blades: the
++	-- first thing to come back on a cut bog. Merged, so a bank is one part a clump.
++	size = { 2.6, 3.4, 2.6 },
++	material = "Grass",
++	colors = { { 58, 62, 50 }, { 52, 56, 45 }, { 100, 102, 94 } },
++	maxPrims = 10,
++	blades = 6,
++	body = 0.4,
++	merge = 10,
++}
++Sculpts.moor_bog_oak = {
++	kind = "tree",
++	-- A black bog oak: the stump a cutting uncovers, snapped off and half out of the
++	-- peat, its wood blacker than any tree on the heath.
++	size = { 6, 8, 6 },
++	material = "Wood",
++	colors = { { 40, 35, 30 }, { 34, 30, 26 }, { 48, 42, 36 } },
++	maxPrims = 26,
++	segments = 3,
++	branches = 2,
++	bend = 18,
++	snapped = true,
++}
++Sculpts.moor_peat_pool = {
++	kind = "pool",
++	-- One cell of black water standing in a cut: a thin sheet, its tint carrying the
++	-- water where the night sky is too dark to show in it (as moor_pool does).
++	size = { 4.2, 0.12, 4.2 },
++	material = "Glass",
++	colors = { { 32, 40, 52 }, { 36, 45, 58 } },
++	reflectance = 0.3,
++	maxPrims = 4,
++}
++Sculpts.moor_peat_sledge = {
++	kind = "hull",
++	form = "beached",
++	-- A peat sledge broken and laid up on the bank, its planks sprung and one runner
++	-- gone: long and low, so it reads as a sled rather than a boat.
++	size = { 7.2, 1.8, 3 },
++	material = "WoodPlanks",
++	colors = { { 66, 54, 44 }, { 58, 47, 38 }, { 74, 61, 50 } },
++	maxPrims = 40,
++	worn = 0.55,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..5beb010f 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,97 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The peat cutting (a moor map feature, MoorPeatCutting). Cold bog-mist seeping off the
++-- black water in the cut: a pale breath hugging the surface, a slower grave-green body
++-- rolling over it and a wide grey haze, all on one wandering worm so the three sheets
++-- stay one body (EF8), fading in long slow swells so the cutting's mist comes and goes
++-- rather than lying there. A faint grave-light breathes inside it now and then, the
++-- bog's own marsh-light. Kept low, clear of the game camera (SE10).
++recipes.moor_cut_breath = {
++	about = "Cold bog-mist seeping off a peat cutting's black water, low along the trenches, with a faint grave-light breathing in it.",
++	theme = "barrow",
++	path = { kind = "worm", length = 46, step = 4, bend = 7, climb = 2, round = 2 },
++	layers = {
++		{
++			name = "breath",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 3.5,
++				lift = 0.3,
++				toward = "up",
++				rise = 0.55,
++				life = { 7, 10 },
++				rate = 1.2,
++				size = 7,
++				tall = 0.55,
++				transparency = 0.86,
++				color = "core",
++				texture = "veil",
++				lean = 12,
++				vary = 0.65,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 10, span = 12, periods = { 9.5, 7.3 } },
++			priority = 1,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 26,
++				thick = 10,
++				lift = 2.2,
++				toward = "up",
++				rise = 0.22,
++				life = { 14, 18 },
++				rate = 0.5,
++				size = 18,
++				tall = 0.5,
++				transparency = 0.93,
++				color = "haze",
++				texture = "veil",
++				lean = 5,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2.5, tilt = 6, span = 24, periods = { 17, 12 } },
++			priority = 2,
++		},
++		{
++			name = "body",
++			look = {
++				kind = "stream",
++				every = 15,
++				thick = 6,
++				lift = 1.1,
++				toward = "up",
++				rise = 0.35,
++				life = { 9, 13 },
++				rate = 0.9,
++				size = 11,
++				tall = 0.6,
++				transparency = 0.9,
++				color = "body",
++				texture = "smoke",
++				lean = 8,
++				vary = 0.6,
++			},
++			motion = {
++				kind = "worm",
++				amplitude = 1,
++				across = 1.3,
++				periods = { 14, 10 },
++				twist = 18,
++				swell = { wavelength = 44, speed = 1.4, depth = 0.6 },
++			},
++			priority = 3,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 22, max = 2, range = 12, brightness = 0.5, color = "core" },
++			motion = { kind = "pulse", period = 6.2, depth = 0.45 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..8c72aef9 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,19 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The peat cutting (a moor map feature, MoorPeatCutting).
++	["sculpt:moor_peat_stack"] = row("A stack of squared peat turves drying on a bank by a cutting.", MOOR),
++	["sculpt:moor_peat_brick"] = row("A row of peat bricks laid out flat to dry on the cutting's bank.", MOOR),
++	["sculpt:moor_cottongrass"] = row("A clump of cottongrass, pale heads over an olive body, on the cut bog.", MOOR),
++	["sculpt:moor_bog_oak"] = row(
++		"A black bog-oak stump a peat cutting uncovered, snapped off and half out of the peat.",
++		MOOR
++	),
++	["sculpt:moor_peat_pool"] = row("A thin sheet of black water standing in a peat trench.", MOOR),
++	["sculpt:moor_peat_sledge"] = row(
++		"A broken peat sledge laid up on the bank, its planks sprung and one runner gone.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/MoorPeatCutting.luau b/src/shared/systems/features/MoorPeatCutting.luau
+new file mode 100644
+index 00000000..6635ed38
+--- /dev/null
++++ b/src/shared/systems/features/MoorPeatCutting.luau
+@@ -0,0 +1,739 @@
++--!strict
++-- A peat cutting for the moor: rows of straight trenches cut into the bog, black water
++-- standing in them between sheer peat walls, a cart track across on baulks, turves
++-- stacked to dry on the banks, a broken sledge and a black bog oak, and cold mist
++-- breathing off the water. The moor has heath, hollows, outcrops and the barrow ring; it
++-- has no place where people worked the ground for fuel.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first, then
++-- look). The first draws choose the structure, the rest only dress it:
++--   1. the cut: rows of parallel trenches, a main drain with branches off it, a lattice
++--      of crossing cuts, or a fan of cuts draining into a sump;
++--   2. the row direction (along X, along Z or slanted) and the road's way through:
++--      across the rows on baulks, along a bank, or at a slant;
++--   3. how many trenches, how wide, and whether they run off the footprint or stop
++--      inside it, leaving headlands that read as wall islands from above;
++--   4. how deep the cuts stand, and where the sump drains;
++--   5. the banks: flat, gently rolling or heaped with spoil, and where the drying ground
++--      lies;
++--   6. then the stacks, the bog oaks, the sledge and the mist.
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++local Noise = require("../Noise")
++
++type Point = { x: number, z: number }
++type Cut = { depth: number, kind: string }
++
++-- One band of cut: `wdt` cells wide in `t`, running from `sLo` to `sHi` along `s` (in the
++-- row frame), broken by one gap so banks either side still join.
++type Band = {
++	t0: number,
++	wdt: number,
++	sLo: number,
++	sHi: number,
++	gap: number,
++	gapHalf: number,
++	depth: number,
++}
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.clamp(math.floor(lo + (hi - lo + 1) * rng:NextNumber()), lo, hi)
++end
++
++local function pick<T>(rng: Random, list: { T }): T
++	return list[whole(rng, 1, #list)]
++end
++
++-- The ground the cut is made in: the moor's own turf beyond the heath, its pool bed for
++-- the water and the old pool's trick of a thin glass sheet over it; the cut peat and the
++-- drying yard in materials the moor leaves free, so Roblox colours them once, for this.
++local TURF = { material = "LeafyGrass", color = { 50, 53, 45 } }
++local PEAT = { material = "Rock", color = { 54, 42, 34 } }
++-- Ice, tinted near black: the free material whose surface reads wet, dark enough to
++-- hold no light of its own, so the water is black with the sky's cold sheen in it.
++local WATER = { material = "Ice", color = { 26, 34, 44 } }
++local SUMP = { material = "Concrete", color = { 26, 31, 38 } }
++local DRYING = { material = "Sandstone", color = { 70, 62, 50 } }
++
++local feature: MapFeature.Feature = {
++	name = "MoorPeatCutting",
++	about = "A peat cutting: straight trenches cut into the bog in rows, black water standing in them, turves stacked to dry on the banks and a broken sledge among the cottongrass.",
++	tileset = "moor",
++	scale = "medium",
++	role = "crossing",
++	mood = { "worked", "bog", "black water", "cold" },
++	cells = {
++		-- The uncut bog between the cuts: the moor's own dark turf, kept clear of its
++		-- heather so the cottongrass and the turves read.
++		bank = {
++			ground = TURF,
++			lift = 0.12,
++			clear = true,
++			props = {
++				{ sculpt = "moor_cottongrass", every = 6, scale = { 0.8, 1.15 } },
++				{ sculpt = "moor_heather", every = 18, scale = { 0.75, 1.05 } },
++			},
++		},
++		-- The cut face's lip: bare peat a cell wide round every trench, the edge the
++		-- turves were lifted from, and the wall a trench shows from above.
++		lip = {
++			ground = PEAT,
++			lift = 0.12,
++			clear = true,
++			props = { { sculpt = "moor_cottongrass", every = 11, scale = { 0.7, 1.0 } } },
++		},
++		-- Spoil: a bank heaped with the turves lifted out of the cut, bricks laid on it.
++		spoil = {
++			ground = PEAT,
++			lift = 0.12,
++			clear = true,
++			props = { { sculpt = "moor_peat_brick", every = 2.2, scale = { 0.8, 1.1 }, sink = 0.1 } },
++		},
++		-- The drying ground: a flat yard of dry peat where the bricks are turned.
++		drying = {
++			ground = DRYING,
++			lift = 0.12,
++			clear = true,
++			props = { { sculpt = "moor_peat_brick", every = 1.5, scale = { 0.85, 1.15 } } },
++		},
++		-- Black water standing in the cut, with a thinner, glassier sheet over it here
++		-- and there where the sky catches.
++		water = {
++			ground = WATER,
++			lift = 0.15,
++			clear = true,
++			props = { { sculpt = "moor_peat_pool", every = 2.6, scale = { 1.3, 1.6 } } },
++		},
++		-- The sump the cut drains to: a deeper, colder pit.
++		sump = { ground = SUMP, lift = 0.18, clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-2: the cut and its frame, first.
++		local layout = pick(rng, { "rows", "rows", "branch", "grid", "fan" })
++		local slant = pick(rng, { 0, 0, 1, -1 })
++		local base = if rng:NextNumber() < 0.5 then 0 else math.pi / 2
++		local ang = base + slant * between(rng, 0.35, 0.62)
++		local w, d = whole(rng, 26, 32), whole(rng, 26, 32)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		local ax, az = math.cos(ang), math.sin(ang)
++		local bx, bz = -az, ax
++		-- Half-extents of the rectangle along the row and across it, corners included.
++		local S = math.abs((w - 1) / 2 * bx) + math.abs((d - 1) / 2 * bz)
++		local T = math.abs((w - 1) / 2 * ax) + math.abs((d - 1) / 2 * az)
++
++		local n = w * d
++		local cut: { [number]: Cut } = {}
++		local function cellOf(i: number): (number, number)
++			return (i - 1) % w + 1, (i - 1) // w + 1
++		end
++		local function inField(x: number, z: number): boolean
++			return x >= 1 and x <= w and z >= 1 and z <= d
++		end
++		local function cutAt(x: number, z: number, depth: number, kind: string)
++			if inField(x, z) then
++				cut[(z - 1) * w + x] = { depth = depth, kind = kind }
++			end
++		end
++		local function sOf(x: number, z: number): number
++			return (x - cx) * bx + (z - cz) * bz
++		end
++		local function tOf(x: number, z: number): number
++			return (x - cx) * ax + (z - cz) * az
++		end
++
++		local depth = whole(rng, 2, 4)
++		if layout == "rows" then
++			-- Long straight cuts in rows, the banks between them wide enough to walk and
++			-- stack on; each may stop short of the edge and leave a headland.
++			local count = whole(rng, 1, 4)
++			local sp = whole(rng, 3, 5)
++			local tw = pick(rng, { 1, 2, 2, 2 })
++			while count > 1 and (count - 1) * sp + tw > 2 * T - 1 do
++				count -= 1
++			end
++			local t0 = -((count - 1) * sp + tw) / 2 + between(rng, -1.2, 1.2)
++			local bands: { Band } = {}
++			for k = 1, count do
++				table.insert(bands, {
++					t0 = t0 + (k - 1) * sp,
++					wdt = tw,
++					sLo = -S + (if rng:NextNumber() < 0.55 then 0 else whole(rng, 1, 7)),
++					sHi = S - (if rng:NextNumber() < 0.55 then 0 else whole(rng, 1, 7)),
++					gap = 0,
++					gapHalf = -1,
++					depth = math.clamp(depth + whole(rng, -1, 1), 2, 5),
++				})
++			end
++			for z = 1, d do
++				for x = 1, w do
++					local s, t = sOf(x, z), tOf(x, z)
++					for _, b in bands do
++						local u = t - b.t0
++						if u >= 0 and u < b.wdt and s >= b.sLo and s <= b.sHi then
++							cutAt(x, z, b.depth, "water")
++							break
++						end
++					end
++				end
++			end
++		elseif layout == "branch" then
++			-- One main drain down the length, branches cut off it into the bank; the
++			-- branches may run one side or both.
++			local mainW = whole(rng, 1, 2)
++			local mainT = between(rng, -T * 0.3, T * 0.3)
++			local sLo = -S + (if rng:NextNumber() < 0.5 then 0 else whole(rng, 1, 4))
++			local sHi = S - (if rng:NextNumber() < 0.5 then 0 else whole(rng, 1, 4))
++			local mainDepth = math.clamp(depth + 1, 2, 5)
++			local branches = whole(rng, 2, 4)
++			local bw = whole(rng, 1, 2)
++			local len = whole(rng, 5, 11)
++			local both = rng:NextNumber() < 0.45
++			local side = pick(rng, { -1, 1 })
++			local spots: { number } = {}
++			for j = 1, branches do
++				spots[j] = -S * 0.7 + (j - 0.5) * (1.4 * S / branches) + between(rng, -1.5, 1.5)
++			end
++			for z = 1, d do
++				for x = 1, w do
++					local s, t = sOf(x, z), tOf(x, z)
++					local hit = false
++					if math.abs(t - mainT) < mainW / 2 and s >= sLo and s <= sHi then
++						cutAt(x, z, mainDepth, "water")
++						hit = true
++					end
++					if not hit then
++						for j = 1, branches do
++							local off = t - mainT
++							local outward = if both then math.abs(off) else off * side
++							if
++								math.abs(s - spots[j]) < bw / 2
++								and outward > mainW / 2 - 0.1
++								and outward < mainW / 2 + len
++							then
++								cutAt(x, z, depth, "water")
++								break
++							end
++						end
++					end
++				end
++			end
++		elseif layout == "grid" then
++			-- A lattice of cuts both ways, the squares of bank between them drained by
++			-- one gap each.
++			local inset = whole(rng, 1, 3)
++			local bands: { Band } = {}
++			local function addBands(count: number, sp: number, tw: number, sHalf: number)
++				local t0 = -((count - 1) * sp + tw) / 2 + between(rng, -0.8, 0.8)
++				for k = 1, count do
++					table.insert(bands, {
++						t0 = t0 + (k - 1) * sp,
++						wdt = tw,
++						sLo = -sHalf + inset,
++						sHi = sHalf - inset,
++						gap = between(rng, -sHalf * 0.5, sHalf * 0.5),
++						gapHalf = between(rng, 1.0, 2.2),
++						depth = depth,
++					})
++				end
++			end
++			addBands(whole(rng, 1, 2), whole(rng, 4, 6), whole(rng, 1, 2), S)
++			local rowsA = #bands
++			addBands(whole(rng, 1, 2), whole(rng, 4, 6), whole(rng, 1, 2), T)
++			for z = 1, d do
++				for x = 1, w do
++					local s, t = sOf(x, z), tOf(x, z)
++					for k, b in bands do
++						-- The second set is the first turned a quarter: its t runs along
++						-- this frame's s, its s across it.
++						local sB, tB = if k <= rowsA then s else -t, if k <= rowsA then t else s
++						local u = tB - b.t0
++						if u >= 0 and u < b.wdt and sB >= b.sLo and sB <= b.sHi then
++							if b.gapHalf <= 0 or math.abs(sB - b.gap) > b.gapHalf then
++								cutAt(x, z, b.depth, "water")
++								break
++							end
++						end
++					end
++				end
++			end
++		else
++			-- A fan: cuts radiating off one sump, the pit they all drain into.
++			local sx = cx + between(rng, -1, 1) * w * 0.2
++			local sz = cz + between(rng, -1, 1) * d * 0.2
++			local sumpR = between(rng, 1.7, 2.5)
++			local spokes = whole(rng, 3, 4)
++			local baseA = between(rng, 0, 2 * math.pi)
++			local spread = between(rng, math.pi * 0.8, math.pi * 1.5)
++			local rays = {}
++			for j = 1, spokes do
++				local a = baseA
++					+ (if spokes > 1 then spread * (j - 1) / (spokes - 1) else 0)
++					+ between(rng, -0.16, 0.16)
++				table.insert(rays, {
++					ux = math.cos(a),
++					uz = math.sin(a),
++					r1 = between(rng, 4.5, 10),
++					wdt = whole(rng, 1, 2),
++					depth = math.clamp(depth + whole(rng, -1, 0), 2, 4),
++				})
++			end
++			for z = 1, d do
++				for x = 1, w do
++					local dx, dz = x - sx, z - sz
++					local rr = math.sqrt(dx * dx + dz * dz)
++					if rr <= sumpR then
++						cutAt(x, z, depth + 2.5, "sump")
++					else
++						for _, r in rays do
++							local al = dx * r.ux + dz * r.uz
++							if al >= sumpR - 0.4 and al <= r.r1 then
++								local px, pz = dx - al * r.ux, dz - al * r.uz
++								if math.sqrt(px * px + pz * pz) < r.wdt / 2 then
++									cutAt(x, z, r.depth, "water")
++									break
++								end
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- 4: a sump the cut drains to, an end of one trench deepened into a pit.
++		if layout ~= "fan" and rng:NextNumber() < 0.75 then
++			local cells: { number } = {}
++			for i in cut do
++				table.insert(cells, i)
++			end
++			if #cells > 0 then
++				local i = cells[whole(rng, 1, #cells)]
++				local x, z = cellOf(i)
++				local r = between(rng, 1.3, 2.1)
++				for dz2 = -3, 3 do
++					for dx2 = -3, 3 do
++						if math.sqrt(dx2 * dx2 + dz2 * dz2) <= r then
++							cutAt(x + dx2, z + dz2, depth + 2.5, "sump")
++						end
++					end
++				end
++			end
++		end
++
++		-- 2: the road's way through, tried a few ways and kept where it keeps off the
++		-- water: a track rides a bank where it can and crosses on baulks where it must.
++		local mode = pick(rng, { "across", "along", "slant" })
++		local function direction(m: string): (number, number)
++			if m == "along" then
++				return 1, between(rng, -0.1, 0.1)
++			elseif m == "slant" then
++				return 1, (if rng:NextNumber() < 0.5 then 1 else -1) * between(rng, 0.45, 0.95)
++			end
++			return between(rng, -0.22, 0.22), 1
++		end
++		local function samples(ds: number, dt: number, s0: number, t0: number): { Point }
++			local inv = 1 / math.sqrt(ds * ds + dt * dt)
++			ds, dt = ds * inv, dt * inv
++			local out: { Point } = {}
++			local reach = S + T
++			for u = -reach, reach, 0.2 do
++				local s, t = s0 + ds * u, t0 + dt * u
++				local x, z = cx + bx * s + ax * t, cz + bz * s + az * t
++				if x >= 0.5 and x <= w + 0.5 and z >= 0.5 and z <= d + 0.5 then
++					table.insert(out, { x = x, z = z })
++				end
++			end
++			return out
++		end
++		local function wading(points: { Point }): number
++			local hits = 0
++			for _, p in points do
++				local x, z = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++				if inField(x, z) and cut[(z - 1) * w + x] ~= nil then
++					hits += 1
++				end
++			end
++			return if #points > 0 then hits / #points else 1
++		end
++		local function bestOf(ds: number, dt: number): ({ Point }, number)
++			local best, bestScore = {}, math.huge
++			for _ = 1, 5 do
++				local points = samples(ds, dt, between(rng, -S * 0.6, S * 0.6), between(rng, -T * 0.6, T * 0.6))
++				if #points * 0.2 >= math.min(w, d) * 0.55 then
++					local score = wading(points)
++					if score < bestScore then
++						best, bestScore = points, score
++					end
++				end
++			end
++			return best, bestScore
++		end
++		local ds, dt = direction(mode)
++		local path, alongWading = bestOf(ds, dt)
++		if mode == "along" and (#path == 0 or alongWading > 0.2) then
++			-- No bank runs the way it wanted to: cross the rows on baulks instead.
++			mode = "across"
++			ds, dt = direction(mode)
++			path = bestOf(ds, dt)
++		end
++		if #path == 0 then
++			path = samples(0, 1, 0, 0)
++		end
++		local reserved: { [number]: boolean } = {}
++		local function reserve(px: number, pz: number)
++			local x0, z0 = math.floor(px + 0.5), math.floor(pz + 0.5)
++			for dz2 = -2, 2 do
++				for dx2 = -2, 2 do
++					local x, z = x0 + dx2, z0 + dz2
++					if inField(x, z) and math.max(math.abs(x - px), math.abs(z - pz)) <= 1.6 then
++						reserved[(z - 1) * w + x] = true
++					end
++				end
++			end
++		end
++		for _, p in path do
++			reserve(p.x, p.z)
++		end
++		-- The ends stand on border cells, where a map's road joins the feature.
++		local function borderPoint(p: Point): Point
++			local x, z = math.clamp(p.x, 1, w), math.clamp(p.z, 1, d)
++			local dl, dr, dn, dsz = x - 0.5, w + 0.5 - x, z - 0.5, d + 0.5 - z
++			local least = math.min(dl, dr, dn, dsz)
++			if least == dl then
++				return { x = 1, z = math.clamp(math.floor(z + 0.5), 1, d) }
++			elseif least == dr then
++				return { x = w, z = math.clamp(math.floor(z + 0.5), 1, d) }
++			elseif least == dn then
++				return { x = math.clamp(math.floor(x + 0.5), 1, w), z = 1 }
++			end
++			return { x = math.clamp(math.floor(x + 0.5), 1, w), z = d }
++		end
++		local road: { Point } = {}
++		for k = 1, #path, 18 do
++			table.insert(road, path[k])
++		end
++		table.insert(road, borderPoint(path[#path]))
++		road[1] = borderPoint(road[1])
++		reserve(road[1].x, road[1].z)
++		reserve(road[#road].x, road[#road].z)
++		for i in reserved do
++			cut[i] = nil
++		end
++
++		-- 3: walk and heights; the cuts are walls, the banks walkable turf.
++		local walk = table.create(n, true)
++		local heights = table.create(n, 0)
++		for i, c in cut do
++			walk[i] = false
++			heights[i] = -c.depth
++		end
++
++		-- Every pocket of bank must reach every other: a causeway is dug where one
++		-- doesn't, so a cut never walls a piece of the feature off.
++		local function regions(): { { number } }
++			local g = Grid.new(w, d, Grid.WALL)
++			for i, ok in walk do
++				g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++			end
++			return Grid.regions(g)
++		end
++		for _ = 1, 10 do
++			local regs = regions()
++			if #regs <= 1 then
++				break
++			end
++			local g = Grid.new(w, d, Grid.WALL)
++			for i, ok in walk do
++				g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++			end
++			local target: { [number]: boolean } = {}
++			for _, i in regs[1] do
++				target[i] = true
++			end
++			local start = regs[2][1]
++			local prev: { [number]: number } = {}
++			local seen: { [number]: boolean } = {}
++			local queue = { start }
++			seen[start] = true
++			local head, found = 1, nil
++			while head <= #queue and found == nil do
++				local i = queue[head]
++				head += 1
++				if target[i] then
++					found = i
++					break
++				end
++				local x, z = Grid.coords(g, i)
++				for _, nb in Grid.NEIGHBOURS do
++					local nx, nz = x + nb[1], z + nb[2]
++					if Grid.inBounds(g, nx, nz) then
++						local j = Grid.index(g, nx, nz)
++						if not seen[j] then
++							seen[j] = true
++							prev[j] = i
++							table.insert(queue, j)
++						end
++					end
++				end
++			end
++			if found == nil then
++				break
++			end
++			local i = found
++			while i ~= start do
++				if not walk[i] then
++					walk[i] = true
++					heights[i] = 0
++					cut[i] = nil
++				end
++				i = prev[i]
++			end
++		end
++
++		-- 5: the banks' own rise — flat, gently rolling, or heaped with spoil.
++		local relief = whole(rng, 0, 2)
++		if relief > 0 then
++			local field = Noise.field(rng)
++			local amp = if relief == 2 then 3.2 else 1.8
++			for i, ok in walk do
++				if ok then
++					local x, z = cellOf(i)
++					local roll = Noise.fractal(field, x, z, {
++						octaves = 2,
++						frequency = 0.16,
++						lacunarity = 2,
++						gain = 0.5,
++					})
++					heights[i] = math.min(2, math.floor(math.max(0, roll) * amp))
++				end
++			end
++		end
++
++		-- 6 prep: what is painted where. Lip last, so the cut's own edge stays peat.
++		local function waterNear(x: number, z: number): boolean
++			for _, nb in Grid.NEIGHBOURS do
++				local nx, nz = x + nb[1], z + nb[2]
++				if inField(nx, nz) and cut[(nz - 1) * w + nx] ~= nil then
++					return true
++				end
++			end
++			return false
++		end
++		local openCells: { number } = {}
++		for i, ok in walk do
++			if ok and not reserved[i] then
++				table.insert(openCells, i)
++			end
++		end
++		local paint: { [number]: string } = {}
++		for _, i in openCells do
++			paint[i] = "bank"
++		end
++		local dryingCells: { number } = {}
++		if #openCells > 0 and rng:NextNumber() < 0.8 then
++			for _ = 1, whole(rng, 1, 2) do
++				local x, z = cellOf(openCells[whole(rng, 1, #openCells)])
++				for dz2 = -2, 2 do
++					for dx2 = -2, 2 do
++						local nx, nz = x + dx2, z + dz2
++						if inField(nx, nz) and math.abs(dx2) + math.abs(dz2) <= 3 then
++							local j = (nz - 1) * w + nx
++							if walk[j] and not reserved[j] and not waterNear(nx, nz) then
++								if paint[j] ~= "drying" then
++									table.insert(dryingCells, j)
++								end
++								paint[j] = "drying"
++							end
++						end
++					end
++				end
++			end
++		end
++		if #openCells > 0 and rng:NextNumber() < 0.75 then
++			for _ = 1, whole(rng, 1, 3) do
++				local x, z = cellOf(openCells[whole(rng, 1, #openCells)])
++				for dz2 = -1, 1 do
++					for dx2 = -1, 1 do
++						local nx, nz = x + dx2, z + dz2
++						if inField(nx, nz) and not waterNear(nx, nz) then
++							local j = (nz - 1) * w + nx
++							if walk[j] and not reserved[j] and paint[j] ~= "drying" then
++								paint[j] = "spoil"
++								heights[j] = math.max(heights[j], if dx2 == 0 and dz2 == 0 then 2 else 1)
++							end
++						end
++					end
++				end
++			end
++		end
++		local lipCells: { number } = {}
++		for _, i in openCells do
++			local x, z = cellOf(i)
++			if waterNear(x, z) then
++				paint[i] = "lip"
++				table.insert(lipCells, i)
++			end
++		end
++		-- Nothing at the border may stand more than a step over the plain ground
++		-- round the feature.
++		for i, ok in walk do
++			if ok then
++				local x, z = cellOf(i)
++				if x == 1 or z == 1 or x == w or z == d then
++					heights[i] = 0
++				end
++			end
++		end
++
++		local kinds: { [number]: string } = table.clone(paint)
++		local waterCells: { number } = {}
++		for i, c in cut do
++			kinds[i] = c.kind
++			table.insert(waterCells, i)
++		end
++
++		-- 6: the working's own things on the banks — stacks, a sledge, bog oaks.
++		local marks: { FeatureDress.Landmark } = {}
++		local function addMark(sculpt: string, i: number, scale: number, sink: number, solid: boolean)
++			local x, z = cellOf(i)
++			table.insert(marks, {
++				sculpt = sculpt,
++				x = x + between(rng, -0.22, 0.22),
++				z = z + between(rng, -0.22, 0.22),
++				yaw = between(rng, 0, 360),
++				scale = scale,
++				sink = sink,
++				solid = solid,
++			})
++		end
++		local stacksAt: { number } = {}
++		local stackSpots = if #dryingCells > 0 then dryingCells else openCells
++		for _ = 1, whole(rng, 1, 3) do
++			if #stackSpots > 0 then
++				local i = stackSpots[whole(rng, 1, #stackSpots)]
++				if #stacksAt == 0 or math.abs(i - stacksAt[#stacksAt]) > 3 then
++					table.insert(stacksAt, i)
++					addMark("moor_peat_stack", i, between(rng, 0.9, 1.2), 0.1, true)
++				end
++			end
++		end
++		-- The sledge lies where the turves were hauled from, near a stack.
++		if #stacksAt > 0 and rng:NextNumber() < 0.8 then
++			local x, z = cellOf(stacksAt[1])
++			for _ = 1, 12 do
++				local nx, nz = x + whole(rng, -2, 2), z + whole(rng, -2, 2)
++				if inField(nx, nz) then
++					local j = (nz - 1) * w + nx
++					if walk[j] and not reserved[j] and paint[j] ~= nil and cut[j] == nil then
++						table.insert(marks, {
++							sculpt = "moor_peat_sledge",
++							x = nx + between(rng, -0.2, 0.2),
++							z = nz + between(rng, -0.2, 0.2),
++							yaw = -math.deg(math.atan2(bz, bx)) + between(rng, -14, 14),
++							scale = between(rng, 0.95, 1.1),
++							sink = 0.15,
++							solid = true,
++						})
++						break
++					end
++				end
++			end
++		end
++		-- A black bog oak or two the cut uncovered, standing at the edge of the water.
++		for _ = 1, whole(rng, 0, 2) do
++			if #lipCells > 0 then
++				local i = lipCells[whole(rng, 1, #lipCells)]
++				addMark("moor_bog_oak", i, between(rng, 0.8, 1.05), 0.2, true)
++			end
++		end
++
++		-- The mist: cold breath off the black water, two or three patches of it.
++		local effects: { FeatureDress.Effect } = {}
++		local picks: { number } = {}
++		for _ = 1, 80 do
++			if #picks >= math.min(3, #waterCells) then
++				break
++			end
++			if #waterCells > 0 then
++				local i = waterCells[whole(rng, 1, #waterCells)]
++				local x, z = cellOf(i)
++				local apart = true
++				for _, j in picks do
++					local jx, jz = cellOf(j)
++					if (jx - x) ^ 2 + (jz - z) ^ 2 < 70 then
++						apart = false
++						break
++					end
++				end
++				if apart then
++					table.insert(picks, i)
++					table.insert(effects, {
++						recipe = "moor_cut_breath",
++						x = x,
++						z = z,
++						lift = 0.3,
++						seed = #picks,
++					})
++				end
++			end
++		end
++
++		-- The photograph: wait over the longest straight run of cut and look down it —
++		-- the black water leading away between its peat faces, the banks and their turves
++		-- either side. The camera floats over the trench rather than standing on a bank,
++		-- so nothing in the foreground blocks the cut.
++		local cameras: { MapFeature.Shot } = {}
++		if #waterCells > 0 then
++			local function runOf(i: number): number
++				local x, z = cellOf(i)
++				local total = 1
++				for _, sign in { 1, -1 } do
++					for k = 1, 9 do
++						local nx = math.floor(x + bx * k * sign + 0.5)
++						local nz = math.floor(z + bz * k * sign + 0.5)
++						if inField(nx, nz) and cut[(nz - 1) * w + nx] ~= nil then
++							total += 1
++						else
++							break
++						end
++					end
++				end
++				return total
++			end
++			local target, longest = waterCells[1], 0
++			for _, i in waterCells do
++				local run = runOf(i)
++				if run > longest then
++					longest, target = run, i
++				end
++			end
++			local tx, tz = cellOf(target)
++			local fx = math.clamp(tx + bx * 9 + ax * 2, 1, w)
++			local fz = math.clamp(tz + bz * 9 + az * 2, 1, d)
++			table.insert(cameras, {
++				name = "down the long cut",
++				from = { x = fx, z = fz, lift = 20 },
++				to = { x = tx, z = tz, lift = 0.5 },
++				fov = 60,
++			})
++		end
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

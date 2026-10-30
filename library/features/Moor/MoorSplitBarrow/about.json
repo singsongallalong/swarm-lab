@@ -1,0 +1,28 @@
+{
+  "letter": "C",
+  "generator": "g04",
+  "run": "moor-features-1",
+  "intent": "A long barrow robbed open: a turf mound cut down to its bare stone chamber, a stepped way down into the dark with capstones thrown off and grave goods still in the breach \u2014 the moor's graves, standing stones and barrows, but a place you can walk down into rather than only around.",
+  "variation": [
+    "form: a straight long ridge / a sickle bent round its forecourt / two lobes joined at a narrow waist / one broad end tapering to a tail",
+    "split: a robber's trench from the long flank / the barrow's own end torn open along its spine / a trench cut clean across it / a gash begun on the crown",
+    "chamber: a cist / a long passage / two chambers side by side behind a broken partition",
+    "kerb: an arc of standing stones / a ring / a ring two stones thick, its ways in and out varied, and now and then a blind robber's trench that stopped short",
+    "dress: companion mounds 0-2, lesser cists 0-2, spoil banks 0-2, kerb stones and grave goods; the crown's height and the drop into the dark"
+  ],
+  "critic": {
+    "own_idea": 7,
+    "photograph": 7,
+    "topology": 7,
+    "look": 6,
+    "game_camera": 6,
+    "usable": 6,
+    "total": 6.75,
+    "best_shot": "feature-shots seed 2, along the split",
+    "why": "You walk down into it: a deep trench with slabs and grave goods, and layouts that vary. It is weaker from directly above.",
+    "reads_as_itself": "yes: a mound sliced open down to a stone chamber with grave goods",
+    "size": "small to medium"
+  },
+  "why": "A place to walk down into: a robbed barrow that turns the moor's graves into a trench fight, at a size that fits often.",
+  "notes": "# C, notes to its builder\n\nKeep: the walk down into the trench, between turf walls, past standing slabs, fallen capstones and the chest. \"Along the split\" is a strong, deep shot, and nothing else on the moor lets you step below ground level.\n\n1. Give the breach a clear focal object at its far end: a big upright slab or a dark chamber mouth that the trench points at. Right now the eye wanders over equal-sized grey bits.\n2. Make the mound read as a mound from the game camera. From above it is a plan of grey bars in a faint ring, much like a ruin. A brighter turf crown and a clear long oval outline would help, so the cut reads as a cut through something.\n3. Pull the grave-light wisps lower and closer into the trench, so the set piece belongs to the breach and doesn't float as stray dots over the heath.\n"
+}

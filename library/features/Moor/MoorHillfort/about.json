@@ -1,0 +1,28 @@
+{
+  "letter": "B",
+  "generator": "g06",
+  "run": "moor-features-1",
+  "intent": "A hillfort of concentric turf ramparts and ditches ringing a high flat crown, entered by a deep gate cut whose timber gate has fallen and left by a narrow postern, with hut circles, a well and a signal beacon still burning for nobody: a place of earthworks, walls and a lit landmark the moor has never had.",
+  "variation": [
+    "ramparts: two banks / three (the common) / four, each with its own ditch",
+    "hill shape: round / an oval / lobed, with the footprint's size and the crown's",
+    "gate: one straight cut / a dog-legged cut whose gaps turn as they climb / a flank postern, the road crossing the crown cornerwise",
+    "ruin: sound ramparts / one slipped breach / two or three breaches, their stones down the banks",
+    "crown and dress: its size, the ring widths and heights, the gate's width, one to four hut circles, and where the beacon and the well stand"
+  ],
+  "critic": {
+    "own_idea": 7,
+    "photograph": 6,
+    "topology": 6,
+    "look": 5,
+    "game_camera": 7,
+    "usable": 7,
+    "total": 6.35,
+    "best_shot": "feature-shots seed 1, the game camera over it (beacon, hut circles)",
+    "why": "A burning beacon, a well and hut circles are a real place, but the ramparts are block steps and the layouts mostly rotate the same ring.",
+    "reads_as_itself": "yes: an earthwork ring with huts, well, gate and beacon, though the ramparts read as blocky walls",
+    "size": "large"
+  },
+  "why": "A lit beacon and settlement remains as a destination, but large, so for maps with room to spare.",
+  "notes": "# B, notes to its builder\n\nKeep: the beacon on its tripod with its fire-and-smoke set piece. It is a real lit landmark you can see from far off, and with the well and the hut circles it gives the crown a reason to exist.\n\n1. Soften the ramparts. At eye level they read as rows of green block walls and stairs, not banks and ditches. Ramp them over several cells, keep the ditches clearly lower than the ground outside, and pick out the crest line, so the concentric rings read at a glance (from above they read as one ring at best).\n2. Make the gate cut a moment. The fallen gate is a few small stacked blocks. Make the cut deeper and narrower than the rest, with the timbers clearly fallen across it, so the \"over its gate\" shot has a subject in front.\n3. Mind the size. This takes a large piece of heath. A tighter variant with one rampart would fit open ground far more often.\n"
+}

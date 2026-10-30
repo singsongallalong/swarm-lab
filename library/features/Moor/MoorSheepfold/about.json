@@ -1,0 +1,28 @@
+{
+  "letter": "G",
+  "generator": "g08",
+  "run": "moor-features-1",
+  "intent": "A shepherd's fold, the moor's one place people kept animals in: a single-gap dry-stone ring on a trodden, bone-strewn floor, a rowan grown up through the wall, nettles thick at its shaded foot, and the lost flock's fleece still lifting off the stones.",
+  "variation": [
+    "form: a round ring / an oval stretched along the track / a ring pulled straight on the side facing the road",
+    "pen: none / a lambing pen walled off across the shaded side / a free-standing round pen standing inside",
+    "wall and floor: one dry-stone course or a rubble-cored bank two cells thick; the floor flush with the heath, sunk two studs into a hollow or raised on a knoll, each with a stepped sill",
+    "outcrops: 0-3 rock outcrops the fold's wall was built among, on the shaded heath",
+    "the way in: the gap's side and width, the road's arc round the fold, the rowan's place in the wall, the nettles' arc and where the bones lie"
+  ],
+  "critic": {
+    "own_idea": 5,
+    "photograph": 5,
+    "topology": 4,
+    "look": 3,
+    "game_camera": 6,
+    "usable": 8,
+    "total": 4.9,
+    "best_shot": "feature-shots seed 2, over the wall at the rowan",
+    "why": "Clean, small and easy to place, but it is the same stone ring every seed, and the tree is too thin to carry it.",
+    "reads_as_itself": "yes: a small drystone pen with a lone tree, nettles and bones (the tree doesn't read as a rowan in particular)",
+    "size": "small"
+  },
+  "why": "A small, quiet dressing piece (pen, tree, bones) that fits nearly anywhere when bigger features won't.",
+  "notes": "# G, notes to its builder\n\nKeep: the small round drystone pen with one twisted tree rising out of it. It is compact, legible from the game camera, and fits almost anywhere, which matters on tight heath.\n\n1. Vary it. All twelve seeds are the same ring, with only the entrance and the path moving. Try broken stretches of wall, a lean-to or a second smaller pen attached, and the tree on different sides.\n2. Give the tree more presence. It reads as a thin bare snag, not a rowan. A thicker, taller trunk splitting the wall would make it the photograph's subject.\n3. Bring the fleece set piece closer to the wall tops. In the preview it reads as a generic white drift.\n"
+}

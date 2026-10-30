@@ -1,0 +1,28 @@
+{
+  "letter": "F",
+  "generator": "g01",
+  "run": "moor-features-1",
+  "intent": "A drowned causeway: a raised flag-and-log road on a bank over sunken black bog pools, with sunken posts, a half-sunk toll gate and marsh-light \u2014 a whole built crossing left to drown, a kind of place the moor did not have.",
+  "variation": [
+    "water: a channel cut across the heath / a basin hollowed in its middle / three to five separate pools in a mire / a flood filling the whole hollow",
+    "crossing: straight / dogleg turning on a platform / fork, two ways across / broken span crossed by stepping stones",
+    "surface: stone flags / log sleepers / both in alternating stretches",
+    "levels: causeway crown 1.8-2.7 studs, bog depth 2.4-3.8, wet shore 1-2 cells wide",
+    "dressing: posts on both sides or one, the gate standing over the way or drowned beside it (or gone), two to four marsh-lights"
+  ],
+  "critic": {
+    "own_idea": 6,
+    "photograph": 5,
+    "topology": 8,
+    "look": 7,
+    "game_camera": 5,
+    "usable": 6,
+    "total": 6.18,
+    "best_shot": "feature-shots seed 2, down the drowned way (arch ahead)",
+    "why": "The best spread of layouts in the run, and a clear crossing, but the water is flat and bright and the photographs lack a subject.",
+    "reads_as_itself": "yes: a slab road over dark pools with posts and a timber arch",
+    "size": "medium"
+  },
+  "why": "A crossing that turns the road into a chokepoint over drowned pools, with the widest layout variety.",
+  "notes": "# F, notes to its builder\n\nKeep: the raised pale road running straight across ragged dark pools, with leaning posts and the timber arch. The layouts change a lot from seed to seed (straight, doglegged, crossing several pools), which is the best spread in the run.\n\n1. Make the pools darker and lower. The teal sheets look flat and bright beside the grey slabs. Near-black water set clearly below the causeway bank would sell the \"drowning\".\n2. Make the toll gate the photograph. It currently reads as a plain doorframe. Tilt it, sink one post, and put it where the road enters the water, so the eye-level shot has a subject in front of the far heath instead of a field of grey slabs.\n3. Make the marsh-light brighter and more of them along the line of posts. One tiny green dot is lost.\n"
+}

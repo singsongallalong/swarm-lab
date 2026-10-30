@@ -1,0 +1,909 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..ceab35a3 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -4,10 +4,12 @@
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
++local MoorSinkhole = require("../systems/features/MoorSinkhole")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	MoorSinkhole = MoorSinkhole,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..80866f96 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -940,5 +940,39 @@ Sculpts.parish_bell_tower = {
+ 	accent = PARISH_MOSS,
+ 	maxPrims = 34,
+ }
++-- The sinkhole (features/MoorSinkhole). A black sheet of water wide enough for
++-- a collapse's floor, a warning stone at its lip, and a shelf of basalt breaking
++-- out of the wall. Never used by a tileset: the feature lays them itself.
++Sculpts.moor_sink_pool = {
++	kind = "pool",
++	size = { 34, 0.1, 34 },
++	material = "Glass",
++	-- A shade above black, like the moor's pools (C34): the night sky is too dark
++	-- to show in it, so the tint carries "water".
++	colors = { { 40, 48, 60 }, { 44, 53, 66 } },
++	reflectance = 0.32,
++	maxPrims = 4,
++}
++Sculpts.moor_sink_stone = {
++	kind = "marker",
++	size = { 3.2, 6.2, 1.7 },
++	material = "Slate",
++	colors = { { 84, 84, 88 }, { 76, 77, 82 } },
++	-- The moor's faded oxblood rag (bible B8), as the threshold markers wear.
++	accent = { 70, 40, 38 },
++	maxPrims = 9,
++}
++Sculpts.moor_sink_shelf = {
++	kind = "columns",
++	size = { 9, 4.5, 9 },
++	material = "Basalt",
++	-- In the pit's own shadow, darker than the moor's surface cliffs.
++	colors = { { 52, 54, 60 }, { 46, 48, 54 }, { 58, 60, 66 } },
++	maxPrims = 22,
++	columns = 3,
++	jag = 0.5,
++	-- The near half drops away, so a shelf breaks out of the wall it sits in.
++	step = 0.55,
++}
+ 
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..353070b7 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,94 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The sinkhole (features/MoorSinkhole): the pit's own breath. Cold grave-mist
++-- lying on the black water and brimming over the lip, with a pale gleam on the
++-- water it rises from. Placed on a water cell at the bottom of the collapse, so
++-- the mist fills the pit from below and reaches the lip last. The barrow
++-- theme's pale bone core, grave-green body and grey-green haze: the moor's own
++-- grave-light, not the wayfinding violet (EF9). Kept under the game camera's
++-- height (SE10) and thin, so a phone keeps the core and the haze.
++recipes.moor_sink_mist = {
++	about = "Cold mist rising off the sinkhole's black water and brimming over the lip, over a pale gleam on the water.",
++	theme = "barrow",
++	path = { kind = "worm", length = 22, step = 3, bend = 9, climb = 1, round = 2 },
++	layers = {
++		{
++			name = "breath",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 2.5,
++				lift = 0.3,
++				toward = "up",
++				rise = 1,
++				life = { 7, 9 },
++				rate = 1.2,
++				size = 2,
++				-- Stretched like breath pulled off water, not curled like flames.
++				tall = 3,
++				transparency = 0.7,
++				color = "core",
++				texture = "wisp",
++				lean = 16,
++				vary = 0.8,
++			},
++			motion = { kind = "sway", amplitude = 1.5, tilt = 10, span = 10, periods = { 7.3, 5.1 } },
++			priority = 1,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 18,
++				thick = 14,
++				lift = 0.8,
++				toward = "up",
++				rise = 0.3,
++				life = { 20, 26 },
++				rate = 0.5,
++				size = 18,
++				tall = 0.8,
++				transparency = 0.95,
++				color = "haze",
++				texture = "veil",
++				lean = 6,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 4, tilt = 6, span = 26, periods = { 19, 13 } },
++			priority = 2,
++		},
++		{
++			name = "body",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 7,
++				lift = 0.5,
++				toward = "up",
++				rise = 0.6,
++				life = { 14, 18 },
++				rate = 0.8,
++				size = 9,
++				tall = 1.4,
++				transparency = 0.9,
++				color = "body",
++				texture = "smoke",
++				lean = 8,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 2.5, tilt = 12, span = 16, periods = { 13, 9 } },
++			priority = 3,
++		},
++		-- The gleam: a little light on the water, so the black has something to
++		-- hold. Cold, not warm: the moor's lamps are the only warmth (B2).
++		{
++			name = "gleam",
++			look = { kind = "light", every = 11, max = 2, range = 10, brightness = 0.5, color = "core" },
++			motion = { kind = "pulse", period = 5.2, depth = 0.35 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..608bade2 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,16 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The sinkhole (features/MoorSinkhole), laid by the feature itself.
++	["sculpt:moor_sink_pool"] = row(
++		"A wide black sheet of water, still enough to hold the moon: the sinkhole's water table.",
++		MOOR
++	),
++	["sculpt:moor_sink_stone"] = row(
++		"A warning stone at the sinkhole's lip with a faded oxblood rag tied round it.",
++		MOOR
++	),
++	["sculpt:moor_sink_shelf"] = row("A broken shelf of basalt columns breaking out of the sinkhole's wall.", MOOR),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/MoorSinkhole.luau b/src/shared/systems/features/MoorSinkhole.luau
+new file mode 100644
+index 00000000..4e3ab23e
+--- /dev/null
++++ b/src/shared/systems/features/MoorSinkhole.luau
+@@ -0,0 +1,722 @@
++--!strict
++-- The moor's sinkhole: a round collapse in the heath, its sides stepped down by
++-- broken turf benches to a water table far below, and the road bending round its
++-- lip. The moor has heath, hollows, outcrops and shelves; it has no place where
++-- the ground dropped away like this.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30). The first
++-- draws choose the structure, the rest only dress it:
++--   1. the collapse: one pit, a lobed one (a second, smaller hole bulging out
++--      of the lip), or a crown of small holes round the main one;
++--   2. the way down: broken turf benches all round, a winding stair of turf
++--      arcs, or sheer basalt walls with no way down at all;
++--   3. the heart: black water alone, a turf islet with a dead tree on it, a
++--      rockfall fan off the lip, or a drowned waystone in the water;
++--   4. the footprint, the pit's size, offset and wobbly lip, and its depth;
++--   5. the road's side, its entry and exit angles, and how tight its bend is.
++-- Everything stands on the moor's own kit (moor_* sculpts, the barrows' mist
++-- theme), plus three sculpts and one set piece of its own.
++local DistanceField = require("../DistanceField")
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++-- A hole: its middle, its mean lip radius and the wobble of that lip.
++type Pit = {
++	x: number,
++	z: number,
++	r: number,
++	stretch: number,
++	turn: number,
++	-- Three harmonics of the lip: { amplitude, phase, amplitude, phase, amplitude, phase }.
++	wobble: { number },
++}
++
++-- One hole's wall as benches: the lip's rock ring, then levels stepping down to
++-- the water. `levels[k]` is ring k's height, k from 1 (the first bench).
++type Profile = {
++	pit: Pit,
++	waterFrac: number,
++	water: number, -- studs below the rim the water lies
++	lipRing: number, -- cells the lip's rock ring is wide
++	ringW: number, -- cells each bench is wide
++	levels: { number },
++	wayDown: boolean, -- false on sheer walls: no walkable bench at all
++	stair: boolean, -- true: benches walkable only on arcs (a winding stair)
++	arc0: number,
++	arcStep: number,
++	arcHalf: number,
++	breach: number, -- the angle of the gap that is the way down
++	breachHalf: number,
++	breaks: { { { number } } }, -- per bench, { angle, half-width } slumps
++	shelves: { boolean }, -- sheer walls: benches still holding their turf
++}
++
++-- The most the offline views draw down to (dresspreview's SLAB is 18 studs).
++-- Water any deeper would not draw, so the pit keeps its bottom above this.
++local BOTTOM = 15.5
++local TAU = 2 * math.pi
++local STEP = 2 -- Terrain.terraces.maxStep: the most walkable neighbours may differ
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function pick(rng: Random, list: { string }): string
++	return list[whole(rng, 1, #list)]
++end
++
++-- Radians between two angles, -pi..pi.
++local function apart(a: number, b: number): number
++	return (a - b + math.pi) % TAU - math.pi
++end
++
++-- Half studs, so benches and funnels read as steps rather than slopes.
++local function halfStuds(v: number): number
++	return math.floor(v * 2 + 0.5) / 2
++end
++
++-- Ground the feature paints. Surfaces inside the bible's limits (saturation at
++-- most 0.50, value at most 0.40), and one colour per material: LeafyGrass in
++-- the moor's own past-the-edge turf, the stones and the water in materials it
++-- leaves free. The pit is painted darker than the heath: a hole reads as a
++-- hole, and its bands as depth.
++local TURF = { material = "LeafyGrass", color = { 50, 53, 45 } }
++-- The wall's two bands: the cold rock at the lip, and the deeper rock under it.
++local STONE = { material = "Rock", color = { 38, 40, 46 } }
++local STRATA = { material = "Concrete", color = { 30, 32, 38 } }
++-- Black water, a touch of moon-blue so the gleam reads against the rock.
++local WATER = { material = "Ice", color = { 32, 40, 54 } }
++
++local COLLAPSES = { "single", "lobed", "crown" }
++local WAYS_DOWN = { "benches", "stair", "sheer" }
++local HEARTS = { "water", "islet", "slabs", "stone" }
++
++local feature: MapFeature.Feature = {
++	name = "MoorSinkhole",
++	about = "A sinkhole in the heath: turf benches and sheer basalt walls falling to black water, the road bending round its lip.",
++	tileset = "moor",
++	scale = "medium",
++	role = "crossing",
++	mood = { "collapsed", "hollow", "deep", "cold" },
++	cells = {
++		-- The turf benches: the heath's own darker turf past the edge, with the
++		-- heather and the odd boulder that came down with them.
++		ledge = {
++			ground = TURF,
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "moor_heather", every = 9, scale = { 0.5, 0.9 } },
++				{ sculpt = "moor_boulder", every = 26, scale = { 0.4, 0.65 }, sink = 0.5 },
++			},
++		},
++		-- The bare rock of the walls, shelves of it breaking out of the face.
++		rock = {
++			ground = STONE,
++			clear = true,
++			props = { { sculpt = "moor_sink_shelf", every = 20, scale = { 0.4, 0.7 }, sink = 1.1 } },
++		},
++		-- The deeper bands, a bar darker than the rock above, so the walls read
++		-- as layers going down into the dark.
++		strata = { ground = STRATA, clear = true },
++		-- The water table: a black gleam far below, still enough to hold the moon.
++		water = { ground = WATER, lift = 0.1, clear = true },
++		-- An islet of turf left standing in the water.
++		islet = {
++			ground = TURF,
++			lift = 0.4,
++			clear = true,
++			props = { { sculpt = "moor_heather", every = 1, scale = { 0.5, 0.9 } } },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, first.
++		local shape = pick(rng, COLLAPSES)
++		local way = pick(rng, WAYS_DOWN)
++		local heart = pick(rng, HEARTS)
++
++		-- 4: the footprint, the pit's place and shape.
++		local w, d = whole(rng, 28, 32), whole(rng, 28, 32)
++		local cx, cz = (w + 1) / 2 + between(rng, -1.4, 1.4), (d + 1) / 2 + between(rng, -1.4, 1.4)
++		local stretch = between(rng, 0.9, 1.1)
++		local turn = between(rng, 0, math.pi)
++		local wobble = {
++			between(rng, 0.04, 0.1),
++			between(rng, 0, TAU),
++			between(rng, 0.03, 0.07),
++			between(rng, 0, TAU),
++			between(rng, 0.02, 0.04),
++			between(rng, 0, TAU),
++		}
++		local reach = math.min(cx - 0.5, w + 0.5 - cx, cz - 0.5, d + 0.5 - cz)
++
++		-- The road bends round the pit on one side; a lobed or crowned collapse
++		-- is thrown up on the other.
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++		local inAt = between(rng, 0, TAU)
++		local outAt = inAt + math.pi + between(rng, -0.6, 0.6)
++		local delta = apart(outAt, inAt)
++		local arc = if side > 0
++			then (if delta >= 0 then delta else delta + TAU)
++			else (if delta <= 0 then delta else delta - TAU)
++		local roadMid = inAt + arc / 2
++		local away = roadMid + math.pi
++
++		-- The main pit, shrunk when a lobe or a crown has to fit beside it.
++		local margin = between(rng, 2.4, 3.8)
++		local R = math.clamp((reach - margin) / 1.14, 7, 10.8)
++		if shape == "lobed" then
++			R *= between(rng, 0.76, 0.88)
++		elseif shape == "crown" then
++			R *= between(rng, 0.62, 0.76)
++		end
++		local main: Pit = { x = cx, z = cz, r = R, stretch = stretch, turn = turn, wobble = wobble }
++
++		-- 5a: how deep the water lies, and the benches above it.
++		local waterFrac = between(rng, 0.34, 0.46)
++		local lip = 4 -- studs the lip's rock ring stands below the rim
++		local lipRing = 1.4
++		local ringW = 1.2 -- a hair over one cell's worth of distance, so benches never jump two
++		local qWater = R * (1 - waterFrac)
++		local rings = math.max(2, math.floor((qWater - lipRing) / ringW) + 1)
++		-- Keep the water above the offline views' slab (a water surface below
++		-- 18 studs would not draw), and every bench step at 2.
++		rings = math.min(rings, 5)
++		local stair = way == "stair"
++		local wayDown = way ~= "sheer"
++		local levels: { number } = {}
++		local water: number
++		if wayDown then
++			for k = 1, rings do
++				levels[k] = -(lip + STEP * (k - 1))
++			end
++			water = levels[rings] - between(rng, 2.5, 4)
++		else
++			local depth = between(rng, 12, BOTTOM)
++			for k = 1, rings do
++				levels[k] = halfStuds(-depth * k / (rings + 1))
++			end
++			water = -depth
++		end
++		local breach = between(rng, 0, TAU)
++		local arcHalf = between(rng, 1.0, 1.35)
++		local arcStep = between(rng, 0.7, 1.0) * (if rng:NextNumber() < 0.5 then 1 else -1)
++		local breaks: { { { number } } } = {}
++		for k = 1, rings do
++			local list: { { number } } = {}
++			local count = if wayDown and not stair then whole(rng, 0, 2) else 0
++			for _ = 1, count do
++				for _ = 1, 8 do
++					local at = between(rng, 0, TAU)
++					local half = between(rng, 0.12, 0.4)
++					local ok = math.abs(apart(at, breach)) > half + arcHalf + 0.2
++					for _, b in list do
++						ok = ok and math.abs(apart(at, b[1])) > half + b[2] + 0.25
++					end
++					if ok then
++						table.insert(list, { at, half })
++						break
++					end
++				end
++			end
++			breaks[k] = list
++		end
++		-- On sheer walls a few benches still hold their turf: green shelves
++		-- clinging to the rock, which is what says "the ground broke away".
++		local shelves: { boolean } = {}
++		local anyShelf = false
++		if not wayDown then
++			for k = 1, rings do
++				shelves[k] = rng:NextNumber() < 0.55
++				anyShelf = anyShelf or shelves[k]
++			end
++			if not anyShelf then
++				shelves[whole(rng, 1, rings)] = true
++			end
++		end
++		local profile: Profile = {
++			pit = main,
++			waterFrac = waterFrac,
++			water = water,
++			lipRing = lipRing,
++			ringW = ringW,
++			levels = levels,
++			wayDown = wayDown,
++			stair = stair,
++			arc0 = breach,
++			arcStep = arcStep,
++			arcHalf = arcHalf,
++			breach = breach,
++			breachHalf = if stair then math.min(arcHalf, 1.1) else between(rng, 0.35, 0.6),
++			breaks = breaks,
++			shelves = shelves,
++		}
++
++		local function lipAt(pit: Pit, angle: number): number
++			local a = pit.wobble
++			return pit.r
++				* (
++					1
++					+ a[1] * math.sin(angle + a[2])
++					+ a[3] * math.sin(2 * angle + a[4])
++					+ a[5] * math.sin(3 * angle + a[6])
++				)
++		end
++
++		local function localOf(pit: Pit, x: number, z: number): (number, number)
++			local dx, dz = x - pit.x, z - pit.z
++			local cs, sn = math.cos(pit.turn), math.sin(pit.turn)
++			local lx, lz = dx * cs + dz * sn, -dx * sn + dz * cs
++			return math.sqrt((lx / pit.stretch) ^ 2 + (lz * pit.stretch) ^ 2), math.atan2(lz, lx)
++		end
++
++		-- Other holes: a lobe of the same collapse, or a crown of small ones.
++		local lobes: { Pit } = {}
++		local crowns: { { pit: Pit, depth: number } } = {}
++		if shape == "lobed" then
++			local angle = away + between(rng, -0.5, 0.5)
++			local r2 = R * between(rng, 0.36, 0.55)
++			local sep = R + r2 * between(rng, 0.4, 0.85)
++			-- Fit it inside the heath left round the pit.
++			local room = reach * 0.96
++			local far = sep + r2
++			if far > room then
++				local k = math.clamp((room - R * 0.55) / math.max(far - R * 0.55, 0.1), 0.6, 1)
++				r2 *= k
++				sep = R * 0.55 + (sep - R * 0.55) * k
++			end
++			table.insert(lobes, {
++				x = cx + math.cos(angle) * sep,
++				z = cz + math.sin(angle) * sep,
++				r = r2,
++				stretch = between(rng, 0.92, 1.08),
++				turn = between(rng, 0, math.pi),
++				wobble = { 0.05, between(rng, 0, TAU), 0.04, between(rng, 0, TAU), 0.02, between(rng, 0, TAU) },
++			})
++		elseif shape == "crown" then
++			local count = whole(rng, 3, 5)
++			local first = away + between(rng, -1.1, 1.1)
++			for k = 1, count do
++				local angle = first + (k - 1) * between(rng, 0.55, 0.8)
++				local rs = between(rng, 1.8, 2.9)
++				local dist = lipAt(main, angle) + rs + between(rng, 1.4, 2.6)
++				local x, z = cx + math.cos(angle) * dist, cz + math.sin(angle) * dist
++				local room = math.min(x - 0.5, w + 0.5 - x, z - 0.5, d + 0.5 - z)
++				local clear = true
++				for _, c in crowns do
++					clear = clear and (x - c.pit.x) ^ 2 + (z - c.pit.z) ^ 2 > (rs + c.pit.r + 1.4) ^ 2
++				end
++				if clear and room >= rs + 1.6 then
++					table.insert(crowns, {
++						pit = {
++							x = x,
++							z = z,
++							r = rs,
++							stretch = between(rng, 0.92, 1.08),
++							turn = between(rng, 0, math.pi),
++							wobble = {
++								0.05,
++								between(rng, 0, TAU),
++								0.04,
++								between(rng, 0, TAU),
++								0.02,
++								between(rng, 0, TAU),
++							},
++						},
++						depth = between(rng, 4, 9),
++					})
++				end
++			end
++		end
++
++		-- 2: lay the ground out.
++		local walk, heights = table.create(w * d, true), table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function coords(i: number): (number, number)
++			return (i - 1) % w + 1, (i - 1) // w + 1
++		end
++
++		local function benchWalkable(p: Profile, k: number, angle: number): boolean
++			if not p.wayDown then
++				return false
++			end
++			if p.stair then
++				return math.abs(apart(angle, p.arc0 + (k - 1) * p.arcStep)) <= p.arcHalf
++			end
++			for _, b in p.breaks[k] do
++				if math.abs(apart(angle, b[1])) < b[2] then
++					return false
++				end
++			end
++			return true
++		end
++
++		-- The main pit's wall at `q` cells inside its lip, at `angle`.
++		local function mainCell(q: number, angle: number): (boolean, number, string)
++			if q >= lipAt(main, angle) * (1 - waterFrac) then
++				return false, water, "water"
++			end
++			if q < lipRing then
++				if wayDown and math.abs(apart(angle, breach)) <= profile.breachHalf then
++					return true, levels[1] + STEP, "ledge"
++				end
++				return false, levels[1], "rock"
++			end
++			local k = math.min(math.floor((q - lipRing) / ringW) + 1, #levels)
++			local walkable = benchWalkable(profile, k, angle)
++			local kind = if walkable or profile.shelves[k] then "ledge" elseif k % 2 == 0 then "strata" else "rock"
++			return walkable, levels[k], kind
++		end
++
++		-- A small hole's sheer funnel down to `floorLevel`.
++		local function funnelCell(q: number, floorLevel: number, wet: boolean): (number, string)
++			local h = math.max(floorLevel, halfStuds(-BOTTOM * math.clamp(q / 1.8, 0, 1)))
++			if wet and h <= floorLevel + 0.1 then
++				return floorLevel, "water"
++			end
++			return math.max(h, floorLevel), if h <= floorLevel + 0.5 then "strata" else "rock"
++		end
++
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local bestQ, bestAngle, bestKind = 0, 0, 0
++				local u, a = localOf(main, x, z)
++				local q = lipAt(main, a) - u
++				if q > bestQ then
++					bestQ, bestAngle, bestKind = q, a, 1
++				end
++				for _, lobe in lobes do
++					local lu, la = localOf(lobe, x, z)
++					local lq = lipAt(lobe, la) - lu
++					if lq > bestQ then
++						bestQ, bestAngle, bestKind = lq, la, 2
++					end
++				end
++				for c = 1, #crowns do
++					local cu, ca = localOf(crowns[c].pit, x, z)
++					local cq = lipAt(crowns[c].pit, ca) - cu
++					if cq > bestQ then
++						bestQ, bestAngle, bestKind = cq, ca, 2 + c
++					end
++				end
++				if bestQ > 0 then
++					if bestKind == 1 then
++						local ok, h, kind = mainCell(bestQ, bestAngle)
++						walk[i], heights[i], kinds[i] = ok, h, kind
++					elseif bestKind == 2 then
++						local h, kind = funnelCell(bestQ, water, true)
++						walk[i], heights[i], kinds[i] = false, h, kind
++					else
++						local c = crowns[bestKind - 2]
++						local h, kind = funnelCell(bestQ, -c.depth, false)
++						walk[i], heights[i], kinds[i] = false, h, kind
++					end
++				end
++			end
++		end
++
++		-- 3: the water's middle, and the heart of it.
++		local function wetCells(): { number }
++			local out: { number } = {}
++			for i, kind in kinds do
++				if kind == "water" then
++					table.insert(out, i)
++				end
++			end
++			return out
++		end
++		local function nearestToCentre(cells: { number }): number
++			local best, found = math.huge, 0
++			for _, i in cells do
++				local x, z = coords(i)
++				local dist = (x - cx) ^ 2 + (z - cz) ^ 2
++				if dist < best then
++					best, found = dist, i
++				end
++			end
++			return found
++		end
++		local waterCentre = { x = cx, z = cz }
++		local waterRadius = main.r * waterFrac
++		local firstWet = wetCells()
++		if #firstWet > 0 then
++			local x, z = coords(nearestToCentre(firstWet))
++			waterCentre = { x = x, z = z }
++		end
++		local heartAt = { x = waterCentre.x, z = waterCentre.z }
++		if #firstWet > 0 then
++			local lit = between(rng, 0, TAU)
++			local out = between(rng, 0, math.max(0.4, waterRadius * 0.3))
++			heartAt = { x = waterCentre.x + math.cos(lit) * out, z = waterCentre.z + math.sin(lit) * out }
++		end
++		if heart == "islet" and #firstWet > 0 then
++			-- A pillar of turf left standing in the water, its sides bare rock.
++			local ri = math.max(1.2, math.min(2.2, waterRadius * between(rng, 0.45, 0.6)))
++			local rise = between(rng, 3, 4.5)
++			for _, i in firstWet do
++				local x, z = coords(i)
++				local dist = math.sqrt((x - heartAt.x) ^ 2 + (z - heartAt.z) ^ 2)
++				if dist < ri then
++					heights[i] = halfStuds(water + (if dist < ri * 0.55 then rise else rise * 0.55))
++					kinds[i] = if dist < ri * 0.55 then "islet" else "rock"
++				end
++			end
++		end
++		local waterCells = wetCells()
++
++		-- 4: keep the walkable ground one piece: anything the rim cannot reach
++		-- (a bench cut off by a slump) becomes rock.
++		local function borderPoint(angle: number): Point
++			local c, s = math.cos(angle), math.sin(angle)
++			local tx = if c > 1e-6 then (w + 0.5 - cx) / c elseif c < -1e-6 then (0.5 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d + 0.5 - cz) / s elseif s < -1e-6 then (0.5 - cz) / s else math.huge
++			local t = math.min(tx, tz)
++			local x, z = math.clamp(math.floor(cx + c * t + 0.5), 1, w), math.clamp(math.floor(cz + s * t + 0.5), 1, d)
++			if tx <= tz then
++				x = if c > 0 then w else 1
++			else
++				z = if s > 0 then d else 1
++			end
++			return { x = x, z = z }
++		end
++		local g = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		local entry = borderPoint(inAt)
++		if Grid.get(g, entry.x, entry.z) ~= Grid.FLOOR then
++			local best = math.huge
++			for z = 1, d do
++				for x = 1, w do
++					if Grid.get(g, x, z) == Grid.FLOOR and (x == 1 or z == 1 or x == w or z == d) then
++						local dist = (x - entry.x) ^ 2 + (z - entry.z) ^ 2
++						if dist < best then
++							best, entry = dist, { x = x, z = z }
++						end
++					end
++				end
++			end
++		end
++		local field = DistanceField.fromCells(g, { entry })
++		for i, ok in walk do
++			if ok and field.distances[i] == math.huge then
++				walk[i] = false
++				kinds[i] = "rock"
++			end
++		end
++
++		-- 5: the road, from the border in, round the lip on its side, and out.
++		local function settle(angle: number, radius: number): Point?
++			for step = 0, 8 do
++				local r = radius + step * 0.4
++				local x, z = cx + math.cos(angle) * r, cz + math.sin(angle) * r
++				local xi, zi = math.floor(x + 0.5), math.floor(z + 0.5)
++				if xi >= 2 and xi <= w - 1 and zi >= 2 and zi <= d - 1 and walk[at(xi, zi)] then
++					return { x = x, z = z }
++				end
++			end
++			return nil
++		end
++
++		local road: { Point } = { borderPoint(inAt) }
++		local gap = between(rng, 1.7, 2.6)
++		local steps = whole(rng, 5, 8)
++		for k = 1, steps - 1 do
++			local angle = inAt + arc * k / steps
++			local p = settle(angle, lipAt(main, angle) + gap)
++			if p then
++				table.insert(road, p)
++			end
++		end
++		table.insert(road, borderPoint(outAt))
++
++		-- 6: the dressing from here: the warning stone, the trees and rubble,
++		-- the heart's own landmark, and the mist.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local function onRim(angle: number, out: number): Point?
++			local r = lipAt(main, angle) + out
++			local x, z = cx + math.cos(angle) * r, cz + math.sin(angle) * r
++			local xi, zi = math.floor(x + 0.5), math.floor(z + 0.5)
++			if xi >= 1 and xi <= w and zi >= 1 and zi <= d and walk[at(xi, zi)] then
++				return { x = x, z = z }
++			end
++			return nil
++		end
++
++		-- The stone someone dragged to the lip and tied a rag round: the human
++		-- trace the bible asks for, and a figure for the scale.
++		local stoneAt: Point? = nil
++		local stoneAngle = roadMid
++		for _, turnOff in { 0.4, 0.5, 0.3, 0.6, 0.2 } do
++			stoneAngle = roadMid + side * turnOff
++			stoneAt = onRim(stoneAngle, between(rng, 0.7, 1.2))
++			if stoneAt then
++				break
++			end
++		end
++		if stoneAt then
++			table.insert(marks, {
++				sculpt = "moor_sink_stone",
++				x = stoneAt.x,
++				z = stoneAt.z,
++				yaw = -math.deg(stoneAngle) - 90 + between(rng, -12, 12),
++				scale = between(rng, 0.85, 1.05),
++				sink = 0.2,
++				solid = true,
++			})
++		end
++		-- Dead trees leaning over the lip, and the rubble that came down it.
++		for _ = 1, whole(rng, 0, 2) do
++			local angle = between(rng, 0, TAU)
++			if math.abs(apart(angle, roadMid)) > 0.55 then
++				local p = onRim(angle, between(rng, 1.1, 2.8))
++				if p then
++					table.insert(marks, {
++						sculpt = if rng:NextNumber() < 0.5 then "moor_tree_bent" else "moor_tree",
++						x = p.x,
++						z = p.z,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 0.7, 1.0),
++						sink = 0.4,
++					})
++				end
++			end
++		end
++		for _ = 1, whole(rng, 2, 4) do
++			local p = onRim(between(rng, 0, TAU), between(rng, 0.5, 1.4))
++			if p then
++				table.insert(marks, {
++					sculpt = "moor_boulder",
++					x = p.x,
++					z = p.z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.5, 1.0),
++					sink = 0.5,
++				})
++			end
++		end
++		if heart == "islet" and #waterCells > 0 then
++			table.insert(marks, {
++				sculpt = "moor_tree_bent",
++				x = heartAt.x,
++				z = heartAt.z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.6, 0.85),
++				sink = 0.3,
++			})
++		elseif heart == "stone" and #waterCells > 0 then
++			table.insert(marks, {
++				sculpt = "moor_sink_stone",
++				x = heartAt.x,
++				z = heartAt.z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1.3, 1.7),
++				sink = -0.6,
++			})
++		elseif heart == "slabs" and #waterCells > 0 then
++			for _ = 1, whole(rng, 4, 7) do
++				local angle = between(rng, 0, TAU)
++				local out = between(rng, 0.6, 2.4)
++				local x, z = waterCentre.x + math.cos(angle) * out, waterCentre.z + math.sin(angle) * out
++				local xi, zi = math.floor(x + 0.5), math.floor(z + 0.5)
++				if xi >= 1 and xi <= w and zi >= 1 and zi <= d then
++					table.insert(marks, {
++						sculpt = if rng:NextNumber() < 0.45 then "moor_sink_shelf" else "moor_boulder",
++						x = x,
++						z = z,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 0.6, 1.2),
++						sink = between(rng, 0.2, 1.0),
++					})
++				end
++			end
++		end
++		-- The water itself: a black sheet, so the moon and the mist's gleam have
++		-- something to lie on. It is a landmark, not a cell kind, because it is
++		-- one sheet and the game's pools are sculpts (pool, C34).
++		if #waterCells > 0 then
++			local x, z = coords(nearestToCentre(waterCells))
++			table.insert(marks, {
++				sculpt = "moor_sink_pool",
++				x = x,
++				z = z,
++				yaw = between(rng, 0, 360),
++				scale = math.clamp(waterRadius * 8 * 0.95 / 34, 0.45, 0.9),
++			})
++			-- The pit's breath: the mist that lies on the black water and brims
++			-- over the lip. It starts from a water cell still open after the heart.
++			table.insert(effects, {
++				recipe = "moor_sink_mist",
++				x = x,
++				z = z,
++				lift = 0.4,
++				seed = whole(rng, 1, 999),
++			})
++		end
++
++		-- 7: the photographs. One high over the far lip, to read the benches and
++		-- the water; one from down in the pit when there is a bench to stand on,
++		-- or from the road's bend when the walls are sheer all the way.
++		local focus = if #waterCells > 0 then waterCentre else { x = cx, z = cz }
++		local far = settle(away, lipAt(main, away) + between(rng, 1.6, 2.6)) or borderPoint(away)
++		local camAngle = roadMid - side * between(rng, 0.15, 0.4)
++		local nearRoad = settle(camAngle, lipAt(main, camAngle) + 0.4) or borderPoint(camAngle)
++		local bench: Point? = nil
++		local nearest = math.huge
++		for i, kind in kinds do
++			if kind == "ledge" and walk[i] and heights[i] < -3 then
++				local x, z = coords(i)
++				local off = math.abs(apart(math.atan2(z - cz, x - cx), roadMid))
++				if off < nearest then
++					nearest, bench = off, { x = x, z = z }
++				end
++			end
++		end
++		local second: MapFeature.Shot = if bench
++			then {
++				name = "down in the pit",
++				from = { x = bench.x, z = bench.z, lift = between(rng, 4, 6) },
++				to = { x = focus.x, z = focus.z, lift = 0.8 },
++				fov = 66,
++			}
++			else {
++				name = "the road's bend",
++				from = { x = nearRoad.x, z = nearRoad.z, lift = between(rng, 20, 24) },
++				to = { x = focus.x, z = focus.z, lift = 0.8 },
++				fov = 62,
++			}
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "over the far lip",
++					from = { x = far.x, z = far.z, lift = between(rng, 19, 24) },
++					to = { x = focus.x, z = focus.z, lift = 0.8 },
++					fov = 62,
++				},
++				second,
++			},
++		}
++	end,
++}
++
++return feature

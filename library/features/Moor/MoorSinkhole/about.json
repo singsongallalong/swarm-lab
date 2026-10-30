@@ -1,0 +1,28 @@
+{
+  "letter": "D",
+  "generator": "g00",
+  "run": "moor-features-1",
+  "intent": "A sinkhole the moor has never had: a round collapse whose broken turf benches and sheer rock walls step down to a black water table, with a lobe or a crown of small collapses where the ground gave way twice, the road bending round its lip, and cold grave-mist brimming out of the water.",
+  "variation": [
+    "collapse: a single round pit / a lobed one (a second, smaller hole bulging out of the lip) / a crown of 3-5 small holes round the main pit",
+    "way down: broken turf benches all round / a winding stair of turf arcs / sheer rock walls with turf shelves clinging to them and no way down",
+    "heart: black water alone / a turf islet with a dead tree on it / a rockfall fan of slabs half sunk / a drowned waystone standing in the water",
+    "pit: footprint 28-32 cells, offset up to 1.4 cells, mean lip radius 7-10.8, oval stretch 0.90-1.10 and turn, a three-harmonic wobbly lip, depth 12-15.5 studs, water 34-46% of the lip's radius",
+    "road: which side it bends on, entry and exit angles (exit up to 0.6 rad off opposite), 5-8 rim points, and how close it hugs the lip (1.7-2.6 cells)"
+  ],
+  "critic": {
+    "own_idea": 7,
+    "photograph": 7,
+    "topology": 5,
+    "look": 4,
+    "game_camera": 7,
+    "usable": 7,
+    "total": 6.3,
+    "best_shot": "feature-shots seed 2, down in the pit",
+    "why": "Stepped benches to black water with a stone and good mist, but it's one round pit with a satellite hole, and the sides read as terraces, not collapse.",
+    "reads_as_itself": "yes: a round pit stepping down to dark water with mist",
+    "size": "small to medium"
+  },
+  "why": "Black water below ground level with rising grave-mist, small enough to drop onto most heath.",
+  "notes": "# D, notes to its builder\n\nKeep: the stepped turf benches dropping to black water with the banded stone standing in it. \"Down in the pit\" is a good photograph with scale, and the mist set piece with its two lights is the most atmospheric of the run.\n\n1. Push the topology. Across the seeds it's one round pit, sometimes with a satellite hole and the road bending a different way. Make the twice-collapsed lobe and the crown of small holes bigger and more common, and sometimes let the road run across a narrow neck between two holes.\n2. Make the rock walls read. The sides are all regular turf terraces, and it looks like a quarry or an amphitheatre. Mix in sheer dark rock bands and broken turf overhangs on one side.\n3. Keep it small to medium. It fits open heath well at its current size. Don't grow it.\n"
+}

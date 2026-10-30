@@ -1,0 +1,851 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..6dc4cbfe 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -4,10 +4,12 @@
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
++local MoorSheepfold = require("../systems/features/MoorSheepfold")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	MoorSheepfold = MoorSheepfold,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..6f363587 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -941,4 +941,61 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- The shepherd's fold (map features, MoorSheepfold): the moor's old field-wall grey for
++-- the stones the fold was built of, a rowan in berry, nettles at the wall's shaded foot,
++-- and the bones of the flock the fold kept.
++-- A chunk of the fold's wall: a few coping stones set along the wall's line, for the
++-- rubble at its foot and the stone fallen across the gap.
++Sculpts.moor_drystone = {
++	kind = "blocks",
++	size = { 4.6, 2.6, 1.7 },
++	material = "Slate",
++	colors = { { 88, 87, 86 }, { 80, 79, 79 }, { 96, 94, 91 } },
++	maxPrims = 8,
++}
++-- The rowan that grew up through the fold's wall: a small crooked tree, paler than the
++-- moor's dead trees, its twigs carrying the berry clusters in the moor's muted oxblood.
++Sculpts.moor_rowan = {
++	kind = "tree",
++	size = { 10, 13, 10 },
++	material = "Wood",
++	colors = { { 96, 96, 92 }, { 90, 90, 86 }, { 86, 85, 82 }, { 62, 58, 52 }, { 92, 58, 56 } },
++	maxPrims = 44,
++	segments = 4,
++	branches = 9,
++	bend = 24,
++}
++-- Nettles: a low dark-green clump with a pale flower head, strewn along the wall's
++-- shaded side. Merged, so a thick band costs a part a clump.
++Sculpts.moor_nettles = {
++	kind = "tuft",
++	size = { 3.4, 3.6, 3.4 },
++	material = "Grass",
++	colors = { { 62, 74, 56 }, { 54, 66, 50 }, { 70, 80, 62 }, { 92, 84, 68 } },
++	maxPrims = 12,
++	blades = 6,
++	body = 0.5,
++	merge = 12,
++}
++-- The ram the fold lost: a sheep-sized skeleton, its horns swept back, weathered to the
++-- grey of old bone in the fold's earth.
++Sculpts.moor_ram_bones = {
++	kind = "bones",
++	size = { 9.5, 4, 4.6 },
++	material = "Limestone",
++	colors = { { 96, 95, 88 }, { 88, 87, 82 }, { 80, 80, 76 } },
++	maxPrims = 34,
++	ribs = 5,
++}
++-- The rest of the flock: small heaps of bones scattered on the fold's floor.
++Sculpts.moor_bone_heap = {
++	kind = "boulder",
++	size = { 2.8, 1.5, 2.4 },
++	material = "Limestone",
++	colors = { { 96, 95, 88 }, { 88, 87, 82 }, { 80, 80, 76 } },
++	maxPrims = 6,
++	chunks = 4,
++	tilt = 26,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..997b6bd9 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,89 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The shepherd's fold (map features, MoorSheepfold). What the flock left behind, still
++-- lifting off the stones it rubbed against: a few pale tufts of fleece drifting up out of
++-- the fold, slow soft tatters under them and a low faint haze at the wall's foot, the
++-- barrows' cold grave-light on all of it (the barrow theme, which suits the moor). Sparse
++-- and small, so the fold reads as abandoned rather than haunted by a fog.
++recipes.moor_fold_fleece = {
++	about = "Pale tufts of a lost flock's fleece drifting up off the shepherd's fold in the barrows' cold grave-light.",
++	theme = "barrow",
++	path = { kind = "worm", length = 16, step = 3, bend = 28, climb = 5, round = 2 },
++	layers = {
++		{
++			name = "tufts",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 1.2,
++				lift = 1.2,
++				toward = "up",
++				rise = 0.9,
++				life = { 4, 6 },
++				rate = 2.5,
++				size = 1.1,
++				tall = 1.4,
++				transparency = 0.45,
++				color = "core",
++				texture = "wisp",
++				lean = 14,
++				vary = 0.7,
++			},
++			motion = { kind = "sway", amplitude = 1.4, tilt = 10, span = 9, periods = { 5.3, 3.1 } },
++			priority = 1,
++		},
++		{
++			name = "tatters",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 3,
++				lift = 0.9,
++				toward = "up",
++				rise = 0.45,
++				life = { 7, 9 },
++				rate = 1.1,
++				size = 4,
++				tall = 1.1,
++				transparency = 0.8,
++				color = "body",
++				texture = "veil",
++				lean = 12,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 14, span = 12, periods = { 8.7, 5.9 } },
++			priority = 3,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 5,
++				lift = 0.35,
++				toward = "up",
++				rise = 0.25,
++				life = { 9, 12 },
++				rate = 0.5,
++				size = 9,
++				tall = 0.7,
++				transparency = 0.9,
++				color = "haze",
++				texture = "veil",
++				lean = 8,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 3, tilt = 6, span = 16, periods = { 13, 9 } },
++			priority = 2,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 9, max = 2, range = 12, brightness = 0.6, color = "body" },
++			motion = { kind = "pulse", period = 5.2, depth = 0.35 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..fee45996 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -204,6 +204,11 @@ local rows: { [string]: Row } = {
+ 		"A fallen outer gate of the Labyrinth gate's brick, one side of its lintel down.",
+ 		MOOR
+ 	),
++	["sculpt:moor_drystone"] = row("A chunk of dry-stone wall coping, fallen at the shepherd's fold's foot.", MOOR),
++	["sculpt:moor_rowan"] = row("A small rowan grown up through the shepherd's fold's wall, its twigs in berry.", MOOR),
++	["sculpt:moor_nettles"] = row("A clump of nettles at the shepherd's fold's shaded wall foot.", MOOR),
++	["sculpt:moor_ram_bones"] = row("A ram's skeleton left on the shepherd's fold's floor.", MOOR),
++	["sculpt:moor_bone_heap"] = row("A heap of small bones scattered on the shepherd's fold's floor.", MOOR),
+ 	-- data/RunRecipes
+ 	["run:moor_field_wall"] = row("A dry-stone field wall run along the moor's old field edges.", MOOR),
+ 	["run:moor_retaining_wall"] = row(
+diff --git a/src/shared/systems/features/MoorSheepfold.luau b/src/shared/systems/features/MoorSheepfold.luau
+new file mode 100644
+index 00000000..c3bed67e
+--- /dev/null
++++ b/src/shared/systems/features/MoorSheepfold.luau
+@@ -0,0 +1,652 @@
++--!strict
++-- A map feature for the moor (docs/guides/map-features.md): a shepherd's fold. A round
++-- dry-stone wall with one gap, the flock's floor trodden bare inside it, the bones of the
++-- flock left on that floor, a rowan grown up through the wall, and nettles thick at the
++-- wall's shaded foot where the flock sheltered. The moor has graves, barrows and standing
++-- stones, places of the dead; it has no place anyone kept animals in, and the fold keeps
++-- the trace of a lived place without a lamp: the fleece still lifts off the stones.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first, then
++-- look). The first draws choose the structure, the rest only dress it:
++--   1. the fold's form: a round ring, an oval stretched along the track, or a ring pulled
++--      straight on the side that faces the road;
++--   2. its pen: none, a lambing pen walled off across the shaded side, or a small round
++--      pen standing inside the fold against that wall;
++--   3. its wall: one dry-stone course, or a rubble-cored bank two cells thick;
++--   4. its floor: flush with the heath, sunk two studs into a hollow, or raised on a knoll;
++--   5. the rock outcrops it was built among: none to three, on the shaded heath;
++--   6. then the size, the fold's place in the footprint, the gap's side and width, the road
++--      that bows round it, the rowan's place in the wall, the nettles' arc and the bones.
++-- Everything stands on the moor's own materials and its field-wall grey (RunRecipes), so
++-- the fold reads as the same work as the old walls along the heath.
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- Radians between two angles, 0..pi.
++local function apart(a: number, b: number): number
++	return math.abs((a - b + math.pi) % (2 * math.pi) - math.pi)
++end
++
++local FORMS = { "ring", "oval", "straight" }
++local PENS = { "none", "chord", "hoop" }
++local LEVELS = { 0, -2, 2 }
++local BONES = { "heart", "shadow", "gap" }
++-- The moor's old field-wall grey (RunRecipes.moor_field_wall), laid in the materials the
++-- moor's tileset leaves free for a feature: Rock for the stone, Sand for the trodden floor
++-- (a shade browner and darker than the heath), Cobblestone for the gap's worn sill.
++local STONE = { material = "Rock", color = { 86, 85, 84 } }
++local EARTH = { material = "Sand", color = { 66, 60, 52 } }
++local FLAG = { material = "Cobblestone", color = { 94, 92, 88 } }
++
++local feature: MapFeature.Feature = {
++	name = "MoorSheepfold",
++	about = "A shepherd's fold: one round dry-stone wall with a single gap, bones on its trodden floor, a rowan grown through the wall and nettles at its shaded foot.",
++	tileset = "moor",
++	scale = "medium",
++	role = "filler",
++	mood = { "abandoned", "husbandry", "overgrown", "haunted" },
++	cells = {
++		-- The wall's own stone. Its coping is the boulder scatter: FeatureDress lifts a cell
++		-- kind's props by the cell's lift, so they stand on the wall's top as rough stones.
++		wall = {
++			ground = STONE,
++			clear = true,
++			props = {
++				{ sculpt = "moor_boulder", every = 2.2, scale = { 0.3, 0.5 }, sink = 0.45 },
++				{ sculpt = "moor_heather", every = 11, scale = { 0.4, 0.6 }, sink = 0.1 },
++			},
++		},
++		-- The low bank of stones that has fallen out of the wall's foot.
++		rubble = {
++			ground = STONE,
++			clear = true,
++			props = { { sculpt = "moor_boulder", every = 1.5, scale = { 0.4, 0.7 }, sink = 0.55 } },
++		},
++		-- The floor the flock trod bare, and the track it wore out to the road.
++		floor = {
++			ground = EARTH,
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "moor_bone_heap", every = 7, scale = { 0.55, 0.95 }, sink = 0.15 },
++				{ sculpt = "moor_boulder", every = 17, scale = { 0.3, 0.5 }, sink = 0.4 },
++			},
++		},
++		-- Nettles grow on the wall's shaded side, in the soil the flock enriched.
++		nettles = {
++			ground = EARTH,
++			lift = 0.2,
++			clear = true,
++			props = { { sculpt = "moor_nettles", every = 1, scale = { 0.8, 1.3 }, sink = 0.2 } },
++		},
++		-- Where the flock died: the ram's skeleton and the heaps of smaller bones.
++		bones = {
++			ground = EARTH,
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "moor_bone_heap", every = 1.2, scale = { 0.6, 1 }, sink = 0.1 },
++				{ sculpt = "moor_nettles", every = 6, scale = { 0.55, 0.85 }, sink = 0.2 },
++			},
++		},
++		-- The sill the flock tramped through the gap: old flat stones.
++		threshold = { ground = FLAG, lift = 0.2, clear = true },
++		-- The wall where the rowan split it: the same stone, broken down to a stump.
++		root = {
++			ground = STONE,
++			clear = true,
++			props = { { sculpt = "moor_boulder", every = 1, scale = { 0.4, 0.7 }, sink = 0.5 } },
++		},
++		-- The low rock outcrops the fold was built among, out on the heath.
++		outcrop = {
++			ground = STONE,
++			clear = true,
++			props = { { sculpt = "moor_boulder", every = 1.4, scale = { 0.6, 1.1 }, sink = 0.55 } },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-5: the structure, first.
++		local form = FORMS[whole(rng, 1, #FORMS)]
++		local pen = PENS[whole(rng, 1, #PENS)]
++		local thick = whole(rng, 1, 2)
++		local floorLevel = LEVELS[whole(rng, 1, #LEVELS)]
++		local boneMode = BONES[whole(rng, 1, #BONES)]
++		local outcrops = whole(rng, 0, 3)
++
++		-- 6: the footprint, the fold's place in it and the road that bows round it.
++		local w, d = whole(rng, 22, 28), whole(rng, 22, 28)
++		local halfW, halfD = (w + 1) / 2, (d + 1) / 2
++		local roadAt = between(rng, 0, 2 * math.pi)
++		local nx, nz = math.cos(roadAt), math.sin(roadAt)
++		local stretch = if form == "oval" then between(rng, 1.2, 1.42) else 1
++		local room = math.min(halfW, halfD) - 0.5
++		local margin = between(rng, 2.2, 3.6)
++		-- The wall's farthest reach from the fold's centre is R * stretch; the scale draws the
++		-- ring in or out across the heath, so no two seeds put the wall in the same place.
++		local R = (room - thick - margin) * between(rng, 0.92, 1.02) / stretch
++		local away = between(rng, 0, math.max(0, math.min(2.2, margin - 1.2)))
++		local cx, cz = halfW - nx * away, halfD - nz * away
++		local Rmax = R * stretch
++
++		local function rayT(a: number): number
++			local c, s = math.cos(a), math.sin(a)
++			local tx = if c > 1e-6 then (w + 0.5 - cx) / c elseif c < -1e-6 then (0.5 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d + 0.5 - cz) / s elseif s < -1e-6 then (0.5 - cz) / s else math.huge
++			return math.min(tx, tz)
++		end
++		local function border(a: number): Point
++			local c, s = math.cos(a), math.sin(a)
++			local tx = if c > 1e-6 then (w + 0.5 - cx) / c elseif c < -1e-6 then (0.5 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d + 0.5 - cz) / s elseif s < -1e-6 then (0.5 - cz) / s else math.huge
++			local t = math.min(tx, tz)
++			local x = math.clamp(math.floor(cx + c * t + 0.5), 1, w)
++			local z = math.clamp(math.floor(cz + s * t + 0.5), 1, d)
++			if tx <= tz then
++				x = if c > 0 then w else 1
++			else
++				z = if s > 0 then d else 1
++			end
++			return { x = x, z = z }
++		end
++
++		local dRoad = math.min(Rmax + thick + between(rng, 2.1, 3.4), rayT(roadAt) - 1.3)
++		local spread = between(rng, 0.55, 0.95)
++		local arcEnd = spread + between(rng, 0.2, 0.5)
++
++		-- The gap, always on the road's side.
++		local flat = if form == "straight" then R * between(rng, 0.55, 0.72) else 0
++		local gapW = between(rng, 1.1, 1.7) -- half the gap's width, cells
++		local gapOut = if form == "straight" then flat else R
++		-- The worn sill sits a step between the heath and a floor that is sunk or raised.
++		local sillLevel = floorLevel / 2
++
++		-- The shaded side, away from the road's lamps: the rowan, the nettles, the pen.
++		local shadowAt = roadAt + math.pi + between(rng, -0.45, 0.45)
++		local rowanAt = shadowAt + between(rng, -0.85, 0.85)
++		local rowanHalf = (between(rng, 0.7, 1.1) + 0.3) / R
++		local nettleAt = shadowAt + between(rng, -0.35, 0.35)
++		local nettleHalf = between(rng, 0.7, 1.15)
++		local penAt = shadowAt + between(rng, -0.35, 0.35)
++		local fallAt = shadowAt + between(rng, -0.7, 0.7)
++		local fallHalf = between(rng, 0.25, 0.55)
++
++		-- The outcrops it was built among, on the shaded heath clear of the road and the gap.
++		local clusters: { { x: number, z: number, r: number, top: number, phase: number } } = {}
++		for _ = 1, outcrops do
++			for _ = 1, 3 do
++				local a = shadowAt + between(rng, -0.95, 0.95)
++				local rr = between(rng, 0.9, 1.7)
++				local dist = Rmax + thick + rr * 1.3 + between(rng, 0.4, 1.0)
++				local fits = dist + rr * 1.3 <= rayT(a) - 1
++				local clear = true
++				local px, pz = cx + math.cos(a) * dist, cz + math.sin(a) * dist
++				for _, c in clusters do
++					clear = clear and (px - c.x) ^ 2 + (pz - c.z) ^ 2 > (rr + c.r + 1.1) ^ 2
++				end
++				if fits and clear then
++					table.insert(clusters, {
++						x = px,
++						z = pz,
++						r = rr,
++						top = between(rng, 1.4, 2.7),
++						phase = between(rng, 0, 2 * math.pi),
++					})
++					break
++				end
++			end
++		end
++
++		-- 7: then the wall's height and the wear on it.
++		local wallTop = if floorLevel < 0 then between(rng, 2.5, 3.5) else floorLevel + between(rng, 2.5, 3.5)
++		local rootTop = wallTop - between(rng, 1.1, 1.6)
++		local fallTop = wallTop - between(rng, 0.9, 1.4)
++		local penTop = wallTop - between(rng, 0.6, 1.1)
++		local rubTop = wallTop - between(rng, 1.3, 1.9)
++		local wallPhase = between(rng, 0, 2 * math.pi)
++
++		local walk, heights = table.create(w * d, true), table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		-- Distance out from the centre in the fold's own stretched cells, and the
++		-- coordinates along its road axis (p) and across it (q).
++		local axis = roadAt + (if form == "oval" then math.pi / 2 else 0)
++		local ca, sa = math.cos(axis), math.sin(axis)
++		local function metric(dx: number, dz: number): (number, number, number)
++			local p = dx * ca + dz * sa
++			local q = -dx * sa + dz * ca
++			return math.sqrt((p / stretch) ^ 2 + q * q), p, q
++		end
++		local function inFoldAt(x: number, z: number): boolean
++			local u, p = metric(x - cx, z - cz)
++			return u < R and not (form == "straight" and p > flat)
++		end
++
++		-- The ring: floor inside, wall at its lip, the rowan's stretch and the fallen stretch
++		-- left low. The gap and the outcrops are cut after it, so neither can miss a cell.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local dx, dz = x - cx, z - cz
++				local a = math.atan2(dz, dx)
++				local u, p = metric(dx, dz)
++				if inFoldAt(x, z) then
++					heights[i] = floorLevel
++					local edge = u >= R - thick or (form == "straight" and p > flat - 1)
++					if edge then
++						walk[i] = false
++						if apart(a, rowanAt) < rowanHalf then
++							kinds[i] = "root"
++							lifts[i] = rootTop - floorLevel + between(rng, -0.08, 0.08)
++						elseif apart(a, fallAt) < fallHalf then
++							kinds[i] = "rubble"
++							lifts[i] = fallTop - floorLevel + between(rng, -0.2, 0.2)
++						elseif thick == 2 and u >= R - 1 then
++							kinds[i] = "rubble"
++							lifts[i] = rubTop - floorLevel + between(rng, -0.15, 0.2)
++						else
++							kinds[i] = "wall"
++							lifts[i] = wallTop
++								- floorLevel
++								+ 0.25 * math.sin(a * 2.7 + wallPhase)
++								+ between(rng, -0.18, 0.2)
++						end
++					else
++						kinds[i] = "floor"
++					end
++				end
++			end
++		end
++
++		-- The one gap, cut wide through the wall on the road's side, with a worn sill a cell
++		-- or so beyond it either way so the flock's way never pinches.
++		for z = 1, d do
++			for x = 1, w do
++				local dx, dz = x - cx, z - cz
++				local pz = dx * nx + dz * nz
++				local qz = -dx * nz + dz * nx
++				if pz > 0 and math.abs(qz) < gapW then
++					local i = at(x, z)
++					local u = metric(dx, dz)
++					local open = if form == "straight"
++						then pz > flat - 1.2 and pz < flat + 1
++						else u > R - thick - 1.6 and u < R + 1.2
++					if open then
++						walk[i] = true
++						kinds[i] = "threshold"
++						lifts[i] = nil
++						heights[i] = sillLevel
++					end
++				end
++			end
++		end
++
++		-- The outcrops: low rock the fold's wall was built against, on the shaded heath.
++		for _, c in clusters do
++			for z = 1, d do
++				for x = 1, w do
++					local dx, dz = x - c.x, z - c.z
++					local ur = math.sqrt(dx * dx + dz * dz)
++					if ur < c.r * (1 + 0.22 * math.sin(math.atan2(dz, dx) * 3 + c.phase)) then
++						local i = at(x, z)
++						if walk[i] then
++							walk[i] = false
++							kinds[i] = "outcrop"
++							heights[i] = 0
++							lifts[i] = math.max(0.6, c.top + between(rng, -0.25, 0.25))
++						end
++					end
++				end
++			end
++		end
++
++		-- The pen: a lambing pen walled off across the shaded side, or a round pen standing
++		-- inside the fold. Either is entered by its own gap, so the fold still has only one
++		-- way in from outside.
++		if pen == "chord" then
++			local cp, sp = math.cos(penAt), math.sin(penAt)
++			local cut = R * between(rng, 0.5, 0.62)
++			local penGap = between(rng, 1.1, 1.7)
++			for z = 1, d do
++				for x = 1, w do
++					local i = at(x, z)
++					if walk[i] and kinds[i] == "floor" then
++						local dx, dz = x - cx, z - cz
++						local u = metric(dx, dz)
++						local pz = dx * cp + dz * sp
++						local qz = -dx * sp + dz * cp
++						if u < R - thick and pz > cut - 1 and pz <= cut and math.abs(qz) > penGap then
++							walk[i] = false
++							kinds[i] = "wall"
++							lifts[i] = penTop - floorLevel + between(rng, -0.15, 0.15)
++						end
++					end
++				end
++			end
++		elseif pen == "hoop" then
++			-- Kept three cells clear of the wall, so the way round it never pinches to a sliver.
++			local rp = math.min(between(rng, 2.5, 3.3), R - thick - 3.6)
++			if rp >= 2.5 then
++				local dist = R - thick - rp - 2.6
++				local pcx, pcz = cx + math.cos(penAt) * dist, cz + math.sin(penAt) * dist
++				local openAt = math.atan2(cz - pcz, cx - pcx)
++				local openHalf = (between(rng, 0.9, 1.3) + 0.35) / rp
++				for z = 1, d do
++					for x = 1, w do
++						local i = at(x, z)
++						if walk[i] and kinds[i] == "floor" then
++							local px, pz = x - pcx, z - pcz
++							local ur = math.sqrt(px * px + pz * pz)
++							if ur >= rp and ur < rp + 1 and apart(math.atan2(pz, px), openAt) > openHalf then
++								walk[i] = false
++								kinds[i] = "wall"
++								lifts[i] = penTop - floorLevel + between(rng, -0.15, 0.15)
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- What the wall's raster left enclosed by mistake: a pocket is filled with rubble, and
++		-- a pen whose gap fell between two cells has its way in cut here.
++		local function repair()
++			local g = Grid.new(w, d, Grid.WALL)
++			for i, ok in walk do
++				g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++			end
++			local regions = Grid.regions(g)
++			if #regions < 2 then
++				return
++			end
++			table.sort(regions, function(a: { number }, b: { number }): boolean
++				return #a > #b
++			end)
++			local main: { [number]: boolean } = {}
++			for _, i in regions[1] do
++				main[i] = true
++			end
++			for k = 2, #regions do
++				local region = regions[k]
++				if #region <= 3 then
++					for _, i in region do
++						walk[i] = false
++						kinds[i] = "rubble"
++						lifts[i] = math.max(0.6, rubTop - heights[i])
++					end
++				else
++					local fx, fz, best = cx, cz, math.huge
++					for _, i in region do
++						local x, z = (i - 1) % w + 1, (i - 1) // w + 1
++						local d2 = (x - cx) ^ 2 + (z - cz) ^ 2
++						if d2 < best then
++							best, fx, fz = d2, x, z
++						end
++					end
++					local n = math.ceil(math.sqrt(best)) + 2
++					for s = 0, n do
++						local x = math.floor(fx + (cx - fx) * s / n + 0.5)
++						local z = math.floor(fz + (cz - fz) * s / n + 0.5)
++						local i = at(x, z)
++						if main[i] then
++							break
++						end
++						walk[i] = true
++						kinds[i] = "floor"
++						heights[i] = if inFoldAt(x, z) then floorLevel else 0
++						lifts[i] = nil
++					end
++				end
++			end
++		end
++		repair()
++
++		-- Nettles: a band at the wall's foot inside the fold and on the heath outside, all
++		-- along the shaded arc where the flock stood out of the wind.
++		local nettleIn = between(rng, 1.2, 2.2)
++		local nettleOut = between(rng, 0.9, 1.7)
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] then
++					local dx, dz = x - cx, z - cz
++					if apart(math.atan2(dz, dx), nettleAt) < nettleHalf then
++						local u = metric(dx, dz)
++						if kinds[i] == "floor" and u < R - thick and u > R - thick - nettleIn then
++							kinds[i] = "nettles"
++						elseif kinds[i] == nil and u >= R and u < R + nettleOut then
++							kinds[i] = "nettles"
++							heights[i] = 0
++						end
++					end
++				end
++			end
++		end
++
++		-- The bones: the ram's skeleton and the heaps around it, on plain floor inside the fold.
++		local function floorCell(nearX: number, nearZ: number): (number?, number?)
++			for r = 0, 6 do
++				for k = 0, 7 do
++					local a = k * math.pi / 4
++					local x = math.floor(nearX + math.cos(a) * r + 0.5)
++					local z = math.floor(nearZ + math.sin(a) * r + 0.5)
++					if x >= 1 and x <= w and z >= 1 and z <= d then
++						local i = at(x, z)
++						if walk[i] and kinds[i] == "floor" then
++							return x, z
++						end
++					end
++				end
++			end
++			return nil, nil
++		end
++		local wantX, wantZ
++		if boneMode == "heart" then
++			wantX, wantZ = cx + between(rng, -1.2, 1.2), cz + between(rng, -1.2, 1.2)
++		elseif boneMode == "shadow" then
++			local r = R * between(rng, 0.45, 0.65)
++			wantX, wantZ = cx + math.cos(shadowAt) * r, cz + math.sin(shadowAt) * r
++		else
++			local r = R * between(rng, 0.35, 0.5)
++			wantX, wantZ = cx + nx * r, cz + nz * r
++		end
++		local boneX, boneZ = floorCell(wantX, wantZ)
++		local marks: { FeatureDress.Landmark } = {}
++		if boneX and boneZ then
++			local br = between(rng, 1.3, 2)
++			for z = 1, d do
++				for x = 1, w do
++					local i = at(x, z)
++					if walk[i] and (kinds[i] == "floor" or kinds[i] == "nettles") then
++						if (x - boneX) ^ 2 + (z - boneZ) ^ 2 <= br * br then
++							kinds[i] = "bones"
++						end
++					end
++				end
++			end
++			table.insert(marks, {
++				sculpt = "moor_ram_bones",
++				x = boneX,
++				z = boneZ,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.9, 1.15),
++				sink = 0.15,
++			})
++		end
++
++		-- The track the flock wore from the gap out to the road.
++		local trackFrom = gapOut + 0.6
++		local trackTo = dRoad - 1.2
++		local steps = math.max(2, math.ceil((trackTo - trackFrom) / 0.4))
++		for s = 1, steps do
++			local t = (s - 0.5) / steps
++			local along = trackFrom + (trackTo - trackFrom) * t
++			local x, z = math.floor(cx + nx * along + 0.5), math.floor(cz + nz * along + 0.5)
++			if x >= 1 and x <= w and z >= 1 and z <= d then
++				local i = at(x, z)
++				if walk[i] and kinds[i] == nil then
++					kinds[i] = "floor"
++					heights[i] = 0
++				end
++			end
++		end
++
++		-- The rowan grown up through the wall, the stones it shouldered out, and the dry-stone
++		-- rubble at the gap's sill and along the wall's foot.
++		table.insert(marks, {
++			sculpt = "moor_rowan",
++			x = cx + math.cos(rowanAt) * (R - thick / 2),
++			z = cz + math.sin(rowanAt) * (R - thick / 2),
++			yaw = between(rng, 0, 360),
++			scale = between(rng, 0.85, 1.15),
++			sink = -(rootTop - floorLevel),
++			solid = true,
++		})
++		for _ = 1, whole(rng, 3, 5) do
++			local a = rowanAt + between(rng, -0.5, 0.5)
++			local inward = rng:NextNumber() < 0.5
++			local r = if inward then R - thick - between(rng, 0.4, 1.6) else R + between(rng, 0.4, 1.2)
++			table.insert(marks, {
++				sculpt = "moor_boulder",
++				x = cx + math.cos(a) * r,
++				z = cz + math.sin(a) * r,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.5, 0.9),
++				sink = 0.25,
++			})
++		end
++		table.insert(marks, {
++			sculpt = "moor_drystone",
++			x = cx + nx * (gapOut + 0.5),
++			z = cz + nz * (gapOut + 0.5),
++			yaw = between(rng, 0, 360),
++			scale = between(rng, 0.7, 0.9),
++			sink = 0.35,
++		})
++		for _ = 1, whole(rng, 3, 5) do
++			local a = nettleAt + between(rng, -0.6, 0.6)
++			local r = R + between(rng, 0.3, 1)
++			table.insert(marks, {
++				sculpt = "moor_drystone",
++				x = cx + math.cos(a) * r,
++				z = cz + math.sin(a) * r,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.55, 0.85),
++				sink = 0.3,
++			})
++		end
++		-- Coping stones shaken out of the wall lie where they fell, on the floor.
++		for _ = 1, whole(rng, 2, 4) do
++			local a = between(rng, 0, 2 * math.pi)
++			local r = R * between(rng, 0.25, 0.7)
++			local x, z = cx + math.cos(a) * r, cz + math.sin(a) * r
++			local px, pz = math.floor(x + 0.5), math.floor(z + 0.5)
++			if px >= 1 and px <= w and pz >= 1 and pz <= d and walk[at(px, pz)] then
++				table.insert(marks, {
++					sculpt = "moor_drystone",
++					x = x,
++					z = z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.45, 0.7),
++					sink = 0.35,
++				})
++			end
++		end
++
++		-- The fleece, drifting off the stones the flock rubbed against and out through the gap.
++		local fleR = R * between(rng, 0.3, 0.55)
++		local effects: { FeatureDress.Effect } = {
++			{
++				recipe = "moor_fold_fleece",
++				x = cx + math.cos(shadowAt) * fleR,
++				z = cz + math.sin(shadowAt) * fleR,
++				lift = 0.5,
++				seed = whole(rng, 1, 500),
++			},
++		}
++
++		-- The road: in off the heath, bowed round the fold's road side at a constant distance,
++		-- and out the other way.
++		local function roadPoint(a: number, dist: number): Point
++			return { x = cx + math.cos(a) * dist, z = cz + math.sin(a) * dist }
++		end
++		local road: { Point } = {
++			border(roadAt - arcEnd),
++			roadPoint(roadAt - spread, dRoad),
++			roadPoint(roadAt, dRoad),
++			roadPoint(roadAt + spread, dRoad),
++			border(roadAt + arcEnd),
++		}
++		-- Every road point stays on walkable ground; the fold keeps clear of the road's way.
++		for _, p in road do
++			for _ = 1, 6 do
++				local px, pz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++				if px >= 1 and px <= w and pz >= 1 and pz <= d and walk[at(px, pz)] then
++					break
++				end
++				p.x += (cx + nx * dRoad - p.x) * 0.2
++				p.z += (cz + nz * dRoad - p.z) * 0.2
++			end
++		end
++
++		-- The photographs: stood in the gap with the rowan at the far wall, and a high
++		-- three-quarter from beyond the shaded wall over the bones.
++		local heart = if boneX and boneZ then { x = boneX, z = boneZ } else { x = cx, z = cz }
++		local side = between(rng, -1.8, 1.8)
++		local camIn = between(rng, 1, 2.5)
++		local rowanCamAt = rowanAt + between(rng, -0.4, 0.4)
++		local rowanDist = R + thick + between(rng, 3, 6)
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "inside the fold at the rowan",
++					from = {
++						x = cx + nx * (gapOut - camIn) - nz * side,
++						z = cz + nz * (gapOut - camIn) + nx * side,
++						lift = between(rng, 5, 6.5),
++					},
++					to = {
++						x = cx + math.cos(rowanAt) * (R - thick / 2),
++						z = cz + math.sin(rowanAt) * (R - thick / 2),
++						lift = 2.5,
++					},
++					fov = 64,
++				},
++				{
++					name = "over the wall at the rowan",
++					from = {
++						x = cx + math.cos(rowanCamAt) * rowanDist,
++						z = cz + math.sin(rowanCamAt) * rowanDist,
++						lift = between(rng, 12, 16),
++					},
++					to = { x = heart.x, z = heart.z, lift = 1.5 },
++					fov = 62,
++				},
++			},
++		}
++	end,
++}
++
++return feature
