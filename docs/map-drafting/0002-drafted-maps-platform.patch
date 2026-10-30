@@ -139,7 +139,7 @@ index 00000000..b9f89061
 +return table.freeze(DraftedMaps)
 diff --git a/src/shared/systems/DraftedMap.luau b/src/shared/systems/DraftedMap.luau
 new file mode 100644
-index 00000000..4a3bcf91
+index 00000000..800e9bd4
 --- /dev/null
 +++ b/src/shared/systems/DraftedMap.luau
 @@ -0,0 +1,204 @@
@@ -230,10 +230,10 @@ index 00000000..4a3bcf91
 +	if regions ~= 1 then
 +		add(`{regions} separate walkable regions; everything walkable must join up (Grid.keepLargestRegion)`)
 +	end
-+	for _, p in { { "start", map.start }, { "exit", map.exit } } do
-+		local c = p[2] :: Grid.CellCoord
++	local ends: { [string]: Grid.CellCoord } = { start = map.start, exit = map.exit }
++	for label, c in ends do
 +		if not Grid.inBounds(g, c.x, c.z) or map.kinds[Grid.index(g, c.x, c.z)] ~= "road" then
-+			add(`{p[1]} at {c.x},{c.z} is not on a road cell`)
++			add(`{label} at {c.x},{c.z} is not on a road cell`)
 +		end
 +	end
 +	if #out == 0 then
@@ -316,7 +316,7 @@ index 00000000..4a3bcf91
 +	rng: Random
 +): MapDress.Dressing
 +	-- Landmarks first, so the dressing's quiet props keep clear of them.
-+	local marks = if draft.landmarks then draft.landmarks(map, rng) else {}
++	local marks: { Landmark } = if draft.landmarks then draft.landmarks(map, rng) else {}
 +	local keepOut: { MapDress.KeepOut } = {}
 +	for _, m in marks do
 +		local recipe = Sculpts[m.sculpt]
