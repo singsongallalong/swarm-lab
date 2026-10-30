@@ -14,9 +14,8 @@ max_turns = 130
 tools = ["tools/explain.luau"]
 rules = ["docs/guides/set-pieces.md"]
 
-[platform]
-needs = "docs/kit-domain.marker"
-patches = ["docs/kit/0001-domain-theme-and-limits.patch"]
+# The Domain's theme and colour limits were a trial patch (docs/kit/0001) for domain-kit-1;
+# they merged into the game as bible B12 (PR #933), so the job needs no platform now.
 
 [files."src/shared/data/Sculpts.luau"]
 mode = "add_rows"
