@@ -359,9 +359,20 @@ def resume(run_dir: Path, turns: int = 30, concurrency: int = 4) -> Path:
             and not (run_dir / "gens" / g["gid"] / ".swarm" / "manifest.json").exists()]
     log = lambda msg: print(f"[{meta['run']}] {msg}", flush=True)  # noqa: E731
     log(f"resuming {len(todo)}: " + ", ".join(g["gid"] for g in todo) + f" (up to {turns} more turns each)")
+    # A generator the run never started (its provider's budget ran out first) starts now,
+    # from the beginning, with the job's full turns and a fresh budget.
+    budget = Budget(provs)
+    j = config.job(t, meta["job"])
+
+    def go(g: dict) -> dict:
+        prior = recs.get(g["gid"], {})
+        wt = run_dir / "gens" / g["gid"]
+        if str(prior.get("status", "")).startswith("skipped"):
+            return run_one(t, provs[g["provider"]], wt, run_dir / "logs", g["gid"], budget, False, j.data.get("max_turns"))
+        return resume_one(t, provs[g["provider"]], wt, run_dir / "logs", g["gid"], prior, turns)
+
     with cf.ThreadPoolExecutor(max_workers=max(1, concurrency)) as pool:
-        futs = {pool.submit(resume_one, t, provs[g["provider"]], run_dir / "gens" / g["gid"], run_dir / "logs",
-                            g["gid"], recs.get(g["gid"], {}), turns): g for g in todo}
+        futs = {pool.submit(go, g): g for g in todo}
         for f in cf.as_completed(futs):
             rec = f.result()
             recs[rec["gid"]] = rec
