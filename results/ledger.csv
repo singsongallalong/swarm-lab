@@ -15,3 +15,4 @@ palettes-1,Palette,deepseek,deepseek-flash[1m],12,12,8,0,6,21396576,1.3594,301.5
 relics-1,Relics,deepseek,deepseek-flash[1m],4,4,4,0,0,6425251,0.3479,313.9,,
 relics-1,Relics,deepseek-pro,deepseek-v4-pro[1m],4,4,4,0,0,2852803,0.8562,352.1,,
 rimeholt-features,Rimeholt,deepseek,deepseek-flash[1m],12,11,10,0,6,295720537,4.6964,1382.6,src/shared/data/Sculpts.luau: changed text outside its rows,
+task-hash-spec,HashSpec,deepseek,deepseek-flash[1m],3,3,0,0,0,1118768,0.116,139.6,"tests/systems/Hash.spec.luau: requires '../../src/shared/systems/Hash', which isn't on the job's list",
