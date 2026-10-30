@@ -296,6 +296,12 @@ def resume_one(t, p, wt: Path, log_dir: Path, gid: str, prior: dict, turns: int)
         session = json.loads(out_path.read_text().strip().splitlines()[-1]).get("session_id")
     except (OSError, json.JSONDecodeError, IndexError):
         session = None
+    if not session:
+        # A generator killed at the wall-time cap printed no result, but its transcript
+        # is in the shared config dir, named by session; take the newest for its worktree.
+        proj = CONFIG_DIR / "projects" / str(wt.resolve()).replace("/", "-").replace(".", "-")
+        logs = sorted(proj.glob("*.jsonl"), key=lambda f: f.stat().st_mtime)
+        session = logs[-1].stem if logs else None
     rec = dict(prior)
     if not session:
         rec["status"] = "not resumed: no session recorded"

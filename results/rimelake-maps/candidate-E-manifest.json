@@ -1,0 +1,15 @@
+{
+  "skill": "Rimelake",
+  "look": "RimelakeBay",
+  "rows_added": [],
+  "intent": "A horseshoe of old snow and granite round a broad bay of ice that runs off the map's east edge into mist, with the shore road curving from the southern arrival past the western barrows and ruins to the runestone ring out on a headland that points over the ice.",
+  "renders": [
+    ".swarm/out/map-whole-r9.png",
+    ".swarm/out/map-landmark-r9.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A lake or ice-bed ground kind (or a way to keep quiet props and ground mist off a bay), so a large frozen lake isn't charged the emitter cost of open heath: mist scales with every heath cell, ice sheets or not.",
+    "An ice sheet sculpt built to tile (one colour, square or seamlessly overlapping edge), so a lake laid from rimeholt_ice reads as one sheet rather than overlapping pans."
+  ]
+}

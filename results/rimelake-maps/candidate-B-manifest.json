@@ -1,0 +1,15 @@
+{
+  "skill": "Rimelake",
+  "look": "RimelakeTarns",
+  "rows_added": [],
+  "intent": "A snowbound highland bowl round a lake that never thaws: the road drops in off the north edge past three tarns stepping down the shoulder, then turns along the lake's west shore to the exit, with barrows on the high ground and the runestone ring on the shore where the road meets the ice, so from above the map reads as one wide pale lake held in a ring of dark high ground.",
+  "renders": [
+    ".swarm/out/map-whole-final.png",
+    ".swarm/out/map-landmark-final.png"
+  ],
+  "revisions": 1,
+  "requests": [
+    "A square ice-sheet prop: rimeholt_ice is a lobed pool, so a lake has to be laid from overlapping sheets; a flush-edged sheet (or a lake-surface set piece) would tile as one sheet cleanly.",
+    "A way to keep the dressing's ordinary scatter off drafted-map landmarks: the keep-out currently applies only to quiet prop sets, so tufts and boulders stand on the lake ice."
+  ]
+}

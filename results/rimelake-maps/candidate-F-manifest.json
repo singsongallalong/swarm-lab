@@ -1,0 +1,12 @@
+{
+  "skill": "Rimelake",
+  "look": "RimelakeRound",
+  "rows_added": [],
+  "intent": "A round highland of old snow whose middle is one great frozen lake, crossed by the hill road between two shores, with a runestone ring at the ice and barrows spaced on the outer high ground.",
+  "renders": [".swarm/out/map-whole-r3.png", ".swarm/out/map-landmark-r3.png"],
+  "revisions": 2,
+  "requests": [
+    "A walkable ice or water cell kind, so a frozen lake can be its own ground instead of heath hidden under a sheet of ice landmarks (mist and props then need no keep-out over it).",
+    "A way for landmarks(map, rng) to read the geometry the map was generated with, so the shore of a generated lake can be found without carrying it as an extra field on the map."
+  ]
+}

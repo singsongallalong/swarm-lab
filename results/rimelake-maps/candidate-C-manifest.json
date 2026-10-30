@@ -1,0 +1,12 @@
+{
+  "skill": "Rimelake",
+  "look": "RimelakeIsles",
+  "rows_added": ["rimelake_ice"],
+  "intent": "A round highland of old snow round one wide frozen lake, its road crossing the ice past a ringed granite isle with rocky islets strewn through the sheet and barrows on the shore.",
+  "renders": [".swarm/out/map-whole-final.png", ".swarm/out/map-landmark-final.png"],
+  "revisions": 7,
+  "requests": [
+    "A flat, full-disc ice sculpt: the pool sculpt's three lobes leave notches when sheets are tiled into one lake.",
+    "A keep-out that non-quiet dressing sets respect, as quiet sets do: Rimeholt's boulders scatter over the lake's ice because only quiet props use DraftedMap.dress's keepOut."
+  ]
+}

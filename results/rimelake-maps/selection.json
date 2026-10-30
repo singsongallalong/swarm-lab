@@ -1,0 +1,14 @@
+{
+  "picked": ["C", "B", "F"],
+  "reasons": {
+    "C": "The lake of islands: the road crosses the frozen lake itself past islets and a ringed granite isle, the one draft where you walk on the ice rather than round it, and the crossing's line changes with the seed (straight, a wave, an S).",
+    "B": "The high tarns: a long switchback road climbs round the rim before dropping to the tarns, the most journey-like shape and the strongest silhouette from above.",
+    "F": "The round lake: the plainest, but the clearest read of 'a frozen lake' at eye level, wide open ice to the far shore."
+  },
+  "fixes": {
+    "C": "Boulders scatter over the ice because only quiet props respect DraftedMap's keepOut; the lake's ice sheets leave notches where the pool sculpt's lobes meet (both requests in its manifest).",
+    "B": "Seed 2's eye-level view is blocked by a slab beside the road; keep the road's edge clear.",
+    "F": "Its three seeds are nearly the same map."
+  },
+  "notes": "First pass 1 of 6: three hit the 25-minute wall-time cap, one max turns, one 743 lines. With the cap at 40 minutes, the line cap at 800 and resume taking the session from the transcript when the generator printed none, all six survived. The A barrow shore and D fjord look tall slab-like standing stones too close to the road at eye level."
+}

@@ -1,0 +1,15 @@
+{
+  "skill": "Rimelake",
+  "look": "RimelakeBarrowShore",
+  "rows_added": [],
+  "intent": "A snow highland rings one wide sheet of old ice; the road comes in at the west rim, wraps the lake's west and south shore past the runestone ring at the ice's edge, and leaves by the south rim, with the barrow field, its graveyard and its ruin in the broad south-west lobe beyond the road.",
+  "renders": [
+    ".swarm/out/map-whole-r7.png",
+    ".swarm/out/map-landmark-r7.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A water or ice ground kind, or a way for a landmark to claim its ground, so a frozen lake need not be all heath and spend the phone map's emitter budget on ground mist over the ice.",
+    "A prop-set switch for drafted maps to suppress the tileset's own scattered ice tarns and lone barrow, which the map's lake and barrow field already tell better."
+  ]
+}

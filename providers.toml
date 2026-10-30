@@ -18,7 +18,7 @@ price_in = 0.30
 price_cached = 0.03
 price_out = 1.20
 max_turns = 40
-timeout_s = 1500
+timeout_s = 2400
 budget_tokens = 30_000_000        # whole-run cap across this provider's generators
 
 # From DeepSeek's Claude Code guide (api-docs.deepseek.com/quick_start/agent_integrations/claude_code).
@@ -49,7 +49,7 @@ price_in = 0.25
 price_cached = 0.05
 price_out = 1.50
 max_turns = 40
-timeout_s = 1500
+timeout_s = 2400
 budget_tokens = 30_000_000
 
 [kimi]
@@ -63,7 +63,7 @@ price_in = 0.55
 price_cached = 0.19
 price_out = 2.65
 max_turns = 40
-timeout_s = 1500
+timeout_s = 2400
 budget_tokens = 20_000_000
 
 # The control arm: the same harness on Claude, for a like-for-like comparison.
@@ -78,5 +78,5 @@ price_in = 0.0
 price_cached = 0.0
 price_out = 0.0
 max_turns = 40
-timeout_s = 1500
+timeout_s = 2400
 budget_tokens = 10_000_000

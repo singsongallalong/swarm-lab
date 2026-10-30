@@ -1,0 +1,688 @@
+diff --git a/src/shared/data/DraftedMaps.luau b/src/shared/data/DraftedMaps.luau
+index b9f89061..432d8eab 100644
+--- a/src/shared/data/DraftedMaps.luau
++++ b/src/shared/data/DraftedMaps.luau
+@@ -4,9 +4,11 @@
+ -- `lune run scripts/dresspreview whole out.png 3 1 layout=<Name>` before anything
+ -- builds it.
+ local DraftedMap = require("../systems/DraftedMap")
++local RimelakeFjord = require("../systems/draftedmaps/RimelakeFjord")
+ 
+ local DraftedMaps: { [string]: DraftedMap.Draft } = {
+ 	-- One line per draft, `Name = Name,`, with its require above.
++	RimelakeFjord = RimelakeFjord,
+ }
+ 
+ return table.freeze(DraftedMaps)
+diff --git a/src/shared/systems/draftedmaps/RimelakeFjord.luau b/src/shared/systems/draftedmaps/RimelakeFjord.luau
+new file mode 100644
+index 00000000..3c085d8e
+--- /dev/null
++++ b/src/shared/systems/draftedmaps/RimelakeFjord.luau
+@@ -0,0 +1,666 @@
++--!strict
++-- RimelakeFjord (swarm-lab's maps job): a highland plateau ringed in rime round a
++-- frozen lake pinched to a narrows. The road comes in along one shore, crosses the
++-- ice at the runestone ring and leaves along the other; barrows stand on the high
++-- ground, with a graveyard and ruins set back from the water. Pure seeded layout and
++-- its landmarks, no game API: the rimeholt tileset dresses it.
++local DraftedMap = require("../DraftedMap")
++local Grid = require("../Grid")
++local Heath = require("../Heath")
++local Noise = require("../Noise")
++
++type EdgeKind = "cliff" | "thicket" | "drop" | "ruin_wall"
++type SiteKind = "ruin" | "graveyard"
++type CellKind = Heath.CellKind
++type Map = Heath.Map
++type Point = { x: number, z: number }
++type Disc = { cx: number, cz: number, r: number }
++
++-- The lake, in the plateau's middle: an organic ellipse split by two opposed bays
++-- into a western and an eastern lobe, joined by a channel at the narrows.
++type Lake = {
++	cx: number,
++	cz: number,
++	angle: number, -- radians, the long axis
++	cosA: number,
++	sinA: number,
++	rx: number, -- cells, half the long axis
++	rz: number, -- cells, half the short axis
++	narrowsU: number, -- where along the long axis the channel is
++	channel: number, -- cells across the narrows
++	headland: number, -- radius of the two bays that pinch the lake
++	mask: { boolean }, -- per cell, lake or not, indexed like Grid.cells
++	contains: (number, number) -> boolean, -- fractional cells, the same shape
++}
++
++-- The moor's reach of grid holds a highland ring: the lake fills the middle and a
++-- band of snow high ground runs round it, with mist and hills beyond.
++local WIDTH = 128
++local DEPTH = 104
++-- Road: cells within ROAD_HALF of the centreline are road; its shoulder is heath.
++local ROAD_HALF = 2
++local SHOULDER_HALF = 4
++-- Centreline samples per cell of length: fine enough to read as a curve.
++local SAMPLES_PER_CELL = 2
++
++local EDGE_ORDER: { EdgeKind } = { "cliff", "thicket", "drop", "ruin_wall" }
++local EDGE_WEIGHTS: { [EdgeKind]: number } = {
++	cliff = 0.46,
++	thicket = 0.32,
++	drop = 0.12,
++	ruin_wall = 0.10,
++}
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + rng:NextNumber() * (hi - lo)
++end
++
++-- An even whole number in [lo, hi] (both even), from NextNumber alone: the previews
++-- and specs run on a stand-in Random with no NextInteger.
++local function evenBetween(rng: Random, lo: number, hi: number): number
++	return lo + 2 * math.floor(rng:NextNumber() * ((hi - lo) / 2 + 1))
++end
++
++local function catmullRom(p0: number, p1: number, p2: number, p3: number, t: number): number
++	local t2, t3 = t * t, t * t * t
++	return 0.5 * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (3 * p1 - p0 - 3 * p2 + p3) * t3)
++end
++
++-- A Catmull-Rom spline through the controls, sampled so no kink reads.
++local function spline(controls: { Point }): { Point }
++	local points: { Point } = {}
++	for i = 1, #controls - 1 do
++		local p0, p1 = controls[math.max(i - 1, 1)], controls[i]
++		local p2, p3 = controls[i + 1], controls[math.min(i + 2, #controls)]
++		local length = math.sqrt((p2.x - p1.x) ^ 2 + (p2.z - p1.z) ^ 2)
++		local steps = math.max(1, math.ceil(length * SAMPLES_PER_CELL))
++		for s = 0, steps - 1 do
++			local t = s / steps
++			table.insert(
++				points,
++				{ x = catmullRom(p0.x, p1.x, p2.x, p3.x, t), z = catmullRom(p0.z, p1.z, p2.z, p3.z, t) }
++			)
++		end
++	end
++	local last = controls[#controls]
++	table.insert(points, { x = last.x, z = last.z })
++	return points
++end
++
++-- Visits every cell whose centre is within `radius` of any sample: the road corridor
++-- and its shoulder are the union of those discs.
++local function stamp(points: { Point }, radius: number, visit: (number, number) -> ())
++	local r = math.ceil(radius)
++	for _, p in points do
++		local px, pz = math.floor(p.x), math.floor(p.z)
++		for z = pz - r, pz + r do
++			for x = px - r, px + r do
++				if (x - p.x) ^ 2 + (z - p.z) ^ 2 <= radius * radius then
++					visit(x, z)
++				end
++			end
++		end
++	end
++end
++
++-- Signed distance, in cells, from the lake's ellipse: negative on the ice and its
++-- headlands, positive out on the highland. An elliptical first-order estimate, near
++-- enough for the ring's shape.
++local function lakeDistance(lake: Lake, x: number, z: number): number
++	local dx, dz = x - lake.cx, z - lake.cz
++	local u = dx * lake.cosA + dz * lake.sinA
++	local v = -dx * lake.sinA + dz * lake.cosA
++	local rr = math.sqrt((u / lake.rx) ^ 2 + (v / lake.rz) ^ 2)
++	if rr < 1e-6 then
++		return -math.huge
++	end
++	local grad = math.sqrt((u / (lake.rx * lake.rx)) ^ 2 + (v / (lake.rz * lake.rz)) ^ 2) / rr
++	if grad < 1e-6 then
++		return (rr - 1) * (lake.rx + lake.rz) / 2
++	end
++	return (rr - 1) / grad
++end
++
++-- How many cells of high ground lie beyond the lake at this point: a noise-wobbled
++-- band, so its outer edge swells into shelves and pinches into little bays.
++local function bandWidth(lake: Lake, field: Noise.Field, x: number, z: number, base: number, amp: number): number
++	local dx, dz = x - lake.cx, z - lake.cz
++	local u = dx * lake.cosA + dz * lake.sinA
++	local v = -dx * lake.sinA + dz * lake.cosA
++	local width = base
++		+ Noise.sample(field, u * 0.055 + 17.3, v * 0.055 + 63.9) * amp
++		+ Noise.sample(field, u * 0.15 + 77.1, v * 0.15 + 21.5) * amp * 0.35
++	return math.max(width, 11)
++end
++
++local function lakeToWorld(lake: Lake, u: number, v: number): (number, number)
++	return lake.cx + u * lake.cosA - v * lake.sinA, lake.cz + u * lake.sinA + v * lake.cosA
++end
++
++-- The shore row `off` cells outside the lake at point `u` along its long axis, on
++-- `side` (+1 or -1). Flat past the lake's ends, where only the bounds matter.
++local function shoreV(lake: Lake, u: number, side: number, off: number): number
++	local t = 1 - (u / lake.rx) ^ 2
++	return side * (lake.rz * math.sqrt(math.max(t, 0)) + off)
++end
++
++local function buildLake(rng: Random, field: Noise.Field): Lake
++	local cx = WIDTH * between(rng, 0.47, 0.53)
++	local cz = DEPTH * between(rng, 0.47, 0.53)
++	local angle = between(rng, -0.30, 0.30)
++	local rx = between(rng, 23, 27)
++	local rz = between(rng, 15, 19)
++	local narrowsU = between(rng, -0.18, 0.18) * rx
++	local channel = between(rng, 12, 16)
++	local headland = between(rng, 14, 18)
++	local cosA, sinA = math.cos(angle), math.sin(angle)
++	-- Both bays' centres, in the lake's local frame: their inner edges leave a
++	-- channel `channel` cells wide at the narrows.
++	local bayV = headland + channel / 2
++
++	local function contains(x: number, z: number): boolean
++		local dx, dz = x - cx, z - cz
++		local u = dx * cosA + dz * sinA
++		local v = -dx * sinA + dz * cosA
++		local wobble = Noise.sample(field, u * 0.075 + 13.1, v * 0.075 + 71.7) * 0.10
++			+ Noise.sample(field, u * 0.21 + 41.3, v * 0.21 + 5.9) * 0.04
++		local rr = math.sqrt((u / rx) ^ 2 + (v / rz) ^ 2)
++		if rr + wobble >= 1 then
++			return false
++		end
++		local du = u - narrowsU
++		if du * du + (v - bayV) ^ 2 <= headland * headland then
++			return false
++		end
++		if du * du + (v + bayV) ^ 2 <= headland * headland then
++			return false
++		end
++		return true
++	end
++
++	local mask: { boolean } = table.create(WIDTH * DEPTH, false)
++	for z = 1, DEPTH do
++		for x = 1, WIDTH do
++			mask[(z - 1) * WIDTH + x] = contains(x, z)
++		end
++	end
++
++	return {
++		cx = cx,
++		cz = cz,
++		angle = angle,
++		cosA = cosA,
++		sinA = sinA,
++		rx = rx,
++		rz = rz,
++		narrowsU = narrowsU,
++		channel = channel,
++		headland = headland,
++		mask = mask,
++		contains = contains,
++	}
++end
++
++-- In along one shore, round the near headland's shore and over the ice at the
++-- narrows; then off the far headland and north off the map, leaving the far shore's
++-- high ground free for its sites and barrows.
++local function roadControls(lake: Lake, side: number, zStart: number, exitX: number): { Point }
++	local function shore(u: number, s: number, off: number): Point
++		local x, z = lakeToWorld(lake, u, shoreV(lake, u, s, off))
++		return { x = x, z = z }
++	end
++	local function localPoint(u: number, v: number): Point
++		local x, z = lakeToWorld(lake, u, v)
++		return { x = x, z = z }
++	end
++	local r, g = lake.headland, lake.channel
++	local u = lake.narrowsU
++	local bayV = r + g / 2
++	-- A point `back` cells inland from the headland's shore at `du` from its centre.
++	local function bayShore(du: number, s: number, back: number): Point
++		local d = math.min(math.abs(du), r)
++		local edge = bayV - math.sqrt(r * r - d * d)
++		return localPoint(u + du, s * (edge + back))
++	end
++	return {
++		{ x = 7, z = zStart },
++		shore(-lake.rx * 0.95, side, 8),
++		bayShore(-r * 0.9, side, 4),
++		bayShore(-r * 0.55, side, 4),
++		bayShore(-r * 0.2, side, 4),
++		localPoint(u, side * (g / 2 + 4)),
++		localPoint(u, 0),
++		localPoint(u, -side * (g / 2 + 4)),
++		bayShore(r * 0.2, -side, 4),
++		bayShore(r * 0.55, -side, 4),
++		bayShore(r * 0.9, -side, 4),
++		shore(lake.rx * 0.95, -side, 7),
++		{ x = exitX, z = 18 },
++		{ x = exitX, z = 7 },
++	}
++end
++
++-- Every cell of the discs grown by `pad` is open heath at one level, wet water and
++-- unclaimed: a landmark or an outcrop stands whole or not at all.
++local function clusterFits(map: Map, lake: Lake, claims: { [number]: boolean }, discs: { Disc }, pad: number): boolean
++	local x0, z0, x1, z1 = math.huge, math.huge, -math.huge, -math.huge
++	for _, d in discs do
++		x0 = math.min(x0, math.floor(d.cx - d.r - pad))
++		z0 = math.min(z0, math.floor(d.cz - d.r - pad))
++		x1 = math.max(x1, math.ceil(d.cx + d.r + pad))
++		z1 = math.max(z1, math.ceil(d.cz + d.r + pad))
++	end
++	if x0 < 3 or z0 < 3 or x1 > WIDTH - 2 or z1 > DEPTH - 2 then
++		return false
++	end
++	for z = z0, z1 do
++		for x = x0, x1 do
++			local near = false
++			for _, d in discs do
++				if (x - d.cx) ^ 2 + (z - d.cz) ^ 2 <= (d.r + pad) ^ 2 then
++					near = true
++					break
++				end
++			end
++			if near then
++				local i = Grid.index(map.grid, x, z)
++				if map.kinds[i] ~= "heath" or lake.mask[i] or claims[i] then
++					return false
++				end
++			end
++		end
++	end
++	return true
++end
++
++local function claimDisc(claims: { [number]: boolean }, grid: Grid.Grid, cx: number, cz: number, radius: number)
++	local r = math.ceil(radius)
++	for z = math.floor(cz) - r, math.floor(cz) + r do
++		for x = math.floor(cx) - r, math.floor(cx) + r do
++			if (x - cx) ^ 2 + (z - cz) ^ 2 <= radius * radius and Grid.inBounds(grid, x, z) then
++				claims[Grid.index(grid, x, z)] = true
++			end
++		end
++	end
++end
++
++-- Ruins and the graveyard set back from the water, off the road, with room to dress.
++local function placeSites(map: Map, lake: Lake, claims: { [number]: boolean }, rng: Random)
++	local rules: { { kind: SiteKind, count: number, min: number, max: number } } = {
++		{ kind = "graveyard", count = 1, min = 10, max = 12 },
++		{ kind = "ruin", count = 1, min = 8, max = 10 },
++		{ kind = "ruin", count = 1, min = 8, max = 10 },
++	}
++	local pad = 2
++	for _, rule in rules do
++		for _ = 1, rule.count do
++			for _ = 1, 400 do
++				local w = evenBetween(rng, rule.min, rule.max)
++				local d = evenBetween(rng, rule.min, rule.max)
++				local x0 = math.floor(between(rng, 4, WIDTH - w - 3))
++				local z0 = math.floor(between(rng, 4, DEPTH - d - 3))
++				local x1, z1 = x0 + w - 1, z0 + d - 1
++				local fits = true
++				for z = z0 - pad, z1 + pad do
++					for x = x0 - pad, x1 + pad do
++						if not Grid.inBounds(map.grid, x, z) then
++							fits = false
++							break
++						end
++						local i = Grid.index(map.grid, x, z)
++						if map.kinds[i] ~= "heath" or lake.mask[i] or claims[i] then
++							fits = false
++							break
++						end
++					end
++					if not fits then
++						break
++					end
++				end
++				if fits then
++					claimDisc(claims, map.grid, (x0 + x1) / 2, (z0 + z1) / 2, math.max(w, d) / 2 + pad)
++					table.insert(map.sites, { kind = rule.kind, x0 = x0, z0 = z0, x1 = x1, z1 = z1 })
++					break
++				end
++			end
++		end
++	end
++end
++
++local function stampOutcrop(map: Map, lake: Lake, disc: Disc)
++	local r = math.ceil(disc.r)
++	for z = math.floor(disc.cz) - r, math.floor(disc.cz) + r do
++		for x = math.floor(disc.cx) - r, math.floor(disc.cx) + r do
++			if (x - disc.cx) ^ 2 + (z - disc.cz) ^ 2 <= disc.r * disc.r and Grid.inBounds(map.grid, x, z) then
++				local i = Grid.index(map.grid, x, z)
++				if map.kinds[i] == "heath" and not lake.mask[i] then
++					map.kinds[i] = "outcrop"
++				end
++			end
++		end
++	end
++end
++
++-- Rock ridges back from the lake's shores, and boulders loose on the heath. Each is
++-- grown with a halo of open ground, so none walls a corridor shut.
++local function placeOutcrops(map: Map, lake: Lake, claims: { [number]: boolean }, rng: Random)
++	for side = -1, 1, 2 do
++		for _ = 1, 2 do
++			for _ = 1, 60 do
++				local u = between(rng, -0.68 * lake.rx, 0.68 * lake.rx)
++				if math.abs(u - lake.narrowsU) > lake.headland + 6 then
++					local discs: { Disc } = {}
++					local count = 2 + math.floor(rng:NextNumber(0, 3))
++					local off = between(rng, 8, 13)
++					for k = 1, count do
++						local eu = u + (k - (count + 1) / 2) * between(rng, 4, 5.5)
++						local v = shoreV(lake, eu, side, off + between(rng, -1.5, 1.5))
++						local wx, wz = lakeToWorld(lake, eu, v)
++						table.insert(discs, { cx = wx, cz = wz, r = between(rng, 2, 3) })
++					end
++					if clusterFits(map, lake, claims, discs, 2) then
++						for _, d in discs do
++							stampOutcrop(map, lake, d)
++						end
++						break
++					end
++				end
++			end
++		end
++	end
++	for _ = 1, 6 do
++		for _ = 1, 80 do
++			local disc: Disc = { cx = between(rng, 8, WIDTH - 8), cz = between(rng, 8, DEPTH - 8), r = 0 }
++			disc.r = between(rng, 2.2, 3.4)
++			if clusterFits(map, lake, claims, { disc }, 2) then
++				stampOutcrop(map, lake, disc)
++				break
++			end
++		end
++	end
++end
++
++-- The runestones stand on the near headland, on its lakeward side by the narrows.
++local function runeSpot(lake: Lake, side: number, rng: Random): DraftedMap.Landmark
++	local r, g = lake.headland, lake.channel
++	local du = r * 0.6
++	local edge = r + g / 2 - math.sqrt(r * r - du * du)
++	local x, z = lakeToWorld(lake, lake.narrowsU + du, side * (edge + 11))
++	return {
++		sculpt = "rimeholt_runestones",
++		x = x,
++		z = z,
++		yaw = math.deg(lake.angle) + 12,
++		scale = between(rng, 2.3, 2.5),
++		sink = 0.35,
++	}
++end
++
++-- Barrows on the high ground, clear of the road, the water and (later) the sites. The
++-- band is narrow, so the deal is long: a barrow needs a clearing wide enough to stand
++-- in, and it claims that clearing before the sites go looking for theirs.
++local function placeBarrows(map: Map, lake: Lake, claims: { [number]: boolean }, rng: Random): { DraftedMap.Landmark }
++	local marks: { DraftedMap.Landmark } = {}
++	for _ = 1, 3 do
++		for _ = 1, 1500 do
++			local disc: Disc = { cx = between(rng, 8, WIDTH - 8), cz = between(rng, 8, DEPTH - 8), r = 4.5 }
++			if clusterFits(map, lake, claims, { disc }, 2) then
++				claimDisc(claims, map.grid, disc.cx, disc.cz, disc.r)
++				table.insert(marks, {
++					sculpt = "rimeholt_barrow",
++					x = disc.cx,
++					z = disc.cz,
++					yaw = math.deg(lake.angle) + between(rng, -10, 10),
++					scale = between(rng, 2.5, 3),
++					sink = 0.4,
++				})
++				break
++			end
++		end
++	end
++	return marks
++end
++
++local function placeLandmarks(
++	lake: Lake,
++	rng: Random,
++	runes: DraftedMap.Landmark,
++	barrows: { DraftedMap.Landmark }
++): { DraftedMap.Landmark }
++	local marks: { DraftedMap.Landmark } = { runes }
++	for _, barrow in barrows do
++		table.insert(marks, barrow)
++	end
++	-- The ice: a staggered lattice on the lake's own axes, overlapping so the lobes
++	-- read as one sheet, then a short bridge of smaller sheets across the narrows.
++	local yaw = math.deg(lake.angle)
++	local sink = 0
++	local function ice(u: number, v: number, scale: number)
++		local x, z = lakeToWorld(lake, u, v)
++		if not lake.contains(x, z) then
++			return
++		end
++		sink = (sink + 1) % 6
++		table.insert(marks, {
++			sculpt = "rimeholt_ice",
++			x = x,
++			z = z,
++			yaw = yaw + between(rng, -6, 6),
++			scale = scale,
++			sink = 0.02 + 0.011 * sink,
++		})
++	end
++	for _, du in { -6, 0, 6 } do
++		ice(lake.narrowsU + du, 0, between(rng, 1.4, 1.6))
++	end
++	local stepU, stepV = 6.4, 5.7
++	local cols = math.ceil(lake.rx / stepU) + 1
++	local rows = math.ceil(lake.rz / stepV) + 1
++	for j = -rows, rows do
++		for i = -cols, cols do
++			local u = i * stepU + (if j % 2 == 0 then 0 else stepU / 2)
++			local v = j * stepV
++			ice(u, v, between(rng, 1.55, 1.8))
++		end
++	end
++	return marks
++end
++
++-- Segments of edge: low-frequency noise orders the rim cells and each kind takes its
++-- weight's share, so kinds come in long runs (the moor's assignEdges, its own tuning).
++local function assignEdges(map: Map, rim: { number }, field: Noise.Field)
++	local value: { [number]: number } = {}
++	for _, i in rim do
++		local x, z = Grid.coords(map.grid, i)
++		value[i] = Noise.sample(field, x * 0.035 + 517.3, z * 0.035)
++	end
++	table.sort(rim, function(a: number, b: number): boolean
++		if value[a] ~= value[b] then
++			return value[a] < value[b]
++		end
++		return a < b
++	end)
++	local weights: { number } = {}
++	local total = 0
++	for k = 1, #EDGE_ORDER do
++		weights[k] = EDGE_WEIGHTS[EDGE_ORDER[k]] or 0
++		total += weights[k]
++	end
++	local k, budget = 1, 0
++	for n, i in rim do
++		while k < #EDGE_ORDER and n > budget + weights[k] / total * #rim do
++			budget += weights[k] / total * #rim
++			k += 1
++		end
++		map.edges[i] = EDGE_ORDER[k]
++	end
++end
++
++local function build(rng: Random): Map
++	local field = Noise.field(rng)
++	local grid = Grid.new(WIDTH, DEPTH, Grid.WALL)
++	local kinds: { CellKind } = table.create(WIDTH * DEPTH, "void" :: CellKind)
++	local map: Map = {
++		grid = grid,
++		kinds = kinds,
++		edges = {},
++		road = {},
++		start = { x = 0, z = 0 },
++		exit = { x = 0, z = 0 },
++		sites = {},
++		heights = table.create(WIDTH * DEPTH, 0),
++		terraces = {},
++	}
++	local claims: { [number]: boolean } = {}
++
++	local lake = buildLake(rng, field)
++
++	-- The highland ring: the lake and its headlands, circled by a band of high ground
++	-- whose width swells and pinches with the noise.
++	local bandBase = between(rng, 16, 18.5)
++	local bandAmp = between(rng, 5, 6.5)
++	for z = 2, DEPTH - 1 do
++		for x = 2, WIDTH - 1 do
++			local i = Grid.index(grid, x, z)
++			if lake.mask[i] or lakeDistance(lake, x, z) <= bandWidth(lake, field, x, z, bandBase, bandAmp) then
++				kinds[i] = "heath"
++			end
++		end
++	end
++
++	-- The road in along one shore, over the narrows, out north past the far headland.
++	local side = if rng:NextNumber() < 0.5 then 1 else -1
++	local _, zStart = lakeToWorld(lake, -lake.rx * 0.95, shoreV(lake, -lake.rx * 0.95, side, 8))
++	zStart = math.clamp(zStart, 20, DEPTH - 20)
++	local exitWX = lakeToWorld(lake, lake.rx * 0.95, shoreV(lake, lake.rx * 0.95, -side, 7))
++	local exitX = math.clamp(exitWX + between(rng, -7, 7), 20, WIDTH - 20)
++	local points = spline(roadControls(lake, side, zStart, exitX))
++	map.road = points
++	local roadFlags: { [number]: boolean } = {}
++	stamp(points, ROAD_HALF, function(x: number, z: number)
++		if x >= 2 and z >= 2 and x <= WIDTH - 1 and z <= DEPTH - 1 then
++			roadFlags[Grid.index(grid, x, z)] = true
++		end
++	end)
++	stamp(points, SHOULDER_HALF, function(x: number, z: number)
++		if x >= 2 and z >= 2 and x <= WIDTH - 1 and z <= DEPTH - 1 then
++			local i = Grid.index(grid, x, z)
++			if kinds[i] == "void" and not roadFlags[i] then
++				kinds[i] = "heath"
++			end
++		end
++	end)
++	for i in roadFlags do
++		kinds[i] = "road"
++	end
++	local first, last = points[1], points[#points]
++	map.start = { x = math.floor(first.x + 0.5), z = math.floor(first.z + 0.5) }
++	map.exit = { x = math.floor(last.x + 0.5), z = math.floor(last.z + 0.5) }
++
++	-- The runestone ring's ground is kept for it before anything else is placed.
++	local runes = runeSpot(lake, side, rng)
++	-- The ring stands whole on dry high ground: otherwise it steps back from the ice.
++	for _ = 1, 8 do
++		local ok = true
++		for dz = -6, 6 do
++			for dx = -6, 6 do
++				local x, z = math.floor(runes.x) + dx, math.floor(runes.z) + dz
++				if dx * dx + dz * dz <= 36 then
++					if not Grid.inBounds(grid, x, z) then
++						ok = false
++						break
++					end
++					local i = Grid.index(grid, x, z)
++					if kinds[i] ~= "heath" or lake.mask[i] then
++						ok = false
++						break
++					end
++				end
++			end
++			if not ok then
++				break
++			end
++		end
++		if ok then
++			break
++		end
++		runes.x += (runes.x - lake.cx) * 0.08
++		runes.z += (runes.z - lake.cz) * 0.08
++	end
++	claimDisc(claims, grid, runes.x, runes.z, 7)
++	local barrows = placeBarrows(map, lake, claims, rng)
++	placeSites(map, lake, claims, rng)
++	placeOutcrops(map, lake, claims, rng)
++	local marks = placeLandmarks(lake, rng, runes, barrows)
++
++	-- Walkable kinds to the shared grid; anything the outcrops cut off goes back to void.
++	for i, kind in kinds do
++		if kind == "heath" or kind == "road" then
++			grid.cells[i] = Grid.FLOOR
++		end
++	end
++	Grid.keepLargestRegion(grid)
++	for i, kind in kinds do
++		if grid.cells[i] == Grid.WALL and (kind == "heath" or kind == "road") then
++			kinds[i] = "void"
++		end
++	end
++	for k = #map.sites, 1, -1 do
++		if not Heath.onFloor(grid, map.sites[k]) then
++			table.remove(map.sites, k)
++		end
++	end
++	-- A barrow left in a pocket the outcrops cut off would stand in the void.
++	for k = #marks, 1, -1 do
++		local mark = marks[k]
++		if mark.sculpt == "rimeholt_barrow" then
++			local i = Grid.index(grid, math.floor(mark.x), math.floor(mark.z))
++			if grid.cells[i] ~= Grid.FLOOR then
++				table.remove(marks, k)
++			end
++		end
++	end
++
++	-- Rims: void cells that line walkable ground, each given an edge kind.
++	local rim: { number } = {}
++	for i, kind in kinds do
++		if kind == "void" then
++			local x, z = Grid.coords(grid, i)
++			for _, d in Grid.NEIGHBOURS do
++				if Grid.get(grid, x + d[1], z + d[2]) == Grid.FLOOR then
++					kinds[i] = "rim"
++					table.insert(rim, i)
++					break
++				end
++			end
++		end
++	end
++	assignEdges(map, rim, field)
++
++	-- The landmarks travel with the map: generate's rng is the only stream, and the
++	-- dress step asks for them after the layout is made.
++	local stash = map :: any
++	stash.rimelakeMarks = marks
++	return map
++end
++
++local function generate(rng: Random): Heath.Map
++	return build(rng)
++end
++
++local function landmarks(map: Heath.Map, _rng: Random): { DraftedMap.Landmark }
++	local stash = map :: any
++	local marks = stash.rimelakeMarks
++	if marks then
++		return marks :: { DraftedMap.Landmark }
++	end
++	return {}
++end
++
++return {
++	name = "RimelakeFjord",
++	about = "A highland ring round a frozen lake, its road crossing the ice at the runestones.",
++	tileset = "rimeholt",
++	generate = generate,
++	landmarks = landmarks,
++} :: DraftedMap.Draft

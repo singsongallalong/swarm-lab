@@ -1,0 +1,12 @@
+{
+  "skill": "Rimelake",
+  "look": "RimelakeFjord",
+  "rows_added": [],
+  "intent": "A ring of rime highland round one frozen lake, its road coming in along a shore and crossing the ice at a narrow neck beside the runestone ring, so from above the pale lake fills the bowl and the road threads its narrows.",
+  "renders": [".swarm/out/map-whole-r4.png", ".swarm/out/map-landmark-r3.png"],
+  "revisions": 2,
+  "requests": [
+    "A seamless flat ice-sheet sculpt for tiling: rimeholt_ice is a pool of lobes, so a lake laid from it shows overlapping circles from above.",
+    "A way for a large tiled ground landmark to opt out of the scale-derived keep-out, so ice can cover a lake without stripping the whole shore of dressing props."
+  ]
+}

@@ -1,0 +1,701 @@
+diff --git a/src/shared/data/DraftedMaps.luau b/src/shared/data/DraftedMaps.luau
+index b9f89061..72bf57b6 100644
+--- a/src/shared/data/DraftedMaps.luau
++++ b/src/shared/data/DraftedMaps.luau
+@@ -4,9 +4,11 @@
+ -- `lune run scripts/dresspreview whole out.png 3 1 layout=<Name>` before anything
+ -- builds it.
+ local DraftedMap = require("../systems/DraftedMap")
++local RimelakeIsles = require("../systems/draftedmaps/RimelakeIsles")
+ 
+ local DraftedMaps: { [string]: DraftedMap.Draft } = {
+ 	-- One line per draft, `Name = Name,`, with its require above.
++	RimelakeIsles = RimelakeIsles,
+ }
+ 
+ return table.freeze(DraftedMaps)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index f409fe03..89d481b3 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -540,6 +540,17 @@ local Sculpts: { [string]: Recipe } = {
+ 		accent = { 62, 88, 90 },
+ 		maxPrims = 9,
+ 	},
++	rimelake_ice = {
++		kind = "pool",
++		-- The frozen lake's sheet: the same thin plate as rimeholt_ice, but in
++		-- one ice-blue so a whole lake's many overlapping sheets read as one
++		-- surface instead of a mosaic of two nearly snow-coloured shades.
++		size = { 24, 0.1, 24 },
++		material = "Glass",
++		colors = { { 70, 94, 102 } },
++		reflectance = 0.25,
++		maxPrims = 4,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0e4c0dc5..7ce9a5a9 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -358,6 +358,10 @@ local rows: { [string]: Row } = {
+ 		"A tall marker stone with an ice-blue rag at Rimeholt's thresholds between reaches.",
+ 		MOOR
+ 	),
++	["sculpt:rimelake_ice"] = row(
++		"The frozen lake's sheet: one ice-blue plate, laid overlapping so the whole lake reads as a single surface.",
++		MOOR
++	),
+ 	["outdoor:rimeholt"] = row(
+ 		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
+ 		MOOR
+diff --git a/src/shared/systems/draftedmaps/RimelakeIsles.luau b/src/shared/systems/draftedmaps/RimelakeIsles.luau
+new file mode 100644
+index 00000000..0e06b6e3
+--- /dev/null
++++ b/src/shared/systems/draftedmaps/RimelakeIsles.luau
+@@ -0,0 +1,642 @@
++--!strict
++-- Rimelake: the frozen highland where the hill-folk's barrows and runestones
++-- lie under old snow round a lake that never thaws. The lake is one wide sheet
++-- of old ice at the heart of the map; small granite islets break its surface,
++-- the road crosses it from islet to islet to the runestone isle in its middle,
++-- and the barrows stand on the snow round its shore. A pure, seeded layout:
++-- every roll comes from `rng`, so one seed always makes the same map.
++local DraftedMap = require("../DraftedMap")
++local Grid = require("../Grid")
++local Heath = require("../Heath")
++local Noise = require("../Noise")
++local TerrainTypes = require("../../TerrainTypes")
++
++type EdgeKind = TerrainTypes.EdgeKind
++type SiteKind = TerrainTypes.SiteKind
++type CellKind = Heath.CellKind
++type Site = Heath.Site
++type Landmark = DraftedMap.Landmark
++
++local WIDTH = 120
++local DEPTH = 104
++-- Cells along the border the walkable ground never reaches (the outer ring).
++local MARGIN = 2
++-- Half the road's width, in cells: the moor's road.
++local ROAD_HALF = 1.5
++local SAMPLES_PER_CELL = 2
++local ATTEMPTS = 400
++-- The edge kinds round the rim, in the order they are dealt out: neighbours in
++-- this order meet most often, and each kind takes its weight's share of the rim.
++local EDGE_ORDER: { EdgeKind } = { "drop", "cliff", "thicket", "ruin_wall" }
++local EDGE_WEIGHTS: { [EdgeKind]: number } = { drop = 0.15, cliff = 0.45, thicket = 0.3, ruin_wall = 0.1 }
++local RIM_NOISE_OFFSET = 517.3
++local BLOB_NOISE: Noise.Fractal = { octaves = 2, frequency = 0.055, lacunarity = 2.1, gain = 0.5 }
++local LAKE_NOISE: Noise.Fractal = { octaves = 2, frequency = 0.075, lacunarity = 2.2, gain = 0.45 }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + rng:NextNumber() * (hi - lo)
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(rng:NextNumber(lo, hi + 1))
++end
++
++-- An even whole number from lo to hi inclusive; lo and hi are even.
++local function evenSide(rng: Random, lo: number, hi: number): number
++	return lo + 2 * math.floor(rng:NextNumber() * ((hi - lo) / 2 + 1))
++end
++
++local function catmullRom(p0: number, p1: number, p2: number, p3: number, t: number): number
++	local t2, t3 = t * t, t * t * t
++	return 0.5 * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (3 * p1 - p0 - 3 * p2 + p3) * t3)
++end
++
++-- Distance in cells from (x, z) to a site's rectangle; 0 inside it.
++local function rectDistance(site: Site, x: number, z: number): number
++	local dx = math.max(site.x0 - x, 0, x - site.x1)
++	local dz = math.max(site.z0 - z, 0, z - site.z1)
++	return math.sqrt(dx * dx + dz * dz)
++end
++
++local function attempt(rng: Random): Heath.Map
++	local field = Noise.field(rng)
++	local grid = Grid.new(WIDTH, DEPTH, Grid.WALL)
++	local map: Heath.Map = {
++		grid = grid,
++		kinds = table.create(WIDTH * DEPTH, "void" :: CellKind),
++		edges = {},
++		road = {},
++		start = { x = 1, z = 1 },
++		exit = { x = 1, z = 1 },
++		sites = {},
++		heights = table.create(WIDTH * DEPTH, 0),
++		terraces = {},
++	}
++
++	-- The highland: one rounded plateau, its outline wobbled by broad noise so
++	-- no seed reads as a stamped circle.
++	local cx = WIDTH / 2 + between(rng, -5, 5)
++	local cz = DEPTH / 2 + between(rng, -4, 4)
++	local rx = between(rng, 41, 46)
++	local rz = between(rng, 33, 38)
++	local function blobAt(x: number, z: number): number
++		local dx, dz = (x - cx) / rx, (z - cz) / rz
++		local n = math.sqrt(dx * dx + dz * dz)
++		local wobble = Noise.fractal(field, x + 91.7, z - 42.3, BLOB_NOISE)
++		return n / (1 + wobble * 0.13)
++	end
++
++	-- The lake: a long, turned oval of old ice at the highland's heart. Its
++	-- noise-wobbled shore guides where ice may lie and where no site may stand.
++	local lake = {
++		cx = cx + between(rng, -4, 4),
++		cz = cz + between(rng, -3, 3),
++		rx = between(rng, 23, 26),
++		rz = between(rng, 15, 18),
++	}
++	local turn = between(rng, -0.35, 0.35)
++	local cosTurn, sinTurn = math.cos(turn), math.sin(turn)
++	local function lakeAt(x: number, z: number): number
++		local dx, dz = x - lake.cx, z - lake.cz
++		local u = dx * cosTurn + dz * sinTurn
++		local v = -dx * sinTurn + dz * cosTurn
++		local n = math.sqrt((u / lake.rx) ^ 2 + (v / lake.rz) ^ 2)
++		local wobble = Noise.fractal(field, x - 33.1, z + 77.9, LAKE_NOISE)
++		return n / (1 + wobble * 0.11)
++	end
++
++	-- The highland's snow, under everything but the road (below) and the islets
++	-- (later): every cell inside the plateau's noisy outline is open heath.
++	for z = 2, DEPTH - 1 do
++		for x = 2, WIDTH - 1 do
++			if blobAt(x, z) <= 1 then
++				map.kinds[Grid.index(grid, x, z)] = "heath"
++			end
++		end
++	end
++
++	-- The runestone isle at the lake's middle, and the road's line through it:
++	-- the way on crosses the ice and passes the isle, close enough to lead the
++	-- eye to the ring without standing on it.
++	local isle = {
++		x = lake.cx + between(rng, -2, 2),
++		z = lake.cz + between(rng, -2, 2),
++	}
++
++	-- The road: in from the west edge, across the highland and the lake by the
++	-- isle, out over the east edge of the map. Catmull-Rom through the control
++	-- points gives one smooth line without kinks.
++	local controls: { { x: number, z: number } } = {
++		{ x = 2, z = lake.cz + between(rng, -16, 16) },
++		{ x = cx - 24 + between(rng, -4, 4), z = lake.cz + between(rng, -14, 14) },
++		{ x = isle.x, z = isle.z },
++		{ x = cx + 24 + between(rng, -4, 4), z = lake.cz + between(rng, -14, 14) },
++		{ x = WIDTH - 1, z = lake.cz + between(rng, -16, 16) },
++	}
++	local samples: { { x: number, z: number } } = {}
++	for i = 1, #controls - 1 do
++		local p0 = controls[math.max(i - 1, 1)]
++		local p1, p2 = controls[i], controls[i + 1]
++		local p3 = controls[math.min(i + 2, #controls)]
++		local length = math.sqrt((p2.x - p1.x) ^ 2 + (p2.z - p1.z) ^ 2)
++		local steps = math.max(1, math.ceil(length * SAMPLES_PER_CELL))
++		for s = 0, steps - 1 do
++			local t = s / steps
++			local x = catmullRom(p0.x, p1.x, p2.x, p3.x, t)
++			local z = catmullRom(p0.z, p1.z, p2.z, p3.z, t)
++			table.insert(samples, { x = math.clamp(x, 2, WIDTH - 1), z = math.clamp(z, 2, DEPTH - 1) })
++		end
++	end
++	table.insert(samples, {
++		x = math.clamp(controls[#controls].x, 2, WIDTH - 1),
++		z = math.clamp(controls[#controls].z, 2, DEPTH - 1),
++	})
++	map.road = samples
++
++	-- Carve the road's cells: every cell whose middle lies within the road's
++	-- half-width of a sample. Outside the plateau this is the cutting's trench,
++	-- a narrow way in through the rim.
++	for _, p in samples do
++		for z = math.floor(p.z) - 2, math.ceil(p.z) + 2 do
++			for x = math.floor(p.x) - 2, math.ceil(p.x) + 2 do
++				-- The outer ring stays wall for MapDress's border, so the road
++				-- runs out at the cells just inside it.
++				if
++					x >= 2
++					and x <= WIDTH - 1
++					and z >= 2
++					and z <= DEPTH - 1
++					and (p.x - x) ^ 2 + (p.z - z) ^ 2 <= ROAD_HALF ^ 2
++				then
++					map.kinds[Grid.index(grid, x, z)] = "road"
++				end
++			end
++		end
++	end
++	local roadCells: { { number } } = {}
++	for i, kind in map.kinds do
++		if kind == "road" then
++			local x, z = Grid.coords(grid, i)
++			table.insert(roadCells, { x, z })
++		end
++	end
++	local function roadDistance(x: number, z: number): number
++		local best = math.huge
++		for _, c in roadCells do
++			local d = (c[1] - x) ^ 2 + (c[2] - z) ^ 2
++			if d < best then
++				best = d
++			end
++		end
++		return math.sqrt(best)
++	end
++
++	-- The runestone ring's isle in the lake's heart, far enough off the road
++	-- that the road's own cells leave the ring a clear shoulder of ice.
++	local dirX, dirZ = controls[4].x - controls[2].x, controls[4].z - controls[2].z
++	local dirLen = math.max(math.sqrt(dirX * dirX + dirZ * dirZ), 1e-6)
++	local perpX, perpZ = -dirZ / dirLen, dirX / dirLen
++	local side = if rng:NextNumber() < 0.5 then -1 else 1
++	local ring = { x = isle.x + perpX * side * 9.0, z = isle.z + perpZ * side * 9.0 }
++	for off = 9.0, 13.0, 0.5 do
++		local x, z = isle.x + perpX * side * off, isle.z + perpZ * side * off
++		local ix, iz = math.floor(x + 0.5), math.floor(z + 0.5)
++		if
++			Grid.inBounds(grid, ix, iz)
++			and map.kinds[Grid.index(grid, ix, iz)] == "heath"
++			and roadDistance(x, z) > 7.2
++			and lakeAt(x, z) < 0.95
++		then
++			ring = { x = x, z = z }
++			break
++		end
++	end
++
++	-- Sites on the snow round the lake, kept well off the ice and the road. All
++	-- cells of a site and its clearance are heath outside the lake, and no two
++	-- sites or their clearances touch.
++	local claimed: { [number]: boolean } = {}
++	local function fits(x0: number, z0: number, x1: number, z1: number, pad: number): boolean
++		if x0 - pad < 2 or z0 - pad < 2 or x1 + pad > WIDTH - 1 or z1 + pad > DEPTH - 1 then
++			return false
++		end
++		for z = z0 - pad, z1 + pad do
++			for x = x0 - pad, x1 + pad do
++				local i = Grid.index(grid, x, z)
++				if map.kinds[i] ~= "heath" or claimed[i] or lakeAt(x, z) < 1.06 then
++					return false
++				end
++			end
++		end
++		return true
++	end
++	local function placeSite(kind: SiteKind, sizeMin: number, sizeMax: number): boolean
++		for _ = 1, ATTEMPTS do
++			local w = evenSide(rng, sizeMin, sizeMax)
++			local d = evenSide(rng, sizeMin, sizeMax)
++			local x0 = whole(rng, 2, WIDTH - w - 1)
++			local z0 = whole(rng, 2, DEPTH - d - 1)
++			local x1, z1 = x0 + w - 1, z0 + d - 1
++			if fits(x0, z0, x1, z1, 2) then
++				for z = z0, z1 do
++					for x = x0, x1 do
++						claimed[Grid.index(grid, x, z)] = true
++					end
++				end
++				table.insert(map.sites, { kind = kind, x0 = x0, z0 = z0, x1 = x1, z1 = z1 })
++				return true
++			end
++		end
++		return false
++	end
++	placeSite("graveyard", 10, 14)
++	placeSite("ruin", 8, 12)
++	placeSite("ruin", 8, 12)
++
++	-- Islets: rocky outcrops breaking the lake's surface. One line of them runs
++	-- along the road's crossing, so the way reads as hopping from island to
++	-- island; the rest are strewn through the ice.
++	local function addIslet(ix: number, iz: number, radius: number)
++		for z = math.floor(iz - radius), math.ceil(iz + radius) do
++			for x = math.floor(ix - radius), math.ceil(ix + radius) do
++				if Grid.inBounds(grid, x, z) and (x - ix) ^ 2 + (z - iz) ^ 2 <= radius * radius then
++					local i = Grid.index(grid, x, z)
++					if map.kinds[i] == "heath" then
++						map.kinds[i] = "outcrop"
++					end
++				end
++			end
++		end
++	end
++	-- Rocky steps beside the road's crossing: alternating sides, spread apart.
++	-- No islet may bury the ring: every one keeps its own reach plus a few
++	-- cells clear of the ring's stone.
++	local function ringClear(ix: number, iz: number, radius: number): boolean
++		return (ix - ring.x) ^ 2 + (iz - ring.z) ^ 2 > (radius + 4.5) ^ 2
++	end
++	local lastAt = -100
++	local stepSide = if rng:NextNumber() < 0.5 then -1 else 1
++	for idx, p in samples do
++		local onLake = lakeAt(p.x, p.z) < 0.82
++		local farFromIsle = (p.x - isle.x) ^ 2 + (p.z - isle.z) ^ 2 > 8 ^ 2
++		if onLake and farFromIsle and idx - lastAt >= 9 then
++			local a, b = samples[math.max(idx - 1, 1)], samples[math.min(idx + 1, #samples)]
++			local dx, dz = b.x - a.x, b.z - a.z
++			local len = math.max(math.sqrt(dx * dx + dz * dz), 1e-6)
++			local offset = between(rng, 4.0, 5.0)
++			local ix = p.x - dz / len * offset * stepSide
++			local iz = p.z + dx / len * offset * stepSide
++			local radius = between(rng, 1.0, 1.7)
++			if lakeAt(ix, iz) < 0.9 and roadDistance(ix, iz) > 3.2 and ringClear(ix, iz, radius) then
++				addIslet(ix, iz, radius)
++				lastAt = idx
++				stepSide = -stepSide
++			end
++		end
++	end
++	-- Islets strewn through the open ice, clear of the isle, the ring and the road.
++	local strewn = whole(rng, 6, 10)
++	for _ = 1, strewn do
++		for _ = 1, 40 do
++			local a = between(rng, 0, 2 * math.pi)
++			local rr = math.sqrt(rng:NextNumber()) * 0.8
++			local u, v = math.cos(a) * rr * lake.rx, math.sin(a) * rr * lake.rz
++			local ix = lake.cx + u * cosTurn - v * sinTurn
++			local iz = lake.cz + u * sinTurn + v * cosTurn
++			local radius = between(rng, 0.9, 2.0)
++			local farFromIsle = (ix - isle.x) ^ 2 + (iz - isle.z) ^ 2 > 7 ^ 2
++			if lakeAt(ix, iz) < 0.92 and farFromIsle and roadDistance(ix, iz) > 3.2 and ringClear(ix, iz, radius) then
++				addIslet(ix, iz, radius)
++				break
++			end
++		end
++	end
++	-- A ragged rim of stones round the ring's isle: the runestones stand on a
++	-- broken ring of granite rising out of the lake's ice.
++	for _ = 1, 6 do
++		local a = between(rng, 0, 2 * math.pi)
++		local r = between(rng, 4.6, 6.0)
++		local ix, iz = ring.x + math.cos(a) * r, ring.z + math.sin(a) * r
++		if lakeAt(ix, iz) < 0.98 and roadDistance(ix, iz) > 3.5 then
++			addIslet(ix, iz, between(rng, 0.5, 0.9))
++		end
++	end
++
++	-- Floors, then anything the islets cut off from the rest goes back to void,
++	-- and a site the cut ran through goes with it.
++	for i, kind in map.kinds do
++		if kind == "heath" or kind == "road" then
++			grid.cells[i] = Grid.FLOOR
++		end
++	end
++	Grid.keepLargestRegion(grid)
++	for i, kind in map.kinds do
++		if (kind == "heath" or kind == "road") and grid.cells[i] ~= Grid.FLOOR then
++			map.kinds[i] = "void"
++		end
++	end
++	for k = #map.sites, 1, -1 do
++		if not Heath.onFloor(grid, map.sites[k]) then
++			table.remove(map.sites, k)
++		end
++	end
++
++	-- The rim: every void cell touching walkable ground, with one edge kind
++	-- each, dealt in long runs by low-frequency noise.
++	local rim: { number } = {}
++	for i, kind in map.kinds do
++		if kind == "void" then
++			local x, z = Grid.coords(grid, i)
++			for _, d in Grid.NEIGHBOURS do
++				if Grid.get(grid, x + d[1], z + d[2]) == Grid.FLOOR then
++					map.kinds[i] = "rim"
++					table.insert(rim, i)
++					break
++				end
++			end
++		end
++	end
++	local value: { [number]: number } = {}
++	for _, i in rim do
++		local x, z = Grid.coords(grid, i)
++		value[i] = Noise.sample(field, x * 0.07 + RIM_NOISE_OFFSET, z * 0.07)
++	end
++	table.sort(rim, function(a: number, b: number): boolean
++		if value[a] ~= value[b] then
++			return value[a] < value[b]
++		end
++		return a < b
++	end)
++	local total = 0
++	for _, kind in EDGE_ORDER do
++		total += EDGE_WEIGHTS[kind]
++	end
++	local taken, budget = 1, 0
++	for n, i in rim do
++		while taken < #EDGE_ORDER and n > budget + EDGE_WEIGHTS[EDGE_ORDER[taken]] / total * #rim do
++			budget += EDGE_WEIGHTS[EDGE_ORDER[taken]] / total * #rim
++			taken += 1
++		end
++		map.edges[i] = EDGE_ORDER[taken]
++	end
++	-- The cutting the road comes in by: its sides are cliff, and at the map's
++	-- edge the ground falls away into mist.
++	for _, i in rim do
++		local x, z = Grid.coords(grid, i)
++		local besideRoad = false
++		for _, d in Grid.NEIGHBOURS do
++			local nx, nz = x + d[1], z + d[2]
++			if Grid.inBounds(grid, nx, nz) and map.kinds[Grid.index(grid, nx, nz)] == "road" then
++				besideRoad = true
++				break
++			end
++		end
++		if besideRoad then
++			map.edges[i] = if x <= MARGIN or x >= WIDTH - MARGIN + 1 then "drop" else "cliff"
++		end
++	end
++
++	-- Start and exit stand where the road first and last reaches the open
++	-- highland; the road runs on behind the start and past the exit to the map's
++	-- edge, as the moor's does with its cutting.
++	local startIndex: number? = nil
++	local exitIndex: number? = nil
++	for idx, p in samples do
++		local x, z = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++		if blobAt(x, z) < 0.9 then
++			if startIndex == nil then
++				startIndex = idx
++			end
++			exitIndex = idx
++		end
++	end
++	local first = samples[startIndex or 1]
++	local last = samples[exitIndex or #samples]
++	map.start = { x = math.floor(first.x + 0.5), z = math.floor(first.z + 0.5) }
++	map.exit = { x = math.floor(last.x + 0.5), z = math.floor(last.z + 0.5) }
++	if startIndex and startIndex > 1 then
++		map.startSample = startIndex
++	end
++
++	-- Landmarks: the lake's ice first (the heart of the map), then the isle's
++	-- runestones and fires, the barrows on the snow, and the waymarkers where
++	-- the road comes through the rim.
++	local marks: { Landmark } = {}
++	local function onHeath(x: number, z: number): boolean
++		local ix, iz = math.floor(x + 0.5), math.floor(z + 0.5)
++		if not Grid.inBounds(grid, ix, iz) then
++			return false
++		end
++		return map.kinds[Grid.index(grid, ix, iz)] == "heath"
++	end
++	local function nearSite(x: number, z: number, reach: number): boolean
++		for _, site in map.sites do
++			if rectDistance(site, x, z) <= reach then
++				return true
++			end
++		end
++		return false
++	end
++	-- Whether a prop of `reach` at (x, z) would stand on an ice sheet already
++	-- laid: ice may spill a little past the lake's own outline.
++	local function nearIce(x: number, z: number, reach: number): boolean
++		for _, m in marks do
++			if m.sculpt == "rimeholt_ice" or m.sculpt == "rimelake_ice" then
++				local r = reach + 3 * (m.scale or 1)
++				if (m.x - x) ^ 2 + (m.z - z) ^ 2 <= r * r then
++					return true
++				end
++			end
++		end
++		return false
++	end
++	-- An ice sheet of `scale` centred here, or nil when it would run onto the
++	-- road or a site (the ice is walkable ground under the sheet, never over the
++	-- way on or the buildings).
++	local function iceAt(x: number, z: number, scale: number, sink: number, sculpt: string): Landmark?
++		if not onHeath(x, z) then
++			return nil
++		end
++		local reach = 3 * scale
++		if roadDistance(x, z) <= reach + 0.6 or nearSite(x, z, reach + 1.5) then
++			return nil
++		end
++		return { sculpt = sculpt, x = x, z = z, yaw = between(rng, 0, 360), scale = scale, sink = sink }
++	end
++	-- A disc is laid where its middle is in the lake: its edge may spill a
++	-- little onto the frozen shore, which is frozen too, and overlapping middles
++	-- are what make the sheets meet into one lake instead of scattered tiles.
++	local function discInLake(x: number, z: number): boolean
++		return lakeAt(x, z) <= 0.9
++	end
++
++	-- The isle's own sheet first, so the close view frames the lake's heart
++	-- with the runestone ring on it. The heart is the tileset's own
++	-- `rimeholt_ice`; the sheets that fill the lake round it are the
++	-- one-coloured `rimelake_ice`, so their many seams don't read as a mosaic
++	-- against the snow. It shrinks rather than crowd the road.
++	local heartScale = between(rng, 1.8, 2.1)
++	local heart = iceAt(ring.x, ring.z, heartScale, 0.01, "rimeholt_ice")
++	while heart == nil and heartScale > 1.2 do
++		heartScale -= 0.3
++		heart = iceAt(ring.x, ring.z, heartScale, 0.01, "rimeholt_ice")
++	end
++	if heart then
++		table.insert(marks, heart)
++	end
++	-- The rest of the sheet: overlapping discs dealt over the lake's whole body,
++	-- each sunk a little differently so no two tops flicker where they meet.
++	-- They are small enough to lie in the band between the road's snowy verge
++	-- and the shore, so they meet into one sheet instead of scattering.
++	for gz = -math.ceil(lake.rz), math.ceil(lake.rz), 2.2 do
++		for gx = -math.ceil(lake.rx), math.ceil(lake.rx), 2.2 do
++			local x = lake.cx + gx + between(rng, -0.7, 0.7)
++			local z = lake.cz + gz + between(rng, -0.7, 0.7)
++			local scale = between(rng, 1.8, 2.6)
++			if discInLake(x, z) then
++				local sheet = iceAt(x, z, scale, between(rng, 0.02, 0.07), "rimelake_ice")
++				if sheet then
++					table.insert(marks, sheet)
++				end
++			end
++		end
++	end
++
++	-- The runestone ring on the isle, and cold granite and two of the last
++	-- hill-fires at its edge: the lake's heart reads from above as a ringed,
++	-- lit stone.
++	if onHeath(ring.x, ring.z) then
++		table.insert(marks, {
++			sculpt = "rimeholt_runestones",
++			x = ring.x,
++			z = ring.z,
++			yaw = between(rng, 0, 360),
++			scale = between(rng, 1.5, 1.8),
++			sink = 0.4,
++		})
++	end
++	local outX, outZ = perpX * side, perpZ * side
++	local alongX, alongZ = dirX / dirLen, dirZ / dirLen
++	for s = -1, 1, 2 do
++		local bx, bz = ring.x + alongX * s * 4.6, ring.z + alongZ * s * 4.6
++		if onHeath(bx, bz) and roadDistance(bx, bz) > 3 then
++			table.insert(marks, {
++				sculpt = "rimeholt_hillfire",
++				x = bx,
++				z = bz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1.1, 1.3),
++				sink = 0.2,
++			})
++		end
++		local rx0, rz0 = ring.x + outX * 4.8 + alongX * s * 2.0, ring.z + outZ * 4.8 + alongZ * s * 2.0
++		if onHeath(rx0, rz0) and roadDistance(rx0, rz0) > 3 then
++			table.insert(marks, {
++				sculpt = "rimeholt_boulder",
++				x = rx0,
++				z = rz0,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1.2, 1.7),
++				sink = 0.7,
++			})
++		end
++	end
++
++	-- The hill-folk's barrows on the snow round the shore (the lake's own
++	-- dressing raises one more in its graveyard and the tileset another).
++	local barrows = 0
++	for _ = 1, 200 do
++		if barrows >= 2 then
++			break
++		end
++		local x = between(rng, 8, WIDTH - 8)
++		local z = between(rng, 8, DEPTH - 8)
++		local clear = onHeath(x, z) and lakeAt(x, z) > 1.15 and blobAt(x, z) < 0.9
++		clear = clear and roadDistance(x, z) > 6 and not nearSite(x, z, 4) and not nearIce(x, z, 3.5)
++		for _, m in marks do
++			if m.sculpt == "rimeholt_barrow" and (m.x - x) ^ 2 + (m.z - z) ^ 2 < 12 ^ 2 then
++				clear = false
++			end
++		end
++		if clear then
++			-- Its mound is about seven cells by five; keep all of it on land.
++			for _, d in { { -3.4, -2.4 }, { 3.4, -2.4 }, { -3.4, 2.4 }, { 3.4, 2.4 } } do
++				if not onHeath(x + d[1], z + d[2]) or lakeAt(x + d[1], z + d[2]) < 1.05 then
++					clear = false
++				end
++			end
++		end
++		if clear then
++			table.insert(marks, {
++				sculpt = "rimeholt_barrow",
++				x = x,
++				z = z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1.5, 1.9),
++				sink = 0.8,
++			})
++			barrows += 1
++		end
++	end
++
++	-- Waymarkers either side of the road where it comes through the rim: the
++	-- old hill-folk's stones marking the way in and the way on.
++	local function markersAt(fromStart: boolean)
++		local at: number? = nil
++		if fromStart then
++			for idx, p in samples do
++				if blobAt(math.floor(p.x + 0.5), math.floor(p.z + 0.5)) < 0.88 then
++					at = idx
++					break
++				end
++			end
++		else
++			for idx = #samples, 1, -1 do
++				local p = samples[idx]
++				if blobAt(math.floor(p.x + 0.5), math.floor(p.z + 0.5)) < 0.88 then
++					at = idx
++					break
++				end
++			end
++		end
++		if at == nil or at <= 1 or at >= #samples then
++			return
++		end
++		local p = samples[at]
++		local ahead = samples[if fromStart then at + 1 else at - 1]
++		local dx, dz = (p.x - ahead.x) * (if fromStart then -1 else 1), (p.z - ahead.z) * (if fromStart then -1 else 1)
++		local len = math.max(math.sqrt(dx * dx + dz * dz), 1e-6)
++		local px, pz = -dz / len, dx / len
++		for s = -1, 1, 2 do
++			local x = p.x + px * s * 3.4
++			local z = p.z + pz * s * 3.4
++			if onHeath(x, z) and roadDistance(x, z) > 2.6 and not nearIce(x, z, 2.5) then
++				table.insert(marks, {
++					sculpt = "rimeholt_marker",
++					x = x,
++					z = z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 1.2, 1.4),
++					sink = 0.4,
++				})
++			end
++		end
++	end
++	markersAt(true)
++	markersAt(false);
++	(map :: any).rimelakeMarks = marks
++	return map
++end
++
++local draft: DraftedMap.Draft = {
++	name = "RimelakeIsles",
++	about = "A highland of old snow round one wide frozen lake, its road crossing the ice from islet to islet to the runestone ring at the heart.",
++	tileset = "rimeholt",
++	generate = attempt,
++	landmarks = function(map: Heath.Map, _rng: Random): { Landmark }
++		local marks = (map :: any).rimelakeMarks
++		return if marks then marks :: { Landmark } else {}
++	end,
++}
++
++return draft
