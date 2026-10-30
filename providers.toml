@@ -15,7 +15,10 @@ key_env = "DEEPSEEK_API_KEY"
 model = "deepseek-flash[1m]"
 small_model = "deepseek-flash"
 price_in = 0.30
-price_cached = 0.03
+# V4.1 Flash's cache hit is $0.006 per 1M (computeprices.com, 2026-10-29), not 0.03. Even
+# so the estimate stays above the bill (fafwa, 2026-10-30: about $11 real for ~890M tokens,
+# against ~$19 at these rates), likely from DeepSeek's off-peak halving: high, on purpose.
+price_cached = 0.006
 price_out = 1.20
 max_turns = 40
 timeout_s = 2400
