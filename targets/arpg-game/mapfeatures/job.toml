@@ -1,0 +1,95 @@
+# The mapfeatures job (2026-10-30): map features against the game's own contract
+# (systems/MapFeature, docs/guides/map-features.md), so a kept feature goes straight into
+# the game. It replaces the `features` job's swarm-lab platform (0003-0005). fafwa: "try out
+# a bunch of radical new feature types. My idea is that deepseek can generate small
+# features like this and then a claude builder can assemble them."
+# Pinned to the contract's branch until PR #936 merges; then drop `ref`.
+ref = "origin/claude/map-features-contract"
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+max_turns = 150
+tools = ["tools/explain.luau"]
+rules = ["docs/guides/map-features.md", "docs/guides/set-pieces.md", "docs/art/bible.md"]
+
+[files."src/shared/systems/features/{skill}*.luau"]
+mode = "new_file"
+
+[files."src/shared/data/MapFeatures.luau"]
+mode = "add_lines"
+pattern = '(local {skill}\w* = require\("\.\./systems/features/{skill}\w*"\)|{skill}\w* = {skill}\w*,)'
+
+[files."src/shared/data/Sculpts.luau"]
+mode = "add_rows"
+prefix = "{skill_lower}_"
+
+[files."src/shared/data/SetPieces.luau"]
+mode = "add_rows"
+prefix = "{skill_lower}_"
+
+[files."src/shared/data/catalog/World.luau"]
+mode = "add_lines"
+pattern = '(\["sculpt:{skill_lower}_\w+"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),)?|"[^"]{1,160}",|(MOOR|TOWN)|\),|--[^\n]{0,200})'
+
+[purity]
+first_line = "--!strict"
+max_lines = 1000
+requires = ["../FeatureDress", "../FeatureLook", "../MapFeature", "../Grid", "../Noise", "../DistanceField"]
+forbid = [
+  '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
+  '\btask\.', '\bwait\s*\(', '\bspawn\s*\(', '\bdelay\s*\(', '\bcoroutine\.',
+  '\bos\.', '\bdebug\.', '\bgetfenv\b', '\bsetfenv\b', '\bloadstring\b', '\b_G\b', '\bshared\b',
+  '\bRandom\.new\b', '\bmath\.random\b',
+]
+
+[quotes.contract]
+file = "src/shared/systems/MapFeature.luau"
+note = "the contract: what a feature is, the problems it is checked by, how it is stamped into maps"
+
+[quotes.looks]
+file = "src/shared/systems/FeatureLook.luau"
+note = "what your own cell kinds can look like (CellLook), and the rules they keep"
+
+[quotes.example]
+file = "src/shared/systems/features/MoorBarrowRing.luau"
+note = "the worked example, a henge for the moor. Yours must be a different kind of place, not this one varied"
+
+[quotes.sculpt_types]
+file = "src/shared/SculptTypes.luau"
+note = "what a sculpt recipe is: the kinds are fixed code, a recipe picks one and its size, colours and options"
+
+[quotes.setpiece_types]
+file = "src/shared/SetPieceTypes.luau"
+note = "what a set piece and a theme are"
+
+[quotes.setpieces]
+file = "src/shared/data/SetPieces.luau"
+note = "the set piece recipes: a new one goes at the end of the `recipes` table, its theme an existing one"
+
+[[specs]]
+name = "MapFeatures"
+cmd = "lune run tests MapFeatures"
+
+[[specs]]
+name = "Sculpt"
+cmd = "lune run tests Sculpt"
+
+[[specs]]
+name = "SetPiece"
+cmd = "lune run tests SetPiece"
+
+[[specs]]
+name = "Catalog"
+cmd = "lune run tests Catalog"
+
+[[specs]]
+name = "ContentCompleteness"
+cmd = "lune run tests ContentCompleteness"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/systems/features src/shared/data/MapFeatures.luau src/shared/data/Sculpts.luau src/shared/data/SetPieces.luau src/shared/data/catalog/World.luau"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/systems/features src/shared/data/MapFeatures.luau src/shared/data/Sculpts.luau src/shared/data/SetPieces.luau src/shared/data/catalog/World.luau"

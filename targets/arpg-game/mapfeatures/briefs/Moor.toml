@@ -1,0 +1,22 @@
+# Radical new feature types for the moor (2026-10-30): the moor's maps reshuffle the same
+# heath, outcrops, shelves, hollows and rim edges every time; these are new kinds of place
+# for the generator to stamp in (arpg-game stream map-features).
+skill = "Moor"
+family = "feature"
+example = "MoorBarrowRing"
+brief = """
+Make one feature for **the moor**: the game's first outdoor area, a night heath of dead
+grass and heather round a ruined village, basalt cliffs and thickets at its rim, graves,
+standing stones and barrows, low mist, a faded oxblood accent (its tileset is `moor`, and
+everything in it already exists for you to use: grep `src/shared/data/outdoorTilesets/Moor.luau`
+for its ground colours and props, and `data/Sculpts.luau` for sculpts named `moor_`,
+`field_`, `barrow_`, headstones, boulders, waystones; set pieces in `data/SetPieces.luau`).
+
+fafwa, who owns the game: today "this heath shows up in basically every map over and
+over ... I want to add new features entirely". Your direction names a kind of place the
+moor has never had. Make it **unmistakably that place**, with height and shape (lifts,
+banks, ditches, pits, walls), its own ground where it needs it, landmarks from the moor's
+sculpts or new ones of your own, and an effect if it has one (mist pouring, marsh-light,
+embers, crows). A feature is one structure, not a map: small (up to 16 cells a side) or
+medium (up to 32); if the road runs through it, it is a `crossing`.
+"""

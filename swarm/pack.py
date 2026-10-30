@@ -86,9 +86,10 @@ def render_commands(brief: dict) -> tuple[str, str]:
         # One map feature alone on a pad of plain ground (MapFeature.asDraft): its own
         # photographs first, the pad from above, its new sculpts and its set piece. The
         # reference is the worked example, RimeholtFrozenFall.
+        ex = brief.get("example", "RimeholtFrozenFall")
         ref = [
-            "lune run scripts/dresspreview shots .swarm/out/ref-shots-RimeholtFrozenFall.png 2 1 feature=RimeholtFrozenFall",
-            "lune run scripts/dresspreview whole .swarm/out/ref-whole-RimeholtFrozenFall.png 1 1 feature=RimeholtFrozenFall",
+            f"lune run scripts/dresspreview shots .swarm/out/ref-shots-{ex}.png 2 1 feature={ex}",
+            f"lune run scripts/dresspreview whole .swarm/out/ref-whole-{ex}.png 1 1 feature={ex}",
         ]
         mine = [
             "lune run scripts/dresspreview seedsheet .swarm/out/feature-seeds-r1.png 12 1 feature=<YourLook>",

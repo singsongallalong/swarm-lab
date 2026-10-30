@@ -414,6 +414,10 @@ def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str
     # A worker task (swarm/task.py) brings its own target: the repo at the agent's commit.
     t = target_override or config.target(target_name)
     j = config.job(t, job_name)
+    # A job may pin the game's ref (job.toml `ref`): a contract on a branch not yet merged.
+    if j.data.get("ref") and not target_override:
+        import dataclasses
+        t = dataclasses.replace(t, ref=j.data["ref"])
     brief = j.brief(brief_name)
     figs = config.figures(t, j, brief, figure)
     provs = config.providers()
