@@ -1,0 +1,24 @@
+{
+  "letter": "J",
+  "generator": "g06",
+  "run": "domain-kit-1",
+  "sculpts": [
+    "domain_brazier",
+    "domain_brazier_high",
+    "domain_brazier_low"
+  ],
+  "setpiece": "domain_brazier_fire",
+  "intent": "A holy brazier on a tall gold tripod with a bowl of white light, the Eternal Domain's lamp by the hundred, varied across three rows into a taller colonnade lamp and a low marble altar lamp, with its fire a pale gold flame and rising gold sparks.",
+  "critic": {
+    "piece": 8,
+    "shape": 6,
+    "camera": 7,
+    "seeds": 4,
+    "effect": 7,
+    "total": 6.6,
+    "reads_as_itself": true,
+    "why": "Unmistakably a gold holy brazier with a white fire; three good rows, but identical seeds and a small flame."
+  },
+  "role": "Lining every hall and colonnade in pairs and rows, the Domain's common lamp.",
+  "notes": "# J: holy brazier\nKeep: the gold tripod and the glowing white bowl, which are instantly a brazier and Domain-coloured, and the low ivory altar-lamp row.\n1. Seeds are identical within each row. Vary the leg splay, the bowl rim or the height a little so a hall of a hundred does not look stamped.\n2. Thicken the tall row's legs. At pitch 50 the high brazier is a bowl on three hairlines.\n3. Make the flame a touch larger and brighter. It is small at game-camera distance, and a lamp by the hundred needs to light the hall.\n"
+}

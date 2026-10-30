@@ -1,0 +1,24 @@
+{
+  "letter": "F",
+  "generator": "g08",
+  "run": "domain-kit-1",
+  "sculpts": [
+    "domain_gold_tree",
+    "domain_gold_tree_low",
+    "domain_gold_tree_broken"
+  ],
+  "setpiece": "domain_gold_leaves",
+  "intent": "A pale marble sacred tree 32 studs tall, its full crown of gilded boughs turned wider or denser by each seed, with companion rows for a younger 22-stud tree and a snapped 24-stud one, and leaves of gold light drifting down from the crown to pool at its foot.",
+  "critic": {
+    "piece": 6,
+    "shape": 6,
+    "camera": 5,
+    "seeds": 7,
+    "effect": 6,
+    "total": 6.0,
+    "reads_as_itself": true,
+    "why": "A white-gold tree with good variety and drifting light leaves; a sparse dead-looking crown that thins out at pitch 50."
+  },
+  "role": "In garden courts and alcoves between halls, the broken row in ruined wings.",
+  "notes": "# F: gold tree\nKeep: the white-and-gold bough tangle and the broken row, which give good seed variety, and the drifting leaves of light.\n1. The crown is a sparse, leafless twig scribble that reads as a dead bleached tree. Thicken the boughs and mass them into a fuller gilt crown.\n2. Add a trunk flare or root plinth so the tree stands on something holy rather than on bare floor.\n3. Keep the falling leaves closer to the crown and let them pool at the foot. From above they scatter over the whole tile.\n"
+}

@@ -1,0 +1,132 @@
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..495b8854 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -941,4 +941,37 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- The Eternal Domain (roadmap areas/eternal-domain.md): the waystones that
++-- lead a run through its halls. A ring of tall marble pillars round a dais,
++-- one fallen and the rest standing at their own heights, and a gilded head
++-- stone to set in the ring's middle or to stand in a line down a hall. A
++-- person is 5 studs: the ring's stones stand five to six people tall.
++Sculpts.domain_wayring = {
++	kind = "waystones",
++	-- Wide enough for nine pillars to read as a ring from the game camera,
++	-- and for the one that has fallen to lie clear of the walk between them.
++	size = { 36, 28, 4.2 },
++	material = "Marble",
++	-- Warm ivory to pale marble, the shaded tone darkest: two or three stone
++	-- tones make the pillars read one against another.
++	colors = { { 232, 224, 208 }, { 219, 213, 199 }, { 201, 195, 183 } },
++	maxPrims = 12,
++	stones = 9,
++}
++-- The head stone of a ring, or the stones of a line: a tall marble monolith
++-- with a gilded band round it near the crown and a gold ribbon hanging from
++-- the knot, and its fallen stones heaped at the foot. Seeds lean it a little
++-- differently, set its cap and ribbon askew and move the heap.
++Sculpts.domain_waystone = {
++	kind = "marker",
++	-- Wider than the ring's stones, so the gold band reads from the high camera.
++	size = { 6.5, 30, 4.5 },
++	material = "Marble",
++	colors = { { 232, 224, 208 }, { 219, 213, 199 } },
++	-- Gold trim against the ivory: saturation 0.52, value 0.90, inside the
++	-- domain's limit (gold is trim and crown, never a whole surface).
++	accent = { 230, 190, 110 },
++	maxPrims = 9,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..bf2951cb 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,65 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The Eternal Domain (roadmap areas/eternal-domain.md): the light that runs
++-- from waystone to waystone through the halls. A builder threads the route
++-- through a line or ring of stones at band height; bright bands run toward
++-- the far end, so the light travels stone to stone, and a swell fades
++-- whole stretches in and out so it is never all there at once. White-gold
++-- sparks spring off the line, and gold motes drift up from it.
++recipes.domain_waylight = {
++	about = "Holy light running from waystone to waystone: a gold thread with bright bands, sparks and rising gold motes.",
++	theme = "domain",
++	path = { kind = "route", round = 0 },
++	layers = {
++		{
++			name = "thread",
++			look = { kind = "neon", width = 0.7, segment = 3, transparency = 0.08, color = "gold" },
++			motion = {
++				kind = "flow",
++				wavelength = 16,
++				speed = 10,
++				depth = 0.5,
++				swell = { wavelength = 80, speed = 6, depth = 0.6 },
++				wiggle = { amplitude = 0.25, span = 30, periods = { 4.3, 2.9 } },
++			},
++			priority = 1,
++		},
++		{
++			name = "sparks",
++			look = { kind = "arcs", every = 10, pieces = 5, reach = 1.2, span = 2.8, width = 0.1, color = "core" },
++			motion = { kind = "crackle", every = 0.12, swell = { wavelength = 80, speed = 6, depth = 0.6 } },
++			priority = 2,
++		},
++		{
++			name = "bands",
++			look = { kind = "light", every = 12, max = 6, range = 15, brightness = 0.8, color = "glow" },
++			motion = { kind = "pulse", period = 3.6, depth = 0.3 },
++			priority = 3,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 1.4,
++				lift = 0.7,
++				toward = "up",
++				rise = 1.6,
++				life = { 2.5, 3.5 },
++				rate = 5,
++				size = 1.1,
++				tall = 2,
++				transparency = 0.25,
++				color = "gold",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 10, span = 14, periods = { 4.1, 5.7 } },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..ec4d196c 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,15 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The Eternal Domain (roadmap areas/eternal-domain.md)
++	["sculpt:domain_wayring"] = row(
++		"A ring of nine tall ivory pillars, one fallen, marking the way through the Eternal Domain's halls.",
++		MOOR
++	),
++	["sculpt:domain_waystone"] = row(
++		"A tall ivory waystone with a gilded band and a hanging gold ribbon: the Eternal Domain's marker stone.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)

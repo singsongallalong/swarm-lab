@@ -71,3 +71,30 @@ critic still sees the lines.
 ## Log
 
 - 2026-10-30: domain-kit-1 launched: 12 workers off-peak.
+- 2026-10-30, domain-kit-1 result: 7 of 12 passed the checks at first. Three workers hit 100
+  turns and two left a stray render in the repo root; after a resume and cleanup, 11 of 12
+  passed. One edited text outside its rows. Cost about $2.75 in all (estimate).
+- The blind critic shelved 8: brazier 6.6, arch 6.3, wayring 6.15, spire 6.0, gold tree 6.0,
+  column 5.6, great gate 5.55, pool 5.05. The **blind reading failed 3**, all figurative
+  landmarks: the seated god read as "a squat block under a pagoda crown", the god's face as
+  "a stack of cream blocks", and the throne-dais as "an altar with no seat". Shelf:
+  `library/kits/Domain/`.
+
+## What domain-kit-1 taught (measured on one run)
+
+- **Repeating props and architecture work:** braziers, arches, columns, standing stones, a
+  tree, a gate. They're usable but not hero quality (5–6.6/10).
+- **Figurative landmarks fail with today's sculpt kinds.** A worker can only set the knobs of
+  kinds built for other places (`colossus` is the quarry's), so a seated god, a throne or a
+  carved face comes out as stacked blocks. Landmarks need another route:
+  1. **Generated meshes in a Studio lane:** text-to-3D is strongest at statues and faces.
+     game-factory's lane request queue has the recipe; arpg-game would need its own.
+  2. **New sculpt kinds** written by the builder (a seated figure, a throne, a relief), then
+     a kit run to dress them.
+  3. A DeepSeek `kinds`-style run writing new kind code to a contract. It's the weakest
+     option for figures: composition is where workers are weakest.
+- **Seeds hardly vary within a row:** the variety comes from the separate rows a worker
+  makes (whole, broken, fallen). Next time, ask for one row per variant on purpose, and
+  check seed spread the way the map variety spec does.
+- **The blind reading is worth keeping.** It caught exactly the pieces a player wouldn't
+  recognise, and it's cheap: the same critic, one extra step first.

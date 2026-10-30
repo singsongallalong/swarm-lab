@@ -1,0 +1,174 @@
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..527def39 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -940,5 +940,45 @@ Sculpts.parish_bell_tower = {
+ 	accent = PARISH_MOSS,
+ 	maxPrims = 34,
+ }
++-- The Eternal Domain (roadmap areas/eternal-domain.md), a TRIAL kit for
++-- swarm-lab's smoke test (2026-10-30): the colonnade column of the gods.
++-- Pale ivory marbles under the trial's stone cap (value 0.75-0.92, saturation
++-- 0.05-0.20): a light, a mid and a shaded tone, so the drums and the facets
++-- read against each other from the game camera (bible §2, A005: plain parts
++-- this size lose their facets and read flat in one tone).
++-- The whole column: four marble drums in a square pier, turned a little
++-- against each other so the joints catch the light as flutes, and a crown
++-- of four roughened blocks where the builder's hammer left off. `jag` keeps
++-- the drums hand-cut, never level, and the caps change with the seed, so no
++-- two columns in a colonnade are quite the same.
++Sculpts.domain_column = {
++	kind = "columns",
++	size = { 8, 50, 7 },
++	material = "Marble",
++	colors = { { 228, 219, 198 }, { 210, 201, 182 }, { 194, 187, 170 } },
++	maxPrims = 30,
++	columns = 2,
++	jag = 0.08,
++}
++-- The snapped column: the same pier broken across, the tall side standing
++-- and the rest stepped down to a stump, its fallen stones heaped at the
++-- foot. Seeds turn the break to a new side, so a run of them never breaks
++-- the same way twice (the direction's "some seeds ... snapped").
++Sculpts.domain_column_broken = {
++	kind = "tower",
++	size = { 9, 52, 4.5 },
++	material = "Marble",
++	colors = { { 228, 219, 198 }, { 210, 201, 182 }, { 194, 187, 170 } },
++	maxPrims = 24,
++}
++-- The drum that lies beside a broken one: squared marble blocks of the
++-- fallen shaft, one set down across the others, in the three stone tones.
++Sculpts.domain_column_fallen = {
++	kind = "blocks",
++	size = { 5, 2.6, 3.6 },
++	material = "Marble",
++	colors = { { 228, 219, 198 }, { 210, 201, 182 }, { 194, 187, 170 } },
++	maxPrims = 8,
++}
+ 
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..b6d2ae9b 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,95 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The Eternal Domain (roadmap areas/eternal-domain.md), a TRIAL piece for
++-- swarm-lab's kit smoke test (2026-10-30). The gods' light gathers at the
++-- foot of a colonnade column and climbs it: a narrow shower of gold motes
++-- rising out of a soft warm wash, with a few pale sky-blue sparks for the
++-- domain's cold, and two lights breathing on the stone. Gold is the
++-- domain's crown, so the shower is narrow and the wash faint (EF8): the
++-- piece glows on the column, it is not a fire. The path is short and
++-- wanders (bend 25) so the emitters do not stand in a row, and the motes
++-- do the climbing (rise x life about 20 studs): a worm's climb only caps its
++-- pitch, so a long one would lie flat as a rope (A132 effect critic 2).
++-- The core is slim and low, well under the game camera (SE10).
++recipes.domain_column_glory = {
++	about = "Holy light gathering at the foot of a god-column and climbing it in a narrow shower of gold motes, with pale sky-blue sparks and two soft breathing lights.",
++	theme = "domain",
++	path = { kind = "worm", length = 6, step = 2, bend = 25, climb = 70, round = 2 },
++	layers = {
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 1.5,
++				thick = 2.5,
++				lift = 0.4,
++				toward = "up",
++				rise = 2.6,
++				life = { 6, 9 },
++				rate = 6,
++				size = 0.5,
++				tall = 1.2,
++				transparency = 0.15,
++				color = "gold",
++				texture = "wisp",
++				lean = 8,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.5, tilt = 4, span = 8, periods = { 4.3, 6.1 } },
++			priority = 1,
++		},
++		{
++			name = "glow",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 5,
++				lift = 1,
++				toward = "up",
++				rise = 1.1,
++				life = { 7, 10 },
++				rate = 1.2,
++				size = 4.5,
++				tall = 1.2,
++				transparency = 0.9,
++				color = "glow",
++				texture = "smoke",
++				lean = 10,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 7, span = 12, periods = { 7.1, 9.7 } },
++			priority = 2,
++		},
++		{
++			name = "cold",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 3.5,
++				lift = 1.2,
++				toward = "up",
++				rise = 2,
++				life = { 5, 7 },
++				rate = 1,
++				size = 0.4,
++				tall = 1.6,
++				transparency = 0.25,
++				color = "sky",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 6, span = 9, periods = { 5.3, 3.7 } },
++			priority = 3,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 4, max = 2, range = 20, brightness = 1, color = "glow" },
++			motion = { kind = "pulse", period = 3.8, depth = 0.3 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..697d04cc 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,19 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The Eternal Domain (a TRIAL kit for swarm-lab's smoke test, 2026-10-30)
++	["sculpt:domain_column"] = row(
++		"A whole column of the Eternal Domain's colonnade: four ivory marble drums in a square pier under a hand-cut crown.",
++		MOOR
++	),
++	["sculpt:domain_column_broken"] = row(
++		"A colonnade column of the Eternal Domain snapped across, its facets stepped down to a stump and fallen stones at the foot.",
++		MOOR
++	),
++	["sculpt:domain_column_fallen"] = row(
++		"The fallen drums of a broken god-column, squared marble blocks heaped on the ground.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)

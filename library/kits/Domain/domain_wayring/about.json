@@ -1,0 +1,23 @@
+{
+  "letter": "C",
+  "generator": "g10",
+  "run": "domain-kit-1",
+  "sculpts": [
+    "domain_wayring",
+    "domain_waystone"
+  ],
+  "setpiece": "domain_waylight",
+  "intent": "A ring of nine tall ivory pillars with one fallen, varied per seed in stone heights, lean and which stone lies down, with a wide gilded waystone for a line or a ring's head stone; a gold thread of holy light runs from stone to stone through their bands, its bright bands travelling and gold motes rising.",
+  "critic": {
+    "piece": 6,
+    "shape": 6,
+    "camera": 6,
+    "seeds": 7,
+    "effect": 6,
+    "total": 6.15,
+    "reads_as_itself": true,
+    "why": "Strong, varied henge silhouette and a good lit trail, but the stones are greyish with little Domain gold."
+  },
+  "role": "As a ring in an open cloud-court clearing or shrine room, the light thread leading the player in.",
+  "notes": "# C: waystone ring\nKeep: the leaning ring of tall stones with one fallen, which is a strong, readable silhouette that changes well across seeds.\n1. Bring gold and holy-white onto the ring stones themselves. Today they are grey-ivory and could be any henge in any land.\n2. Make the head waystone wider and more distinct from the ring stones. It is one more thin post with a small gold band.\n3. The light thread reads well as a lit trail, but it renders away from the stones. Show it threaded through a placed ring so the builder can see the intended look.\n"
+}

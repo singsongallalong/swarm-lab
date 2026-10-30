@@ -1,0 +1,24 @@
+{
+  "letter": "K",
+  "generator": "g00",
+  "run": "domain-kit-1",
+  "sculpts": [
+    "domain_column",
+    "domain_column_broken",
+    "domain_column_fallen"
+  ],
+  "setpiece": "domain_column_glory",
+  "intent": "A colonnade column of the Eternal Domain in pale ivory marble, built as four squared drums in a square pier under a hand-cut crown; seeds weather its crown and drum tones, the broken row turns a faceted break and its fallen stones to a new side each seed, and the fallen row scatters squared drums at a snapped column's foot, while the domain set piece lifts a narrow shower of gold motes and pale blue sparks from its base.",
+  "critic": {
+    "piece": 6,
+    "shape": 5,
+    "camera": 6,
+    "seeds": 6,
+    "effect": 5,
+    "total": 5.6,
+    "reads_as_itself": true,
+    "why": "A column, a stump and a fallen pile that read plainly; a thin square pier with no gold, and the broken row is too close to the whole one."
+  },
+  "role": "In long colonnades along hall walls, with the broken and fallen rows mixed in for ruin.",
+  "notes": "# K: colonnade column\nKeep: the fallen-drum pile, which is a good chunky ruin, and the rising gold-mote shower.\n1. Add gold: a gilt band at the crown and base. The shaft is plain grey-ivory and could belong to any ruin.\n2. Give the shaft more girth and a clear capital. It is a thin square pier with a notched top.\n3. The broken row hardly differs from the whole row. Snap it lower so the two read apart from the camera.\n"
+}

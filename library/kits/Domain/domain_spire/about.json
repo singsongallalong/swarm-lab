@@ -1,0 +1,23 @@
+{
+  "letter": "A",
+  "generator": "g04",
+  "run": "domain-kit-1",
+  "sculpts": [
+    "domain_spire",
+    "domain_spire_lesser"
+  ],
+  "setpiece": "domain_spire_flame",
+  "intent": "A slender ivory god-spire in tiers, each ringed in gold and crowned by a gold finial that burns, with a lesser 58-stud spire as its low twin; seeds vary the belfry's posts, buttresses, doorway and crown so no two stand alike.",
+  "critic": {
+    "piece": 7,
+    "shape": 6,
+    "camera": 5,
+    "seeds": 4,
+    "effect": 7,
+    "total": 6.0,
+    "reads_as_itself": true,
+    "why": "Clearly an ivory-and-gold bell spire with a burning crown; too slender for the high camera, seeds identical, and the flame swamps the tower."
+  },
+  "role": "As the landmark at a hall's far end or a courtyard centre, sparingly, one per area.",
+  "notes": "# A: god-spire\nKeep: the tiered ivory belfry with its gold rings and the tall white-gold flame sheaf, which makes it a beacon from the high camera.\n1. Thicken the shaft and widen the base tiers. At pitch 50 it is a thin stick against the 5-stud post, so give it a footprint that holds the floor.\n2. Make the seeds really differ: all three spire seeds, and the lesser spire, render as the same silhouette. Vary the crown height, the buttress count and the belfry openings.\n3. Pull the flame toward the finial. In the three-quarter view it rises from the base and engulfs the tower, so it reads as a pillar of fire instead of a burning crown.\n"
+}

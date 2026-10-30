@@ -1,0 +1,174 @@
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..b3a481c2 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -941,4 +941,41 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- The Eternal Domain (roadmap areas/eternal-domain.md): the game's opposite
++-- to the moor, pale stone and gold under holy light. A triumphal arch to
++-- span a hall: warm ivory piers in three stone tones, gilded stones through
++-- them and a gold keystone (the arch kind always crowns with the last
++-- colour). One material for the whole row is all the arch kind takes, so the
++-- gold is carried in colour on marble. The light that runs through the
++-- passage is its own set piece, domain_arch_light.
++Sculpts.domain_triumphal_arch = {
++	kind = "arch",
++	size = { 30, 32, 7 },
++	material = "Marble",
++	colors = { { 232, 221, 196 }, { 216, 208, 194 }, { 203, 193, 172 }, { 231, 190, 110 } },
++	maxPrims = 12,
++	span = 16,
++}
++-- The same order, taller and narrower, for a high vault or a doorway the
++-- procession passes through one at a time.
++Sculpts.domain_triumphal_arch_high = {
++	kind = "arch",
++	size = { 26, 35, 6.5 },
++	material = "Marble",
++	colors = { { 232, 221, 196 }, { 216, 208, 194 }, { 203, 193, 172 }, { 231, 190, 110 } },
++	maxPrims = 12,
++	span = 13.5,
++}
++-- The arch broken: one pier's crown, a lintel stone and the gold keystone
++-- thrown down beside it (the arch kind's snapped form).
++Sculpts.domain_triumphal_arch_ruined = {
++	kind = "arch",
++	size = { 30, 27, 6.5 },
++	material = "Marble",
++	colors = { { 232, 221, 196 }, { 216, 208, 194 }, { 203, 193, 172 }, { 231, 190, 110 } },
++	maxPrims = 12,
++	span = 15,
++	snapped = true,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..43141e12 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,99 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The Eternal Domain (roadmap areas/eternal-domain.md): holy light streaming
++-- through a triumphal arch's passage, placed on the floor under
++-- domain_triumphal_arch (and its orders) and turned to run along the
++-- passage. A white-gold line lies on the floor and runs on toward the arch's
++-- far side, gold motes rise off it as from a sunbeam, a pale sky-blue haze
++-- drifts over it (the area's one cool note), and a few warm lights pool on
++-- the floor and the piers. Three seeds bend the path differently, so the
++-- light finds a different way through. Kept low: the motes rise a few studs,
++-- never into the game camera (SE10).
++recipes.domain_arch_light = {
++	about = "Holy light streaming through a hall of the Eternal Domain: a white-gold line on the floor, gold motes rising off it and a pale sky-blue haze.",
++	theme = "domain",
++	-- Gently bent, nearly straight, so it reads as a path through the arch
++	-- rather than a wandering worm.
++	path = { kind = "worm", length = 64, step = 3, bend = 2, climb = 0, round = 3 },
++	layers = {
++		{
++			name = "core",
++			look = { kind = "neon", width = 0.7, segment = 3, transparency = 0.15, color = "core" },
++			motion = {
++				kind = "flow",
++				wavelength = 20,
++				speed = 8,
++				depth = 0.55,
++				wiggle = { amplitude = 0.3, span = 40, periods = { 4.3, 2.9 } },
++			},
++			priority = 1,
++		},
++		{
++			-- The core's bloom, spilled wide on the marble: what the high
++			-- camera reads as the path of light, where the thin core is a wire.
++			name = "spill",
++			look = { kind = "neon", width = 2.4, segment = 3, transparency = 0.5, color = "glow" },
++			motion = {
++				kind = "flow",
++				wavelength = 20,
++				speed = 8,
++				depth = 0.45,
++				wiggle = { amplitude = 0.3, span = 40, periods = { 4.3, 2.9 } },
++			},
++			priority = 2,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 12,
++				thick = 2.5,
++				lift = 0.2,
++				toward = "up",
++				rise = 1.7,
++				life = { 2.5, 3.6 },
++				rate = 3,
++				size = 2.4,
++				tall = 1.8,
++				transparency = 0.45,
++				color = "gold",
++				texture = "wisp",
++				lean = 7,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 10, span = 18, periods = { 5.3, 7.9 } },
++			priority = 3,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 24,
++				thick = 7,
++				lift = 1.6,
++				toward = "up",
++				rise = 0.7,
++				life = { 8, 11 },
++				rate = 0.8,
++				size = 9,
++				tall = 1.2,
++				transparency = 0.85,
++				color = "sky",
++				texture = "veil",
++				lean = 6,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 8, span = 30, periods = { 11, 17 } },
++			priority = 4,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 26, max = 3, range = 20, brightness = 0.95, color = "glow" },
++			motion = { kind = "pulse", period = 4.6, depth = 0.25 },
++			priority = 5,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..884e1b74 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,19 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The Eternal Domain (roadmap areas/eternal-domain.md)
++	["sculpt:domain_triumphal_arch"] = row(
++		"A triumphal arch of ivory marble across a hall of the Eternal Domain, gilt stones in its piers and a gold keystone, with a path of light running through it.",
++		MOOR
++	),
++	["sculpt:domain_triumphal_arch_high"] = row(
++		"The Eternal Domain's arch in its taller, narrower order, for a high vault of the hall.",
++		MOOR
++	),
++	["sculpt:domain_triumphal_arch_ruined"] = row(
++		"A broken triumph: the Eternal Domain's arch with a pier's crown, a lintel stone and its gold keystone down at its foot.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)

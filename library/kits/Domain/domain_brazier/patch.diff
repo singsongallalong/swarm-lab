@@ -1,0 +1,179 @@
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..1606203c 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -941,4 +941,32 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- The Eternal Domain (roadmap areas/eternal-domain.md): its hall lamps, a
++-- brazier on a tall gold stand with a bowl of white light, placed by the
++-- hundred. The brazier kind paints the stand and bowl from its fourth colour
++-- and the light in the bowl from its fifth; the first three keep the warm
++-- ivory and two golds of the place. Three heights suit a hall's rows: the
++-- lamp, a taller one for colonnades, and a low marble altar one.
++Sculpts.domain_brazier = {
++	kind = "brazier",
++	size = { 7, 11.5, 7 },
++	material = "Metal",
++	colors = { { 232, 226, 212 }, { 208, 202, 190 }, { 186, 150, 88 }, { 230, 193, 111 }, { 234, 229, 216 } },
++	maxPrims = 5,
++}
++Sculpts.domain_brazier_high = {
++	kind = "brazier",
++	size = { 5.8, 14, 5.8 },
++	material = "Metal",
++	colors = { { 232, 226, 212 }, { 208, 202, 190 }, { 186, 150, 88 }, { 230, 193, 111 }, { 234, 229, 216 } },
++	maxPrims = 5,
++}
++Sculpts.domain_brazier_low = {
++	kind = "brazier",
++	size = { 8, 8, 8 },
++	material = "Marble",
++	colors = { { 232, 226, 212 }, { 208, 202, 190 }, { 230, 193, 111 }, { 232, 226, 212 }, { 186, 150, 88 } },
++	maxPrims = 5,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..ed52f288 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,114 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The Eternal Domain (roadmap areas/eternal-domain.md): the fire in its
++-- braziers. A pale gold flame licking up out of the bowl, a whiter core
++-- inside it, gold sparks climbing away and one warm light so the pale
++-- stone round it takes the fire's colour. Its path is a short steep worm,
++-- so the emitters stack as a flame rather than trailing along the ground;
++-- each layer sways on its own slow periods, so the tongue flickers. The
++-- marker sits where the bowl's light is. Kept small and few (four emitters
++-- and a light) because the hall holds a hundred of them.
++recipes.domain_brazier_fire = {
++	about = "The Eternal Domain's brazier fire: a pale gold flame with a white heart, gold sparks climbing away and one warm light.",
++	theme = "domain",
++	path = { kind = "worm", length = 4, step = 2, bend = 20, climb = 80, round = 1 },
++	layers = {
++		{
++			name = "core",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 1.2,
++				lift = 0.2,
++				toward = "up",
++				rise = 7,
++				life = { 0.5, 0.8 },
++				rate = 5,
++				size = 0.7,
++				tall = 3,
++				transparency = 0.3,
++				color = "core",
++				texture = "wisp",
++				lean = 2,
++				vary = 0.25,
++			},
++			motion = { kind = "sway", amplitude = 0.2, tilt = 3, span = 6, periods = { 1.2, 1.8 } },
++			priority = 1,
++		},
++		{
++			name = "body",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 3,
++				lift = 0.3,
++				toward = "up",
++				rise = 4,
++				life = { 1.2, 1.8 },
++				rate = 4,
++				size = 3.2,
++				tall = 2.2,
++				transparency = 0.45,
++				color = "gold",
++				texture = "veil",
++				lean = 3,
++				vary = 0.3,
++			},
++			motion = { kind = "sway", amplitude = 0.35, tilt = 5, span = 8, periods = { 2.2, 1.5 } },
++			priority = 2,
++		},
++		{
++			name = "sparks",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 1.6,
++				lift = 0.6,
++				toward = "up",
++				rise = 8.5,
++				life = { 1.6, 2.4 },
++				rate = 5,
++				size = 0.24,
++				tall = 2.2,
++				transparency = 0.08,
++				color = "gold",
++				texture = "wisp",
++				lean = 6,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 0.4, tilt = 7, span = 10, periods = { 2.4, 3.2 } },
++			priority = 2,
++		},
++		{
++			name = "glow",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 3,
++				lift = 0.5,
++				toward = "up",
++				rise = 1.8,
++				life = { 1.8, 2.6 },
++				rate = 0.8,
++				size = 3.2,
++				tall = 1.3,
++				transparency = 0.88,
++				color = "glow",
++				texture = "smoke",
++				lean = 4,
++				vary = 0.35,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 4, span = 12, periods = { 3.2, 2.4 } },
++			priority = 4,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 4, max = 1, range = 16, brightness = 1, color = "glow" },
++			motion = { kind = "pulse", period = 2.6, depth = 0.22 },
++			priority = 1,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..55963b55 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,18 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	["sculpt:domain_brazier"] = row(
++		"The Eternal Domain's lamp: a brazier on a tall gold stand, its bowl a dish of white light.",
++		MOOR
++	),
++	["sculpt:domain_brazier_high"] = row(
++		"A taller Eternal Domain brazier with a slimmer bowl, for the rows between its colonnades.",
++		MOOR
++	),
++	["sculpt:domain_brazier_low"] = row(
++		"A low Eternal Domain brazier in ivory marble with a gold bowl, for its altar steps and low halls.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)

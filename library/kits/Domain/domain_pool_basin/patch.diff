@@ -1,0 +1,148 @@
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..6ff7789c 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -941,4 +941,27 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- The Eternal Domain (a trial, 2026-10-30): the kit's pool of light. A wide,
++-- low ring of pale marble, its broken rim stepped, with still water in it that
++-- glows gold: white stone and gold that glows, the domain's look in one prop.
++-- The tower kind is the kit's only round shell; at this height its base flare
++-- is the step up to the rim, and its seeded breaks read as ruin.
++Sculpts.domain_pool_basin = {
++	kind = "tower",
++	size = { 30, 4.2, 2.4 },
++	material = "Marble",
++	colors = { { 230, 222, 205 }, { 222, 213, 196 }, { 211, 202, 186 } },
++	maxPrims = 30,
++}
++-- Still water at the basin's foot: gold, so the pool is its own light. The
++-- darkest gold is the water's depth, the pale one its sheen.
++Sculpts.domain_pool_water = {
++	kind = "pool",
++	size = { 21, 0.1, 21 },
++	material = "Neon",
++	colors = { { 234, 202, 118 }, { 214, 178, 100 } },
++	reflectance = 0.35,
++	maxPrims = 4,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..f0393968 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,91 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The Eternal Domain (a trial, 2026-10-30): the light rising off the kit's
++-- pool. Gold strands climb off the water out of a white-gold glow, with a
++-- faint pale-blue haze at the rim (the domain's cool accent, sparing) and a
++-- few breathing lights, so the pool is lit from within and seen from across a
++-- hall. The worm stays short and flat, so the light rises over the whole
++-- surface rather than out of one point, and the tallest of it dies under the
++-- game camera's height (SE10).
++recipes.domain_pool_light = {
++	about = "The light rising off the Eternal Domain's pool: bright gold strands climbing off the water through a warm gold glow and a faint sky-blue haze.",
++	theme = "domain",
++	path = { kind = "worm", length = 16, step = 4, bend = 22, climb = 2, round = 2 },
++	layers = {
++		{
++			name = "strands",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 5,
++				lift = 0.3,
++				toward = "up",
++				rise = 3,
++				life = { 3, 4.5 },
++				rate = 3.5,
++				size = 1.1,
++				tall = 3.5,
++				transparency = 0.45,
++				color = "gold",
++				texture = "wisp",
++				lean = 5,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 7, span = 9, periods = { 4.1, 5.9 } },
++			priority = 1,
++		},
++		{
++			name = "glow",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 9,
++				lift = 0.1,
++				toward = "up",
++				rise = 1.2,
++				life = { 6, 8 },
++				rate = 2,
++				size = 7,
++				tall = 1.3,
++				transparency = 0.78,
++				color = "core",
++				texture = "veil",
++				lean = 6,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 5, span = 14, periods = { 9, 6 } },
++			priority = 2,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 14,
++				thick = 12,
++				lift = 0,
++				toward = "up",
++				rise = 0.6,
++				life = { 9, 11 },
++				rate = 0.4,
++				size = 9,
++				tall = 0.8,
++				transparency = 0.93,
++				color = "sky",
++				texture = "veil",
++				lean = 3,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 3, span = 18, periods = { 12, 8 } },
++			priority = 4,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 9, max = 3, range = 22, brightness = 1, color = "glow" },
++			motion = { kind = "pulse", period = 4.4, depth = 0.3 },
++			priority = 3,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..05a03d44 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,15 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The Eternal Domain (a trial, 2026-10-30): a pool of light.
++	["sculpt:domain_pool_basin"] = row(
++		"A wide round basin of pale marble, its rim broken, for the Eternal Domain's pools of light.",
++		MOOR
++	),
++	["sculpt:domain_pool_water"] = row(
++		"Still water glowing gold in the foot of the Eternal Domain's marble basin.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)

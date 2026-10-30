@@ -1,0 +1,24 @@
+{
+  "letter": "E",
+  "generator": "g02",
+  "run": "domain-kit-1",
+  "sculpts": [
+    "domain_great_gate",
+    "domain_gate_low",
+    "domain_gate_broad"
+  ],
+  "setpiece": "domain_gate_glory",
+  "intent": "The Great Gate of the gods: a 40-stud warm-ivory gate with receding gilt frames and a glowing gold door on stepped marble tiers, with a low three-tier variant and a broad hall variant; seeds shift the stone and gilding a shade.",
+  "critic": {
+    "piece": 6,
+    "shape": 6,
+    "camera": 7,
+    "seeds": 3,
+    "effect": 5,
+    "total": 5.55,
+    "reads_as_itself": true,
+    "why": "Rich stepped plinth and frames; the door does not glow, it looks like a leaning stack of plates from three-quarters, and the seeds are identical."
+  },
+  "role": "As the sealed boss or exit door at the end of a hall, one per floor.",
+  "notes": "# E: Great Gate\nKeep: the stepped gold-trimmed marble plinth and the receding frames, which are rich detail that reads well from above.\n1. Make the door glow. The \"glowing gold door\" renders as a flat grey slab, and from three-quarters the receding plates look like a leaning stack of books.\n2. Seeds are identical in all three rows. Vary the frame count, the plinth tiers or the gilding layout.\n3. Tie the gold-mote ray fan to the door face so the light comes from the gate, not from a point in front of it.\n"
+}

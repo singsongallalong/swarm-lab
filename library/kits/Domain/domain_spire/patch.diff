@@ -1,0 +1,157 @@
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..fcc92c98 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -941,4 +941,31 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- The Eternal Domain (trial): the gods' spire. Pale ivory marble in tiers,
++-- each tier ringed and crowned in gold; a pale sky-blue light in the doorway
++-- and the belfry's gold bell under the gold finial. Slender at 84 studs, many
++-- times a man's height, so it stands over a hall as the domain's landmark.
++Sculpts.domain_spire = {
++	kind = "belltower",
++	size = { 13, 84, 13 },
++	material = "Marble",
++	-- Gold trim, ivory walls, the doorway's cool light, the gold bell.
++	colors = { { 234, 182, 117 }, { 234, 226, 210 }, { 171, 193, 230 }, { 230, 172, 110 } },
++	materials = { [1] = "Metal", [2] = "Marble", [3] = "Neon", [4] = "Metal" },
++	-- A richer gold on the base and crown: the brief's accent, to 0.75.
++	accent = { 234, 150, 60 },
++	maxPrims = 36,
++}
++-- The lesser spire: the same ivory tiers and gold rings, still slender, at the
++-- height of a great hall's roof, so a tall crown and a low one stand together.
++Sculpts.domain_spire_lesser = {
++	kind = "belltower",
++	size = { 10, 58, 10 },
++	material = "Marble",
++	colors = { { 234, 182, 117 }, { 234, 226, 210 }, { 171, 193, 230 }, { 230, 172, 110 } },
++	materials = { [1] = "Metal", [2] = "Marble", [3] = "Neon", [4] = "Metal" },
++	accent = { 234, 150, 60 },
++	maxPrims = 36,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..ad45cf13 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,97 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The Eternal Domain (trial): the flame of holy light at the crown of a god's
++-- spire, placed on its finial. A fast white-gold core of wisp tongues climbs
++-- out of a slower gold smoke body, a pale sky-blue veil hangs round both, and
++-- a few gilded sparks crackle off it; the light breathes so the crown reads
++-- as burning from across the hall. Compact on purpose: one flame, under a
++-- phone's emitter share (EF3), for a builder to set on each spire's crown.
++recipes.domain_spire_flame = {
++	about = "The flame of holy light burning at an Eternal Domain spire's crown: a white-gold core in a warm gold body and a pale sky-blue haze.",
++	theme = "domain",
++	radius = 500,
++	path = { kind = "worm", length = 6, step = 2, bend = 12, climb = 10, round = 2 },
++	layers = {
++		{
++			name = "core",
++			look = {
++				kind = "stream",
++				every = 2,
++				thick = 1.2,
++				lift = 0.4,
++				toward = "up",
++				rise = 9,
++				life = { 1.4, 2.2 },
++				rate = 7,
++				size = 1.6,
++				tall = 3.5,
++				transparency = 0.25,
++				color = "core",
++				texture = "wisp",
++				lean = 5,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.5, tilt = 10, span = 6, periods = { 1.7, 2.6 } },
++			priority = 1,
++		},
++		{
++			name = "body",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 3,
++				lift = 0.2,
++				toward = "up",
++				rise = 5,
++				life = { 2, 3 },
++				rate = 4,
++				size = 5,
++				tall = 2.5,
++				transparency = 0.65,
++				color = "gold",
++				texture = "smoke",
++				lean = 8,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 14, span = 8, periods = { 2.9, 4.3 } },
++			priority = 2,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 5,
++				lift = 0.8,
++				toward = "up",
++				rise = 2.4,
++				life = { 4, 6 },
++				rate = 1.2,
++				size = 14,
++				tall = 1.4,
++				transparency = 0.9,
++				color = "sky",
++				texture = "veil",
++				lean = 10,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 8, span = 12, periods = { 5, 7.5 } },
++			priority = 3,
++		},
++		{
++			name = "sparks",
++			look = { kind = "arcs", every = 4, pieces = 3, reach = 1.4, span = 2, width = 0.07, color = "gold" },
++			motion = { kind = "crackle", every = 0.18 },
++			priority = 5,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 6, max = 2, range = 24, brightness = 1.2, color = "glow" },
++			motion = { kind = "pulse", period = 2.4, depth = 0.35 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..e7765cba 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,14 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	["sculpt:domain_spire"] = row(
++		"The Eternal Domain's god-spire: a slender ivory tower in gold-ringed tiers, its belfry crowned by a gold finial under the flame of holy light.",
++		MOOR
++	),
++	["sculpt:domain_spire_lesser"] = row(
++		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)

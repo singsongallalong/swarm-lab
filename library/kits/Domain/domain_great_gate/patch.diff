@@ -1,0 +1,177 @@
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..689a8499 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -941,4 +941,55 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- The Eternal Domain: the Great Gate of the gods, the endgame hall's way in.
++-- A towering door of gold in an ivory frame, its tiers stepped up to it and
++-- holy light in the throat: warm pale marble in two tones, a gilded rim and
++-- cornice, and the gold door glowing between them. Seeds shift the stone
++-- and gilding a shade; the low and broad rows are the same gate at other
++-- sizes for the builder to mix.
++Sculpts.domain_great_gate = {
++	kind = "gate",
++	size = { 40, 40, 40 },
++	material = "Marble",
++	colors = { { 234, 224, 198 }, { 206, 194, 170 }, { 228, 188, 104 }, { 234, 196, 108 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Neon" },
++	maxPrims = 130,
++	ribs = 8,
++	tiers = {
++		{ width = 40, depth = 40, rise = 3, steps = 2 },
++		{ width = 33, depth = 32, rise = 3, steps = 2 },
++	},
++}
++-- The gate a lesser hall gets: lower and narrower, on three stepped tiers,
++-- so its door reads smaller under the same ivory and gold crown.
++Sculpts.domain_gate_low = {
++	kind = "gate",
++	size = { 34, 38, 26 },
++	material = "Marble",
++	colors = { { 234, 224, 198 }, { 206, 194, 170 }, { 228, 188, 104 }, { 234, 196, 108 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Neon" },
++	maxPrims = 130,
++	ribs = 5,
++	tiers = {
++		{ width = 34, depth = 26, rise = 2.5, steps = 2 },
++		{ width = 28, depth = 20, rise = 2.5, steps = 2 },
++		{ width = 23, depth = 16, rise = 2, steps = 1 },
++	},
++}
++-- The wide gate of a great hall: the same door and crown stretched across a
++-- broad frontage, on two shallow tiers.
++Sculpts.domain_gate_broad = {
++	kind = "gate",
++	size = { 52, 38, 32 },
++	material = "Marble",
++	colors = { { 234, 224, 198 }, { 206, 194, 170 }, { 228, 188, 104 }, { 234, 196, 108 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Neon" },
++	maxPrims = 110,
++	ribs = 5,
++	tiers = {
++		{ width = 52, depth = 32, rise = 3, steps = 2 },
++		{ width = 44, depth = 24, rise = 3, steps = 2 },
++	},
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..e501e999 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1438,4 +1438,88 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- The Eternal Domain: the holy light at the Great Gate. A column of gold
++-- motes drifting up out of the threshold, a few white-hot sparks in it,
++-- rays of gold light rising around them and a warm light pooling at their
++-- foot. The marker goes at the gate's throat, inside the ivory frame.
++recipes.domain_gate_glory = {
++	about = "Holy light at the Eternal Domain's Great Gate: gold motes and white-hot sparks drifting up from the threshold in rays of gold light.",
++	theme = "domain",
++	path = { kind = "worm", length = 8, step = 2, bend = 6, climb = 80, round = 1 },
++	layers = {
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 3,
++				lift = 0.6,
++				toward = "up",
++				rise = 2,
++				life = { 3.5, 5.5 },
++				rate = 6,
++				size = 0.65,
++				tall = 1.8,
++				transparency = 0.25,
++				color = "gold",
++				texture = "wisp",
++				lean = 10,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.7, tilt = 10, span = 8, periods = { 4.5, 3 } },
++			priority = 1,
++		},
++		{
++			name = "sparks",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 1.5,
++				lift = 0.4,
++				toward = "up",
++				rise = 2.6,
++				life = { 2.5, 4 },
++				rate = 2.5,
++				size = 0.35,
++				tall = 2,
++				transparency = 0.15,
++				color = "core",
++				texture = "wisp",
++				lean = 8,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 0.5, tilt = 8, span = 8, periods = { 3.5, 2.5 } },
++			priority = 2,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 8, max = 2, range = 22, brightness = 1.2, color = "gold" },
++			motion = { kind = "pulse", period = 4.2, depth = 0.3 },
++			priority = 3,
++		},
++		{
++			name = "rays",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 6,
++				lift = 1.2,
++				toward = "up",
++				rise = 0.5,
++				life = { 6, 9 },
++				rate = 1,
++				size = 7,
++				tall = 2.2,
++				transparency = 0.86,
++				color = "gold",
++				texture = "rays",
++				lean = 4,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 6, span = 12, periods = { 8, 5 } },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..c80902fe 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,19 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	-- The Eternal Domain (a trial for swarm-lab's kit smoke test)
++	["sculpt:domain_great_gate"] = row(
++		"The Eternal Domain's Great Gate: a towering ivory gate with a glowing gold door on stepped marble tiers, lit from within.",
++		MOOR
++	),
++	["sculpt:domain_gate_low"] = row(
++		"The Eternal Domain's lesser gate: the Great Gate's ivory and gold door on three high marble tiers.",
++		MOOR
++	),
++	["sculpt:domain_gate_broad"] = row(
++		"The Eternal Domain's broad gate: the Great Gate's door and crown stretched across a wide marble frontage.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)

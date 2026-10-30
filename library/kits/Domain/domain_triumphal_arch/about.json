@@ -1,0 +1,24 @@
+{
+  "letter": "D",
+  "generator": "g03",
+  "run": "domain-kit-1",
+  "sculpts": [
+    "domain_triumphal_arch",
+    "domain_triumphal_arch_high",
+    "domain_triumphal_arch_ruined"
+  ],
+  "setpiece": "domain_arch_light",
+  "intent": "A triumphal arch of warm ivory marble with gilt stones and a gold keystone spanning a hall of the Eternal Domain, through which a path of holy light streams; the three rows give the wide order, a taller narrower order and a snapped ruin, and seeds vary which stones are gilt, which side fell and how the light bends.",
+  "critic": {
+    "piece": 6,
+    "shape": 6,
+    "camera": 7,
+    "seeds": 7,
+    "effect": 6,
+    "total": 6.3,
+    "reads_as_itself": true,
+    "why": "Plain gateway with patchy gilt, but readable, well varied, with a good ruin row and a light ribbon through it."
+  },
+  "role": "Spanning the thresholds between great halls, with the ruined row in collapsed side passages.",
+  "notes": "# D: triumphal arch\nKeep: the clear post-and-lintel gateway, the snapped ruin row and the light ribbon streaming through the opening.\n1. Gather the gilt into a deliberate keystone and capitals. Random gold blocks scattered up the posts look patchy.\n2. Add mass: a plinth under each post and a deeper cornice on the lintel, so it reads as monumental instead of stacked bricks.\n3. Thin the smoky blue wisps along the ribbon. The gold flame tufts carry it, and the smoke muddies it from the game camera.\n"
+}

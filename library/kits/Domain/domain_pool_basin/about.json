@@ -1,0 +1,23 @@
+{
+  "letter": "G",
+  "generator": "g09",
+  "run": "domain-kit-1",
+  "sculpts": [
+    "domain_pool_basin",
+    "domain_pool_water"
+  ],
+  "setpiece": "domain_pool_light",
+  "intent": "A wide broken basin of pale marble around still water that glows gold, with white-gold light rising off it; seeds vary the basin's width and breaks and the water's shape.",
+  "critic": {
+    "piece": 5,
+    "shape": 4,
+    "camera": 6,
+    "seeds": 6,
+    "effect": 5,
+    "total": 5.05,
+    "reads_as_itself": true,
+    "why": "A clean broken rim and gold water, but the two only make a pool together; low rim, and the light reads as smoke."
+  },
+  "role": "Basin and water placed together as a pool in the middle of a court or shrine room.",
+  "notes": "# G: pool basin\nKeep: the broken octagonal marble rim and the irregular gold water, which make a clean, readable floor feature.\n1. Render the basin and the water together. Apart, the rim is an empty curb and the water is a flat yellow decal.\n2. Raise the rim and add the step, because it barely clears the floor next to the post. Give the water a brighter centre so it reads as glowing water, not as sand.\n3. The effect is a mass of white smoky wisps that reads as steam or smoke. Make it thin vertical shafts of gold-white light rising off the surface.\n"
+}
