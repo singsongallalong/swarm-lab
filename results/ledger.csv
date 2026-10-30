@@ -11,3 +11,4 @@ rimeholt-zones,Rimeholt,deepseek,deepseek-flash[1m],3,3,3,0,2,37193567,1.4929,71
 blightfen-zones,Blightfen,deepseek,deepseek-flash[1m],3,3,3,0,2,43429647,1.6868,601.2,,
 rimelake-maps,Rimelake,deepseek,deepseek-flash[1m],6,6,6,0,3,77073689,2.9762,1526.5,,
 rimelake-open,Rimelake,deepseek,deepseek-flash[1m],6,2,4,0,1,194866547,7.8422,2946.4,spec lint failed,
+palettes-1,Palette,deepseek,deepseek-flash[1m],12,12,8,0,0,14782230,1.0583,269.8,touched dresspreview.png,
