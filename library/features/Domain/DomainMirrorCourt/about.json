@@ -1,0 +1,28 @@
+{
+  "letter": "I",
+  "generator": "g03",
+  "run": "domain-features-1",
+  "intent": "The Eternal Domain's mirror court: a great still pool of pale water sunk in an ivory court, gold-rimmed and crossed by a causeway with a colonnade standing in the water, new gilded kerb stones, a pale sheen at each column's foot and motes of holy light rising off the surface.",
+  "variation": [
+    "basin: round / canal / twin / quadrant - one oval basin, one long basin, two basins either side of the way, or four round a cross of paving (sky-blue or silver water)",
+    "crossings: 0 / 1 / 2 one-cell footbridges besides the road's causeway, at seeded places across the water, so a seed has more ways through and more water islands",
+    "heart: a gilded needle standing in the water / a round dais with a gold tree / a round dais with a great brazier, set off the crossing's middle and on the far side from the game camera",
+    "level: flush court or a raised stylobate, the pool sunk 2-4 studs below it, a two-cell promenade and a gold rim",
+    "colonnade: a ring in the water / rows flanking the causeway / flanks on the court, in mirrored pairs, 4-10 columns, some snapped, some fallen drums"
+  ],
+  "critic": {
+    "idea": 5,
+    "photograph": 6,
+    "topology": 6,
+    "look": 6,
+    "camera": 6,
+    "usable": 7,
+    "total": 5.78,
+    "reads_as_itself": "yes: a gold-kerbed pool in an ivory court with columns standing in it",
+    "inorganic": 9,
+    "best_shot": "feature-shots-final, row 1 left: three-quarter of the raised court with columns in the pool",
+    "why": "Calm, ordered and wholly built, with good plan variety; little new beyond a pool, and the glint sculpt is a blob."
+  },
+  "role": "A side court: the mirror pool as a quiet, ordered rest between fights, crossed by its causeway.",
+  "notes": "# I: Mirror court\n\nKeep: a still pale pool framed by gold-and-ivory kerbs on a raised terrace is calm, symmetrical and wholly built; the twin-pool and figure-eight seeds give real variety.\n\n1. The pool needs its colonnade in every seed: the seeds without columns are just a blue rectangle. Stand a regular rank of columns in or along the water in every seed, so the \"mirror\" reads from the doubled verticals.\n2. The glint sculpt is a flat pale blob, like a puddle or a snow patch. Make it a crisp geometric sheen (a thin square or ring at each column foot), or drop it.\n3. The causeway across the pool is barely there from the game camera. Widen it, raise it a step, and edge it in gold so the road over the water is the photograph's subject.\n"
+}

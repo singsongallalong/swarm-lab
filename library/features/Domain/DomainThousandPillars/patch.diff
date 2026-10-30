@@ -1,0 +1,1067 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..12268fc1 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,12 +2,14 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainThousandPillars = require("../systems/features/DomainThousandPillars")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	DomainThousandPillars = DomainThousandPillars,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index 490cc3f5..f16d3fb0 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1220,4 +1220,16 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (the thousand pillars): the crown of a god-column that
++-- came down, its squared capital blocks heaped where they struck the floor,
++-- one of them still carrying the gilt. A close detail in the aisles and the
++-- rubble, so a broken pillar has something of its own at its foot.
++Sculpts.domain_fallen_capital = {
++	kind = "blocks",
++	size = { 6.5, 2.8, 5.5 },
++	material = "Marble",
++	colors = { { 228, 219, 198 }, { 210, 201, 182 }, { 226, 188, 112 } },
++	maxPrims = 8,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 23f351b2..8cf9a908 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2145,4 +2145,114 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain (the thousand pillars): the light that falls between the
++-- pillars. A tall, narrow shaft of pale gold drops out of the dark above the
++-- colonnade and lands on the marble, dust turning in it, with a wider warm
++-- body round it, a few pale sky-blue glints (the area's one cool note) and a
++-- pool of light where it strikes the floor. Placed in the aisles between the
++-- columns, so each seed's shafts stand in different bays. The emitters hang
++-- just under the column tops and the beams are long and faint; the shaft is
++-- stretched along its fall (toward = "down"), never a haze at the camera.
++recipes.domain_pillar_light = {
++	about = "Holy light falling between the Eternal Domain's pillars: a tall pale-gold shaft dropping onto the marble, dust turning in it and a pool of light where it lands.",
++	theme = "domain",
++	path = { kind = "worm", length = 6, step = 2, bend = 8, climb = 80, round = 2 },
++	layers = {
++		{
++			name = "shaft",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 4,
++				lift = 26,
++				toward = "down",
++				rise = 2.6,
++				life = { 9, 12 },
++				rate = 1.4,
++				size = 5,
++				tall = 6,
++				transparency = 0.86,
++				color = "core",
++				texture = "rays",
++				lean = 0,
++				vary = 0.45,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 1.5, span = 20, periods = { 9, 13 } },
++			priority = 1,
++		},
++		{
++			name = "body",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 8,
++				lift = 25,
++				toward = "down",
++				rise = 1.8,
++				life = { 11, 14 },
++				rate = 0.8,
++				size = 8,
++				tall = 4,
++				transparency = 0.92,
++				color = "gold",
++				texture = "veil",
++				lean = 1,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 3, span = 26, periods = { 11, 17 } },
++			priority = 2,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 5,
++				lift = 0.4,
++				toward = "up",
++				rise = 1.6,
++				life = { 5, 7 },
++				rate = 4,
++				size = 0.4,
++				tall = 1.6,
++				transparency = 0.2,
++				color = "gold",
++				texture = "wisp",
++				lean = 10,
++				vary = 0.7,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 8, span = 10, periods = { 5.3, 7.1 } },
++			priority = 3,
++		},
++		{
++			name = "cold",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 6,
++				lift = 9,
++				toward = "up",
++				rise = 0.8,
++				life = { 8, 11 },
++				rate = 0.5,
++				size = 0.5,
++				tall = 1.2,
++				transparency = 0.35,
++				color = "sky",
++				texture = "wisp",
++				lean = 16,
++				vary = 0.8,
++			},
++			motion = { kind = "sway", amplitude = 1.4, tilt = 6, span = 14, periods = { 7.3, 9.1 } },
++			priority = 4,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 4, max = 2, range = 18, brightness = 1.1, color = "glow" },
++			motion = { kind = "pulse", period = 4.6, depth = 0.3 },
++			priority = 5,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0edeb33a..a70a2426 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -426,6 +426,10 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	["sculpt:domain_fallen_capital"] = row(
++		"The crown of a fallen Eternal Domain god-column: squared marble capital blocks heaped where it struck the floor, one still gilded.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainThousandPillars.luau b/src/shared/systems/features/DomainThousandPillars.luau
+new file mode 100644
+index 00000000..24bef5ea
+--- /dev/null
++++ b/src/shared/systems/features/DomainThousandPillars.luau
+@@ -0,0 +1,887 @@
++--!strict
++-- The Eternal Domain (bible B12; roadmap areas/eternal-domain.md): the thousand
++-- pillars. A vast hypostyle hall on a marble podium -- a forest of tall ivory
++-- columns on a paved floor, the road threading between them, some columns
++-- snapped with their drums and gilded crown blocks down in the aisles, and
++-- shafts of holy light falling between the pillars.
++--
++-- Its seeds are different places, not one hall jittered (fafwa, 2026-10-30:
++-- topology first, then look). The first draws choose the structure and the rest
++-- only dress it:
++--   1. the plan: a peristyle round four sides, two opposed sides, four sides
++--      broken into arcades, or none (an open forest on a stepped podium);
++--   2. the column order: a grid of plinths, a nave lined by files of columns,
++--      concentric rings round the heart, or a clumped thicket;
++--   3. the heart: a stepped dais under one colossal broken column, a sunken
++--      pool of holy water, a fallen column lying across the court, or a ring
++--      of tall waystones round the hall's empty middle;
++--   4. the rise: the hall's floor flush with the outer terrace, a step up, or
++--      two steps up, the road climbing through the gates;
++--   5. the way: across the hall, diagonally, or a dogleg from one side to
++--      another, and which side of the heart the road passes on;
++--   6. then the ruin (one to three collapsed patches out in the forest), the
++--      columns' heights and scales, and the light.
++-- Its own light: domain_pillar_light (a new set piece: shafts of holy light
++-- falling between the pillars), the kit's domain_column_glory at the dais and
++-- domain_pool_light in the pool, and a few gold glows in the plinths and along
++-- the processional way.
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++local Noise = require("../Noise")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- The structure's axes, drawn first.
++local PLANS = { "ring", "opposed", "broken", "open" }
++local ORDERS = { "grid", "nave", "rings", "thicket" }
++local HEARTS = { "dais", "pool", "fall", "ring" }
++local RISES = { 0, 2, 4 }
++local WAYS = { "axis", "diag", "dogleg" }
++local SIDES = { "west", "east", "north", "south" }
++
++-- The Domain's stone, three tones inside B12's limits (value 0.75-0.92,
++-- saturation up to 0.20), and the tileset's own limestone and road paving
++-- where our ground meets its dressing (same material, same colour: Roblox
++-- colours a material once for the whole place).
++local PAVING = { material = "Slate", color = { 208, 203, 192 } }
++local STEP = { material = "Salt", color = { 234, 229, 219 } }
++local PLINTH = { material = "Cobblestone", color = { 222, 196, 148 } }
++local KERB = { material = "Limestone", color = { 202, 194, 178 } }
++local COURT = { material = "Concrete", color = { 196, 190, 178 } }
++local ROAD = { material = "Pavement", color = { 226, 212, 184 } }
++local WATER = { material = "Glacier", color = { 198, 214, 230 } }
++-- Holy light (the domain theme's glow): a small lamp in some plinths, pools
++-- along the processional way, and the water lit from below.
++local GOLD = { 255, 226, 160 }
++
++local feature: MapFeature.Feature = {
++	name = "DomainThousandPillars",
++	about = "A thousand pillars: a vast hypostyle hall of ivory columns on a marble podium, the road threading between them past shafts of holy light, some snapped with their drums and gilded crowns down in the aisles.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "crossing",
++	mood = { "monumental", "holy", "colonnade", "cold", "awe" },
++	cells = {
++		-- The hall's floor: pale slate-grey ivory, a warm fallen capital now and
++		-- then lying where a column struck it.
++		paving = {
++			ground = PAVING,
++			lift = 0.15,
++			clear = true,
++			props = { { sculpt = "domain_fallen_capital", every = 240, scale = { 0.7, 0.95 }, sink = 0.25 } },
++		},
++		-- The podium's steps and the terrace round it: the brightest stone, so a
++		-- seed reads as a stepped marble edge from above.
++		step = { ground = STEP, lift = 0.1, clear = true },
++		-- A column's base: a warm, gold-tinged block, so the grid of pillars
++		-- reads from the game camera even where the ivory tops merge.
++		plinth = {
++			ground = PLINTH,
++			clear = true,
++			glow = { color = GOLD, range = 14, brightness = 0.8, every = 150, height = 0.6 },
++		},
++		-- The peristyle wall: the tileset's dressed limestone.
++		kerb = { ground = KERB, clear = true },
++		-- The heart's floor (a dais's top, a pool court's floor).
++		court = { ground = COURT, lift = 0.15, clear = true },
++		-- Still water in the sunken pool, pale sky blue sparingly (B12), lit from
++		-- below by the gold light on it.
++		water = {
++			ground = WATER,
++			lift = 0.05,
++			clear = true,
++			glow = { color = GOLD, range = 16, brightness = 1.1, every = 9, height = 0.4 },
++		},
++		-- Where a column fell: limestone rubble, the drum pieces and crown blocks
++		-- strewn through it.
++		rubble = {
++			ground = KERB,
++			lift = 0.15,
++			clear = true,
++			props = { { sculpt = "domain_fallen_capital", every = 4, scale = { 0.85, 1.15 }, sink = 0.3 } },
++		},
++		-- The processional way: the Domain's own gold-leaning paving, with pools
++		-- of holy light along it.
++		road = {
++			ground = ROAD,
++			lift = 0.2,
++			clear = true,
++			glow = { color = GOLD, range = 18, brightness = 1.2, every = 95, height = 1.2 },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, first.
++		local plan = PLANS[whole(rng, 1, #PLANS)]
++		local order = ORDERS[whole(rng, 1, #ORDERS)]
++		local heart = HEARTS[whole(rng, 1, #HEARTS)]
++		local rise = RISES[whole(rng, 1, #RISES)]
++		local way = WAYS[whole(rng, 1, #WAYS)]
++		local ruinCount = whole(rng, 1, 3)
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++
++		-- The hall, its proportions, and the walk round it: one border cell of
++		-- terrace, a two-cell band (the peristyle or the steps), then the hall.
++		local w, d = whole(rng, 46, 56), whole(rng, 46, 56)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		local wallRise = between(rng, 2, 3)
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inBounds(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= w and z <= d
++		end
++		local function hall(x: number, z: number): boolean
++			return x >= 4 and x <= w - 3 and z >= 4 and z <= d - 3
++		end
++
++		-- 3 (sizes): the heart, drawn before the road so the road can pass it.
++		local heartR: number
++		local poolR, poolWater = 0, 0
++		local fallHalf, fallWide = 0, 0
++		if heart == "dais" then
++			heartR = between(rng, 5.4, 6.8)
++		elseif heart == "pool" then
++			heartR = between(rng, 6.8, 8.0)
++			poolR = heartR - between(rng, 1.5, 2.0)
++			poolWater = poolR * between(rng, 0.42, 0.5)
++		elseif heart == "fall" then
++			fallHalf = between(rng, 5.0, 6.4)
++			fallWide = between(rng, 1.2, 1.7)
++			heartR = fallHalf
++		else
++			heartR = between(rng, 4.0, 4.8)
++		end
++
++		-- The border cell a road enters or leaves by, straight out from `angle`.
++		local function borderCell(angle: number): Point
++			local c, s = math.cos(angle), math.sin(angle)
++			local tx = if c > 1e-6 then (w - cx) / c elseif c < -1e-6 then (1 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d - cz) / s elseif s < -1e-6 then (1 - cz) / s else math.huge
++			local t = math.min(tx, tz)
++			local x = math.clamp(math.floor(cx + c * t + 0.5), 1, w)
++			local z = math.clamp(math.floor(cz + s * t + 0.5), 1, d)
++			if tx <= tz then
++				x = if c > 0 then w else 1
++			else
++				z = if s > 0 then d else 1
++			end
++			return { x = x, z = z }
++		end
++
++		-- 5: the way through. The road runs radially in, round the heart on one
++		-- side, and radially out.
++		local ENTRY: { [string]: number } = { axis = 0, diag = math.pi / 2, dogleg = 0 }
++		local EXIT: { [string]: number } = { axis = math.pi, diag = -math.pi / 2, dogleg = math.pi / 2 }
++		local entryP = borderCell(ENTRY[way] + between(rng, -0.22, 0.22))
++		local exitP = borderCell(EXIT[way] + between(rng, -0.22, 0.22))
++		local aIn = math.atan2(entryP.z - cz, entryP.x - cx)
++		local aOut = math.atan2(exitP.z - cz, exitP.x - cx)
++		local detour = heartR + between(rng, 9, 10)
++		local stretch = between(rng, 0.92, 1.08)
++		local road: { Point } = { entryP }
++		local delta = (aOut - aIn) % (2 * math.pi)
++		local sweep
++		if math.abs(delta - math.pi) < 0.35 then
++			sweep = if side > 0 then delta else delta - 2 * math.pi
++		elseif delta <= math.pi then
++			sweep = delta
++		else
++			sweep = delta - 2 * math.pi
++		end
++		local steps = math.max(2, math.ceil(math.abs(sweep) / 0.4))
++		for k = 0, steps do
++			local a = aIn + sweep * k / steps
++			table.insert(road, { x = cx + math.cos(a) * detour, z = cz + math.sin(a) * detour * stretch })
++		end
++		table.insert(road, exitP)
++
++		-- The road's cells: a three-cell painted way, and a wider lane kept clear
++		-- of pillars, rubble and the heart so the way stays open.
++		local roadPaint: { [number]: boolean } = {}
++		local roadClear: { [number]: boolean } = {}
++		local function markRoad(radius: number, mask: { [number]: boolean })
++			for k = 2, #road do
++				local a, b = road[k - 1], road[k]
++				local samples = math.max(1, math.ceil(math.max(math.abs(b.x - a.x), math.abs(b.z - a.z)) * 3))
++				for s = 0, samples do
++					local t = s / samples
++					local x, z = a.x + (b.x - a.x) * t, a.z + (b.z - a.z) * t
++					for zz = math.floor(z - radius), math.ceil(z + radius) do
++						for xx = math.floor(x - radius), math.ceil(x + radius) do
++							local dx, dz = xx - x, zz - z
++							if dx * dx + dz * dz <= radius * radius and inBounds(xx, zz) then
++								mask[at(xx, zz)] = true
++							end
++						end
++					end
++				end
++			end
++		end
++		markRoad(1.3, roadPaint)
++		markRoad(2.4, roadClear)
++		-- A lane south of the middle kept open, so the game camera over the heart
++		-- looks down the hall rather than into a column's flank.
++		for z = math.floor(cz) - 1, math.floor(cz) + 9 do
++			for x = math.floor(cx) - 2, math.floor(cx) + 2 do
++				if inBounds(x, z) and math.abs(x - cx) <= 1.6 then
++					roadClear[at(x, z)] = true
++				end
++			end
++		end
++
++		-- 6: the ruin, drawn before the colonnade: one to three heaps where a
++		-- column came down, each a gap in the forest's order.
++		local rubbleMask: { [number]: boolean } = {}
++		local patches: { { x0: number, z0: number, w: number, d: number } } = {}
++		for _ = 1, ruinCount do
++			for _ = 1, 24 do
++				local pw, pd = whole(rng, 2, 3), whole(rng, 2, 3)
++				local x0 = whole(rng, 5, w - 5 - pw)
++				local z0 = whole(rng, 5, d - 5 - pd)
++				local ok = true
++				for z = z0, z0 + pd - 1 do
++					for x = x0, x0 + pw - 1 do
++						local i = at(x, z)
++						local dx, dz = x - cx, z - cz
++						if
++							not hall(x, z)
++							or roadClear[i]
++							or rubbleMask[i]
++							or dx * dx + dz * dz <= (heartR + 2) * (heartR + 2)
++						then
++							ok = false
++						end
++					end
++				end
++				if ok then
++					table.insert(patches, { x0 = x0, z0 = z0, w = pw, d = pd })
++					for z = z0, z0 + pd - 1 do
++						for x = x0, x0 + pw - 1 do
++							local i = at(x, z)
++							rubbleMask[i] = true
++							walk[i] = false
++							heights[i] = rise + between(rng, 0.8, 1.6)
++							kinds[i] = "rubble"
++						end
++					end
++					break
++				end
++			end
++		end
++
++		-- 1: the plan. Which sides of the band are peristyle wall, and where a
++		-- broken arcade has fallen away.
++		local wallSides: { [string]: boolean } = {}
++		if plan == "ring" or plan == "broken" then
++			for _, s in SIDES do
++				wallSides[s] = true
++			end
++		elseif plan == "opposed" then
++			if rng:NextNumber() < 0.5 then
++				wallSides.west, wallSides.east = true, true
++			else
++				wallSides.north, wallSides.south = true, true
++			end
++		end
++		local breaks: { { side: string, at: number, half: number } } = {}
++		if plan == "broken" then
++			for _ = 1, whole(rng, 2, 4) do
++				table.insert(breaks, {
++					side = SIDES[whole(rng, 1, 4)],
++					at = rng:NextNumber(),
++					half = between(rng, 1.5, 3.0),
++				})
++			end
++		end
++		local function brokenAt(s: string, x: number, z: number): boolean
++			local along, len = x, w
++			if s == "west" or s == "east" then
++				along, len = z, d
++			end
++			for _, b in breaks do
++				if b.side == s and math.abs(along - (1 + b.at * (len - 1))) <= b.half then
++					return true
++				end
++			end
++			return false
++		end
++
++		-- 4: the floor. The terrace ring, the band's stylobate steps (the road
++		-- climbing through them at the gates), the peristyle wall, and the hall.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if x == 1 or z == 1 or x == w or z == d then
++					heights[i] = 0
++					kinds[i] = "step"
++				elseif hall(x, z) then
++					heights[i] = rise
++					kinds[i] = "paving"
++				else
++					local west, east, north, south = x <= 3, x >= w - 2, z <= 3, z >= d - 2
++					-- The steps climb half the rise a cell from the terrace, so
++					-- at most two studs; the depth is the nearest border, so the
++					-- corner cells ramp alike.
++					local depth = math.min(2, math.min(x - 1, math.min(z - 1, math.min(w - x, d - z))))
++					local walled = not not (
++						(west and wallSides.west)
++						or (east and wallSides.east)
++						or (north and wallSides.north)
++						or (south and wallSides.south)
++					)
++					local gap = not not (
++						(west and brokenAt("west", x, z))
++						or (east and brokenAt("east", x, z))
++						or (north and brokenAt("north", x, z))
++						or (south and brokenAt("south", x, z))
++					)
++					if walled and not gap and not roadClear[i] then
++						walk[i] = false
++						heights[i] = rise + wallRise
++						kinds[i] = "kerb"
++					else
++						heights[i] = rise * depth / 2
++						kinds[i] = "step"
++					end
++				end
++			end
++		end
++
++		-- 3: the heart's ground, and the cells kept clear round it.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local heartMask: { [number]: boolean } = {}
++		local function maskCircle(r: number)
++			for z = math.max(4, math.floor(cz - r)), math.min(d - 3, math.ceil(cz + r)) do
++				for x = math.max(4, math.floor(cx - r)), math.min(w - 3, math.ceil(cx + r)) do
++					local dx, dz = x - cx, z - cz
++					if dx * dx + dz * dz <= r * r then
++						heartMask[at(x, z)] = true
++					end
++				end
++			end
++		end
++		if heart == "dais" then
++			maskCircle(heartR + 2)
++			local top = heartR - between(rng, 1.4, 2.0)
++			for z = math.max(4, math.floor(cz - heartR)), math.min(d - 3, math.ceil(cz + heartR)) do
++				for x = math.max(4, math.floor(cx - heartR)), math.min(w - 3, math.ceil(cx + heartR)) do
++					local dx, dz = x - cx, z - cz
++					local u = math.sqrt(dx * dx + dz * dz)
++					local i = at(x, z)
++					if u <= top then
++						heights[i] = rise + 4
++						kinds[i] = "court"
++					elseif u <= heartR then
++						heights[i] = rise + 2
++						kinds[i] = "step"
++					end
++				end
++			end
++			table.insert(marks, {
++				sculpt = "domain_column_broken",
++				x = cx,
++				z = cz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1.2, 1.45),
++				sink = 0.3,
++				solid = true,
++			})
++			for _ = 1, whole(rng, 3, 5) do
++				local a = between(rng, 0, 2 * math.pi)
++				local r = between(rng, top * 0.4, heartR * 0.9)
++				table.insert(marks, {
++					sculpt = "domain_column_fallen",
++					x = cx + math.cos(a) * r,
++					z = cz + math.sin(a) * r,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.9, 1.25),
++					sink = 0.2,
++					solid = true,
++				})
++			end
++			for _ = 1, whole(rng, 1, 2) do
++				local a = between(rng, 0, 2 * math.pi)
++				local r = between(rng, top, heartR)
++				table.insert(marks, {
++					sculpt = "domain_fallen_capital",
++					x = cx + math.cos(a) * r,
++					z = cz + math.sin(a) * r,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.9, 1.15),
++					sink = 0.2,
++				})
++			end
++			table.insert(effects, { recipe = "domain_column_glory", x = cx, z = cz, lift = 0.4 })
++		elseif heart == "pool" then
++			maskCircle(heartR + 2)
++			for z = math.max(4, math.floor(cz - heartR)), math.min(d - 3, math.ceil(cz + heartR)) do
++				for x = math.max(4, math.floor(cx - heartR)), math.min(w - 3, math.ceil(cx + heartR)) do
++					local dx, dz = x - cx, z - cz
++					local u = math.sqrt(dx * dx + dz * dz)
++					local i = at(x, z)
++					if u <= poolWater then
++						walk[i] = false
++						heights[i] = rise - 4
++						kinds[i] = "water"
++					elseif u <= poolR then
++						heights[i] = rise - 4
++						kinds[i] = "court"
++					elseif u <= heartR then
++						heights[i] = rise - 2
++						kinds[i] = "step"
++					end
++				end
++			end
++			table.insert(marks, {
++				sculpt = "domain_pool_basin",
++				x = cx,
++				z = cz,
++				yaw = between(rng, 0, 360),
++				scale = (8 * poolWater + 6) / 30,
++				sink = 0.15,
++				solid = true,
++			})
++			table.insert(marks, {
++				sculpt = "domain_pool_water",
++				x = cx,
++				z = cz,
++				yaw = between(rng, 0, 360),
++				scale = 8 * poolWater / 21,
++				sink = -0.05,
++			})
++			table.insert(effects, { recipe = "domain_pool_light", x = cx, z = cz, lift = 0.3 })
++		elseif heart == "fall" then
++			local across = math.atan2(exitP.z - entryP.z, exitP.x - entryP.x) + math.pi / 2 + between(rng, -0.5, 0.5)
++			local ax, az = math.cos(across), math.sin(across)
++			local bandTop = rise + between(rng, 1.0, 1.8)
++			for z = math.max(4, math.floor(cz - fallHalf - 2)), math.min(d - 3, math.ceil(cz + fallHalf + 2)) do
++				for x = math.max(4, math.floor(cx - fallHalf - 2)), math.min(w - 3, math.ceil(cx + fallHalf + 2)) do
++					local dx, dz = x - cx, z - cz
++					local p, q = dx * ax + dz * az, -dx * az + dz * ax
++					local i = at(x, z)
++					if math.abs(p) <= fallHalf + 2 and math.abs(q) <= fallWide + 2 then
++						heartMask[i] = true
++					end
++					if math.abs(p) <= fallHalf and math.abs(q) <= fallWide then
++						walk[i] = false
++						heights[i] = bandTop + between(rng, -0.3, 0.3)
++						kinds[i] = "rubble"
++					end
++				end
++			end
++			for _ = 1, whole(rng, 4, 7) do
++				local p = between(rng, -fallHalf, fallHalf)
++				local q = between(rng, -fallWide * 0.7, fallWide * 0.7)
++				table.insert(marks, {
++					sculpt = "domain_column_fallen",
++					x = cx + ax * p - az * q,
++					z = cz + az * p + ax * q,
++					yaw = math.deg(across) + between(rng, -25, 25),
++					scale = between(rng, 0.9, 1.3),
++					sink = 0.2,
++					solid = true,
++				})
++			end
++			local endP = if side > 0 then -fallHalf else fallHalf
++			local sx, sz = cx + ax * endP, cz + az * endP
++			table.insert(marks, {
++				sculpt = "domain_column_broken",
++				x = sx,
++				z = sz,
++				yaw = math.deg(across) + between(rng, -15, 15),
++				scale = between(rng, 0.6, 0.8),
++				sink = 0.2,
++				solid = true,
++			})
++			for _ = 1, whole(rng, 1, 2) do
++				local p = between(rng, -fallHalf, fallHalf)
++				table.insert(marks, {
++					sculpt = "domain_fallen_capital",
++					x = cx + ax * p + az * between(rng, -fallWide, fallWide),
++					z = cz + az * p - ax * between(rng, -fallWide, fallWide),
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.9, 1.15),
++					sink = 0.2,
++				})
++			end
++			table.insert(effects, { recipe = "domain_column_glory", x = sx, z = sz, lift = 0.4 })
++		else
++			-- The ring: a ring of tall waystones round the empty middle, the
++			-- gods' own mark on the hall, with the light standing in it.
++			maskCircle(heartR + 2)
++			table.insert(marks, {
++				sculpt = "domain_wayring",
++				x = cx,
++				z = cz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.85, 1.0),
++				sink = 0.35,
++			})
++			for _ = 1, whole(rng, 1, 3) do
++				local a = between(rng, 0, 2 * math.pi)
++				local r = between(rng, heartR * 0.7, heartR * 1.4)
++				table.insert(marks, {
++					sculpt = "domain_column_fallen",
++					x = cx + math.cos(a) * r,
++					z = cz + math.sin(a) * r,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.8, 1.05),
++					sink = 0.2,
++					solid = true,
++				})
++			end
++			table.insert(effects, { recipe = "domain_column_glory", x = cx, z = cz, lift = 0.4 })
++		end
++
++		-- 2: the colonnade. A pillar stands on a two-by-two plinth of marble,
++		-- the plinth a wall cell and the column solid, so the aisles between
++		-- them are the ways through.
++		local plinthMask: { [number]: boolean } = {}
++		local columns: { { x0: number, z0: number, tall: boolean } } = {}
++		local function canPlace(x: number, z: number): boolean
++			-- A plinth keeps a cell of clear ground round it: two plinths a
++			-- cell apart would pinch an aisle shut and seal a pocket of floor.
++			for dx = -1, 2 do
++				for dz = -1, 2 do
++					local px, pz = x + dx, z + dz
++					if not hall(px, pz) then
++						if dx >= 0 and dx <= 1 and dz >= 0 and dz <= 1 then
++							return false
++						end
++					elseif plinthMask[at(px, pz)] then
++						return false
++					end
++				end
++			end
++			for _, c in { { x, z }, { x + 1, z }, { x, z + 1 }, { x + 1, z + 1 } } do
++				local i = at(c[1], c[2])
++				if roadClear[i] or heartMask[i] or rubbleMask[i] then
++					return false
++				end
++			end
++			return true
++		end
++		local function place(x: number, z: number, tall: boolean?): boolean
++			if not canPlace(x, z) then
++				return false
++			end
++			for _, c in { { x, z }, { x + 1, z }, { x, z + 1 }, { x + 1, z + 1 } } do
++				local i = at(c[1], c[2])
++				plinthMask[i] = true
++				walk[i] = false
++				heights[i] = rise + 2
++				kinds[i] = "plinth"
++			end
++			table.insert(columns, { x0 = x, z0 = z, tall = tall == true })
++			return true
++		end
++
++		-- The crown: the tallest pillars ring the heart, whatever its kind, and
++		-- the road runs outside them.
++		local crown = heartR + between(rng, 3.8, 4.2)
++		local crownCount = whole(rng, 8, 12)
++		local crownPhase = between(rng, 0, 2 * math.pi)
++		for k = 0, crownCount - 1 do
++			local a = crownPhase + k * 2 * math.pi / crownCount
++			place(math.floor(cx + math.cos(a) * crown - 0.5), math.floor(cz + math.sin(a) * crown - 0.5), true)
++		end
++
++		if order == "grid" then
++			local spacing = whole(rng, 4, 5)
++			local ox, oz = whole(rng, 0, spacing - 1), whole(rng, 0, spacing - 1)
++			for x = 4 + ox, w - 4, spacing do
++				for z = 4 + oz, d - 4, spacing do
++					place(x, z)
++				end
++			end
++		elseif order == "nave" then
++			-- Two double files down the hall's axis, the road running the nave
++			-- between them.
++			local ax, az = exitP.x - entryP.x, exitP.z - entryP.z
++			local len = math.max(1e-6, math.sqrt(ax * ax + az * az))
++			local ux, uz = ax / len, az / len
++			local px, pz = -uz, ux
++			local spacing = between(rng, 3.6, 4.4)
++			local reach = math.floor(math.min(w, d) / 2 - 6)
++			local files = { -9, -4.5, 4.5, 9 }
++			for k = -reach, reach do
++				for _, u in files do
++					local j = u + between(rng, -0.35, 0.35)
++					place(
++						math.floor(cx + ux * k * spacing + px * j - 0.5),
++						math.floor(cz + uz * k * spacing + pz * j - 0.5)
++					)
++				end
++			end
++		elseif order == "rings" then
++			-- Concentric rings of pillars round the heart, like a tholos.
++			local r = heartR + between(rng, 3.5, 4.5)
++			local rmax = math.min(w, d) / 2 - 5
++			local step = between(rng, 3.4, 4.2)
++			local phase = between(rng, 0, 2 * math.pi)
++			while r <= rmax do
++				local count = math.max(6, math.floor(2 * math.pi * r / 4.2))
++				for k = 0, count - 1 do
++					local a = phase + k * 2 * math.pi / count + between(rng, -0.05, 0.05)
++					place(math.floor(cx + math.cos(a) * r - 0.5), math.floor(cz + math.sin(a) * r - 0.5))
++				end
++				r += step
++			end
++		else
++			-- A clumped thicket: seeded clumps of pillars with open ground
++			-- between, denser than any ordered hall.
++			local field = Noise.field(rng)
++			local threshold = between(rng, -0.25, 0.1)
++			for x = 4, w - 4, 3 do
++				for z = 4, d - 4, 3 do
++					local n = Noise.fractal(field, x * 0.11 + 4.1, z * 0.11 + 2.7, {
++						octaves = 3,
++						frequency = 1,
++						lacunarity = 2,
++						gain = 0.5,
++					})
++					if n > threshold then
++						place(math.floor(x + between(rng, -1.2, 1.2)), math.floor(z + between(rng, -1.2, 1.2)))
++					end
++				end
++			end
++		end
++
++		-- A clump can still pinch an aisle shut where a ruin meets the pillars.
++		-- Fill any pocket of floor that is not part of the main walk: a low
++		-- plinth block, so the hall stays one piece.
++		local function floorRegions(): { { number } }
++			local g = Grid.new(w, d, Grid.WALL)
++			for i, ok in walk do
++				g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++			end
++			return Grid.regions(g)
++		end
++		for _ = 1, 12 do
++			local regs = floorRegions()
++			if #regs <= 1 then
++				break
++			end
++			local main = regs[1]
++			for _, r in regs do
++				if #r > #main then
++					main = r
++				end
++			end
++			for _, r in regs do
++				if r ~= main then
++					for _, ci in r do
++						walk[ci] = false
++						heights[ci] = rise + 2
++						kinds[ci] = "plinth"
++						plinthMask[ci] = true
++					end
++				end
++			end
++		end
++
++		-- The pillars themselves, on their plinths.
++		for _, c in columns do
++			local scale
++			if c.tall then
++				scale = between(rng, 1.0, 1.14)
++			elseif rng:NextNumber() < 0.16 then
++				scale = between(rng, 1.0, 1.1)
++			else
++				scale = between(rng, 0.78, 0.98)
++			end
++			table.insert(marks, {
++				sculpt = "domain_column",
++				x = c.x0 + 0.5,
++				z = c.z0 + 0.5,
++				yaw = between(rng, -3, 3),
++				scale = scale,
++				sink = 0.25,
++				solid = true,
++			})
++		end
++
++		-- The peristyle: a column on the hall's side of each wall, every few
++		-- cells, so the hall is ringed in stone.
++		local perSpacing = whole(rng, 4, 5)
++		local perScale = between(rng, 0.72, 0.9)
++		local perUsed: { [number]: boolean } = {}
++		local function perColumn(s: string, x: number, z: number)
++			local i = at(x, z)
++			if kinds[i] ~= "kerb" or perUsed[i] then
++				return
++			end
++			perUsed[i] = true
++			table.insert(marks, {
++				sculpt = "domain_column",
++				x = x,
++				z = z,
++				yaw = (if s == "north" or s == "south" then 90 else 0) + between(rng, -3, 3),
++				scale = perScale * between(rng, 0.95, 1.05),
++				sink = 0.25,
++				solid = true,
++			})
++		end
++		if wallSides.west then
++			for z = 4, d - 3, perSpacing do
++				perColumn("west", 3, z)
++			end
++		end
++		if wallSides.east then
++			for z = 4, d - 3, perSpacing do
++				perColumn("east", w - 2, z)
++			end
++		end
++		if wallSides.north then
++			for x = 4, w - 3, perSpacing do
++				perColumn("north", x, 3)
++			end
++		end
++		if wallSides.south then
++			for x = 4, w - 3, perSpacing do
++				perColumn("south", x, d - 2)
++			end
++		end
++
++		-- The fallen: drums, a stump and crown blocks in each ruined patch.
++		for _, p in patches do
++			local px, pz = p.x0 + p.w / 2, p.z0 + p.d / 2
++			for _ = 1, whole(rng, 2, 4) do
++				table.insert(marks, {
++					sculpt = "domain_column_fallen",
++					x = p.x0 - 0.5 + between(rng, 0, p.w + 1),
++					z = p.z0 - 0.5 + between(rng, 0, p.d + 1),
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.8, 1.2),
++					sink = 0.2,
++					solid = true,
++				})
++			end
++			if rng:NextNumber() < 0.65 then
++				table.insert(marks, {
++					sculpt = "domain_column_broken",
++					x = px,
++					z = pz,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.5, 0.68),
++					sink = 0.2,
++					solid = true,
++				})
++			end
++			if rng:NextNumber() < 0.8 then
++				table.insert(marks, {
++					sculpt = "domain_fallen_capital",
++					x = px + between(rng, -p.w / 2, p.w / 2),
++					z = pz + between(rng, -p.d / 2, p.d / 2),
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.9, 1.2),
++					sink = 0.2,
++				})
++			end
++		end
++
++		-- And a few crown blocks down in the aisles, so every hall has the
++		-- fallen stone at a walker's foot, not only where a column came down.
++		local scattered = whole(rng, 2, 3)
++		for _ = 1, 30 do
++			if scattered <= 0 then
++				break
++			end
++			local x = between(rng, 5, w - 4)
++			local z = between(rng, 5, d - 4)
++			local i = at(math.floor(x + 0.5), math.floor(z + 0.5))
++			if walk[i] and not roadClear[i] and not heartMask[i] and not plinthMask[i] then
++				table.insert(marks, {
++					sculpt = "domain_fallen_capital",
++					x = x,
++					z = z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.85, 1.15),
++					sink = 0.2,
++					solid = true,
++				})
++				scattered -= 1
++			end
++		end
++
++		-- The light: shafts of holy light standing between the pillars.
++		local shafts = whole(rng, 2, 3)
++		local placed = 0
++		for _ = 1, 40 do
++			if placed >= shafts then
++				break
++			end
++			local x = between(rng, 5, w - 4)
++			local z = between(rng, 5, d - 4)
++			local i = at(math.floor(x + 0.5), math.floor(z + 0.5))
++			if walk[i] and not roadClear[i] and not heartMask[i] and not plinthMask[i] then
++				table.insert(effects, { recipe = "domain_pillar_light", x = x, z = z, lift = 0.2 })
++				placed += 1
++			end
++		end
++
++		-- The way painted last, over the floor and up the gates' steps.
++		for i in roadPaint do
++			if walk[i] then
++				kinds[i] = "road"
++			end
++		end
++
++		-- The photographs: the whole hall from the air over the corner away
++		-- from the way in (the plan, the forest and the heart in one), and a
++		-- walker's view along the processional way, the road clear ahead.
++		local dx, dz = math.cos(aIn), math.sin(aIn)
++		local farX = if dx > 0 then -1 else 1
++		local farZ = if dz > 0 then -1 else 1
++		local cornerX = cx + farX * (w / 2 + between(rng, 4, 6))
++		local cornerZ = cz + farZ * (d / 2 + between(rng, 4, 6))
++		local across = math.sqrt((cornerX - cx) * (cornerX - cx) + (cornerZ - cz) * (cornerZ - cz))
++		local mid = math.max(2, math.min(#road - 1, math.floor(#road / 2)))
++		local t0, t1 = road[mid - 1], road[mid + 1]
++		local along = math.max(1e-6, math.sqrt((t1.x - t0.x) * (t1.x - t0.x) + (t1.z - t0.z) * (t1.z - t0.z)))
++		local tx, tz = (t1.x - t0.x) / along, (t1.z - t0.z) / along
++		local midP = road[mid]
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "the thousand pillars",
++					from = { x = cornerX, z = cornerZ, lift = across * 4 * between(rng, 0.6, 0.72) },
++					to = { x = cx, z = cz, lift = between(rng, 2, 5) },
++					fov = between(rng, 42, 48),
++				},
++				{
++					name = "along the way",
++					from = { x = midP.x - tx * 5, z = midP.z - tz * 5, lift = between(rng, 15, 19) },
++					to = { x = midP.x + tx * 7, z = midP.z + tz * 7, lift = between(rng, 8, 11) },
++					fov = 64,
++				},
++			},
++		}
++	end,
++}
++
++return feature

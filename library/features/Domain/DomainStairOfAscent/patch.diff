@@ -1,0 +1,857 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..eafdb132 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainStairOfAscent = require("../systems/features/DomainStairOfAscent")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainStairOfAscent = DomainStairOfAscent,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index 490cc3f5..f8a46a8c 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1220,4 +1220,31 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain: the great brazier at the crown of the stair of ascent.
++-- The kit's hall braziers are a man and a half tall; this is the one the road
++-- climbs to, four people high: three gilt legs spread wide, a broad gold bowl
++-- of white coals, so the fire reads from the foot of the stair and from the
++-- game camera. Its flame is the crown fire set piece, domain_crown_fire.
++Sculpts.domain_great_brazier = {
++	kind = "brazier",
++	size = { 16, 21, 16 },
++	material = "Metal",
++	colors = { { 232, 226, 212 }, { 214, 207, 192 }, { 198, 190, 174 }, { 226, 186, 110 }, { 234, 214, 160 } },
++	maxPrims = 8,
++}
++-- The Eternal Domain's cloud sea: a low bank of pale sky-blue cloud heaped up
++-- out of the moat round the stair. Four rounded puffs on end, a taller middle,
++-- almost buried blades, so it reads as a bank of cloud rather than a rock; set
++-- in the cloud trench and along the rims of the moat.
++Sculpts.domain_cloud_bank = {
++	kind = "tuft",
++	size = { 40, 14, 32 },
++	material = "Salt",
++	colors = { { 178, 202, 232 }, { 186, 204, 230 } },
++	maxPrims = 6,
++	blades = 0,
++	body = 0.85,
++	rounded = true,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 23f351b2..7d2129d6 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2145,4 +2145,114 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain: the great fire at the crown of the stair of ascent, set
++-- in the bowl of domain_great_brazier. Taller and broader than a hall lamp's
++-- fire, since it is the one light the whole ascent climbs toward: a white-gold
++-- core of wisp tongues, a warm gold body round it, gold sparks climbing away,
++-- a slow gold glow at the bowl and one strong breathing light. Its path is a
++-- short steep worm so the emitters stack as one flame, and each layer sways on
++-- its own periods so the tongue never sits still. The marker goes at the
++-- brazier's bowl: the feature places it at the crown's height plus the bowl's.
++recipes.domain_crown_fire = {
++	about = "The great fire on the Eternal Domain's crown: a white-gold flame in a warm gold body, gold sparks climbing away and a breathing light.",
++	theme = "domain",
++	path = { kind = "worm", length = 7, step = 2, bend = 16, climb = 80, round = 1 },
++	layers = {
++		{
++			name = "core",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 1.6,
++				lift = 0.3,
++				toward = "up",
++				rise = 10,
++				life = { 0.8, 1.3 },
++				rate = 6,
++				size = 1.1,
++				tall = 3.2,
++				transparency = 0.25,
++				color = "core",
++				texture = "wisp",
++				lean = 3,
++				vary = 0.25,
++			},
++			motion = { kind = "sway", amplitude = 0.3, tilt = 4, span = 8, periods = { 1.4, 2.1 } },
++			priority = 1,
++		},
++		{
++			name = "body",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 4.5,
++				lift = 0.4,
++				toward = "up",
++				rise = 6,
++				life = { 1.6, 2.4 },
++				rate = 4,
++				size = 5.5,
++				tall = 2.2,
++				transparency = 0.45,
++				color = "gold",
++				texture = "veil",
++				lean = 4,
++				vary = 0.3,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 7, span = 11, periods = { 2.6, 1.8 } },
++			priority = 2,
++		},
++		{
++			name = "sparks",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 2.2,
++				lift = 0.8,
++				toward = "up",
++				rise = 11,
++				life = { 1.8, 2.8 },
++				rate = 6,
++				size = 0.3,
++				tall = 2.4,
++				transparency = 0.08,
++				color = "gold",
++				texture = "wisp",
++				lean = 7,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.5, tilt = 8, span = 12, periods = { 2.8, 3.7 } },
++			priority = 3,
++		},
++		{
++			name = "glow",
++			look = {
++				kind = "stream",
++				every = 9,
++				thick = 4,
++				lift = 0.6,
++				toward = "up",
++				rise = 2.4,
++				life = { 2.2, 3.2 },
++				rate = 1,
++				size = 4.5,
++				tall = 1.4,
++				transparency = 0.88,
++				color = "glow",
++				texture = "smoke",
++				lean = 4,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 5, span = 14, periods = { 3.4, 2.6 } },
++			priority = 4,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 6, max = 1, range = 24, brightness = 1.3, color = "glow" },
++			motion = { kind = "pulse", period = 2.8, depth = 0.28 },
++			priority = 1,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0edeb33a..09681d94 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -426,6 +426,14 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	["sculpt:domain_great_brazier"] = row(
++		"The Eternal Domain's great brazier: a broad gold bowl of white coals on three gilt legs, burning at the crown of its stair of ascent.",
++		MOOR
++	),
++	["sculpt:domain_cloud_bank"] = row(
++		"A low bank of pale cloud heaped out of the Eternal Domain's cloud sea, round the foot of its stair.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainStairOfAscent.luau b/src/shared/systems/features/DomainStairOfAscent.luau
+new file mode 100644
+index 00000000..1baf00d4
+--- /dev/null
++++ b/src/shared/systems/features/DomainStairOfAscent.luau
+@@ -0,0 +1,659 @@
++--!strict
++-- The Eternal Domain's stair of ascent. A vast stepped ziggurat of ivory and gold:
++-- five broad tiers climb to a crowning platform where a great brazier of holy fire
++-- burns, and the road climbs its axis by broad stairs. The mass stands on a spit of
++-- stone above the cloud sea: some seeds ring it with a cloud moat and causeways,
++-- some set it between cloud on two sides, some give it a full marble court, and one
++-- is a round temple on a round court. It is the direction's place made for the
++-- domain's own kit (domain_* sculpts, the domain theme): a reward at the end of the
++-- game, monumental, cold-perfect, and a little terrible.
++--
++-- The first draws choose the structure (fafwa, 2026-10-30: topology first, then
++-- look), the rest only dress it:
++--   1. the plan: open court, cloud moat with causeways, cloud-flanked ridge, or a
++--      round temple on a round court;
++--   2. the ascent: one axial stair through it, twin stairs whose road crosses the
++--      crown on the diagonal, or a road that turns at the crown and leaves east;
++--   3. the crown: a brazier on a gold dais, a ring of waystones, a colonnade, or
++--      the bare summit; and whether a side stair climbs the flank;
++--   4. the tiers' rises (even four studs, even six, or drawn tier by tier) and the
++--      court's level (flush or sunk two studs);
++--   5. then the palette (ivory, white or gold), the gold banding of the tiers, and
++--      the braziers, trees, stones and fallen drums along the way.
++--
++-- Every band is two cells of sheer riser and two of terrace, so a tier is four
++-- cells deep; the crown begins eighteen cells in. A stair cut through a riser is
++-- three steps of at most two studs (the game's maxStep), one cell out into the
++-- terrace below, so it is walkable from the court to the crown everywhere.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function pick(rng: Random, list: { string }): string
++	return list[whole(rng, 1, #list)]
++end
++
++-- Surfaces. The domain's own marble, limestone, sandstone, pavement and cloud keep
++-- their tileset colours (Roblox colours a material once for the whole place); only
++-- the gold inlay and the shaded riser take materials the tileset leaves free.
++local MARBLE = { material = "Marble", color = { 214, 208, 194 } }
++local LIMESTONE = { material = "Limestone", color = { 202, 194, 178 } }
++local SANDSTONE = { material = "Sandstone", color = { 196, 186, 166 } }
++local PAVEMENT = { material = "Pavement", color = { 226, 212, 184 } }
++local SNOW = { material = "Snow", color = { 232, 229, 222 } }
++local SLATE = { material = "Slate", color = { 200, 194, 182 } }
++-- The cloud sea: a cool pale blue-white, the domain's one cool note under the mass.
++local CLOUD_SEA = { material = "Salt", color = { 178, 202, 232 } }
++-- Gold trim (s 0.44, v 0.80), inside the domain's own limits (B12).
++local GOLD = { material = "Cobblestone", color = { 204, 174, 114 } }
++
++local CELLS: { [string]: FeatureDress.CellLook } = {
++	-- Three stone palettes, each kind its own ground so a seed's palette reads at a
++	-- glance and the seeds differ in look as well as in plan.
++	court_ivory = { ground = LIMESTONE, clear = true },
++	court_white = { ground = MARBLE, clear = true },
++	court_gold = { ground = PAVEMENT, clear = true },
++	terrace_ivory = { ground = MARBLE, clear = true },
++	terrace_white = { ground = SNOW, clear = true },
++	terrace_gold = { ground = LIMESTONE, clear = true },
++	riser_ivory = { ground = SLATE, clear = true },
++	riser_white = { ground = LIMESTONE, clear = true },
++	riser_gold = { ground = SANDSTONE, clear = true },
++	stair_ivory = { ground = PAVEMENT, clear = true },
++	stair_white = { ground = MARBLE, clear = true },
++	stair_gold = { ground = PAVEMENT, clear = true },
++	crown_ivory = { ground = SNOW, clear = true },
++	crown_white = { ground = MARBLE, clear = true },
++	crown_gold = { ground = PAVEMENT, clear = true },
++	-- The gold inlay: the inner lip of every riser, the crown dais and the road.
++	gilt = { ground = GOLD, clear = true },
++	way = { ground = GOLD, clear = true },
++	-- A lit brazier's cell: the fire's own light, breathing on the stone.
++	ember = {
++		ground = SLATE,
++		clear = true,
++		glow = { color = { 255, 226, 160 }, range = 15, brightness = 1.2, every = 1, height = 8.5 },
++	},
++	-- The cloud sea below the mass: the domain's cloud, a breath cooler than its stone.
++	cloud = { ground = CLOUD_SEA, clear = true },
++}
++
++local PALETTES: {
++	[string]: { court: string, terrace: string, riser: string, stair: string, crown: string },
++} = {
++	ivory = {
++		court = "court_ivory",
++		terrace = "terrace_ivory",
++		riser = "riser_ivory",
++		stair = "stair_ivory",
++		crown = "crown_ivory",
++	},
++	white = {
++		court = "court_white",
++		terrace = "terrace_white",
++		riser = "riser_white",
++		stair = "stair_white",
++		crown = "crown_white",
++	},
++	gold = {
++		court = "court_gold",
++		terrace = "terrace_gold",
++		riser = "riser_gold",
++		stair = "stair_gold",
++		crown = "crown_gold",
++	},
++}
++
++local TIERS = 5
++local RING = 4 -- cells a tier: two of riser, two of terrace
++local RISER = 2
++local TERRACE = 2
++local CROWN_D = 18 -- tier one starts here
++local CLOUD_H = -4 -- the cloud sea, four studs under a flush court
++local BRAZIER = "domain_great_brazier"
++
++local feature: MapFeature.Feature = {
++	name = "DomainStairOfAscent",
++	about = "A vast five-tier ziggurat of ivory and gold, its road climbing the axis by broad stairs to a crowning brazier of holy fire.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "crossing",
++	mood = { "monumental", "ascending", "holy", "gilded" },
++	cells = CELLS,
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1. The structure, first.
++		local shape = pick(rng, { "open", "ridge", "round", "moat" })
++		local pattern = pick(rng, { "even4", "even6", "mixed" })
++		local rises: { number } = {}
++		for tier = 1, TIERS do
++			rises[tier] = if pattern == "even4"
++				then 4
++				elseif pattern == "even6" then 6
++				elseif rng:NextNumber() < 0.5 then 4
++				else 6
++		end
++		local sunk = rng:NextNumber() < 0.35
++		local cl = if sunk then -2 else 0
++		-- The top of each tier, the court's own height under it.
++		local top: { number } = {}
++		top[0] = cl
++		for tier = 1, TIERS do
++			top[tier] = top[tier - 1] + rises[tier]
++		end
++		local routes = if shape == "open" or shape == "round"
++			then { "through", "twin", "turn" }
++			else { "through", "twin" }
++		local route = pick(rng, routes)
++		local crownStyle = pick(rng, { "dais", "ring", "columns", "bare" })
++		local palette = PALETTES[pick(rng, { "ivory", "white", "gold" })]
++		local giltBands = rng:NextNumber() < 0.45
++		local sideStair = (shape == "open" or shape == "round") and rng:NextNumber() < 0.5
++
++		-- 2. The footprint and its base plan.
++		local W, D
++		local baseKind = "rect"
++		local bx0, bx1, bz0, bz1 = 1, 1, 1, 1
++		local radius = 0
++		local courtR = 0
++		if shape == "open" then
++			W, D = whole(rng, 54, 56), whole(rng, 54, 56)
++			local m = whole(rng, 2, 3)
++			bx0, bx1, bz0, bz1 = 1 + m, W - m, 1 + m, D - m
++		elseif shape == "ridge" then
++			W, D = whole(rng, 54, 56), whole(rng, 54, 56)
++			local side = whole(rng, 4, 4)
++			local m = whole(rng, 2, 3)
++			bx0, bx1, bz0, bz1 = 1 + side, W - side, 1 + m, D - m
++		elseif shape == "moat" then
++			W, D = whole(rng, 54, 56), whole(rng, 54, 56)
++			local m = whole(rng, 3, 4)
++			bx0, bx1, bz0, bz1 = 1 + m, W - m, 1 + m, D - m
++		else
++			local size = whole(rng, 54, 56)
++			W, D = size, size
++			baseKind = "circle"
++			radius = math.min(W, D) / 2 - whole(rng, 3, 4)
++			courtR = math.min(W, D) / 2 + 1
++		end
++		local fcx, fcz = (W + 1) / 2, (D + 1) / 2
++		local centreX, centreZ = math.floor(fcx + 0.5), math.floor(fcz + 0.5)
++		local halfW = (bx1 - bx0) / 2
++		local halfD = (bz1 - bz0) / 2
++		-- The crown, inside the fifth riser's eighteen cells.
++		local crownHalfW = if baseKind == "circle" then radius - 17.5 else halfW - CROWN_D
++		local crownHalfD = if baseKind == "circle" then radius - 17.5 else halfD - CROWN_D
++
++		-- 3. The road's axes. The entry is the high-z face, the exit low-z, or east.
++		-- A stair lane must lie inside the crown's own width, or its side neighbours
++		-- fall a band at the ring's corners: one cell in from the crown's edge.
++		local maxOffX = math.max(1, math.floor(crownHalfW) - 2)
++		local function clampAxis(v: number, centre: number, span: number): number
++			return math.clamp(v, math.ceil(centre - span), math.floor(centre + span))
++		end
++		local off = if route == "twin" then math.min(whole(rng, 3, 5), maxOffX) else 0
++		local entryX = centreX + whole(rng, -1, 1) - off
++		local exitX = centreX + whole(rng, -1, 1) + off
++		local exitZ = centreZ + whole(rng, -2, 2)
++		local laneSpanX = math.max(1, math.floor(crownHalfW) - 1)
++		local laneSpanZ = math.max(1, math.floor(crownHalfD) - 1)
++		entryX = clampAxis(entryX, fcx, laneSpanX)
++		exitX = clampAxis(exitX, fcx, laneSpanX)
++		exitZ = clampAxis(exitZ, fcz, laneSpanZ)
++		local courtHalf = math.max(3.5, off + 3)
++		if route == "through" then
++			exitX = entryX
++		end
++
++		local function depthOf(x: number, z: number): number
++			if baseKind == "rect" then
++				if x < bx0 or x > bx1 or z < bz0 or z > bz1 then
++					return -1
++				end
++				return math.min(x - bx0, bx1 - x, z - bz0, bz1 - z)
++			end
++			local dx, dz = x - fcx, z - fcz
++			local r = math.sqrt(dx * dx + dz * dz)
++			local d = math.floor(radius - r + 0.5)
++			return if d < 0 then -1 else d
++		end
++
++		local function courtAt(x: number, z: number): string
++			if shape == "open" then
++				return "court"
++			elseif shape == "ridge" then
++				return if z < bz0 or z > bz1 then "court" else "void"
++			elseif shape == "moat" then
++				return if math.abs(x - fcx) <= courtHalf and (z < bz0 or z > bz1) then "court" else "void"
++			end
++			local dx, dz = x - fcx, z - fcz
++			return if math.sqrt(dx * dx + dz * dz) <= courtR then "court" else "void"
++		end
++
++		-- 4. The tiers, band by band.
++		local n = W * D
++		local walk = table.create(n, true)
++		local heights = table.create(n, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		for z = 1, D do
++			for x = 1, W do
++				local i = (z - 1) * W + x
++				local d = depthOf(x, z)
++				if d >= 0 then
++					if d >= CROWN_D then
++						heights[i] = top[TIERS]
++						kinds[i] = palette.crown
++					else
++						local t = d // RING
++						local pos = d % RING
++						if pos < RISER then
++							walk[i] = false
++							heights[i] = top[t]
++							lifts[i] = rises[t + 1] + (if pos == RISER - 1 then 1 else 0)
++							kinds[i] = if pos == RISER - 1 and giltBands then "gilt" else palette.riser
++						else
++							heights[i] = top[t + 1]
++							kinds[i] = palette.terrace
++						end
++					end
++				elseif courtAt(x, z) == "court" then
++					heights[i] = cl
++					kinds[i] = palette.court
++				else
++					walk[i] = false
++					heights[i] = CLOUD_H
++					kinds[i] = "cloud"
++				end
++			end
++		end
++
++		-- 5. The stairs: a notch through each tier's riser, three two-stud steps (two
++		-- for a four-stud tier) from the lower ground up to the terrace.
++		local stairs: { { x: number, z: number, h: number, face: string } } = {}
++		local function carve(tier: number, face: string, axis: number, way: boolean)
++			local db = (tier - 1) * RING
++			local baseH = top[tier - 1]
++			local steps: { { d: number, h: number } } = {}
++			if rises[tier] == 6 then
++				table.insert(steps, { d = db - 1, h = baseH + 2 })
++				table.insert(steps, { d = db, h = baseH + 4 })
++				table.insert(steps, { d = db + 1, h = baseH + 6 })
++			else
++				table.insert(steps, { d = db, h = baseH + 2 })
++				table.insert(steps, { d = db + 1, h = baseH + 4 })
++			end
++			for z = 1, D do
++				for x = 1, W do
++					local d = depthOf(x, z)
++					local lane, faceOk
++					if face == "highZ" then
++						lane = math.abs(x - axis) <= 1.5
++						faceOk = if d >= 0 then bz1 - z == d else z == bz1 + 1
++					elseif face == "lowZ" then
++						lane = math.abs(x - axis) <= 1.5
++						faceOk = if d >= 0 then z - bz0 == d else z == bz0 - 1
++					elseif face == "east" then
++						lane = math.abs(z - axis) <= 1.5
++						faceOk = if d >= 0 then bx1 - x == d else x == bx1 + 1
++					else
++						lane = math.abs(z - axis) <= 1.5
++						faceOk = if d >= 0 then x - bx0 == d else x == bx0 - 1
++					end
++					if baseKind == "circle" then
++						if face == "highZ" then
++							lane = math.abs(x - axis) <= 1.5 and z > fcz
++						elseif face == "lowZ" then
++							lane = math.abs(x - axis) <= 1.5 and z < fcz
++						elseif face == "east" then
++							lane = math.abs(z - axis) <= 1.5 and x > fcx
++						else
++							lane = math.abs(z - axis) <= 1.5 and x < fcx
++						end
++						faceOk = true
++					end
++					if not lane or not faceOk then
++						continue
++					end
++					local i = (z - 1) * W + x
++					for _, step in steps do
++						if d == step.d and (d >= 0 or walk[i]) then
++							walk[i] = true
++							heights[i] = step.h
++							lifts[i] = nil
++							local middle = if face == "highZ" or face == "lowZ" then x == axis else z == axis
++							kinds[i] = if way and middle then "way" else palette.stair
++							table.insert(stairs, { x = x, z = z, h = step.h, face = face })
++							break
++						end
++					end
++				end
++			end
++		end
++
++		-- The road's own stairs, then the ways a seed adds for the eye and the map.
++		for tier = 1, TIERS do
++			carve(tier, "highZ", entryX, true)
++			if route == "turn" then
++				carve(tier, "east", exitZ, true)
++			else
++				carve(tier, "lowZ", exitX, true)
++			end
++			if route == "twin" then
++				carve(tier, "highZ", centreX * 2 - entryX, false)
++				if route ~= "turn" then
++					carve(tier, "lowZ", centreX * 2 - exitX, false)
++				end
++			end
++		end
++		if sideStair then
++			local face = if route == "turn" then "west" else "east"
++			local axis = clampAxis(centreZ + whole(rng, -5, 5), fcz, laneSpanZ)
++			for tier = 1, TIERS do
++				carve(tier, face, axis, false)
++			end
++		end
++		-- Further ways up, a seed or two: whole second staircases on the entry or exit
++		-- face, each its own climb from the court to the crown, cutting every tier
++		-- again and giving a fight another way round.
++		local usedAxes: { number } = { entryX }
++		if route ~= "turn" then
++			table.insert(usedAxes, exitX)
++		end
++		local extraCount = whole(rng, 0, 2)
++		for _ = 1, extraCount do
++			local face = if rng:NextNumber() < 0.5 then "highZ" else "lowZ"
++			local pickAt: number? = nil
++			for _ = 1, 10 do
++				local cand = clampAxis(centreX + whole(rng, -laneSpanX, laneSpanX), fcx, laneSpanX)
++				local clear = true
++				for _, a in usedAxes do
++					clear = clear and math.abs(cand - a) >= 3.5
++				end
++				local probeX, probeZ
++				if baseKind == "circle" then
++					probeX = cand
++					probeZ = if face == "highZ" then math.floor(fcz + radius) + 1 else math.ceil(fcz - radius) - 1
++				else
++					probeX = cand
++					probeZ = if face == "highZ" then bz1 + 1 else bz0 - 1
++				end
++				local ok = probeX >= 1 and probeX <= W and probeZ >= 1 and probeZ <= D
++				if ok and clear and walk[(probeZ - 1) * W + probeX] then
++					pickAt = cand
++					break
++				end
++			end
++			if pickAt then
++				table.insert(usedAxes, pickAt)
++				for tier = 1, TIERS do
++					carve(tier, face, pickAt, false)
++				end
++			end
++		end
++		-- A stair's kerbs: where a step rises more than a walker's step above the
++		-- terrace at its side (the ring turns under a curved crown, or at a corner),
++		-- that side cell becomes a low parapet at the step's own height, so the
++		-- stair runs in a channel and every walkable neighbour stays within two.
++		for _, cell in stairs do
++			for _, dir in { -1, 1 } do
++				local nx, nz = cell.x, cell.z
++				if cell.face == "highZ" or cell.face == "lowZ" then
++					nx = cell.x + dir
++				else
++					nz = cell.z + dir
++				end
++				if nx >= 1 and nx <= W and nz >= 1 and nz <= D then
++					local i = (nz - 1) * W + nx
++					if walk[i] and math.abs(heights[i] - cell.h) > 2 then
++						walk[i] = false
++						heights[i] = cell.h
++						lifts[i] = nil
++						kinds[i] = palette.riser
++					end
++				end
++			end
++		end
++
++		-- 6. The crown's dais, a gold disc two studs above the platform.
++		local dais = crownStyle == "dais"
++		local daisR = 0
++		if dais then
++			daisR = math.max(2, math.min(3, math.floor(math.min(crownHalfW, crownHalfD) - 1)))
++			local cr = math.ceil(daisR)
++			for z = math.floor(fcz) - cr, math.floor(fcz) + cr do
++				for x = math.floor(fcx) - cr, math.floor(fcx) + cr do
++					if x >= 1 and x <= W and z >= 1 and z <= D then
++						local dx, dz = x - fcx, z - fcz
++						if math.sqrt(dx * dx + dz * dz) <= daisR then
++							local i = (z - 1) * W + x
++							if walk[i] then
++								heights[i] = top[TIERS] + 2
++								kinds[i] = "gilt"
++								lifts[i] = nil
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- 7. The road: in from the high border, up the stairs, round the brazier,
++		-- and down the far face and out (or round and out east).
++		local road: { Point } = {}
++		local function add(x: number, z: number)
++			table.insert(road, { x = x, z = z })
++		end
++		local function line(ax: number, az: number, bx: number, bz: number)
++			local steps = math.max(1, math.ceil(math.max(math.abs(bx - ax), math.abs(bz - az))))
++			for s = 0, steps do
++				local t = s / steps
++				add(ax + (bx - ax) * t, az + (bz - az) * t)
++			end
++		end
++		local dx = math.max(2.6, math.min(4.5, crownHalfW - 1.8))
++		local dz = math.max(2.2, math.min(3.2, crownHalfD - 1.8))
++		local detourX = fcx + dx
++		local entryTopZ = fcz + dz
++		local exitTopZ = fcz - dz
++		add(entryX, D)
++		line(entryX, D, entryX, entryTopZ)
++		line(entryX, entryTopZ, detourX, entryTopZ)
++		line(detourX, entryTopZ, detourX, exitTopZ)
++		if route == "turn" then
++			line(detourX, exitTopZ, detourX, exitZ)
++			line(detourX, exitZ, W, exitZ)
++		else
++			line(detourX, exitTopZ, exitX, exitTopZ)
++			line(exitX, exitTopZ, exitX, 1)
++		end
++		-- The processional way, painted along the road where it is walkable.
++		for _, p in road do
++			local cx, cz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			if cx >= 1 and cx <= W and cz >= 1 and cz <= D then
++				local i = (cz - 1) * W + cx
++				if walk[i] then
++					kinds[i] = "way"
++				end
++			end
++		end
++
++		-- Distance from a point to the road, for keeping monuments off it.
++		local function roadGap(x: number, z: number): number
++			local best = math.huge
++			for _, p in road do
++				local d = (p.x - x) ^ 2 + (p.z - z) ^ 2
++				if d < best then
++					best = d
++				end
++			end
++			return math.sqrt(best)
++		end
++
++		-- 8. What stands on it. The crown first: the great brazier is the feature's
++		-- heart and always burns; the rest of the summit changes with the seed.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local function mark(sculpt: string, x: number, z: number, scale: number, sink: number, solid: boolean)
++			table.insert(marks, {
++				sculpt = sculpt,
++				x = x,
++				z = z,
++				yaw = between(rng, 0, 360),
++				scale = scale,
++				sink = sink,
++				solid = solid,
++			})
++		end
++		local brazierScale = between(rng, 0.85, 1.0)
++		mark(BRAZIER, fcx, fcz, brazierScale, 0.1, true)
++		table.insert(effects, {
++			recipe = "domain_crown_fire",
++			x = fcx,
++			z = fcz,
++			lift = 18 * brazierScale,
++			seed = whole(rng, 1, 4000),
++		})
++		if crownStyle == "ring" or crownStyle == "columns" then
++			local sculpt = if crownStyle == "ring" then "domain_waystone" else "domain_column"
++			local reach = if crownStyle == "ring" then 0.5 else 0.4
++			for _, corner in { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } } do
++				local x = fcx + corner[1] * math.max(1.5, crownHalfW - 2)
++				local z = fcz + corner[2] * math.max(1.5, crownHalfD - 2)
++				if roadGap(x, z) > 2.4 then
++					mark(sculpt, x, z, reach * between(rng, 0.9, 1.15), 0.2, true)
++				end
++			end
++		end
++
++		-- Braziers on the terrace corners, tier by tier; the lowest tier's four are
++		-- lit (their cells make the fire's light) and the rest stand as gilded bowls.
++		local function terraceAt(x: number, z: number): boolean
++			if x < 1 or x > W or z < 1 or z > D then
++				return false
++			end
++			local i = (z - 1) * W + x
++			return walk[i] and kinds[i] == palette.terrace
++		end
++		local lit = 0
++		for tier = 1, TIERS - 1 do
++			local d = (tier - 1) * RING + RISER + TERRACE - 1
++			local targets = {}
++			if baseKind == "circle" then
++				local r = radius - ((tier - 1) * RING + RISER + 0.5)
++				for _, a in { math.pi * 0.25, math.pi * 0.75, math.pi * 1.25, math.pi * 1.75 } do
++					table.insert(targets, { x = fcx + math.cos(a) * r, z = fcz + math.sin(a) * r })
++				end
++			else
++				for _, corner in { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } } do
++					local x = if corner[1] < 0 then bx0 + d else bx1 - d
++					local z = if corner[2] < 0 then bz0 + d else bz1 - d
++					table.insert(targets, { x = x, z = z })
++				end
++			end
++			for _, p in targets do
++				local cx, cz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++				if terraceAt(cx, cz) and roadGap(p.x, p.z) > 1.6 then
++					mark("domain_brazier", p.x, p.z, between(rng, 0.7, 0.92), 0.2, true)
++					if tier == 1 and lit < 4 then
++						local i = (cz - 1) * W + cx
++						kinds[i] = "ember"
++						lit += 1
++					end
++				end
++			end
++		end
++
++		-- The foot: two gold trees and two waystones framing the way up, and fallen
++		-- drums where the colonnade broke.
++		local function findCourt(nearX: number, nearZ: number, reach: number): (number?, number?)
++			for r = 0, reach do
++				for z = math.floor(nearZ) - r, math.floor(nearZ) + r do
++					for x = math.floor(nearX) - r, math.floor(nearX) + r do
++						if x >= 1 and x <= W and z >= 1 and z <= D then
++							local i = (z - 1) * W + x
++							if walk[i] and kinds[i] == palette.court and roadGap(x, z) > 1.6 then
++								return x, z
++							end
++						end
++					end
++				end
++			end
++			return nil, nil
++		end
++		for _, side in { -1, 1 } do
++			local x, z = findCourt(fcx + side * 9, D - 4, 6)
++			if x then
++				mark("domain_gold_tree", x, z, between(rng, 0.55, 0.72), 0.3, true)
++			end
++			local wx, wz = findCourt(entryX + side * 4, D - 2, 2)
++			if wx then
++				mark("domain_waystone", wx, wz, between(rng, 0.45, 0.58), 0.2, true)
++			end
++		end
++		for _ = 1, 3 do
++			local x, z =
++				findCourt(fcx + between(rng, -halfW + 3, halfW - 3), fcz + between(rng, -halfD + 3, halfD - 3), 4)
++			if x then
++				mark("domain_column_fallen", x, z, between(rng, 0.8, 1.2), 0.3, true)
++			end
++		end
++		-- Banks of cloud heaped out of the moat, wherever the mass stands above it.
++		local banks: { { x: number, z: number } } = {}
++		for z = 2, D - 1 do
++			for x = 2, W - 1 do
++				local i = (z - 1) * W + x
++				if not walk[i] and kinds[i] == "cloud" and roadGap(x, z) > 6 then
++					table.insert(banks, { x = x, z = z })
++				end
++			end
++		end
++		local wanted = math.min(#banks, whole(rng, 2, 4))
++		for _ = 1, wanted do
++			local b = table.remove(banks, whole(rng, 1, #banks))
++			if b then
++				mark("domain_cloud_bank", b.x, b.z, between(rng, 1.1, 1.7), 0.5, false)
++			end
++		end
++
++		-- 9. The cameras: the ascent from the near court, and the whole mass from
++		-- the air. The game camera over the middle is added by the pad.
++		local cameras: { MapFeature.Shot } = {
++			{
++				name = "the stair from the air",
++				from = { x = W + 6, z = D + 6, lift = 46 },
++				to = { x = fcx, z = fcz, lift = 6 },
++				fov = 60,
++			},
++			{
++				name = "the ascent",
++				from = { x = entryX, z = D + 6, lift = 6 },
++				to = { x = fcx, z = fcz, lift = 18 },
++				fov = 56,
++			},
++		}
++
++		return {
++			width = W,
++			depth = D,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

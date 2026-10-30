@@ -1,0 +1,948 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..97866eb8 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainCloudfall = require("../systems/features/DomainCloudfall")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainCloudfall = DomainCloudfall,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index 490cc3f5..d2371f5e 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1220,4 +1220,33 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (a trial, 2026-10-30): the parapet along a terrace's
++-- brink. A panel of ivory ashlar with gilt niches in its face and a gilded
++-- course along the top, one panel about two cells long, set end to end along
++-- the lip. Seeds weather its crown and shift the niches, so a run of it reads
++-- as old work rather than a stamped rail.
++Sculpts.domain_balustrade_section = {
++	kind = "niches",
++	size = { 14, 3.2, 1.7 },
++	material = "Marble",
++	colors = { { 232, 226, 210 }, { 216, 209, 192 }, { 230, 190, 110 }, { 203, 197, 181 }, { 232, 200, 128 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Marble", [5] = "Foil" },
++	maxPrims = 18,
++}
++-- The Eternal Domain (a trial, 2026-10-30): a bank of cloud. A tuft's solid,
++-- rounded body with no blades is a heap of pale drums, round from above: at
++-- this size, a billow of the sea of cloud the Domain stands on. Merged, since
++-- a brink's worth of them is strewn by the dozen.
++Sculpts.domain_cloud_bank = {
++	kind = "tuft",
++	size = { 20, 7, 16 },
++	material = "Marble",
++	colors = { { 234, 232, 226 }, { 228, 225, 218 }, { 221, 218, 212 } },
++	maxPrims = 30,
++	blades = 0,
++	body = 1,
++	rounded = true,
++	merge = 6,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 23f351b2..5e8bd73e 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2145,4 +2145,179 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain (a trial, 2026-10-30): the cloud going over a terrace's
++-- brink. A wide white-gold curtain of vapour pours off the lip in one long
++-- fall, a colder pale-blue veil spreads below it, gold motes glint up out of
++-- the fall, and a warm light burns on the gilt mouth. The path is short and
++-- its climb steep enough to stack the emitters at the lip rather than trail
++-- them along the terrace; the fall itself is the particles' own long drop,
++-- kept under the game camera's height where it starts (SE10).
++recipes.domain_cloudfall = {
++	about = "Cloud pouring over the Eternal Domain's brink in a wide white-gold cascade, a pale sky-blue veil below it and gold motes glinting in the fall.",
++	theme = "domain",
++	radius = 400,
++	path = { kind = "worm", length = 6, step = 2, bend = 24, climb = 10, round = 2 },
++	layers = {
++		{
++			name = "fall",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 9,
++				lift = 1.3,
++				toward = "down",
++				rise = 3.2,
++				life = { 4.5, 7 },
++				rate = 7,
++				size = 7,
++				tall = 1.8,
++				transparency = 0.72,
++				color = "core",
++				texture = "smoke",
++				lean = 5,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 8, span = 12, periods = { 5.3, 3.7 } },
++			priority = 1,
++		},
++		{
++			name = "veil",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 14,
++				lift = 0.8,
++				toward = "down",
++				rise = 1.8,
++				life = { 8, 12 },
++				rate = 1.5,
++				size = 20,
++				tall = 1,
++				transparency = 0.9,
++				color = "sky",
++				texture = "veil",
++				lean = 4,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 5, span = 20, periods = { 9, 13 } },
++			priority = 3,
++		},
++		{
++			name = "glints",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 6,
++				lift = 1,
++				toward = "up",
++				rise = 1.1,
++				life = { 4, 6.5 },
++				rate = 1.2,
++				size = 0.45,
++				tall = 1.8,
++				transparency = 0.2,
++				color = "gold",
++				texture = "wisp",
++				lean = 14,
++				vary = 0.7,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 10, span = 10, periods = { 4.1, 6.2 } },
++			priority = 2,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 5, max = 2, range = 20, brightness = 1, color = "gold" },
++			motion = { kind = "pulse", period = 4.6, depth = 0.25 },
++			priority = 4,
++		},
++	},
++}
++
++-- The Eternal Domain (a trial, 2026-10-30): the sea of cloud under a brink,
++-- breathing its light up from the deep. A wide pale-blue veil lies on the
++-- billows and drifts, a gold wash and a few motes rise out of them, and two
++-- lights pulse under the haze so the cloud glows from within. Few emitters
++-- and two lights on purpose: a brink's worth of pieces shares a phone's
++-- budget (EF3).
++recipes.domain_cloudsea = {
++	about = "The sea of cloud under the Eternal Domain's brink: pale billows breathing a gold light up from their deeps under a cold sky-blue haze.",
++	theme = "domain",
++	radius = 400,
++	path = { kind = "worm", length = 44, step = 5, bend = 30, climb = 0, round = 3 },
++	layers = {
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 26,
++				thick = 30,
++				lift = 1.4,
++				toward = "along",
++				rise = 1.2,
++				life = { 12, 16 },
++				rate = 1,
++				size = 28,
++				tall = 0.5,
++				transparency = 0.92,
++				color = "sky",
++				texture = "veil",
++				lean = 3,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 6, tilt = 4, span = 50, periods = { 17, 11 } },
++			priority = 2,
++		},
++		{
++			name = "glow",
++			look = {
++				kind = "stream",
++				every = 26,
++				thick = 10,
++				lift = 0.6,
++				toward = "up",
++				rise = 0.7,
++				life = { 7, 10 },
++				rate = 1,
++				size = 9,
++				tall = 0.7,
++				transparency = 0.85,
++				color = "gold",
++				texture = "smoke",
++				lean = 8,
++				vary = 0.6,
++			},
++			motion = { kind = "worm", amplitude = 1.2, across = 1, periods = { 13, 8 }, twist = 6, coil = 0.5 },
++			priority = 3,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 40,
++				thick = 8,
++				lift = 0.4,
++				toward = "up",
++				rise = 0.6,
++				life = { 6, 9 },
++				rate = 0.8,
++				size = 0.5,
++				tall = 1.6,
++				transparency = 0.25,
++				color = "gold",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.7,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 6, span = 24, periods = { 9, 13 } },
++			priority = 4,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 16, max = 2, range = 24, brightness = 0.8, color = "glow" },
++			motion = { kind = "pulse", period = 5.2, depth = 0.3 },
++			priority = 1,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0edeb33a..8098d7ed 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -426,6 +426,14 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	["sculpt:domain_balustrade_section"] = row(
++		"A panel of the Eternal Domain's brink: ivory ashlar with gilt niches and a gilded course along its crown, set end to end along a terrace's lip.",
++		MOOR
++	),
++	["sculpt:domain_cloud_bank"] = row(
++		"A billow of the sea of cloud the Eternal Domain stands on: pale rounded drums heaped into a low bank.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainCloudfall.luau b/src/shared/systems/features/DomainCloudfall.luau
+new file mode 100644
+index 00000000..b290ce13
+--- /dev/null
++++ b/src/shared/systems/features/DomainCloudfall.luau
+@@ -0,0 +1,683 @@
++--!strict
++-- The cloudfall (MapFeature): the brink of the Eternal Domain where its paving
++-- breaks off over the sea of cloud. A broad paved terrace ends at a gilded lip
++-- that runs the width of the place; a balustrade of ivory panels stands along
++-- it; beyond, the ground falls away in broken terraces to a floor of cloud,
++-- and the cloud pours over the lip in wide white cascades lit gold. The road
++-- comes in off one border of the map and leaves by the next, skirting the
++-- brink the whole way.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure; the rest only dress
++-- it:
++--   1. which border the sea of cloud lies beyond (north, east or west: never
++--      south, where it would put the game's camera under the brink), so the
++--      terrace and the road turn to face three different ways;
++--   2. where along that border the sea's centre sits, and how deep it bites
++--      into the paving, from a shallow cove to a bay that comes to the middle;
++--   3. the brink's run: a crescent, two coves, a nose of land pushed out into
++--      the cloud, or a fractured edge with bites taken out of the paving;
++--   4. the broken terraces below: two to four shelves, each its own width,
++--      fall and breaks where the stone has gone;
++--   5. the falls: one to three cascades over the lip, and their spread;
++--   6. then the ruined colonnade and broken terrace walls on the paving, the
++--      road's offset from the brink, and the balustrade's gaps.
++--
++-- It stands on the game's own Domain kit (domain_column, domain_brazier,
++-- domain_column_fallen) and two new sculpts of its own, the balustrade panel
++-- and the cloud bank; the cloud itself is the domain_cloudfall set piece.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++type Bite = { a: number, h: number, depth: number }
++type Span = { a: number, h: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- How the brink runs: one sweeping crescent, two coves, a nose of land, or a
++-- fractured edge bitten into by the cloud.
++local SHAPES = { "crescent", "double", "nose", "fractured" }
++
++-- The Domain's own pale stone, on materials the tileset leaves free. Terrain
++-- keeps one colour a material: the paving is cobblestone (the terrace's
++-- flags), the road concrete (a smooth processional way in the tileset road's
++-- warm colour), the broken shelves slate, the piers limestone in the very
++-- colour the tileset gives it, the cloud snow in the tileset's cloud colour,
++-- and the brink salt, gilded.
++local IVORY = { material = "Cobblestone", color = { 214, 206, 190 } }
++local WARM = { material = "Concrete", color = { 226, 212, 182 } }
++local SHELF = { material = "Slate", color = { 198, 196, 190 } }
++local PIER = { material = "Limestone", color = { 202, 194, 178 } }
++local CLOUD = { material = "Snow", color = { 232, 229, 222 } }
++local GILT = { material = "Salt", color = { 232, 200, 140 } }
++local WASH = { material = "Ice", color = { 184, 202, 232 } }
++-- The Domain's light is holy white-gold (B12); its cool note is the pale sky
++-- blue, used sparingly.
++local HOLY = { 255, 234, 186 }
++
++local feature: MapFeature.Feature = {
++	name = "DomainCloudfall",
++	about = "The Eternal Domain's brink: a paved terrace breaking off over the sea of cloud, a gilded balustrade along the lip, cloud pouring down past broken terraces and the road skirting it.",
++	tileset = "domain",
++	scale = "medium",
++	role = "crossing",
++	mood = { "awe", "brink", "holy", "exposed", "falling" },
++	cells = {
++		-- The terrace: broad pale flags to fight on, rung by its own heights.
++		terrace = {
++			ground = IVORY,
++			clear = true,
++			props = { { sculpt = "domain_column_fallen", every = 55, scale = { 0.7, 1.1 }, sink = 0.5 } },
++		},
++		-- The processional road, a shade warmer so the way reads from above.
++		road = { ground = WARM, clear = true },
++		-- The gilded lip: one band of gold along the brink, lit from within.
++		brink = {
++			ground = GILT,
++			clear = true,
++			glow = { color = HOLY, range = 16, brightness = 1.1, every = 14, height = 1.4 },
++		},
++		-- The broken terraces below the brink, their ruin heaped at the feet.
++		shelf = {
++			ground = SHELF,
++			clear = true,
++			props = { { sculpt = "domain_column_fallen", every = 26, scale = { 0.8, 1.3 }, sink = 0.6 } },
++		},
++		-- Where the cascades have glazed the stone: pale sky blue, the one
++		-- cold note in the place, sparing and only in the falls' wake.
++		wash = { ground = WASH, lift = 0.2, clear = true },
++		-- The sea of cloud itself, and its own billows.
++		cloud = {
++			ground = CLOUD,
++			clear = true,
++			props = { { sculpt = "domain_cloud_bank", every = 30, scale = { 1, 1.6 }, sink = 1.2 } },
++		},
++		-- A ruined pier of the terrace colonnade, a wall cell lifted into a
++		-- square ivory post.
++		pier = { ground = PIER, clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, first. Which border the sea lies beyond, where
++		-- along it the centre sits, how deep it bites, and how the brink runs.
++		-- The sea never lies due south: the game's camera looks north over a
++		-- feature's middle, and a sea there would put it under the brink.
++		local side = whole(rng, 2, 4) -- 2 north, 3 east, 4 west
++		local w = whole(rng, 30, 32)
++		local d = whole(rng, 30, 32)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		-- Inland and along-shore unit vectors, and the map's reach each way.
++		local ix: number, iz: number, sx: number, sz: number, halfI: number, halfS: number
++		if side == 1 then
++			ix, iz, sx, sz, halfI, halfS = 0, -1, 1, 0, d / 2, w / 2
++		elseif side == 2 then
++			ix, iz, sx, sz, halfI, halfS = 0, 1, 1, 0, d / 2, w / 2
++		elseif side == 3 then
++			ix, iz, sx, sz, halfI, halfS = -1, 0, 0, 1, w / 2, d / 2
++		else
++			ix, iz, sx, sz, halfI, halfS = 1, 0, 0, 1, w / 2, d / 2
++		end
++		local shape = SHAPES[whole(rng, 1, #SHAPES)]
++		local out = between(rng, 3, 6)
++		local shoreShift = between(rng, -0.3, 0.3) * halfS
++		local Cx = cx - ix * (halfI + out) + sx * shoreShift
++		local Cz = cz - iz * (halfI + out) + sz * shoreShift
++		-- How deep the sea bites into the paving at its centre: far enough in
++		-- that the brink runs close by the feature's middle, where the game
++		-- camera sees it, and never so far that the sea crosses the middle.
++		local bite = halfI + between(rng, -6, -2)
++		local Rb = out + bite
++		local a1 = between(rng, 0.06, 0.14)
++		local p1 = between(rng, 0, 2 * math.pi)
++		local harm = if shape == "crescent" or shape == "nose" then 1 else 2
++		local sign = if shape == "nose" then -1 else 1
++		local bites: { Bite } = {}
++		if shape == "fractured" then
++			for _ = 1, whole(rng, 2, 4) do
++				table.insert(bites, {
++					a = between(rng, -1.3, 1.3),
++					h = between(rng, 0.06, 0.16),
++					depth = between(rng, 1.2, 3),
++				})
++			end
++		end
++
++		-- The brink's radius at the angle `theta` along the shore from the
++		-- sea's centre.
++		local function brinkRadius(theta: number): number
++			local r = Rb * (1 + sign * a1 * math.cos(harm * theta + p1))
++			for _, b in bites do
++				local ad = math.abs(theta - b.a)
++				if ad < b.h then
++					r += b.depth * (1 - ad / b.h)
++				end
++			end
++			return r
++		end
++
++		-- The point `off` cells inland of the brink at `theta`, in cells.
++		local function brinkPoint(theta: number, off: number): Point
++			local r = brinkRadius(theta) + off
++			local a, b = r * math.cos(theta), r * math.sin(theta)
++			return { x = Cx + ix * a + sx * b, z = Cz + iz * a + sz * b }
++		end
++
++		-- The angles whose brink actually lies inside the footprint: the run of
++		-- brink a visitor sees, and where everything on it must go.
++		local inside: { number } = {}
++		for s = 0, 260 do
++			local theta = -1.5 + 3 * s / 260
++			local q = brinkPoint(theta, 0.5)
++			if q.x > 1.1 and q.x < w - 1.1 and q.z > 1.1 and q.z < d - 1.1 then
++				table.insert(inside, theta)
++			end
++		end
++
++		-- 4: the broken terraces: two to four shelves, each its own width,
++		-- fall and breaks, then the floor of cloud below the last.
++		local shelfCount = whole(rng, 2, 4)
++		local shelfEdges, shelfDepths, wavePhases, breaks = {}, {}, {}, {}
++		local edge, depth = 0, 0
++		for k = 1, shelfCount do
++			edge += between(rng, 1.6, 2.9)
++			depth += between(rng, 3.5, 6)
++			shelfEdges[k] = edge
++			shelfDepths[k] = depth
++			wavePhases[k] = between(rng, 0, 2 * math.pi)
++			breaks[k] = {}
++			if rng:NextNumber() < 0.8 then
++				for _ = 1, whole(rng, 1, 2) do
++					table.insert(breaks[k], { a = between(rng, -1.3, 1.3), h = between(rng, 0.05, 0.14) })
++				end
++			end
++		end
++		local cloudDepth = depth + between(rng, 6, 10)
++		-- The terrace's own height, one to three shallow steps above the walk
++		-- along the brink, so no two brinks stand at the same level.
++		local topHeight = whole(rng, 1, 3)
++
++		-- The terrace, the sea and the terraces below, cell by cell.
++		local walk, heights = table.create(w * d, true), table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local us, thetas, rs = table.create(w * d, 0), table.create(w * d, 0), table.create(w * d, 0)
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local dx, dz = x - Cx, z - Cz
++				local a, b = dx * ix + dz * iz, dx * sx + dz * sz
++				local u = math.sqrt(a * a + b * b)
++				local theta = math.atan2(b, a)
++				local R = brinkRadius(theta)
++				us[i], thetas[i], rs[i] = u, theta, R
++				if u >= R then
++					-- Land: the terrace rises inland in shallow steps of its
++					-- own height, and lies level in a walk along the brink.
++					local dEdge = math.min(x - 1, z - 1, w - x, d - z)
++					local m = math.min(dEdge, u - R)
++					heights[i] = math.min(topHeight, math.floor(m / 2))
++					kinds[i] = "terrace"
++				else
++					-- The sea: a shelf, or the cloud below the shelves.
++					walk[i] = false
++					local t = R - u
++					local level = shelfCount + 1
++					for k = 1, shelfCount do
++						local band = shelfEdges[k] + 0.7 * math.cos(3 * theta + wavePhases[k])
++						local broken = false
++						for _, b2 in breaks[k] do
++							if math.abs(theta - b2.a) < b2.h then
++								broken = true
++								break
++							end
++						end
++						if t <= band and not broken then
++							level = k
++							break
++						end
++					end
++					if level <= shelfCount then
++						heights[i] = -shelfDepths[level]
++						kinds[i] = "shelf"
++					else
++						heights[i] = -cloudDepth
++						kinds[i] = "cloud"
++					end
++				end
++			end
++		end
++
++		-- The terrace must be one walkable ground: a tongue the sea has cut
++		-- off at a border, or a stray cell at the brink, goes under the cloud.
++		local seen = table.create(w * d, false)
++		local keep = table.create(w * d, false)
++		local largest: { number } = {}
++		for first = 1, w * d do
++			if walk[first] and not seen[first] then
++				local region: { number } = {}
++				local queue: { number } = { first }
++				seen[first] = true
++				local head = 1
++				while head <= #queue do
++					local i = queue[head]
++					head += 1
++					table.insert(region, i)
++					local x, z = (i - 1) % w + 1, (i - 1) // w + 1
++					for _, nb in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
++						local nx, nz = x + nb[1], z + nb[2]
++						if nx >= 1 and nz >= 1 and nx <= w and nz <= d then
++							local ni = at(nx, nz)
++							if walk[ni] and not seen[ni] then
++								seen[ni] = true
++								table.insert(queue, ni)
++							end
++						end
++					end
++				end
++				if #region > #largest then
++					largest = region
++				end
++			end
++		end
++		for _, i in largest do
++			keep[i] = true
++		end
++		for i = 1, w * d do
++			if walk[i] and not keep[i] then
++				walk[i] = false
++				kinds[i] = "cloud"
++				heights[i] = -cloudDepth
++			end
++		end
++
++		-- 5: the falls, spread along the visible brink, and the gilt mouths
++		-- they pour through. The cloud's wake glazes the stones below each.
++		local fallCount = whole(rng, 1, 3)
++		local fallAngles: { number } = {}
++		for f = 1, fallCount do
++			local t = (f - 0.5 + between(rng, -0.2, 0.2)) / fallCount
++			local idx = math.clamp(math.floor(t * #inside) + 1, 1, #inside)
++			fallAngles[f] = inside[idx]
++		end
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				for _, fa in fallAngles do
++					local across = math.abs(thetas[i] - fa) * us[i]
++					if walk[i] then
++						if us[i] - rs[i] < 2.4 and across < 3.2 then
++							kinds[i] = "brink"
++						end
++					elseif us[i] < rs[i] and rs[i] - us[i] < 11 and across < 2.8 then
++						kinds[i] = if rs[i] - us[i] < 1.6 and across < 2.2 then "brink" else "wash"
++					end
++				end
++			end
++		end
++
++		-- The brink's own gilded band, from the lip one cell in (the falls'
++		-- mouths are already gilt, wider).
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] and us[i] - rs[i] < 1.05 then
++					kinds[i] = "brink"
++				end
++			end
++		end
++
++		-- 6: the ruined colonnade: none to three runs of piers set inland of
++		-- the road, each run at its own reach and angle.
++		local roadOff = between(rng, 3, 6)
++		for _ = 1, whole(rng, 0, 3) do
++			local off = roadOff + between(rng, 3, 7)
++			local a0 = between(rng, -1.2, 1.1)
++			local step = between(rng, 2.4, 3.4) / (Rb + off)
++			for p = 1, whole(rng, 2, 5) do
++				local theta = a0 + (p - 1) * step
++				if theta > -1.35 and theta < 1.35 then
++					local q = brinkPoint(theta, off)
++					local ix2, iz2 = math.floor(q.x + 0.5), math.floor(q.z + 0.5)
++					if ix2 >= 2 and iz2 >= 2 and ix2 <= w - 1 and iz2 <= d - 1 then
++						local i = at(ix2, iz2)
++						if walk[i] and kinds[i] == "terrace" then
++							walk[i] = false
++							kinds[i] = "pier"
++							lifts[i] = between(rng, 8, 18)
++						end
++					end
++				end
++			end
++		end
++
++		-- The ruined terrace walls: none to two low runs of broken wall inland
++		-- of the colonnade, each with a gap where it has come down. They
++		-- divide the fighting floor without closing it.
++		for _ = 1, whole(rng, 0, 2) do
++			local off = roadOff + between(rng, 6, 12)
++			local a0 = between(rng, -1.2, 1.1)
++			local len = whole(rng, 6, 12)
++			local step = 1 / (Rb + off)
++			local gapAt = whole(rng, 2, len - 1)
++			for p = 1, len do
++				if p ~= gapAt then
++					local theta = a0 + (p - 1) * step
++					if theta > -1.35 and theta < 1.35 then
++						local q = brinkPoint(theta, off)
++						local ix2, iz2 = math.floor(q.x + 0.5), math.floor(q.z + 0.5)
++						if ix2 >= 2 and iz2 >= 2 and ix2 <= w - 1 and iz2 <= d - 1 then
++							local i = at(ix2, iz2)
++							if walk[i] and kinds[i] == "terrace" then
++								walk[i] = false
++								kinds[i] = "pier"
++								lifts[i] = between(rng, 1.5, 3.5)
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- The road: in off one border, along the brink at its own offset, out
++		-- by the border opposite. The two borders across the shore are the
++		-- map's own, and the road joins the walkable cells nearest the arc.
++		local arc: { Point } = {}
++		local steps = 44
++		for s = 0, steps do
++			local theta = -1.45 + 2.9 * s / steps
++			local q = brinkPoint(theta, roadOff)
++			if q.x >= 1.5 and q.x <= w - 0.5 and q.z >= 1.5 and q.z <= d - 0.5 then
++				table.insert(arc, q)
++			end
++		end
++		local start: Point, finish: Point
++		if ix == 0 then
++			local z1, bestA = 1, math.huge
++			for zz = 1, d do
++				if walk[at(1, zz)] then
++					local dd = math.abs(zz - arc[1].z)
++					if dd < bestA then
++						bestA, z1 = dd, zz
++					end
++				end
++			end
++			local z2, bestB = 1, math.huge
++			for zz = 1, d do
++				if walk[at(w, zz)] then
++					local dd = math.abs(zz - arc[#arc].z)
++					if dd < bestB then
++						bestB, z2 = dd, zz
++					end
++				end
++			end
++			start, finish = { x = 1, z = z1 }, { x = w, z = z2 }
++		else
++			local x1, bestA = 1, math.huge
++			for xx = 1, w do
++				if walk[at(xx, 1)] then
++					local dd = math.abs(xx - arc[1].x)
++					if dd < bestA then
++						bestA, x1 = dd, xx
++					end
++				end
++			end
++			local x2, bestB = 1, math.huge
++			for xx = 1, w do
++				if walk[at(xx, d)] then
++					local dd = math.abs(xx - arc[#arc].x)
++					if dd < bestB then
++						bestB, x2 = dd, xx
++					end
++				end
++			end
++			start, finish = { x = x1, z = 1 }, { x = x2, z = d }
++		end
++		local road: { Point } = { start }
++		for s = 1, #arc do
++			table.insert(road, arc[s])
++		end
++		table.insert(road, finish)
++		-- Keep every road point on walkable ground (the ends stay on their
++		-- border; the rest give way inland from the sea).
++		for k, p in road do
++			if k > 1 and k < #road then
++				for _ = 1, 6 do
++					local px = math.clamp(math.floor(p.x + 0.5), 1, w)
++					local pz = math.clamp(math.floor(p.z + 0.5), 1, d)
++					if walk[at(px, pz)] then
++						break
++					end
++					p.x -= ix * 0.6
++					p.z -= iz * 0.6
++				end
++			end
++		end
++
++		-- The road's own paving, three cells wide, laid over the terrace.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] then
++					local nearest = math.huge
++					for k = 1, #road - 1 do
++						local a, b = road[k], road[k + 1]
++						local vx, vz = b.x - a.x, b.z - a.z
++						local len = vx * vx + vz * vz
++						local t = if len > 0 then math.clamp(((x - a.x) * vx + (z - a.z) * vz) / len, 0, 1) else 0
++						local dx, dz = x - (a.x + vx * t), z - (a.z + vz * t)
++						nearest = math.min(nearest, math.sqrt(dx * dx + dz * dz))
++					end
++					if nearest <= 1.35 then
++						kinds[i] = "road"
++					end
++				end
++			end
++		end
++
++		-- The balustrade: ivory panels along the lip, in gaps where the brink
++		-- has fallen away and at each fall's mouth. Some lie broken below.
++		local marks: { FeatureDress.Landmark } = {}
++		local gaps: { Span } = {}
++		for _ = 1, whole(rng, 0, 3) do
++			table.insert(gaps, { a = between(rng, -1.3, 1.3), h = between(rng, 0.07, 0.17) })
++		end
++		local function inGap(theta: number): boolean
++			for _, g in gaps do
++				if math.abs(theta - g.a) < g.h then
++					return true
++				end
++			end
++			for _, fa in fallAngles do
++				if math.abs(theta - fa) < 0.1 then
++					return true
++				end
++			end
++			return false
++		end
++		local spacing = between(rng, 1.55, 1.85)
++		local prev: Point? = nil
++		local acc = 0
++		local samples = 420
++		for s = 0, samples do
++			local theta = -1.5 + 3 * s / samples
++			local p = brinkPoint(theta, 0.55)
++			if p.x > 1.3 and p.x < w - 0.3 and p.z > 1.3 and p.z < d - 0.3 then
++				if prev then
++					acc += math.sqrt((p.x - prev.x) ^ 2 + (p.z - prev.z) ^ 2)
++					if acc >= spacing then
++						acc = 0
++						if not inGap(theta) then
++							local tan = brinkPoint(theta + 0.01, 0.55)
++							local yaw = -math.deg(math.atan2(tan.z - p.z, tan.x - p.x))
++							local ix2, iz2 = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++							local i = at(math.clamp(ix2, 1, w), math.clamp(iz2, 1, d))
++							if walk[i] and kinds[i] ~= "road" and kinds[i] ~= "pier" then
++								table.insert(marks, {
++									sculpt = "domain_balustrade_section",
++									x = p.x,
++									z = p.z,
++									yaw = yaw,
++									sink = 0.1,
++									scale = between(rng, 0.95, 1.05),
++									solid = true,
++								})
++							end
++						end
++					end
++				end
++				prev = p
++			else
++				prev = nil
++			end
++		end
++		-- The fallen panels lying on the first shelf below the gaps.
++		for _ = 1, whole(rng, 2, 5) do
++			local theta = between(rng, -1.2, 1.2)
++			local q = brinkPoint(theta, -between(rng, 2, 4.5))
++			table.insert(marks, {
++				sculpt = "domain_balustrade_section",
++				x = math.clamp(q.x, 0.6, w - 0.6),
++				z = math.clamp(q.z, 0.6, d - 0.6),
++				yaw = between(rng, 0, 360),
++				sink = 0.7,
++				scale = between(rng, 0.9, 1.05),
++			})
++		end
++
++		-- God-columns standing in the cloud past the lip, flanking the fall:
++		-- the last of a colonnade the sea of cloud has taken, their crowns
++		-- still above the terrace. Where a whole one stands, holy light
++		-- gathers at its drowned foot.
++		local effects: { FeatureDress.Effect } = {}
++		local glassy = 6 - fallCount - 1
++		for f, fa in fallAngles do
++			local per = if fallCount >= 3 then 1 else 2
++			for sideStep = -1, 1, 2 do
++				if per == 2 or sideStep > 0 then
++					local theta = fa + sideStep * 3.2 / Rb
++					if theta > -1.35 and theta < 1.35 then
++						local q = brinkPoint(theta, -between(rng, 3.5, 7))
++						local ix2, iz2 = math.floor(q.x + 0.5), math.floor(q.z + 0.5)
++						local inGround = q.x > 1 and q.x < w and q.z > 1 and q.z < d
++						if inGround and not walk[at(ix2, iz2)] then
++							local broken = rng:NextNumber() < 0.45
++							table.insert(marks, {
++								sculpt = if broken then "domain_column_broken" else "domain_column",
++								x = q.x,
++								z = q.z,
++								yaw = between(rng, 0, 360),
++								sink = 0.6,
++								scale = between(rng, 0.85, 1.05),
++							})
++							if not broken and f == 1 and glassy > 0 and sideStep > 0 then
++								table.insert(effects, { recipe = "domain_column_glory", x = q.x, z = q.z, lift = 0.5 })
++								glassy -= 1
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- Braziers along the promenade, between the road and the brink.
++		local last = 1e9
++		for s = 0, samples, 5 do
++			local theta = -1.4 + 2.8 * s / samples
++			local q = brinkPoint(theta, roadOff - 1.5)
++			local ix2, iz2 = math.floor(q.x + 0.5), math.floor(q.z + 0.5)
++			if ix2 >= 2 and iz2 >= 2 and ix2 <= w - 1 and iz2 <= d - 1 then
++				local i = at(ix2, iz2)
++				if walk[i] and kinds[i] ~= "pier" and kinds[i] ~= "road" and last > 14 then
++					table.insert(marks, {
++						sculpt = "domain_brazier",
++						x = q.x,
++						z = q.z,
++						yaw = between(rng, 0, 360),
++						sink = 0.2,
++						scale = between(rng, 0.9, 1.05),
++					})
++					last = 0
++				end
++			end
++			last += 0.5
++		end
++
++		-- The falls themselves, over the gilt mouths; and the sea of cloud
++		-- breathing its light up from its deepest point.
++		for _, fa in fallAngles do
++			local q = brinkPoint(fa, 0.4)
++			table.insert(effects, { recipe = "domain_cloudfall", x = q.x, z = q.z, lift = 1 })
++		end
++		local deepI, deepU = 1, math.huge
++		for i = 1, w * d do
++			if not walk[i] and us[i] < deepU then
++				deepU, deepI = us[i], i
++			end
++		end
++		local deepX, deepZ = (deepI - 1) % w + 1, (deepI - 1) // w + 1
++		table.insert(effects, { recipe = "domain_cloudsea", x = deepX, z = deepZ, lift = 2 })
++
++		-- The cameras. One stands on the brink walk a few paces along the
++		-- balustrade from the main fall, at a person's height, so the gilt lip
++		-- and the panels run away to the cascade; the other hangs out over the
++		-- sea above the cloud, looking back at the fall and its columns.
++		local main = fallAngles[1]
++		local eyeTheta = math.clamp(main + 0.38, inside[1], inside[#inside])
++		local eye = brinkPoint(eyeTheta, 1.2)
++		local eyeIx, eyeIz = math.floor(eye.x + 0.5), math.floor(eye.z + 0.5)
++		if not (eyeIx >= 1 and eyeIz >= 1 and eyeIx <= w and eyeIz <= d and walk[at(eyeIx, eyeIz)]) then
++			eye = brinkPoint(main, 1.2)
++		end
++		local fall = brinkPoint(main, 0.8)
++		local seaAngle = main + between(rng, 0.12, 0.22) * (if rng:NextNumber() < 0.5 then 1 else -1)
++		local seaPoint: Point? = nil
++		for _ = 1, 14 do
++			local q = brinkPoint(seaAngle, -between(rng, 9, 13))
++			local ix2, iz2 = math.floor(q.x + 0.5), math.floor(q.z + 0.5)
++			if ix2 >= 1 and iz2 >= 1 and ix2 <= w and iz2 <= d and kinds[at(ix2, iz2)] == "cloud" then
++				seaPoint = q
++				break
++			end
++		end
++		if seaPoint == nil then
++			seaPoint = brinkPoint(seaAngle, -3)
++		end
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "along the brink",
++					from = { x = eye.x, z = eye.z, lift = 6.5 },
++					to = { x = fall.x, z = fall.z, lift = 1 },
++					fov = 62,
++				},
++				{
++					name = "the fall from the sea",
++					from = { x = seaPoint.x, z = seaPoint.z, lift = cloudDepth + between(rng, 26, 34) },
++					to = { x = fall.x, z = fall.z, lift = 1 },
++					fov = 60,
++				},
++			},
++		}
++	end,
++}
++
++return feature

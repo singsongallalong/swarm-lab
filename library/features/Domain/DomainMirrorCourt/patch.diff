@@ -1,0 +1,786 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..db61f8c6 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainMirrorCourt = require("../systems/features/DomainMirrorCourt")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainMirrorCourt = DomainMirrorCourt,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index 490cc3f5..16258179 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1220,4 +1220,28 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain's mirror court: the sheen a column standing in the pool
++-- throws on the water at its foot. A thin, lobed sheet of pale ice-blue in two
++-- tones, laid on the still surface with a little reflectance, so each column
++-- is doubled in the water and the pool is never a flat blue plate.
++Sculpts.domain_mirror_glint = {
++	kind = "pool",
++	size = { 6.5, 0.08, 6.5 },
++	material = "Neon",
++	colors = { { 218, 228, 234 }, { 210, 222, 232 } },
++	reflectance = 0.4,
++	maxPrims = 4,
++}
++-- The Eternal Domain's mirror court: the gilded kerb stones set along the rim
++-- of the pool like a rail of gold. Hand-cut blocks in the Domain's gold and two
++-- ivories, low enough to look over and bright enough to draw the pool's edge
++-- from the game camera.
++Sculpts.domain_mirror_kerb = {
++	kind = "blocks",
++	size = { 10, 1.4, 1.6 },
++	material = "Marble",
++	colors = { { 230, 190, 110 }, { 226, 218, 200 }, { 212, 204, 188 } },
++	maxPrims = 6,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 23f351b2..96e239f4 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2145,4 +2145,91 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's mirror court (worked with DomainMirrorCourt): the light
++-- rising off the still pool. Gold motes climb out of a low warm sheen lying on
++-- the water, a rare pale sky-blue glint among them (the Domain's one cool note),
++-- and two breathing lights so the pool is lit from within and reads from across
++-- the hall. The worm wanders slowly and stays flat, so the emitters spread over
++-- the surface rather than rising from one point, and the tallest of the light
++-- dies under the game camera (SE10).
++recipes.domain_mirror_motes = {
++	about = "Holy light rising off the Eternal Domain's mirror pool: gold motes and a rare sky-blue glint climbing out of a low gold sheen on the water.",
++	theme = "domain",
++	path = { kind = "worm", length = 26, step = 4, bend = 14, climb = 1, round = 2 },
++	layers = {
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 10,
++				lift = 0.3,
++				toward = "up",
++				rise = 1.6,
++				life = { 3.5, 5.5 },
++				rate = 4,
++				size = 0.6,
++				tall = 1.8,
++				transparency = 0.18,
++				color = "gold",
++				texture = "wisp",
++				lean = 8,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 6, span = 14, periods = { 4.3, 6.1 } },
++			priority = 1,
++		},
++		{
++			name = "glints",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 12,
++				lift = 0.5,
++				toward = "up",
++				rise = 2.5,
++				life = { 4, 5 },
++				rate = 1.2,
++				size = 0.3,
++				tall = 1.2,
++				transparency = 0.1,
++				color = "sky",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.8,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 8, span = 10, periods = { 5, 7 } },
++			priority = 2,
++		},
++		{
++			name = "sheen",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 16,
++				lift = 0.1,
++				toward = "up",
++				rise = 0.5,
++				life = { 12, 16 },
++				rate = 0.8,
++				size = 6,
++				tall = 0.3,
++				transparency = 0.9,
++				color = "glow",
++				texture = "veil",
++				lean = 4,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.5, tilt = 4, span = 20, periods = { 9, 13 } },
++			priority = 3,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 20, max = 2, range = 18, brightness = 0.9, color = "glow" },
++			motion = { kind = "pulse", period = 4.8, depth = 0.35 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0edeb33a..0a4ede53 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -426,6 +426,14 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	["sculpt:domain_mirror_glint"] = row(
++		"The light a column of the Eternal Domain's mirror court pools on the water at its foot: a thin lobed sheet of pale gold.",
++		MOOR
++	),
++	["sculpt:domain_mirror_kerb"] = row(
++		"The gilded kerb stones along the rim of the Eternal Domain's mirror pool: hand-cut gold and ivory blocks like a rail of gold.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainMirrorCourt.luau b/src/shared/systems/features/DomainMirrorCourt.luau
+new file mode 100644
+index 00000000..d2e57d1e
+--- /dev/null
++++ b/src/shared/systems/features/DomainMirrorCourt.luau
+@@ -0,0 +1,614 @@
++--!strict
++-- The Eternal Domain's mirror court: a great still pool of pale water sunk in an ivory
++-- court, gold-rimmed and ringed by a raised promenade, with a causeway across it and a
++-- colonnade standing in the water, each column doubled by the sheen it throws there.
++-- Motes of holy light rise off the mirror, and the road crosses on the causeway. It is
++-- the Domain's own reflection: pale sky water, ivory stone and gold, nothing of the
++-- dark game in it.
++--
++-- Its seeds differ in kind first (fafwa, 2026-10-30: topology, then look). The first
++-- draws choose the structure, the rest only dress it:
++--   1. the basin's form: round, canal, twin or quadrant -- one oval basin, one long
++--      basin, two basins either side of the way, or four round a cross of paving;
++--   2. the crossings: 0-2 footbridges besides the road's causeway, at seeded places
++--      across the water, so a seed has more ways through and more water islands;
++--   3. the heart: a gilded needle standing in the water at the crossing, a round dais
++--      carrying a gold tree, or a round dais carrying a great brazier;
++--   4. the court's level (flush, or a raised stylobate the pool is sunk below) and the
++--      pool's depth;
++--   5. the colonnade: a ring in the water, rows flanking the causeway, or flanks on the
++--      court, 4-10 columns, some snapped, some fallen drums at their feet;
++-- and only then the look: sky-blue or silver water, the gold rim and the gold inlay
++-- ring and spokes drawn through the court.
++-- The kit is the Domain's own (`domain_column`, `domain_column_broken`,
++-- `domain_column_fallen`, `domain_gold_tree_low`, `domain_gold_tree_broken`,
++-- `domain_brazier_high`, `domain_waystone`) with two new sculpts of its own -- the
++-- sheen on the water and the gilded kerb stones -- and one new set piece,
++-- `domain_mirror_motes`.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local SHAPES = { "round", "canal", "twin", "quadrant" }
++local HEARTS = { "needle", "grove", "brazier" }
++local COLONNADES = { "ring", "rows", "flanks" }
++
++-- Studs a painted surface stands over its cell's ground (FeatureLook.lift).
++local WATER_LIFT = 0.35
++local RIM_LIFT = 0.9
++local TERRACE_LIFT = 0.55
++local CAUSEWAY_LIFT = 0.45
++local DAIS_LIFT = 0.7
++-- The colour of the Domain's light (data/EnvThemes `domain`), for the water's glow.
++local GLOW = { 255, 226, 160 }
++
++local feature: MapFeature.Feature = {
++	name = "DomainMirrorCourt",
++	about = "A mirror court: a great still pool of pale water sunk in an ivory court, gold-rimmed and crossed by a marble causeway, with columns standing in the water and light rising off it.",
++	tileset = "domain",
++	scale = "medium",
++	role = "crossing",
++	mood = { "holy", "still", "monumental", "mirrored" },
++	cells = {
++		-- The court's own paving: the Domain's ivory, a cooler and smoother cut of it.
++		court = { ground = { material = "Concrete", color = { 228, 222, 208 } }, lift = 0.2, clear = true },
++		-- The raised promenade round the water, and the way across it: pale worn stone.
++		terrace = { ground = { material = "Salt", color = { 232, 226, 212 } }, lift = TERRACE_LIFT, clear = true },
++		causeway = {
++			-- The tileset's own road paving, so the way through reads as the Domain's road.
++			ground = { material = "Pavement", color = { 226, 212, 184 } },
++			lift = CAUSEWAY_LIFT,
++			clear = true,
++		},
++		-- The mirror itself: still pale water, its light pooling in a few places and
++		-- glints of gold lying on it where the columns stand.
++		mirror = {
++			ground = { material = "Ice", color = { 198, 215, 232 } },
++			lift = WATER_LIFT,
++			clear = true,
++			glow = { color = GLOW, range = 12, brightness = 1.3, every = 30, height = 0.5 },
++			props = { { sculpt = "domain_mirror_glint", every = 16, scale = { 0.3, 0.5 }, sink = 0 } },
++		},
++		mirror_silver = {
++			ground = { material = "Glacier", color = { 214, 221, 228 } },
++			lift = WATER_LIFT,
++			clear = true,
++			glow = { color = GLOW, range = 12, brightness = 1.3, every = 30, height = 0.5 },
++			props = { { sculpt = "domain_mirror_glint", every = 16, scale = { 0.3, 0.5 }, sink = 0 } },
++		},
++		-- The gold kerb round the water; the gilded rail stones are stood along it.
++		rim = { ground = { material = "Slate", color = { 230, 190, 110 } }, lift = RIM_LIFT, clear = true },
++		-- The court's own inlay: a warm gold paving drawn as rings and spokes in
++		-- the ivory, so the plan of the mirror court reads from above.
++		inlay = { ground = { material = "Cobblestone", color = { 226, 204, 156 } }, lift = 0.3, clear = true },
++		-- The heart's dais: the Domain's own marble, paler than the court round it.
++		dais = { ground = { material = "Snow", color = { 232, 229, 222 } }, lift = DAIS_LIFT, clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, first.
++		local shape = SHAPES[whole(rng, 1, #SHAPES)]
++		local heart = HEARTS[whole(rng, 1, #HEARTS)]
++		local colonnade = COLONNADES[whole(rng, 1, #COLONNADES)]
++		local bridges = whole(rng, 0, 2)
++		-- The way runs east-west or north-south; every layout turns with it.
++		local horizontal = rng:NextNumber() < 0.5
++		-- 4-5: size, levels, the look.
++		local w, d = whole(rng, 28, 32), whole(rng, 28, 32)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		local U, V = (if horizontal then w else d) / 2, (if horizontal then d else w) / 2
++		local stylobate = if rng:NextNumber() < 0.5 then 2 else 0
++		local depth = whole(rng, 2, 4)
++		local rimWidth = 1
++		local waterKind = if rng:NextNumber() < 0.38 then "mirror_silver" else "mirror"
++
++		-- The basin's own measure, in cells along the way (u) and across it (v).
++		local ru, rv, twinC, qu, qv = 0, 0, 0, 0, 0
++		if shape == "round" then
++			ru, rv = between(rng, U * 0.55, U * 0.7), between(rng, V * 0.55, V * 0.7)
++		elseif shape == "canal" then
++			ru, rv = between(rng, U * 0.62, U * 0.78), between(rng, V * 0.32, V * 0.42)
++		elseif shape == "twin" then
++			ru, rv = between(rng, U * 0.55, U * 0.72), between(rng, V * 0.25, V * 0.33)
++			twinC = 2 + rv
++		else
++			ru, rv = between(rng, U * 0.27, U * 0.33), between(rng, V * 0.27, V * 0.33)
++			qu, qv = 2.3 + ru, 2.3 + rv
++		end
++
++		-- The heart may stand on a round dais at the water's edge. It sits off the
++		-- crossing's middle, and always on the far side of it from the game camera,
++		-- so the way through stays open and the camera sees the pool past the heart.
++		local hasDais = heart ~= "needle"
++		local rd = if hasDais then between(rng, 2.4, 3.4) else 0
++		local daisSide = if horizontal then -1 elseif rng:NextNumber() < 0.5 then 1 else -1
++		local heartSide = if rng:NextNumber() < 0.5 then 1 else -1
++		-- The dais touches the causeway's edge, so its ground joins the walk.
++		local daisCv = if hasDais then daisSide * (rd + 1) else 0
++		local daisU = if not hasDais
++			then 0
++			else if horizontal then heartSide * between(rng, 3, 4.8) else -between(rng, 3, 4.8)
++
++		-- The footbridges: one cell wide, across the basins, off the road's own way.
++		local sides = { -1, 1 }
++		for k = #sides, 2, -1 do
++			local j = whole(rng, 1, k)
++			sides[k], sides[j] = sides[j], sides[k]
++		end
++		local bridgeUs: { number } = {}
++		for k = 1, bridges do
++			local side = sides[k]
++			local base = if shape == "quadrant" then qu else ru * between(rng, 0.42, 0.72)
++			table.insert(bridgeUs, side * base)
++		end
++
++		local function inBasin(u: number, v: number): boolean
++			if shape == "round" then
++				return (u / ru) ^ 2 + (v / rv) ^ 2 <= 1
++			elseif shape == "canal" then
++				return math.abs(u) <= ru and math.abs(v) <= rv
++			elseif shape == "twin" then
++				return (u / ru) ^ 2 + ((math.abs(v) - twinC) / rv) ^ 2 <= 1
++			end
++			return ((math.abs(u) - qu) / ru) ^ 2 + ((math.abs(v) - qv) / rv) ^ 2 <= 1
++		end
++
++		local n = w * d
++		local walk = table.create(n, true)
++		local heights = table.create(n, 0)
++		local kinds: { [number]: string } = {}
++		local waterAt = table.create(n, false)
++		local causewayAt = table.create(n, false)
++		local bridgeAt = table.create(n, false)
++		local daisAt = table.create(n, false)
++		local rimAt = table.create(n, false)
++		local terraceAt = table.create(n, false)
++		local index = function(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function offsets(x: number, z: number): (number, number)
++			local dx, dz = x - cx, z - cz
++			if horizontal then
++				return dx, dz
++			end
++			return dz, dx
++		end
++
++		for z = 1, d do
++			for x = 1, w do
++				local i = index(x, z)
++				local u, v = offsets(x, z)
++				local onWay = math.abs(v) <= 1
++				local onBridge = false
++				for _, ub in bridgeUs do
++					onBridge = onBridge or math.abs(u - ub) <= 0.5
++				end
++				local onDais = hasDais and ((u - daisU) / rd) ^ 2 + ((v - daisCv) / rd) ^ 2 <= 1
++				causewayAt[i] = onWay
++				bridgeAt[i] = onBridge
++				daisAt[i] = onDais
++				waterAt[i] = inBasin(u, v) and not onWay and not onBridge and not onDais
++			end
++		end
++
++		-- The gold kerb: the wall cells within `rimWidth` of the water.
++		for z = 1, d do
++			for x = 1, w do
++				local i = index(x, z)
++				if not waterAt[i] and not causewayAt[i] and not bridgeAt[i] and not daisAt[i] then
++					local near = false
++					for dz = -rimWidth, rimWidth do
++						for dx = -rimWidth, rimWidth do
++							local xx, zz = x + dx, z + dz
++							if xx >= 1 and xx <= w and zz >= 1 and zz <= d and waterAt[index(xx, zz)] then
++								near = true
++							end
++						end
++					end
++					rimAt[i] = near
++				end
++			end
++		end
++		-- The promenade: the walkable cells two rings outside the kerb, raised with it.
++		local function waterWithin(x: number, z: number, radius: number): boolean
++			for dz = -radius, radius do
++				for dx = -radius, radius do
++					local xx, zz = x + dx, z + dz
++					if xx >= 1 and xx <= w and zz >= 1 and zz <= d and waterAt[index(xx, zz)] then
++						return true
++					end
++				end
++			end
++			return false
++		end
++		for z = 1, d do
++			for x = 1, w do
++				local i = index(x, z)
++				if not waterAt[i] and not rimAt[i] and not causewayAt[i] and not bridgeAt[i] and not daisAt[i] then
++					terraceAt[i] = waterWithin(x, z, rimWidth + 2)
++				end
++			end
++		end
++
++		-- The court's inlay: a gold band one step outside the promenade, and four
++		-- diagonal spokes running out from it toward the court's corners.
++		local inlayAt = table.create(n, false)
++		for z = 1, d do
++			for x = 1, w do
++				local i = index(x, z)
++				local onCourt = not waterAt[i]
++					and not rimAt[i]
++					and not terraceAt[i]
++					and not causewayAt[i]
++					and not bridgeAt[i]
++					and not daisAt[i]
++				if onCourt and x > 2 and x < w - 1 and z > 2 and z < d - 1 then
++					local u, v = offsets(x, z)
++					local r = math.sqrt(u * u + v * v)
++					local ring = not waterWithin(x, z, rimWidth + 2) and waterWithin(x, z, rimWidth + 3)
++					local spoke = math.abs(math.abs(u) - math.abs(v)) <= 0.6 and r <= math.min(U, V) - 2.5
++					if ring or spoke then
++						inlayAt[i] = true
++					end
++				end
++			end
++		end
++
++		for z = 1, d do
++			for x = 1, w do
++				local i = index(x, z)
++				if waterAt[i] then
++					walk[i] = false
++					kinds[i] = waterKind
++					heights[i] = stylobate - depth
++				elseif rimAt[i] then
++					walk[i] = false
++					kinds[i] = "rim"
++					heights[i] = stylobate
++				elseif daisAt[i] then
++					kinds[i] = "dais"
++					heights[i] = stylobate
++				elseif causewayAt[i] or bridgeAt[i] then
++					kinds[i] = "causeway"
++					heights[i] = stylobate
++				elseif terraceAt[i] then
++					kinds[i] = "terrace"
++					heights[i] = stylobate
++				elseif inlayAt[i] then
++					kinds[i] = "inlay"
++					heights[i] = 0
++				else
++					kinds[i] = "court"
++					heights[i] = 0
++				end
++			end
++		end
++
++		local function toWorld(u: number, v: number): (number, number)
++			if horizontal then
++				return cx + u, cz + v
++			end
++			return cx + v, cz + u
++		end
++		local function cellAt(u: number, v: number): (number?, number?)
++			local x, z = toWorld(u, v)
++			local xi, zi = math.floor(x + 0.5), math.floor(z + 0.5)
++			if xi < 1 or xi > w or zi < 1 or zi > d then
++				return nil, nil
++			end
++			return xi, zi
++		end
++
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++
++		-- One column of the colonnade; a column standing in the water gets the light
++		-- it pools there (domain_mirror_glint) lying on the surface at its foot.
++		local function standColumn(xi: number, zi: number, broken: boolean, scale: number)
++			local i = index(xi, zi)
++			table.insert(marks, {
++				sculpt = if broken then "domain_column_broken" else "domain_column",
++				x = xi,
++				z = zi,
++				yaw = between(rng, 0, 360),
++				scale = scale,
++				sink = 0.4,
++				solid = true,
++			})
++			if waterAt[i] then
++				table.insert(marks, {
++					sculpt = "domain_mirror_glint",
++					x = xi,
++					z = zi,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.45, 0.7),
++					sink = -WATER_LIFT,
++				})
++			end
++		end
++
++		-- The game camera stands 5.6 cells south of the court's middle, 27 studs up:
++		-- a tall column nearer than this fills its view, so the colonnade keeps clear.
++		local function clearOfCamera(xi: number, zi: number): boolean
++			local dx, dz = xi - cx, zi - (cz + 5.6)
++			return dx * dx + dz * dz > 8 * 8
++		end
++
++		local function tryColumn(u: number, v: number, onCourt: boolean): boolean
++			local xi, zi = cellAt(u, v)
++			if not xi or not zi then
++				return false
++			end
++			local i = index(xi, zi)
++			if onCourt then
++				if not (walk[i] and kinds[i] == "court") then
++					return false
++				end
++			elseif not waterAt[i] then
++				return false
++			end
++			if not clearOfCamera(xi, zi) then
++				return false
++			end
++			standColumn(xi, zi, rng:NextNumber() < 0.28, between(rng, 0.68, 0.92))
++			return true
++		end
++
++		-- 5: the colonnade, in its seeded arrangement. Every column has its double
++		-- across the causeway, so the court reads as a mirror of itself too.
++		if colonnade == "ring" then
++			local pairs = if shape == "quadrant" then whole(rng, 2, 3) else whole(rng, 3, 5)
++			local first = between(rng, 0.05, math.pi - 0.05)
++			for k = 1, pairs do
++				local a = first + (k - 1) * math.pi / pairs + between(rng, -0.14, 0.14)
++				local f = between(rng, 0.78, 0.98)
++				for _, side in { -1, 1 } do
++					if shape == "twin" then
++						tryColumn(ru * f * math.cos(a), side * (twinC + rv * f * math.sin(a)), false)
++					elseif shape == "quadrant" then
++						local su = if math.cos(a) >= 0 then 1 else -1
++						local local_v = side * (qv + rv * f * math.sin(a))
++						tryColumn(su * qu + ru * f * math.cos(a), local_v, false)
++						tryColumn(-su * qu + ru * f * math.cos(a), local_v, false)
++					else
++						tryColumn(ru * f * math.cos(a), side * rv * f * math.sin(a), false)
++					end
++				end
++			end
++		elseif colonnade == "rows" then
++			-- Facing pairs down the causeway, as if a colonnade crossed the water.
++			local count = whole(rng, 3, 5)
++			local span = ru * between(rng, 0.6, 0.82)
++			for k = 1, count do
++				local u = -span + (k - 1) * 2 * span / math.max(count - 1, 1)
++				if math.abs(u) > 1.5 then
++					for _, side in { -1, 1 } do
++						tryColumn(u, side * between(rng, 0.62, 0.85) * rv, false)
++					end
++				end
++			end
++		else
++			-- Columns and broken drums out on the court, a ring of ruins round the water.
++			local pairs = whole(rng, 2, 4)
++			local first = between(rng, 0.05, math.pi - 0.05)
++			for k = 1, pairs do
++				local a = first + (k - 1) * math.pi / pairs + between(rng, -0.12, 0.12)
++				local f = between(rng, 0.76, 0.92)
++				for _, side in { -1, 1 } do
++					tryColumn((U - 2.5) * f * math.cos(a), side * (V - 2.5) * f * math.sin(a), true)
++				end
++			end
++		end
++		-- A last pair at the way in, framing the crossing.
++		for _, side in { -1, 1 } do
++			tryColumn(-(U - 2.2), side * 3.1, true)
++		end
++
++		-- Fallen drums at the feet of the colonnade, clear of the ways.
++		for _ = 1, whole(rng, 0, 2) do
++			local a = between(rng, 0, 2 * math.pi)
++			local f = between(rng, 0.7, 0.88)
++			local u, v = (U - 3) * f * math.cos(a), (V - 3) * f * math.sin(a)
++			local xi, zi = cellAt(u, v)
++			if xi and zi then
++				local i = index(xi, zi)
++				if walk[i] and not bridgeAt[i] and math.abs(v) > 2.5 then
++					table.insert(marks, {
++						sculpt = "domain_column_fallen",
++						x = xi,
++						z = zi,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 1, 1.4),
++						sink = 0.4,
++						solid = true,
++					})
++				end
++			end
++		end
++
++		-- The gilded kerb stones, set along the rim at intervals like a rail of gold.
++		local kerbCount = whole(rng, 8, 14)
++		local kerbFirst = between(rng, 0, 2 * math.pi)
++		for k = 1, kerbCount do
++			local a = kerbFirst + (k - 1) * 2 * math.pi / kerbCount + between(rng, -0.06, 0.06)
++			-- Find the rim cell on the way out from a basin's middle.
++			for _, f in { 0.85, 0.95, 0.75 } do
++				local u, v
++				if shape == "twin" then
++					local side = if math.sin(a) >= 0 then 1 else -1
++					u = ru * f * math.cos(a)
++					v = side * twinC + rv * f * math.sin(a)
++				elseif shape == "quadrant" then
++					local su = if math.cos(a) >= 0 then 1 else -1
++					local sv = if math.sin(a) >= 0 then 1 else -1
++					u = su * qu + ru * f * math.cos(a)
++					v = sv * qv + rv * f * math.sin(a)
++				else
++					u = ru * f * math.cos(a)
++					v = rv * f * math.sin(a)
++				end
++				local xi, zi = cellAt(u, v)
++				if xi and zi and rimAt[index(xi, zi)] then
++					table.insert(marks, {
++						sculpt = "domain_mirror_kerb",
++						x = xi,
++						z = zi,
++						yaw = -math.deg(a) + 90 + between(rng, -6, 6),
++						scale = between(rng, 0.75, 1.05),
++						sink = -RIM_LIFT,
++					})
++					break
++				end
++			end
++		end
++
++		-- The heart: a gilded needle in the water, a gold tree, or a great brazier.
++		local heartU = if hasDais then daisU else heartSide * between(rng, 3, 4.6)
++		if not horizontal then
++			heartU = -math.abs(heartU)
++		end
++		local heartV = if hasDais then daisCv else daisSide * (2.6 + between(rng, 0, 0.8))
++		local hx, hz = toWorld(heartU, heartV)
++		if heart == "grove" then
++			local tree = if rng:NextNumber() < 0.35 then "domain_gold_tree_broken" else "domain_gold_tree_low"
++			table.insert(marks, {
++				sculpt = tree,
++				x = hx,
++				z = hz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.7, 0.9),
++				sink = 0.4,
++				solid = true,
++			})
++			table.insert(effects, { recipe = "domain_gold_leaves", x = hx, z = hz, lift = 0 })
++		elseif heart == "brazier" then
++			local s = between(rng, 1.1, 1.3)
++			table.insert(marks, {
++				sculpt = "domain_brazier_high",
++				x = hx,
++				z = hz,
++				yaw = between(rng, 0, 360),
++				scale = s,
++				sink = 0.2,
++				solid = true,
++			})
++			table.insert(effects, { recipe = "domain_brazier_fire", x = hx, z = hz, lift = 14 * s })
++		else
++			table.insert(marks, {
++				sculpt = "domain_waystone",
++				x = hx,
++				z = hz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.85, 1),
++				sink = 0.2,
++				solid = true,
++			})
++		end
++		-- A dais is gilded round its lip with the same kerb stones as the pool.
++		if hasDais then
++			local bars = whole(rng, 4, 6)
++			local firstBar = between(rng, 0, 2 * math.pi)
++			for k = 1, bars do
++				local a = firstBar + (k - 1) * 2 * math.pi / bars + between(rng, -0.1, 0.1)
++				local xi, zi = cellAt(daisU + math.cos(a) * rd * 0.92, daisCv + math.sin(a) * rd * 0.92)
++				if xi and zi and daisAt[index(xi, zi)] then
++					table.insert(marks, {
++						sculpt = "domain_mirror_kerb",
++						x = xi,
++						z = zi,
++						yaw = -math.deg(a) + 90 + between(rng, -8, 8),
++						scale = between(rng, 0.5, 0.72),
++						sink = -DAIS_LIFT,
++					})
++				end
++			end
++		end
++
++		-- Motes rising off the mirror: two or three of them, one to a basin where it can.
++		local centres: { { u: number, v: number } } = {}
++		if shape == "round" or shape == "canal" then
++			table.insert(centres, { u = 0, v = 0 })
++		elseif shape == "twin" then
++			table.insert(centres, { u = 0, v = twinC })
++			table.insert(centres, { u = 0, v = -twinC })
++		else
++			for _, su in { 1, -1 } do
++				for _, sv in { 1, -1 } do
++					table.insert(centres, { u = su * qu, v = sv * qv })
++				end
++			end
++		end
++		for k = 1, whole(rng, 2, 3) do
++			local c = centres[(k - 1) % #centres + 1]
++			local placed = false
++			for _ = 1, 12 do
++				local u = c.u + between(rng, -0.45, 0.45) * ru
++				local v = c.v + between(rng, -0.45, 0.45) * rv
++				local xi, zi = cellAt(u, v)
++				if xi and zi and waterAt[index(xi, zi)] then
++					table.insert(effects, { recipe = "domain_mirror_motes", x = xi, z = zi, lift = WATER_LIFT })
++					placed = true
++					break
++				end
++			end
++			if not placed then
++				-- The middle of the basin is water whenever its margin is not.
++				local xi, zi = cellAt(c.u, c.v)
++				if xi and zi and waterAt[index(xi, zi)] then
++					table.insert(effects, { recipe = "domain_mirror_motes", x = xi, z = zi, lift = WATER_LIFT })
++				end
++			end
++		end
++
++		-- The road: in at one border, straight down the causeway, out at the other.
++		local road: { Point } = {}
++		if horizontal then
++			table.insert(road, { x = 1, z = cz })
++			table.insert(road, { x = cx - ru * 0.45, z = cz })
++			table.insert(road, { x = cx, z = cz })
++			table.insert(road, { x = cx + ru * 0.45, z = cz })
++			table.insert(road, { x = w, z = cz })
++		else
++			table.insert(road, { x = cx, z = 1 })
++			table.insert(road, { x = cx, z = cz - ru * 0.45 })
++			table.insert(road, { x = cx, z = cz })
++			table.insert(road, { x = cx, z = cz + ru * 0.45 })
++			table.insert(road, { x = cx, z = d })
++		end
++
++		-- The photograph: a three-quarter view over the near corner of the court,
++		-- the gold rim and the causeway leading to the heart, the colonnade standing
++		-- in the water beyond.
++		local fromX, fromZ = toWorld(-(U + 9), -(V + 9))
++		local viewX, viewZ = toWorld(0, if hasDais then daisCv else 0)
++		local reach = math.sqrt((U + 9) ^ 2 + (V + 9) ^ 2) * 4
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "over the mirror court",
++					from = { x = fromX, z = fromZ, lift = reach * 0.62 },
++					to = { x = viewX, z = viewZ, lift = 0.5 },
++					fov = 64,
++				},
++			},
++		}
++	end,
++}
++
++return feature

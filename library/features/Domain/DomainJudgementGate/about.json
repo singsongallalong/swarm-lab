@@ -1,0 +1,28 @@
+{
+  "letter": "C",
+  "generator": "g07",
+  "run": "domain-features-1",
+  "intent": "A colossal gate of judgement you walk under: two ivory pylons on a raised stylobate, a gold lintel spanning the road, and a fan of holy light poured across a broad paved forecourt, the Domain's first open gate, made to be seen across a hall.",
+  "variation": [
+    "gate: pair (two pylons, one passage) / triple (three pylons, two passages, the road taking one) / porch (two lines of pylons, a gold lintel on each) / winged (the pylons carrying walls out to a way round at each end)",
+    "precinct: free-standing / walled (a wall across the whole frontage, the passages cut through it)",
+    "forecourt: level / sunken basin / two broad terraces / two aisle screens / four colonnade plinths",
+    "approach: the stylobate 2, 4 or 6 studs over the court, a broad flight of steps for every 2 studs past the first",
+    "road and size: straight / dogleg / S-curve; footprint 47-55 cells, gate line 0.58-0.70 of the depth, passage 5-9 cells wide, pedestals 2-6 studs, the fan 6-11 cells at its mouth"
+  ],
+  "critic": {
+    "idea": 6,
+    "photograph": 6,
+    "topology": 3,
+    "look": 3,
+    "camera": 5,
+    "usable": 7,
+    "total": 5.1,
+    "reads_as_itself": "yes: a pylon gate over a road with a curtain of light, though the pylons read as weathered standing stones",
+    "inorganic": 7,
+    "best_shot": "feature-shots-final, row 2 left: looking up at the pylons and gold lintel",
+    "why": "Best effect of the run (the light fan) on the weakest variety: one gate jittered twelve times, in moor-grey stone."
+  },
+  "role": "A threshold on the main route: the gate of judgement as the Domain's entrance, kept for its light curtain once the pylons are made ivory and plumb; its layout must come from where it is placed, since its seeds don't vary.",
+  "notes": "# C: Gate of judgement\n\nKeep: the light curtain spanning the gate is the best single effect in the run: a bright, wide fan that would say \"threshold\" from across a map.\n\n1. The pylons are grey, tapered and tilted, so they read like weathered standing stones from the moor, the opposite of what the Domain needs. Make them ivory, square, plumb and identical, on a stepped stylobate, with the gold lintel sitting level across them.\n2. All twelve seeds are the same gate across the same road, nudged a few studs. Vary it: gates in series down the road, a gate set at a turn, a gate with flanking wing walls or a colonnade either side.\n3. The forecourt is a flat grey slab. Pave it in ivory with gold bands leading to the gate, and add a broad flight of steps up to the stylobate, so the approach has height and the gate has a foreground.\n"
+}

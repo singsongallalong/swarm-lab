@@ -1,0 +1,844 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..35064745 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,12 +2,14 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainJudgementGate = require("../systems/features/DomainJudgementGate")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	DomainJudgementGate = DomainJudgementGate,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index 490cc3f5..fb3ee4bc 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1220,4 +1220,42 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain's gate of judgement (a map feature, DomainJudgementGate): its
++-- colossal pylons. A squared ivory monolith four people broad and eighteen tall, a gilded
++-- band struck round it near the crown and a gold ribbon hanging from the knot, its
++-- capital set a hand's width off square: the Domain's one small wrongness, so a gate of
++-- perfect gods still looks built by hands. The marker kind's stone cap and foot-heap
++-- are the capital and the offcuts the masons left.
++Sculpts.domain_judgement_pylon = {
++	kind = "marker",
++	size = { 34, 90, 24 },
++	material = "Marble",
++	colors = { { 232, 224, 208 }, { 219, 213, 199 }, { 201, 195, 183 } },
++	-- Gold trim against ivory: saturation 0.52, value 0.90 (B12's trim limit).
++	accent = { 230, 190, 110 },
++	maxPrims = 10,
++}
++-- The gate of judgement's gold lintel: a triumphal arch in one gold, its two piers set
++-- 24 studs either side of the passage so a builder stands the gate's pylons over them
++-- and only the lintel and its keystone show, a bar of gold spanning the road. All gold
++-- on purpose (saturation 0.54, value 0.89): the piers live inside the ivory pylons.
++Sculpts.domain_judgement_lintel = {
++	kind = "arch",
++	size = { 52, 62, 14 },
++	material = "Foil",
++	colors = { { 228, 186, 104 } },
++	maxPrims = 12,
++	span = 44,
++}
++-- The same lintel in a wider order, its piers 32 studs either side of the passage, for
++-- gates whose pylons stand farther apart; the builder scales it to the pair in hand.
++Sculpts.domain_judgement_lintel_wide = {
++	kind = "arch",
++	size = { 84, 62, 14 },
++	material = "Foil",
++	colors = { { 228, 186, 104 } },
++	maxPrims = 12,
++	span = 44,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 23f351b2..290db11a 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2145,4 +2145,136 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's gate of judgement (the map feature DomainJudgementGate): the
++-- light poured from the gate's gold lintel. A curtain of gold motes falls off the
++-- lintel's underside across the whole passage, drawn along a straight worm that runs
++-- across the gateway; a wide faint veil of glow falls with them, white-gold sparks race
++-- it down, and a few pale sky-blue glints come through it (the Domain's cold judgement,
++-- sparing). A thread of white-gold light runs along the lintel's lip where the light
++-- spills from, and two lights breathe in the throat. The curtain is born at the marker,
++-- which the feature sets just under the lintel: the motes live long enough to reach the
++-- paving, so the fall reads from the high camera as a pour, not a haze.
++recipes.domain_judgement_light = {
++	about = "The light poured from the Eternal Domain's gate of judgement: gold motes falling through the passage from the lintel, with sky-blue glints.",
++	theme = "domain",
++	radius = 320,
++	-- Straight across the gateway (a worm starts along +X): the curtain hangs square.
++	path = { kind = "worm", length = 32, step = 2, bend = 0, climb = 0, round = 1 },
++	layers = {
++		{
++			-- The fall itself: enough motes to read as a curtain, and few enough that a
++			-- phone keeps it whole (7 emitters).
++			name = "curtain",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 5,
++				lift = 0,
++				toward = "down",
++				rise = 5,
++				life = { 10, 12 },
++				rate = 5,
++				size = 3,
++				tall = 2.6,
++				transparency = 0.55,
++				color = "gold",
++				texture = "veil",
++				lean = 2,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 4, span = 14, periods = { 6.3, 9.1 } },
++			priority = 1,
++		},
++		{
++			-- The lip the light is poured from: a bright thread along the lintel.
++			name = "lip",
++			look = { kind = "neon", width = 0.5, segment = 4, transparency = 0.1, color = "core" },
++			motion = {
++				kind = "flow",
++				wavelength = 16,
++				speed = 6,
++				depth = 0.5,
++				wiggle = { amplitude = 0.2, span = 24, periods = { 4.1, 2.9 } },
++			},
++			priority = 2,
++		},
++		{
++			-- The wash of light around the motes: wide, faint and slow, so the curtain
++			-- has a body and does not read as a comb of streaks.
++			name = "veil",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 18,
++				lift = 0,
++				toward = "down",
++				rise = 3.2,
++				life = { 13, 16 },
++				rate = 1.6,
++				size = 16,
++				tall = 2.2,
++				transparency = 0.88,
++				color = "glow",
++				texture = "veil",
++				lean = 3,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1.4, tilt = 6, span = 20, periods = { 9.1, 13.3 } },
++			priority = 3,
++		},
++		{
++			-- Sparks racing the fall, white-hot in the gold.
++			name = "sparks",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 2,
++				lift = 0.3,
++				toward = "down",
++				rise = 7,
++				life = { 4, 6 },
++				rate = 4,
++				size = 0.35,
++				tall = 2.2,
++				transparency = 0.15,
++				color = "core",
++				texture = "wisp",
++				lean = 5,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 0.4, tilt = 5, span = 10, periods = { 3.3, 4.7 } },
++			priority = 4,
++		},
++		{
++			-- The cold note: a few sky-blue glints among the gold, the god's even gaze.
++			name = "cold",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 8,
++				lift = 0.2,
++				toward = "down",
++				rise = 4.6,
++				life = { 6, 8 },
++				rate = 1,
++				size = 0.6,
++				tall = 2.6,
++				transparency = 0.3,
++				color = "sky",
++				texture = "wisp",
++				lean = 4,
++				vary = 0.8,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 4, span = 16, periods = { 7.1, 10.3 } },
++			priority = 5,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 14, max = 2, range = 24, brightness = 1.2, color = "gold" },
++			motion = { kind = "pulse", period = 4.2, depth = 0.3 },
++			priority = 6,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0edeb33a..5bc9f216 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -426,6 +426,19 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's gate of judgement (a map feature, DomainJudgementGate)
++	["sculpt:domain_judgement_pylon"] = row(
++		"A colossal ivory pylon of the Eternal Domain's gate of judgement, its crown banded and ribboned in gold.",
++		MOOR
++	),
++	["sculpt:domain_judgement_lintel"] = row(
++		"The gold lintel of the Eternal Domain's gate of judgement, spanning the road from pylon to pylon.",
++		MOOR
++	),
++	["sculpt:domain_judgement_lintel_wide"] = row(
++		"The gate of judgement's gold lintel in its wider order, for pylons set farther apart.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainJudgementGate.luau b/src/shared/systems/features/DomainJudgementGate.luau
+new file mode 100644
+index 00000000..2abeb1b3
+--- /dev/null
++++ b/src/shared/systems/features/DomainJudgementGate.luau
+@@ -0,0 +1,607 @@
++--!strict
++-- The gate of judgement, a map feature for the Eternal Domain: two colossal ivory
++-- pylons on a raised stylobate, a gold lintel spanning the road between them, and a
++-- broad paved forecourt before it where the gate's light is poured on the ground. The
++-- Domain has columns, gates with closed gold doors and triumphal arches; it has no open
++-- gate you walk under, crowned by a lintel of gold, with the god's light washing a fan
++-- across the court.
++--
++-- Its seeds differ in kind before detail (fafwa, 2026-10-30: topology first, then look).
++-- The first draws choose the structure, the rest only dress it:
++--   1. the gate: a pair of pylons over one passage; a triple, three pylons and two
++--      passages with the road taking one of them; a porch, two lines of pylons with a
++--      gold lintel each, walked through one after the other; or winged, the pylons
++--      carrying walls out to either side with a way round at each end;
++--   2. the precinct: the gate standing free, or set in a wall across the whole frontage;
++--   3. the forecourt: level, a sunken basin the light pools in, two broad terraces, two
++--      low screens making side aisles, or four plinths for a colonnade;
++--   4. the stylobate's approach: two, four or six studs over the court, climbed by a
++--      broad flight (a 2-stud step is one stride, so only taller ones need stairs);
++--   5. the road's way in: straight, a dogleg, or an S across the court.
++--   6. then the footprint's size, the gate's line, the passage's width, the pylon
++--      pedestals' height, the fan of light's spread and every prop.
++-- The gate's own kit: a colossal pylon with a gilded band (sculpts) and a gold lintel
++-- whose piers are set inside the pylons, and `domain_judgement_light`, the light poured
++-- from the lintel onto the threshold. Everything else is the Domain's kit.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function pick(rng: Random, list: { any }): any
++	return list[whole(rng, 1, #list)]
++end
++
++local FORMS = { "pair", "triple", "porch", "winged" }
++local PRECINCTS = { "open", "walled" }
++local COURTS = { "level", "sunken", "terraced", "aisled", "colonnaded" }
++local APPROACHES = { 2, 4, 6 }
++local ROADS = { "straight", "dogleg", "sweep" }
++
++-- The gate's two lintels (sculpts.luau): a broad one whose piers stand 24 studs either
++-- side of the passage's middle, and a wider order for gates with a broader passage.
++-- The build scales one to put its piers exactly inside the pylons.
++local LINTEL = "domain_judgement_lintel"
++local LINTEL_WIDE = "domain_judgement_lintel_wide"
++local LINTEL_HEIGHT = 62
++
++-- B12's ivory stones, a step cooler than the padding's warm marble so the feature's own
++-- paving reads as made ground; the fan is light-struck and brighter, the threshold and
++-- the line through the gate are the Domain's pale sky blue, used sparingly.
++local COURT = { material = "Slate", color = { 198, 196, 190 } }
++local FAN = { material = "Salt", color = { 234, 214, 168 } }
++-- The tileset's own road colour, so the map's road runs on into the forecourt.
++local WAY = { material = "Pavement", color = { 226, 212, 184 } }
++local JUDGEMENT = { material = "Glacier", color = { 204, 218, 232 } }
++local STEP = { material = "Rock", color = { 186, 182, 174 } }
++local PLINTH = { material = "Basalt", color = { 176, 172, 164 } }
++
++-- The theme's own gold and pale sky blue (data/EnvThemes, the `domain` theme): light
++-- belongs to lamps and effects, never to the stone the map paints.
++local GOLD_LIGHT = { 255, 226, 160 }
++local SKY_LIGHT = { 190, 214, 255 }
++
++local feature: MapFeature.Feature = {
++	name = "DomainJudgementGate",
++	about = "A gate of judgement on the Eternal Domain: two colossal pylons on a raised stylobate, a gold lintel spanning the road, and a paved forecourt washed by the light poured through it.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "crossing",
++	mood = { "monumental", "holy", "judgement", "gate", "ivory", "gold" },
++	cells = {
++		court = {
++			ground = COURT,
++			lift = 0.2,
++			clear = true,
++			-- What the plateau's old colonnade shed: a few fallen drums out on the paving.
++			props = { { sculpt = "domain_column_fallen", every = 38, scale = { 0.45, 0.75 }, sink = 0.5 } },
++		},
++		fan = {
++			ground = FAN,
++			lift = 0.2,
++			clear = true,
++			glow = { color = GOLD_LIGHT, range = 16, brightness = 0.9, every = 100, height = 0.5 },
++		},
++		way = { ground = WAY, lift = 0.2, clear = true },
++		judgement = {
++			ground = JUDGEMENT,
++			lift = 0.2,
++			clear = true,
++			glow = { color = SKY_LIGHT, range = 18, brightness = 1.1, every = 60, height = 0.6 },
++		},
++		step = { ground = STEP, lift = 0.2, clear = true },
++		plinth = { ground = PLINTH, clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-5: the structure, from the first draws.
++		local form = pick(rng, FORMS) :: string
++		local precinct = if form == "winged" then "open" else pick(rng, PRECINCTS) :: string
++		local court = pick(rng, COURTS) :: string
++		local approach = pick(rng, APPROACHES) :: number
++		local roadStyle = pick(rng, ROADS) :: string
++
++		-- 6: size, the gate's line and its members.
++		local w = 2 * whole(rng, 23, 27) + 1 -- 47..55 cells, odd, so the passage is centred
++		local d = 2 * whole(rng, 23, 27) + 1
++		local cx = (w + 1) // 2
++		local bw = if form == "triple" then 7 else pick(rng, { 7, 9 })
++		local bd = pick(rng, { 5, 7 })
++		local pw = if form == "triple" then pick(rng, { 5, 7 }) else pick(rng, { 5, 7, 9 })
++		local half = (pw - 1) // 2
++		local gateWidth = if form == "triple" then 3 * bw + 2 * pw else 2 * bw + pw
++		local gateZ = whole(rng, math.floor(d * 0.64), math.floor(d * 0.76))
++		local plinthLift = 0.5 * whole(rng, 4, 12) -- 2..6 studs
++		local wallLift = 0.5 * whole(rng, 8, 18) -- 4..9
++		local cheekLift = 0.5 * whole(rng, 2, 6) -- 1..3
++		local porchGap = whole(rng, 2, 4)
++		local wingLen = whole(rng, 4, 8)
++		local sideGap = whole(rng, 2, 3)
++		local screenLift = 0.5 * whole(rng, 4, 7) -- 2..3.5
++		local colonnadeLift = 0.5 * whole(rng, 3, 6) -- 1.5..3
++
++		-- The forecourt's terraces (z of the two step lines), kept short of the flight.
++		local innerCourt = if court == "sunken" then -2 elseif court == "terraced" then 4 else 0
++		local gateH = innerCourt + approach
++		local stairRows = math.max(0, (approach - 2) // 2)
++
++		-- The pylon blocks, one per pylon; the platform's cheeks and the passages.
++		local blocks: { { x0: number, x1: number, z0: number, z1: number } } = {}
++		local passages: { number } = {}
++		local function block(x0: number, x1: number, z0: number, z1: number)
++			table.insert(blocks, { x0 = x0, x1 = x1, z0 = z0, z1 = z1 })
++		end
++		local function line(zc: number)
++			local z0, z1 = zc - (bd - 1) // 2, zc + bd // 2
++			block(cx - half - bw, cx - half - 1, z0, z1)
++			block(cx + half + 1, cx + half + bw, z0, z1)
++			table.insert(passages, { x = cx, z = (z0 + z1) / 2 })
++			return z0, z1
++		end
++		local blockZ0, blockZ1
++		if form == "porch" then
++			local total = 2 * bd + porchGap
++			local a = gateZ - (total - 1) // 2
++			local z1a, z1b = line((a + a + bd - 1) / 2)
++			local b = a + bd + porchGap
++			local z2a, z2b = line((b + b + bd - 1) / 2)
++			blockZ0, blockZ1 = z1a, z2b
++			-- The lintels sit over each line, so `passages` holds both.
++			passages[1].z, passages[2].z = (z1a + z1b) / 2, (z2a + z2b) / 2
++		elseif form == "triple" then
++			local z0, z1 = gateZ - (bd - 1) // 2, gateZ + bd // 2
++			local midHalf = (bw - 1) // 2
++			block(cx - midHalf, cx + midHalf, z0, z1)
++			block(cx - midHalf - pw - bw, cx - midHalf - pw - 1, z0, z1)
++			block(cx + midHalf + pw + 1, cx + midHalf + pw + bw, z0, z1)
++			table.insert(passages, { x = cx - (bw + pw) // 2 - ((bw + pw) % 2) * 0.5, z = gateZ })
++			table.insert(passages, { x = cx + (bw + pw) // 2 + ((bw + pw) % 2) * 0.5, z = gateZ })
++			blockZ0, blockZ1 = z0, z1
++		else
++			local z0, z1 = line(gateZ)
++			blockZ0, blockZ1 = z0, z1
++		end
++		local platformFront = blockZ0 - 1
++		local platformBack = blockZ1 + 1
++		local gx0 = cx - (gateWidth - 1) // 2
++		local gx1 = gx0 + gateWidth - 1
++
++		-- The road takes the left or right passage of a triple, the middle otherwise.
++		local passage = if form == "triple" then passages[whole(rng, 1, 2)] else passages[1]
++		local roadX = passage.x
++		local gateCentreZ = passage.z
++
++		-- The forecourt's level by depth, with the terraces drawn here (dressing, after
++		-- the structure): 0, then 2, then 4 studs toward the gate.
++		local t2 =
++			math.max(4, math.min(whole(rng, math.floor(d * 0.30), math.floor(d * 0.44)), platformFront - stairRows - 1))
++		local t1 = math.max(3, math.min(whole(rng, math.floor(d * 0.14), math.floor(d * 0.28)), t2 - 2))
++		local function courtHeight(z: number): number
++			if court == "sunken" then
++				return if z <= 2 then 0 else -2
++			elseif court == "terraced" then
++				if z <= t1 then
++					return 0
++				elseif z <= t2 then
++					return 2
++				end
++				return 4
++			end
++			return 0
++		end
++		local function rowHeight(z: number): number
++			if z >= platformFront and z <= platformBack then
++				return gateH
++			elseif z < platformFront then
++				local j = platformFront - z
++				if j <= stairRows then
++					return gateH - 2 * j
++				end
++				return courtHeight(z)
++			end
++			local j = z - platformBack
++			local backRows = math.abs(gateH) // 2
++			if j <= backRows then
++				return if gateH >= 0 then math.max(0, gateH - 2 * j) else math.min(0, gateH + 2 * j)
++			end
++			return 0
++		end
++
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inside(x: number, z: number): boolean
++			return x >= 1 and x <= w and z >= 1 and z <= d
++		end
++		-- The plateau eases up from its side borders, so a raised court never stands
++		-- more than a step over the ground outside the feature.
++		for z = 1, d do
++			for x = 1, w do
++				heights[at(x, z)] = math.min(rowHeight(z), 2 * math.min(x - 1, w - x))
++			end
++		end
++		local function wall(x: number, z: number, lift: number)
++			if not inside(x, z) then
++				return
++			end
++			local i = at(x, z)
++			walk[i] = false
++			kinds[i] = "plinth"
++			lifts[i] = lift
++		end
++
++		for _, b in blocks do
++			for z = b.z0, b.z1 do
++				for x = b.x0, b.x1 do
++					wall(x, z, plinthLift)
++				end
++			end
++		end
++		-- The stylobate's cheeks, which also carry the block faces along the flight.
++		for z = platformFront - stairRows, platformBack do
++			for _, x in { gx0, gx1 } do
++				if walk[at(x, z)] then
++					wall(x, z, cheekLift)
++				end
++			end
++		end
++		-- A precinct wall across the whole frontage, the passages cut through it: the
++		-- gate's own gatehouse, or the free gate standing alone.
++		if precinct == "walled" then
++			for z = platformFront, platformBack do
++				for x = 1, w do
++					local open = false
++					for _, p in passages do
++						if math.abs(x - p.x) <= half then
++							open = true
++						end
++					end
++					if not open and walk[at(x, z)] then
++						wall(x, z, wallLift)
++					end
++				end
++			end
++		end
++		-- Wings: a wall from each pylon out along the gate line, a way round its end.
++		if form == "winged" then
++			local reach = math.min(wingLen, gx0 - 1 - sideGap)
++			for z = blockZ0, blockZ1 do
++				for k = 1, reach do
++					wall(gx0 - k, z, wallLift * 0.6)
++					wall(gx1 + k, z, wallLift * 0.6)
++				end
++			end
++		end
++
++		-- The fan of light on the forecourt, from the gate's foot out toward the border.
++		local fanZ1 = platformFront - stairRows - 1
++		local fanZ0 = math.min(2, fanZ1 - 2)
++		local fanHalfGate = half + 1
++		local fanHalfFar = whole(rng, 6, 11)
++		local function fanHalf(z: number): number
++			local t = math.clamp((z - fanZ0) / math.max(1, fanZ1 - fanZ0), 0, 1)
++			return math.floor(fanHalfFar + (fanHalfGate - fanHalfFar) * t + 0.5)
++		end
++
++		-- Aisles and colonnades out on the court, clear of the way and the fan's edge.
++		local screenX = math.min(fanHalfFar + 2, w // 2 - 3)
++		local screenLen = whole(rng, 7, 11)
++		local screenZ0 = math.max(3, math.floor(d * 0.16))
++		if court == "aisled" then
++			for side = -1, 1, 2 do
++				for z = screenZ0, screenZ0 + screenLen - 1 do
++					for dx = 0, 1 do
++						local x = if side < 0 then cx - screenX - dx else cx + screenX + dx
++						if
++							inside(x, z)
++							and walk[at(x, z)]
++							and math.abs(z - platformFront) > 0
++							and z < platformFront - stairRows
++						then
++							wall(x, z, screenLift)
++						end
++					end
++				end
++			end
++		elseif court == "colonnaded" then
++			local colX = math.min(fanHalfFar + 3, w // 2 - 5)
++			local zA = math.max(3, screenZ0)
++			local zB = math.max(zA + 4, fanZ1 - 4)
++			for _, side in { -1, 1 } do
++				for _, zc in { zA, math.min(zB, platformFront - stairRows - 2) } do
++					for dx = 0, 1 do
++						for dz = 0, 2 do
++							local x = if side < 0 then cx - colX - dx else cx + colX + dx
++							if inside(x, zc + dz) and walk[at(x, zc + dz)] and zc + dz < platformFront - stairRows then
++								wall(x, zc + dz, colonnadeLift)
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- Paint the ground: courts first, then the light, then the way through.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] then
++					if z >= platformFront and z <= platformBack then
++						kinds[i] = if math.abs(x - roadX) <= half then "judgement" else "court"
++					elseif
++						(z < platformFront and platformFront - z <= stairRows)
++						or (z > platformBack and z - platformBack <= math.abs(gateH) // 2)
++					then
++						kinds[i] = "step"
++					else
++						kinds[i] = "court"
++					end
++				end
++			end
++		end
++		for z = fanZ0, fanZ1 do
++			local hw = fanHalf(z)
++			for x = roadX - hw, roadX + hw do
++				local i = at(x, z)
++				if inside(x, z) and walk[i] and kinds[i] == "court" then
++					kinds[i] = "fan"
++				end
++			end
++		end
++
++		-- The road's way in: straight, a dogleg, or an S, funnelled to the passage.
++		local entrySign = if rng:NextNumber() < 0.5 then -1 else 1
++		local dogOffset = whole(rng, 2, 4)
++		local sweepAmp = whole(rng, 2, 3)
++		local zFoot = fanZ1
++		local function wayOffset(z: number): number
++			if z >= zFoot then
++				return 0
++			end
++			local t = (z - 1) / math.max(1, zFoot - 1)
++			if roadStyle == "dogleg" then
++				return entrySign * dogOffset * (1 - t)
++			elseif roadStyle == "sweep" then
++				return entrySign * sweepAmp * math.sin(2 * math.pi * t)
++			end
++			return 0
++		end
++		local road: { Point } = {}
++		for z = 1, d do
++			if z == 1 or z == d or z % 2 == 0 then
++				table.insert(road, { x = roadX + wayOffset(z), z = z })
++			end
++		end
++		-- Keep every road point on walkable ground, easing it back toward the gate.
++		for _, p in road do
++			for _ = 1, 8 do
++				local px = math.clamp(math.floor(p.x + 0.5), 1, w)
++				local pz = math.clamp(math.floor(p.z + 0.5), 1, d)
++				if walk[at(px, pz)] then
++					break
++				end
++				p.x += (roadX - p.x) * 0.5
++			end
++		end
++		-- The way itself: three cells wide down the road, the judgement line one cell
++		-- through its middle, so the god's way shows as a cold thread in the gold fan.
++		for k = 2, #road do
++			local a, b = road[k - 1], road[k]
++			local steps = math.max(1, math.ceil(math.abs(b.z - a.z)))
++			for s = 0, steps do
++				local t = s / steps
++				local gx = math.floor(a.x + (b.x - a.x) * t + 0.5)
++				local gz = math.floor(a.z + (b.z - a.z) * t + 0.5)
++				for _, o in { { 0, 0 }, { 1, 0 }, { -1, 0 } } do
++					local x, z = gx + o[1], gz
++					local i = at(x, z)
++					if
++						inside(x, z)
++						and walk[i]
++						and (kinds[i] == "court" or kinds[i] == "fan" or kinds[i] == "step")
++					then
++						kinds[i] = "way"
++					end
++				end
++				local i = at(gx, gz)
++				if
++					inside(gx, gz)
++					and walk[i]
++					and (kinds[i] == "court" or kinds[i] == "fan" or kinds[i] == "step" or kinds[i] == "way")
++				then
++					kinds[i] = "judgement"
++				end
++			end
++		end
++
++		-- The gate itself, and the props that people it.
++		local halfDistance = 2 * (pw + bw) -- studs from the passage's middle to a pylon's
++		local lintelRow: string, lintelScale: number
++		if halfDistance <= 25 then
++			lintelRow, lintelScale = LINTEL, halfDistance / 24
++		else
++			lintelRow, lintelScale = LINTEL_WIDE, halfDistance / 32
++		end
++		local pylonScale = 1 + (halfDistance - 24) * 0.014 + between(rng, -0.01, 0.01)
++		local pylon = "domain_judgement_pylon"
++		local marks: { FeatureDress.Landmark } = {}
++		for _, b in blocks do
++			table.insert(marks, {
++				sculpt = pylon,
++				x = (b.x0 + b.x1) / 2,
++				z = (b.z0 + b.z1) / 2,
++				scale = pylonScale,
++				sink = -plinthLift + 0.5,
++				solid = true,
++			})
++		end
++		for _, p in passages do
++			table.insert(marks, {
++				sculpt = lintelRow,
++				x = p.x,
++				z = p.z,
++				scale = lintelScale,
++				sink = 0,
++			})
++		end
++		-- Four braziers at the passage's mouths, on the stylobate, small against the
++		-- pylons so the twenty people they stand for read as the gate's true measure.
++		local brazierScale = between(rng, 0.8, 1)
++		for _, dz in { -1, 1 } do
++			local z = if dz < 0 then blockZ0 - 0.8 else blockZ1 + 0.8
++			for _, side in { -1, 1 } do
++				local x = passage.x + side * half
++				table.insert(marks, {
++					sculpt = "domain_brazier",
++					x = x,
++					z = z,
++					scale = brazierScale,
++					sink = 0.2,
++					yaw = if dz < 0 then 0 else 180,
++				})
++			end
++		end
++		-- Waystones down the fan's edges, the procession's own measure.
++		for k = 1, 3 do
++			local z = math.floor(fanZ0 + (fanZ1 - fanZ0) * (0.22 + 0.30 * (k - 1)) + 0.5)
++			local reach = fanHalf(z) + whole(rng, 2, 3)
++			for _, side in { -1, 1 } do
++				local x = roadX + side * reach
++				if x >= 2 and x <= w - 1 and walk[at(x, z)] then
++					table.insert(marks, {
++						sculpt = "domain_waystone",
++						x = x,
++						z = z,
++						scale = between(rng, 0.9, 1.05),
++						sink = 0.2,
++						yaw = if side < 0 then 90 else -90,
++						solid = true,
++					})
++				end
++			end
++		end
++		-- Fire on the aisle screens' parapets, or the colonnade's columns.
++		if court == "aisled" then
++			for side = -1, 1, 2 do
++				for z = screenZ0 + 2, screenZ0 + screenLen - 1, 4 do
++					local x = if side < 0 then cx - screenX - 0.5 else cx + screenX + 0.5
++					local cx0, cz0 = math.floor(x + 0.5), math.floor(z + 0.5)
++					if inside(cx0, cz0) and not walk[at(cx0, cz0)] then
++						table.insert(marks, {
++							sculpt = "domain_brazier_high",
++							x = x,
++							z = z,
++							scale = 0.75,
++							sink = -screenLift + 0.2,
++						})
++					end
++				end
++			end
++		elseif court == "colonnaded" then
++			local colX = math.min(fanHalfFar + 3, w // 2 - 5)
++			local zA = math.max(3, screenZ0)
++			local zB = math.max(zA + 4, fanZ1 - 4)
++			for _, side in { -1, 1 } do
++				for _, zc in { zA, math.min(zB, platformFront - stairRows - 2) } do
++					local x = if side < 0 then cx - colX - 0.5 else cx + colX + 0.5
++					table.insert(marks, {
++						sculpt = "domain_column",
++						x = x,
++						z = zc + 1,
++						scale = between(rng, 0.9, 1),
++						sink = -colonnadeLift + 0.3,
++						solid = true,
++					})
++				end
++			end
++		end
++
++		-- The light poured from the lintel, one curtain per passage the road uses.
++		local effects: { FeatureDress.Effect } = {}
++		local lintelLift = LINTEL_HEIGHT * 0.79 * lintelScale
++		table.insert(effects, {
++			recipe = "domain_judgement_light",
++			x = roadX - pw / 2 + 0.5,
++			z = gateCentreZ,
++			lift = lintelLift - 1,
++			seed = whole(rng, 1, 100000),
++		})
++
++		-- The pad's game camera stands south of the footprint's middle and looks north,
++		-- so the feature is mirrored in z once (cell z -> depth + 1 - z) with its
++		-- forecourt on the south side: both the game camera and the feature's own
++		-- photographs then look up the fan at the gate's face, not at its back.
++		local fwalk = table.create(w * d, false)
++		local fheights = table.create(w * d, 0)
++		local fkinds: { [number]: string } = {}
++		local flifts: { [number]: number } = {}
++		for z = 1, d do
++			for x = 1, w do
++				local i, j = at(x, z), (d - z) * w + x
++				fwalk[j] = walk[i]
++				fheights[j] = heights[i]
++				fkinds[j] = kinds[i]
++				flifts[j] = lifts[i]
++			end
++		end
++		local fmarks: { FeatureDress.Landmark } = {}
++		for _, m in marks do
++			local c = table.clone(m)
++			c.z = d + 1 - m.z
++			table.insert(fmarks, c)
++		end
++		local feffects: { FeatureDress.Effect } = {}
++		for _, e in effects do
++			local c = table.clone(e)
++			c.z = d + 1 - e.z
++			table.insert(feffects, c)
++		end
++		local froad: { Point } = {}
++		for _, p in road do
++			table.insert(froad, { x = p.x, z = d + 1 - p.z })
++		end
++		local faceZ = d + 1 - gateCentreZ -- the gate line in the mirrored frame
++		local cameras: { MapFeature.Shot } = {
++			{
++				-- From the forecourt's far end on the road, dwarfed by the gate ahead.
++				name = "up the way of judgement",
++				from = { x = math.clamp(roadX + w * 0.16, 2, w - 1), z = faceZ + 26, lift = 24 },
++				to = { x = roadX, z = faceZ + 3, lift = 44 },
++				fov = 74,
++			},
++			{
++				-- From the field beyond the forecourt's east side: the whole gate.
++				name = "the gate from the field",
++				from = { x = w + 9, z = math.min(d - 1, faceZ + 26), lift = 72 },
++				to = { x = roadX, z = faceZ, lift = 52 },
++				fov = 70,
++			},
++		}
++
++		return {
++			width = w,
++			depth = d,
++			walk = fwalk,
++			heights = fheights,
++			kinds = fkinds,
++			lifts = flifts,
++			marks = fmarks,
++			effects = feffects,
++			road = froad,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

@@ -1,0 +1,868 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..6b238c2f 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainValkyrieLandings = require("../systems/features/DomainValkyrieLandings")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainValkyrieLandings = DomainValkyrieLandings,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index 490cc3f5..4cae4738 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1220,4 +1220,34 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (roadmap areas/eternal-domain.md): a Valkyrie's standard,
++-- the gold cross on a stepped base that crowns each of her landings. All gold,
++-- a colour the domain's crown may be (B12: gold to saturation 0.55, value 0.92);
++-- three gold tones so the shaft, its arms and the base read one against another
++-- from the game camera. A person is 5 studs: the cross stands six people tall,
++-- so it is seen from the next landing but one.
++Sculpts.domain_valkyrie_standard = {
++	kind = "wayside",
++	form = "cross",
++	size = { 9, 32, 9 },
++	material = "Metal",
++	colors = { { 232, 190, 108 }, { 222, 180, 104 }, { 234, 196, 116 }, { 230, 188, 106 } },
++	maxPrims = 8,
++}
++-- The standard's wing: a rank of gilded shafts of graded height, the short end
++-- outboard and the tall end at the cross, all leaning out and back, so a pair
++-- of them spreads either side of the standard like wings. Built from the
++-- column kind's graded chunk: it is a fan of gold rods, its caps cut aslant.
++Sculpts.domain_valkyrie_wing = {
++	kind = "columns",
++	size = { 17, 22, 3.6 },
++	material = "Metal",
++	colors = { { 232, 190, 108 }, { 222, 180, 104 }, { 234, 196, 116 } },
++	maxPrims = 16,
++	columns = 5,
++	jag = 0.3,
++	step = 0.5,
++	lean = 20,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 23f351b2..aedcd00e 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2145,4 +2145,116 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain (roadmap areas/eternal-domain.md, the Valkyrie landings):
++-- the holy light coming down onto a landing, where a rider of the gods comes
++-- down. A narrow shaft of gold motes falls out of the high air, an almost
++-- white core in them, a slow gold veil round it and a rare pale sky-blue glint
++-- (the area's one cool note); the last of it pools as warm light on the
++-- marble. Its path is a short steep worm, so the emitters stack as a shaft
++-- rather than trailing along the ground (A132 effect critic 2), and the motes
++-- fall far enough to reach the stone from the top of the shaft. Placed at a
++-- landing's standard; the top of the shaft stays under the game camera when
++-- the player stands on the landing (SE10).
++recipes.domain_valkyrie_descent = {
++	about = "Holy light coming down onto a Valkyrie's landing: a narrow shaft of gold motes falling into a warm pool on the marble, veiled in pale sky blue.",
++	theme = "domain",
++	path = { kind = "worm", length = 6, step = 2, bend = 25, climb = 80, round = 2 },
++	layers = {
++		{
++			name = "shaft",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 3,
++				lift = 24,
++				toward = "down",
++				rise = 4,
++				life = { 5.5, 7 },
++				rate = 6,
++				size = 0.8,
++				tall = 2.6,
++				transparency = 0.22,
++				color = "gold",
++				texture = "wisp",
++				lean = 4,
++				vary = 0.35,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 6, span = 10, periods = { 5.3, 7.9 } },
++			priority = 1,
++		},
++		{
++			name = "veil",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 8,
++				lift = 23,
++				toward = "down",
++				rise = 2.4,
++				life = { 7, 9 },
++				rate = 1.6,
++				size = 7,
++				tall = 1.5,
++				transparency = 0.9,
++				color = "glow",
++				texture = "veil",
++				lean = 6,
++				vary = 0.45,
++			},
++			motion = { kind = "sway", amplitude = 1.4, tilt = 5, span = 16, periods = { 9.1, 6.3 } },
++			priority = 2,
++		},
++		{
++			name = "cold",
++			look = {
++				kind = "stream",
++				every = 7,
++				thick = 5,
++				lift = 24,
++				toward = "down",
++				rise = 3.2,
++				life = { 5, 7 },
++				rate = 1,
++				size = 0.4,
++				tall = 1.8,
++				transparency = 0.3,
++				color = "sky",
++				texture = "wisp",
++				lean = 10,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 8, span = 12, periods = { 7.3, 5.1 } },
++			priority = 3,
++		},
++		{
++			name = "rays",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 6,
++				lift = 22,
++				toward = "down",
++				rise = 0.35,
++				life = { 6, 9 },
++				rate = 1,
++				size = 6,
++				tall = 2.4,
++				transparency = 0.9,
++				color = "gold",
++				texture = "rays",
++				lean = 3,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 4, span = 18, periods = { 11, 7 } },
++			priority = 4,
++		},
++		{
++			name = "pool",
++			look = { kind = "light", every = 4, max = 2, range = 24, brightness = 1.4, color = "glow" },
++			motion = { kind = "pulse", period = 4.8, depth = 0.35 },
++			priority = 5,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0edeb33a..fcdd4191 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -426,6 +426,15 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's Valkyrie landings (roadmap areas/eternal-domain.md)
++	["sculpt:domain_valkyrie_standard"] = row(
++		"A Valkyrie's standard of the Eternal Domain: a tall gold cross on a stepped base, crowning one of her landings.",
++		MOOR
++	),
++	["sculpt:domain_valkyrie_wing"] = row(
++		"A wing of the Eternal Domain's standards: a rank of gilded shafts of graded height, leaning out from the cross.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainValkyrieLandings.luau b/src/shared/systems/features/DomainValkyrieLandings.luau
+new file mode 100644
+index 00000000..92fbfda1
+--- /dev/null
++++ b/src/shared/systems/features/DomainValkyrieLandings.luau
+@@ -0,0 +1,664 @@
++--!strict
++-- The Eternal Domain (roadmap areas/eternal-domain.md): the Valkyries' landings,
++-- the high ground the gods' riders come down to. A cluster of round marble
++-- landings raised on sheer drums out of a sea of cloud, at different heights,
++-- joined by stairs off the processional road and by short bridges between them;
++-- every landing is ringed with gilded columns and crowned with a winged gold
++-- standard, and holy light comes down onto the greatest of them. The road
++-- climbs over that great landing on a long ramp, so the way itself rises and
++-- falls through the place.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure; the rest only dress
++-- it:
++--   1. the cluster's plan: a chain of landings strung along the road, a ring
++--      round the great landing, a twin pair either side of it, or a cluster
++--      gathered on the roomy side of the road;
++--   2. how many lesser landings there are (two to four), where they stand,
++--      which side of the road, and how far out;
++--   3. their heights: an ascent along the road, a crown of low ones round a
++--      high great landing, or alternating high and low;
++--   4. which landings have a well of cloud sunk in them, which is a wall
++--      island: the plan's obstructions change from seed to seed;
++--   5. then the cloud's depth, the road's bend and width, the standards' size,
++--      the columns round each landing and the band of gold in its floor.
++-- The road runs west to east, its height a function of x only, so a bend never
++-- steps; every stair and bridge climbs at most a stud a cell. Every walkable
++-- pair is therefore within Terrain's step, and the first and last road points
++-- sit on the border at the ground's own level.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function pick<T>(rng: Random, from: { T }): T
++	return from[whole(rng, 1, #from)]
++end
++
++-- Radians between two angles, 0..pi.
++local function apart(a: number, b: number): number
++	return math.abs((a - b + math.pi) % (2 * math.pi) - math.pi)
++end
++
++-- Studs. The cloud sea lies in a deep basin the feature's border falls into, so
++-- the drums rise out of it as pillars and the road crosses it as a viaduct: a
++-- step above the pad at its ends and a little higher within.
++local CLOUD_BED = -10
++local ROAD_END = 1
++local ROAD_LEVEL = 2
++
++-- The Domain's own paving and road colours (outdoorTilesets/Domain), so the
++-- landings are laid in the area's stone. The gilding and the cloud take
++-- materials the Domain leaves free; all sit inside B12's limits.
++local PAVING = { material = "Marble", color = { 214, 208, 194 } }
++local GILT = { material = "Concrete", color = { 231, 200, 138 } }
++local CROWN = { material = "Concrete", color = { 234, 212, 150 } }
++local ROAD = { material = "Pavement", color = { 226, 212, 184 } }
++local CLOUD = { material = "Ice", color = { 208, 216, 231 } }
++-- The bible's holy light, warm white-gold (B12's gold, bright as light may be).
++local HOLY = { 255, 226, 160 }
++
++-- A landing: a round marble top on a sheer drum, `h` studs over the cloud.
++type Landing = {
++	x: number,
++	z: number,
++	r: number, -- cells
++	h: number, -- studs
++	main: boolean,
++	well: boolean,
++	wellR: number,
++	ways: { number }, -- angles of the ways on, radians
++}
++
++local feature: MapFeature.Feature = {
++	name = "DomainValkyrieLandings",
++	about = "A cluster of round marble landings raised on drums out of a sea of cloud, joined by stairs and short bridges, each ringed with gilded columns and crowned with a winged gold standard.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "crossing",
++	mood = { "monumental", "valkyrie", "sky", "processional", "gilded" },
++	cells = {
++		-- The landing's floor: the Domain's own marble, a hair over the heath
++		-- fill under it so its own ground is the one drawn.
++		paving = { ground = PAVING, lift = 0.2, clear = true },
++		-- The gilded band round each landing's rim, its seal, and the dais
++		-- under the standard.
++		gilt = { ground = GILT, lift = 0.35, clear = true },
++		-- The dais's middle, where the holy light pools: one small light per
++		-- landing, no more.
++		crown = {
++			ground = CROWN,
++			lift = 0.5,
++			clear = true,
++			glow = { color = HOLY, range = 22, brightness = 1.3, every = 1, height = 2.4 },
++		},
++		-- The processional way, the stairs and the bridges: the Domain's
++		-- gold-leaning road.
++		road = { ground = ROAD, lift = 0.25, clear = true },
++		-- The sea of cloud the landings stand out of: cool pale, so the ivory
++		-- drums read against it from the game camera.
++		cloud = { ground = CLOUD, lift = 0.8, clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, before any dressing.
++		local layout = pick(rng, { "chain", "ring", "twin", "cluster" })
++		local extras = whole(rng, 2, 4)
++		local profile = pick(rng, { "ascent", "crown", "alternate" })
++		local bent = between(rng, -4.5, 4.5)
++		local wide = layout == "chain" or layout == "cluster"
++		local w = whole(rng, 50, 56)
++		local d = if wide then whole(rng, 42, 48) else whole(rng, 46, 54)
++		-- The cloud's own depth over its bed: a shallow haze or a deep bank,
++		-- so two seeds' seas of cloud sit in different height bands.
++		local cloudLift = between(rng, 0.9, 4.6)
++		local roadHalf = between(rng, 1.05, 1.35)
++
++		local function idx(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inside(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= w and z <= d
++		end
++		local function dist(x: number, z: number, cx: number, cz: number): number
++			return math.sqrt((x - cx) ^ 2 + (z - cz) ^ 2)
++		end
++
++		-- The great landing, and the road's line across the footprint: west to
++		-- east with one gentle bend at the landing, so the way is never dead
++		-- straight, and its height by x only.
++		local R = whole(rng, 7, 9)
++		local mainX = math.floor(w * between(rng, 0.42, 0.58) + 0.5)
++		local H = whole(rng, 9, math.max(9, math.min(16, w // 2 - R - 2)))
++		local rise = H - ROAD_LEVEL
++		mainX = math.clamp(mainX, R + rise + 3, w - R - rise - 2)
++		local zMid = math.clamp(whole(rng, 10, d - 10), R + 3, d - R - 2)
++		-- The line's two ends lean off the great landing's bend only a little:
++		-- a shore-steep road would let a stair cross its band away from the
++		-- stair's foot and step where the two meet.
++		local leanA = math.floor((mainX - 1) * 0.3)
++		local leanB = math.floor((w - mainX) * 0.3)
++		local zA = math.clamp(zMid + math.floor(bent + 0.5) + whole(rng, -leanA, leanA), 6, d - 6)
++		local zB = math.clamp(zMid + whole(rng, -leanB, leanB), 6, d - 6)
++		local function zAt(x: number): number
++			if x <= mainX then
++				return zA + (zMid - zA) * (x - 1) / math.max(mainX - 1, 1)
++			end
++			return zMid + (zB - zMid) * (x - mainX) / math.max(w - mainX, 1)
++		end
++		local mx, mz = mainX, zAt(mainX)
++
++		-- A step up off the pad at each border, flat causeway, a long ramp up
++		-- to the great landing and down again: at most a stud a cell.
++		local west0 = mainX - R - rise
++		local east1 = mainX + R + rise
++		local function roadH(x: number): number
++			if x <= 1 or x >= w then
++				return ROAD_END
++			end
++			if x <= west0 then
++				return ROAD_LEVEL
++			elseif x <= mainX - R then
++				return math.floor(ROAD_LEVEL + (H - ROAD_LEVEL) * (x - west0) / math.max(rise, 1) + 0.5)
++			elseif x <= mainX + R then
++				return H
++			elseif x <= east1 then
++				return math.floor(H - (H - ROAD_LEVEL) * (x - (mainX + R)) / math.max(rise, 1) + 0.5)
++			end
++			return ROAD_LEVEL
++		end
++
++		-- 2-3: the lesser landings. Each stands as far off the road as its own
++		-- stair needs, so the stair climbs at most a stud a cell.
++		local landings: { Landing } = {
++			{ x = mx, z = mz, r = R, h = H, main = true, well = false, wellR = 0, ways = { 0, math.pi } },
++		}
++		local function clearOfOthers(x: number, z: number, r: number, skip: Landing): boolean
++			for _, other in landings do
++				if other ~= skip and dist(x, z, other.x, other.z) < r + other.r + 2.5 then
++					return false
++				end
++			end
++			return true
++		end
++		local function stairClear(x: number, z: number, roadZ: number, skip: Landing): boolean
++			local from, to = math.min(roadZ, z), math.max(roadZ, z)
++			for _, other in landings do
++				if other ~= skip then
++					for zz = math.floor(from), math.ceil(to) do
++						for dx = -1, 1 do
++							local xx = math.floor(x + 0.5) + dx
++							if inside(xx, zz) and dist(xx, zz, other.x, other.z) < other.r + 1.2 then
++								return false
++							end
++						end
++					end
++				end
++			end
++			return true
++		end
++		for i = 1, extras do
++			-- Where this one wants to stand: the chain spreads the length of
++			-- the road, the ring flanks the great landing on both sides, the
++			-- twin sets pairs facing each other across it, the cluster gathers
++			-- them all off one shoulder of the road.
++			local targetX: number
++			local wants: number
++			if layout == "ring" then
++				targetX = math.floor(mainX + (if i % 2 == 1 then 1 else -1) * between(rng, R + 8, R + 16) + 0.5)
++				wants = if i % 2 == 1 then -1 else 1
++			elseif layout == "twin" then
++				local offset = R + 9 + math.ceil(i / 2) * 5
++				targetX = math.floor(mainX + (if i % 2 == 1 then offset else -offset) + between(rng, -2, 2) + 0.5)
++				wants = if i % 2 == 1 then 1 else -1
++			elseif layout == "cluster" then
++				targetX = math.floor(mainX + between(rng, -20, 20) + 0.5)
++				wants = 0
++			else
++				targetX = math.floor(w * (0.1 + 0.8 * (i - 0.5) / extras) + between(rng, -3, 3) + 0.5)
++				wants = if i % 2 == 1 then 1 else -1
++			end
++			local base = if profile == "ascent"
++				then 5 + 2 * i
++				elseif profile == "crown" then 14 - 2 * i
++				else (if i % 2 == 1 then 12 else 7)
++			for _ = 1, 36 do
++				local r = whole(rng, 4, 6)
++				local sx = math.clamp(targetX + whole(rng, -4, 4), r + 2, w - r - 2)
++				local h = math.clamp(base + whole(rng, -1, 1), 5, 15)
++				local roadZ = zAt(sx)
++				local hFrom = roadH(sx)
++				-- The climb runs from the road's edge, so the flight's length
++				-- is the climb plus the road's band it starts in.
++				local span = math.max(3, math.abs(h - hFrom) + 1)
++				local q = r + span + 3
++				local roomN = roadZ - 2 - r
++				local roomS = d - 1 - roadZ - r
++				local sides: { number }
++				if wants == 0 then
++					sides = if roomS >= roomN then { 1, -1 } else { -1, 1 }
++				elseif wants > 0 then
++					sides = { 1, -1 }
++				else
++					sides = { -1, 1 }
++				end
++				local done = false
++				for _, side in sides do
++					if not done then
++						local room = if side > 0 then roomS else roomN
++						local sz = roadZ + side * q
++						-- Two flights must not share a column of the road: they
++						-- are two cells wide and need a column between them.
++						local clear = true
++						for _, other in landings do
++							if math.abs(sx - other.x) < 3 then
++								clear = false
++							end
++						end
++						if clear and room >= q and clearOfOthers(sx, sz, r, nil) and stairClear(sx, sz, roadZ, nil) then
++							table.insert(landings, {
++								x = sx,
++								z = sz,
++								r = r,
++								h = h,
++								main = false,
++								well = false,
++								wellR = 0,
++								ways = { math.atan2(roadZ - sz, 0) },
++							})
++							done = true
++						end
++					end
++				end
++				if done then
++					break
++				end
++			end
++		end
++
++		-- The floor and its heights: cloud everywhere, the road cut across it,
++		-- the stairs up to each landing, and each landing's disc on top.
++		local walk = table.create(w * d, false)
++		local cellHeights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		for z = 1, d do
++			for x = 1, w do
++				local i = idx(x, z)
++				cellHeights[i] = CLOUD_BED
++				kinds[i] = "cloud"
++				lifts[i] = cloudLift
++			end
++		end
++		for x = 1, w do
++			local h, line = roadH(x), zAt(x)
++			for z = 1, d do
++				if math.abs(z - line) <= roadHalf then
++					local i = idx(x, z)
++					walk[i] = true
++					cellHeights[i] = h
++					kinds[i] = "road"
++					lifts[i] = nil
++				end
++			end
++		end
++		-- Stairs: a straight flight up the cloud from the road's edge to a
++		-- landing's rim, two cells wide, a stud a cell at most. Their first
++		-- rows lie in the road's own band and take its heights column by
++		-- column, so a flight never steps against the road it leaves.
++		for _, landing in landings do
++			if not landing.main then
++				local roadZ = zAt(landing.x)
++				local side = if landing.z >= roadZ then 1 else -1
++				local edge = roadZ + side * (roadHalf + 0.75)
++				-- Run the flight a cell and a half in under the disc, so its
++				-- outer cells always meet the rounded rim.
++				local to = landing.z - side * (landing.r - 1.5)
++				local hFrom = roadH(landing.x)
++				local baseX = math.floor(landing.x + 0.5)
++				local firstX = if baseX % 2 == 0 then -1 else 0
++				if math.abs(to - edge) > 0.5 then
++					for z = math.floor(math.min(roadZ, to)), math.ceil(math.max(roadZ, to)) do
++						local t = math.clamp((z - edge) / (to - edge), 0, 1)
++						local climb = math.floor(hFrom + (landing.h - hFrom) * t + 0.5)
++						for dx = firstX, firstX + 1 do
++							local xx = baseX + dx
++							if inside(xx, z) then
++								local i = idx(xx, z)
++								local inBand = math.abs(z - roadZ) <= roadHalf + 0.75
++								walk[i] = true
++								cellHeights[i] = if inBand then roadH(xx) else climb
++								kinds[i] = "road"
++								lifts[i] = nil
++							end
++						end
++					end
++				end
++			end
++		end
++		-- The discs last, so a stair's head and the road's plateau meet the
++		-- rim at the landing's own height.
++		for _, landing in landings do
++			for z = math.max(1, math.floor(landing.z - landing.r - 1)), math.min(d, math.ceil(landing.z + landing.r + 1)) do
++				for x = math.max(1, math.floor(landing.x - landing.r - 1)), math.min(w, math.ceil(landing.x + landing.r + 1)) do
++					if dist(x, z, landing.x, landing.z) <= landing.r then
++						local i = idx(x, z)
++						walk[i] = true
++						cellHeights[i] = landing.h
++						kinds[i] = "paving"
++						lifts[i] = nil
++					end
++				end
++			end
++		end
++		-- The footprint's own lip: a marble kerb a stud over the pad, so the
++		-- sea of cloud is held in a built basin and the feature meets the map
++		-- in stone rather than in a cut edge. The road passes through it.
++		for z = 1, d do
++			for x = 1, w do
++				if x == 1 or z == 1 or x == w or z == d then
++					local i = idx(x, z)
++					if not walk[i] then
++						cellHeights[i] = 1
++						kinds[i] = "paving"
++						lifts[i] = 0.6
++					end
++				end
++			end
++		end
++
++		-- Where a bridge could run between two landings, the landing's ways on
++		-- include it, so its columns keep clear of the span's approach.
++		local function sameSide(a: Landing, b: Landing): boolean
++			local sa, sb = a.z - zAt(a.x), b.z - zAt(b.x)
++			return sa * sb > 0 or math.abs(sa) < 0.5 or math.abs(sb) < 0.5
++		end
++		for i, a in landings do
++			for j, b in landings do
++				if j > i then
++					local gap = dist(a.x, a.z, b.x, b.z) - a.r - b.r
++					if gap >= 2 and gap <= 12 and math.abs(a.h - b.h) <= 5 and sameSide(a, b) then
++						table.insert(a.ways, math.atan2(b.z - a.z, b.x - a.x))
++						table.insert(b.ways, math.atan2(a.z - b.z, a.x - b.x))
++					end
++				end
++			end
++		end
++
++		-- 4: the cloud wells. A round pit of cloud sunk into a broad landing's
++		-- floor, its marble shaft sheer: the sky seen through the stone. A
++		-- filled disc of wall, so the walk round it never breaks.
++		local wells = 0
++		for _, landing in landings do
++			if landing.r >= 5 and wells < 2 and rng:NextNumber() < 0.55 then
++				landing.well = true
++				wells += 1
++				local wr = if landing.main then between(rng, 1.5, 2.1) else between(rng, 1.1, 1.6)
++				landing.wellR = wr
++				for z = math.max(1, math.floor(landing.z - wr - 1)), math.min(d, math.ceil(landing.z + wr + 1)) do
++					for x = math.max(1, math.floor(landing.x - wr - 1)), math.min(w, math.ceil(landing.x + wr + 1)) do
++						local i = idx(x, z)
++						if dist(x, z, landing.x, landing.z) <= wr and walk[i] and cellHeights[i] == landing.h then
++							walk[i] = false
++							cellHeights[i] = landing.h - 7
++							kinds[i] = "cloud"
++							lifts[i] = 0.8
++						end
++					end
++				end
++			end
++		end
++
++		-- 5: each landing's floor: a gold band at the rim, the seal round the
++		-- standard, the dais and its one lit cell.
++		local standards: { { x: number, z: number, scale: number } } = {}
++		for _, landing in landings do
++			local sx, sz = landing.x, landing.z
++			-- A step in from the middle, away from the way on, so the standard
++			-- and its wings have room and the landing reads as a ring.
++			local way = landing.ways[1] or 0
++			local out = if landing.well then landing.wellR + 1.6 else math.min(1.4, landing.r * 0.22)
++			if landing.r >= 5 then
++				sz = landing.z + math.sin(way + math.pi) * out
++				sx = landing.x + math.cos(way + math.pi) * out
++			end
++			local scale = if landing.main then between(rng, 0.95, 1.1) else between(rng, 0.62, 0.8)
++			table.insert(standards, { x = sx, z = sz, scale = scale })
++			local seal = if landing.main then 3 else 2.4
++			for z = math.max(1, math.floor(landing.z - landing.r - 1)), math.min(d, math.ceil(landing.z + landing.r + 1)) do
++				for x = math.max(1, math.floor(landing.x - landing.r - 1)), math.min(w, math.ceil(landing.x + landing.r + 1)) do
++					local i = idx(x, z)
++					local dd = dist(x, z, landing.x, landing.z)
++					local ds = dist(x, z, sx, sz)
++					if walk[i] and dd <= landing.r and cellHeights[i] == landing.h then
++						-- A band at the rim, a thin ring round the standard's
++						-- seal, and the dais under it: gold as trim, not floor.
++						if dd > landing.r - 0.9 or math.abs(ds - seal) < 0.65 or ds <= 0.9 then
++							kinds[i] = "gilt"
++							lifts[i] = nil
++						end
++					end
++				end
++			end
++			local crownX, crownZ = math.floor(sx + 0.5), math.floor(sz + 0.5)
++			local ci = if inside(crownX, crownZ) then idx(crownX, crownZ) else 0
++			if ci > 0 and walk[ci] and cellHeights[ci] == landing.h then
++				kinds[ci] = "crown"
++				lifts[ci] = nil
++			end
++		end
++
++		-- The bridges between landings on the same side of the road: short,
++		-- two-cell-high stone spans with the cloud under them. Tried nearest
++		-- first and kept only when every cell they cross can take their height.
++		local function bridge(a: Landing, b: Landing): boolean
++			local dx, dz = b.x - a.x, b.z - a.z
++			local len = math.sqrt(dx * dx + dz * dz)
++			if len <= a.r + b.r + 1 then
++				return false
++			end
++			local ux, uz = dx / len, dz / len
++			-- Ends a cell and a half in under each disc, so a span's last cells
++			-- always meet the rounded rim.
++			local ax, az = a.x + ux * (a.r - 1.5), a.z + uz * (a.r - 1.5)
++			local bx, bz = b.x - ux * (b.r - 1.5), b.z - uz * (b.r - 1.5)
++			local span = math.sqrt((bx - ax) ^ 2 + (bz - az) ^ 2)
++			if span < math.abs(b.h - a.h) or span < 2 then
++				return false
++			end
++			-- A strip two cells wide, each cell's height read off its place
++			-- along the span, so no cell steps more than the span's slope.
++			local half = 0.85
++			local cells: { { x: number, z: number, h: number } } = {}
++			for z = math.floor(math.min(az, bz) - half - 1), math.ceil(math.max(az, bz) + half + 1) do
++				for x = math.floor(math.min(ax, bx) - half - 1), math.ceil(math.max(ax, bx) + half + 1) do
++					local px, pz = x - ax, z - az
++					local t = (px * ux + pz * uz) / span
++					if t >= 0 and t <= 1 then
++						local off = math.abs(px * uz - pz * ux)
++						if off <= half then
++							local h = math.floor(a.h + (b.h - a.h) * t + 0.5)
++							table.insert(cells, { x = x, z = z, h = h })
++						end
++					end
++				end
++			end
++			if #cells < 2 then
++				return false
++			end
++			for _, c in cells do
++				if not inside(c.x, c.z) then
++					return false
++				end
++				local i = idx(c.x, c.z)
++				if walk[i] and math.abs(cellHeights[i] - c.h) > 2 then
++					return false
++				end
++			end
++			for _, c in cells do
++				local i = idx(c.x, c.z)
++				if not walk[i] then
++					walk[i] = true
++					cellHeights[i] = c.h
++					kinds[i] = "road"
++					lifts[i] = nil
++				end
++			end
++			return true
++		end
++		local bridges = 0
++		for _, landing in landings do
++			if not landing.main and bridges < 2 and sameSide(landings[1], landing) and bridge(landings[1], landing) then
++				bridges += 1
++			end
++		end
++		for i, a in landings do
++			for j, b in landings do
++				if j > i and not a.main and not b.main and bridges < 3 and sameSide(a, b) then
++					local gap = dist(a.x, a.z, b.x, b.z) - a.r - b.r
++					if gap >= 2 and gap <= 12 and math.abs(a.h - b.h) <= 5 and bridge(a, b) then
++						bridges += 1
++					end
++				end
++			end
++		end
++
++		-- The marks: each landing's standard and its two wings, a ring of
++		-- columns out of the cloud round it, and braziers at its rim.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		for k, landing in landings do
++			local s = standards[k]
++			local wing = 2.4 * s.scale
++			table.insert(marks, {
++				sculpt = "domain_valkyrie_standard",
++				x = s.x,
++				z = s.z,
++				yaw = between(rng, -8, 8),
++				scale = s.scale,
++				sink = 0.2,
++			})
++			for _, side in { -1, 1 } do
++				table.insert(marks, {
++					sculpt = "domain_valkyrie_wing",
++					x = s.x + side * wing,
++					z = s.z,
++					yaw = (if side > 0 then 180 else 0) + between(rng, -6, 6),
++					scale = s.scale * (if landing.main then 0.9 else 0.75),
++					sink = 0.15,
++				})
++			end
++			-- Columns out on the cloud round the drum, standing taller than the
++			-- landing, so the platform reads as held up in a colonnade.
++			local count = whole(rng, 4, 7)
++			local first = between(rng, 0, 2 * math.pi)
++			local columnScale = (landing.h - CLOUD_BED + 7) / 50
++			for c = 1, count do
++				local a = first + (c - 1) * 2 * math.pi / count + between(rng, -0.12, 0.12)
++				local open = false
++				for _, way in landing.ways do
++					open = open or apart(a, way) < 0.55
++				end
++				if not open then
++					local cx = landing.x + math.cos(a) * (landing.r + 0.9)
++					local cz = landing.z + math.sin(a) * (landing.r + 0.9)
++					if inside(math.floor(cx + 0.5), math.floor(cz + 0.5)) then
++						table.insert(marks, {
++							sculpt = if rng:NextNumber() < 0.25 then "domain_column_broken" else "domain_column",
++							x = cx,
++							z = cz,
++							yaw = math.deg(a) + between(rng, -10, 10),
++							scale = columnScale * between(rng, 0.92, 1.04),
++							sink = 0.4,
++							solid = true,
++						})
++					end
++				end
++			end
++			-- A pair of low braziers on the rim, either side of the way on.
++			if landing.r >= 4 then
++				local way = landing.ways[1] or 0
++				for _, side in { -1, 1 } do
++					local a = way + side * 0.85
++					local bx = landing.x + math.cos(a) * (landing.r - 0.8)
++					local bz = landing.z + math.sin(a) * (landing.r - 0.8)
++					if inside(math.floor(bx + 0.5), math.floor(bz + 0.5)) then
++						table.insert(marks, {
++							sculpt = "domain_brazier_low",
++							x = bx,
++							z = bz,
++							yaw = math.deg(a) + 90,
++							scale = between(rng, 0.5, 0.62),
++							sink = 0.1,
++						})
++					end
++				end
++			end
++			-- The light comes down onto the great landing, and onto the highest
++			-- lesser one.
++			if landing.main or (k == 2 and landing.h >= 10) then
++				table.insert(effects, { recipe = "domain_valkyrie_descent", x = s.x, z = s.z, lift = 1 })
++			end
++		end
++
++		-- The road: in from the west border, along the causeway and over the
++		-- great landing, out at the east.
++		local road: { Point } = {}
++		for x = 1, w do
++			local last = road[#road]
++			if x == 1 or x == w or x == mainX or last == nil or x - last.x >= 3 then
++				table.insert(road, { x = x, z = zAt(x) })
++			end
++		end
++		if road[#road].x ~= w then
++			table.insert(road, { x = w, z = zAt(w) })
++		end
++		-- Keep every point on walkable ground: nudge it along the road's line.
++		for _, p in road do
++			for _ = 1, 8 do
++				local px, pz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++				if inside(px, pz) and walk[idx(px, pz)] then
++					break
++				end
++				p.z += if p.z > zAt(p.x) then 0.5 else -0.5
++			end
++		end
++
++		-- The photographs: the cluster from the cloud outside it, and the way
++		-- up from the causeway's west approach.
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = cellHeights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "the landings above the cloud",
++					from = { x = w + 5, z = d + 5, lift = 26 },
++					to = { x = mx, z = mz, lift = H + 2 },
++					fov = 58,
++				},
++				{
++					name = "up the processional way",
++					from = { x = -5, z = zA, lift = 8 },
++					to = { x = mx, z = mz, lift = H + 7 },
++					fov = 62,
++				},
++			},
++		}
++	end,
++}
++
++return feature

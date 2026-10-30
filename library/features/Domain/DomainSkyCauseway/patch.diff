@@ -1,0 +1,965 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..a517f40c 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainSkyCauseway = require("../systems/features/DomainSkyCauseway")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainSkyCauseway = DomainSkyCauseway,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index 490cc3f5..a0edd3bb 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1220,4 +1220,35 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (a trial, 2026-10-30): the arch that spans a sky-causeway.
++-- Two marble piers set on the balustrades, a lintel of pale stones, a gold
++-- keystone: the kit's arch drawn to the causeway's width, so its opening frames
++-- the road exactly and a procession walks beneath it. Its span is 20 studs, one
++-- causeway's deck and its parapets across. Cool pale stone, so its frame reads
++-- against the warm paving and the white cloud alike.
++Sculpts.domain_span_arch = {
++	kind = "arch",
++	size = { 28, 24, 6 },
++	material = "Marble",
++	-- Pale cool stone in two tones, and the gold keystone the arch kind crowns with.
++	colors = { { 214, 216, 220 }, { 196, 199, 206 }, { 230, 190, 110 } },
++	maxPrims = 12,
++	span = 20,
++}
++
++-- The Eternal Domain (a trial, 2026-10-30): a pier of the sky-causeway, standing
++-- out of the cloud sea against the road's flank: four marble drums in a square
++-- pier, their caps left rough, a gilded drum among them. Seeds turn the drums,
++-- so a row of piers never repeats. Placed with its top just under the deck at
++-- whatever height the sea and the road are at.
++Sculpts.domain_cloud_pier = {
++	kind = "columns",
++	size = { 7, 18, 7 },
++	material = "Marble",
++	colors = { { 214, 216, 220 }, { 196, 199, 206 }, { 230, 190, 110 } },
++	maxPrims = 10,
++	columns = 2,
++	jag = 0.06,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 23f351b2..24e91884 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2145,4 +2145,93 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain (a sky-causeway, 2026-10-30): the light in its sea of
++-- cloud. A slow sheet of cloud climbs out of the sea and drifts, gold motes
++-- rise through it, a faint sky-blue haze lies widest of all, and two soft
++-- lights glow from inside the cloud. Placed from below a causeway's deck (the
++-- marker's lift negative) so the road seems to float over a living sea; also
++-- good on any cloud bank. The core is a wide low sheet, not a column: it is
++-- the sea moving. Each sheet's particles travel as far as the gap to the next
++-- emitter (rise x life >= every), so the cloud never breaks into clumps, and
++-- the motes climb clear of a deck a few studs above.
++recipes.domain_cloud_glory = {
++	about = "The Eternal Domain's cloud sea lit from within: pale cloud climbing out of it, gold motes rising through, and a faint sky-blue haze.",
++	theme = "domain",
++	path = { kind = "worm", length = 44, step = 4, bend = 4, climb = 1, round = 3 },
++	layers = {
++		{
++			name = "cloud",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 14,
++				lift = 0.2,
++				toward = "up",
++				rise = 1.2,
++				life = { 8, 12 },
++				rate = 2,
++				size = 14,
++				tall = 1,
++				transparency = 0.9,
++				color = "core",
++				texture = "veil",
++				lean = 6,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 2.5, tilt = 5, span = 26, periods = { 13, 9 } },
++			priority = 1,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 6,
++				lift = 0.5,
++				toward = "up",
++				rise = 2.2,
++				life = { 4, 6 },
++				rate = 3,
++				size = 0.6,
++				tall = 2,
++				transparency = 0.25,
++				color = "gold",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 10, span = 16, periods = { 6, 4 } },
++			priority = 2,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 14,
++				thick = 18,
++				lift = 1.2,
++				toward = "up",
++				rise = 0.9,
++				life = { 18, 24 },
++				rate = 0.8,
++				size = 16,
++				tall = 0.9,
++				transparency = 0.94,
++				color = "sky",
++				texture = "veil",
++				lean = 4,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 3, tilt = 4, span = 36, periods = { 17, 11 } },
++			priority = 3,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 22, max = 2, range = 22, brightness = 0.9, color = "glow" },
++			motion = { kind = "pulse", period = 4.2, depth = 0.3 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0edeb33a..16633a40 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -426,6 +426,15 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's sky-causeway (a trial, 2026-10-30)
++	["sculpt:domain_span_arch"] = row(
++		"A tall ivory arch with a gold keystone spanning a sky-causeway of the Eternal Domain, its piers standing on the balustrades.",
++		MOOR
++	),
++	["sculpt:domain_cloud_pier"] = row(
++		"A pier of pale marble drums with a gilded drum, standing out of the Eternal Domain's cloud sea against a sky-causeway's flank.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainSkyCauseway.luau b/src/shared/systems/features/DomainSkyCauseway.luau
+new file mode 100644
+index 00000000..66acc53f
+--- /dev/null
++++ b/src/shared/systems/features/DomainSkyCauseway.luau
+@@ -0,0 +1,783 @@
++--!strict
++-- The Eternal Domain's sky-causeway: a narrow processional road of ivory paving crossing a
++-- sea of cloud on a high dyke, sheer drops to the white cloud on both sides, gold braziers
++-- set along the balustrades at every span, and tall gilded arches standing over the road.
++-- At its heart the road opens into a court: an open round dais, or a court with a walled
++-- shrine island and a gold-banded monolith. Small gilded trees stand on islets out in the
++-- cloud, and the sea itself glows (its set piece, domain_cloud_glory).
++--
++-- Its seeds differ in kind first (fafwa, 2026-10-30: topology before detail); the first
++-- draws choose the structure, the rest only dress it:
++--   1. the route: straight across, a swept S, a dogleg turning at the court, or a crossing
++--      with a side spur out to a belvedere ring over the cloud;
++--   2. the court: none (a narrow way all the way), an open round court, or a court with a
++--      walled shrine island (an obstruction to fight around);
++--   3. the deck: a gold line down its middle, bands across it, or plain ivory paving;
++--   4. the summit: flat, or a climb of three to five two-stud steps to a high dais;
++--   5. then the footprint, the crossings' angles, the arches (2 to 5), the cloud's depth,
++--      its islets, the braziers and the lit spans.
++-- Everything stands on the game's own domain kit plus one new arch, domain_span_arch.
++local DistanceField = require("../DistanceField")
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++local Noise = require("../Noise")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- Squared distance from (x, z) to a segment.
++local function segmentDist2(x: number, z: number, a: Point, b: Point): number
++	local dx, dz = b.x - a.x, b.z - a.z
++	local l2 = dx * dx + dz * dz
++	local t = if l2 > 1e-9 then math.clamp(((x - a.x) * dx + (z - a.z) * dz) / l2, 0, 1) else 0
++	local px, pz = a.x + dx * t, a.z + dz * t
++	return (x - px) ^ 2 + (z - pz) ^ 2
++end
++
++local ROUTES = { "straight", "sweep", "dogleg", "cross" }
++local COURTS = { "none", "round", "shrine" }
++local STYLES = { "plain", "banded", "gilded" }
++-- Side order: west, east, north, south. Outward unit vectors and their opposites.
++local OUTWARD = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } }
++local OPPOSITE = { 2, 1, 4, 3 }
++-- The balustrade's height over the deck, and so where anything standing on it stands.
++local PARAPET_LIFT = 2.4
++local DECK_HALF = 2 -- cells each side of the road's line: 16 studs across
++local BEL_R = 3.2 -- the belvedere terrace's radius, cells
++
++-- The causeway's own stone, inside B12: ivory marble and cobbles to value 0.92 and
++-- saturation 0.20, the gold inlay to saturation 0.55. Each material is one colour, as
++-- Terrain colours a material once for the whole place; the domain tileset's own
++-- Limestone, Sandstone and Snow keep its colours.
++local PAVING: FeatureDress.CellLook = {
++	-- A warm, trodden ivory, a tone off the domain's own marble so the processional
++	-- reads against the plain paving it joins.
++	ground = { material = "Cobblestone", color = { 214, 200, 172 } },
++	lift = 0.2,
++	clear = true,
++}
++local BAND: FeatureDress.CellLook = {
++	ground = { material = "Slate", color = { 206, 194, 168 } },
++	lift = 0.2,
++	clear = true,
++}
++local COURT: FeatureDress.CellLook = {
++	-- The court is polished pale ivory, brighter than the road and not the cloud's blue.
++	ground = { material = "Ice", color = { 226, 221, 208 } },
++	lift = 0.2,
++	clear = true,
++}
++local GOLD: FeatureDress.CellLook = {
++	ground = { material = "Salt", color = { 220, 184, 104 } },
++	lift = 0.3,
++	clear = true,
++}
++-- Holy light set in the paving under each arch: a small glowing cube on the road.
++local HOLY = { 255, 216, 140 }
++local LIT: FeatureDress.CellLook = {
++	ground = { material = "Ice", color = { 226, 221, 208 } },
++	lift = 0.2,
++	clear = true,
++	glow = { color = HOLY, range = 16, brightness = 1.3, every = 1, height = 0.9 },
++}
++local PARAPET: FeatureDress.CellLook = {
++	-- A cool pale slate-grey balustrade: the one shadowed grey on the road, so its edge
++	-- reads against both the warm paving and the white cloud.
++	ground = { material = "Concrete", color = { 186, 192, 204 } },
++	lift = PARAPET_LIFT,
++	clear = true,
++}
++local CLOUD: FeatureDress.CellLook = {
++	ground = { material = "Snow", color = { 232, 229, 222 } },
++	lift = 0.2,
++	clear = true,
++}
++-- Cloud in the sea's hollows, a shade cooler, so the sea rolls from above.
++local CLOUD_DEEP: FeatureDress.CellLook = {
++	ground = { material = "Glacier", color = { 218, 222, 228 } },
++	lift = 0.2,
++	clear = true,
++}
++local ISLET: FeatureDress.CellLook = {
++	ground = { material = "Sandstone", color = { 196, 186, 166 } },
++	lift = 0.3,
++	clear = true,
++}
++local SHRINE: FeatureDress.CellLook = {
++	ground = { material = "Limestone", color = { 202, 194, 178 } },
++	lift = 1.2,
++	clear = true,
++}
++
++local feature: MapFeature.Feature = {
++	name = "DomainSkyCauseway",
++	about = "A narrow ivory causeway crossing a sea of cloud on a high dyke, gold braziers along its balustrades and tall gilded arches over the road.",
++	tileset = "domain",
++	scale = "medium",
++	role = "crossing",
++	mood = { "monumental", "processional", "holy", "precarious" },
++	cells = {
++		paving = PAVING,
++		band = BAND,
++		court = COURT,
++		gold = GOLD,
++		lit = LIT,
++		parapet = PARAPET,
++		cloud = CLOUD,
++		cloudDeep = CLOUD_DEEP,
++		islet = ISLET,
++		shrine = SHRINE,
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-4: the structure, before a single dress draw.
++		local route = ROUTES[whole(rng, 1, #ROUTES)]
++		local courtKind = COURTS[whole(rng, 1, #COURTS)]
++		local style = STYLES[whole(rng, 1, #STYLES)]
++		local crest = if rng:NextNumber() < 0.2 then 0 else whole(rng, 3, 5)
++		local w, d = whole(rng, 30, 32), whole(rng, 30, 32)
++		local side = whole(rng, 1, 4)
++		local function onSide(s: number, at: number): Point
++			if s == 1 then
++				return { x = 1, z = at }
++			elseif s == 2 then
++				return { x = w, z = at }
++			elseif s == 3 then
++				return { x = at, z = 1 }
++			end
++			return { x = at, z = d }
++		end
++		-- Both ends land within a few cells of their side's middle, so the crossing always
++		-- passes over the footprint's heart where the game camera finds it.
++		local function coordAlong(s: number): number
++			local span = if s == 1 or s == 2 then d else w
++			return math.clamp(math.floor((span + 1) / 2 + between(rng, -7, 7) + 0.5), 8, span - 8)
++		end
++		local entry = onSide(side, coordAlong(side))
++		local exitSide: number
++		if route == "dogleg" then
++			local pair = if side == 1 or side == 2 then { 3, 4 } else { 1, 2 }
++			exitSide = pair[whole(rng, 1, 2)]
++		else
++			exitSide = OPPOSITE[side]
++		end
++		local exit = onSide(exitSide, coordAlong(exitSide))
++		-- The road's line: a straight, a swept bow, an L at the court, or a gentle bow
++		-- (the crossing) that will also carry a side spur.
++		local line: { Point } = {}
++		local corner: Point? = nil
++		if route == "dogleg" then
++			local verticalEntry = side == 1 or side == 2
++			corner = { x = if verticalEntry then exit.x else entry.x, z = if verticalEntry then entry.z else exit.z }
++			line = { entry, corner, exit }
++		else
++			local bow = if route == "sweep"
++				then between(rng, 3, 7) * (if rng:NextNumber() < 0.5 then -1 else 1)
++				else between(rng, 1.5, 4.5) * (if rng:NextNumber() < 0.5 then -1 else 1)
++			local dx, dz = exit.x - entry.x, exit.z - entry.z
++			local len = math.sqrt(dx * dx + dz * dz)
++			local ctrl = {
++				x = (entry.x + exit.x) / 2 - dz / len * bow * 2,
++				z = (entry.z + exit.z) / 2 + dx / len * bow * 2,
++			}
++			for k = 0, 48 do
++				local t = k / 48
++				local a, b, c = (1 - t) ^ 2, 2 * (1 - t) * t, t * t
++				table.insert(line, {
++					x = a * entry.x + b * ctrl.x + c * exit.x,
++					z = a * entry.z + b * ctrl.z + c * exit.z,
++				})
++			end
++		end
++		-- The line, sampled every half cell with its arc length.
++		local samples: { { x: number, z: number, s: number } } = {}
++		local total = 0
++		local function push(x: number, z: number)
++			if #samples > 0 then
++				local p = samples[#samples]
++				total += math.sqrt((x - p.x) ^ 2 + (z - p.z) ^ 2)
++			end
++			table.insert(samples, { x = x, z = z, s = total })
++		end
++		for k = 1, #line - 1 do
++			local a, b = line[k], line[k + 1]
++			local steps = math.max(1, math.ceil(math.sqrt((b.x - a.x) ^ 2 + (b.z - a.z) ^ 2) / 0.5))
++			local last = if k == #line - 1 then steps else steps - 1
++			for t = 0, last do
++				local u = t / steps
++				push(a.x + (b.x - a.x) * u, a.z + (b.z - a.z) * u)
++			end
++		end
++		-- Distance to the road's line, its arc position and heading.
++		local function nearest(x: number, z: number): (number, number, number)
++			local best, bs, bh = math.huge, 0, 0
++			for k = 1, #samples - 1 do
++				local a, b = samples[k], samples[k + 1]
++				local dx, dz = b.x - a.x, b.z - a.z
++				local l2 = dx * dx + dz * dz
++				local t = if l2 > 1e-9 then math.clamp(((x - a.x) * dx + (z - a.z) * dz) / l2, 0, 1) else 0
++				local px, pz = a.x + dx * t, a.z + dz * t
++				local dd = (x - px) ^ 2 + (z - pz) ^ 2
++				if dd < best then
++					best = dd
++					bs = a.s + (b.s - a.s) * t
++					bh = math.atan2(dz, dx)
++				end
++			end
++			return math.sqrt(best), bs, bh
++		end
++		local function atS(s: number): (Point, number)
++			for k = 1, #samples - 1 do
++				if s <= samples[k + 1].s then
++					local a, b = samples[k], samples[k + 1]
++					local t = if b.s > a.s then (s - a.s) / (b.s - a.s) else 0
++					return { x = a.x + (b.x - a.x) * t, z = a.z + (b.z - a.z) * t }, math.atan2(b.z - a.z, b.x - a.x)
++				end
++			end
++			local last, prev = samples[#samples], samples[#samples - 1]
++			return { x = last.x, z = last.z }, math.atan2(last.z - prev.z, last.x - prev.x)
++		end
++
++		-- The court, kept a cell clear of the footprint's border so no walkable border
++		-- cell ever sits up at the dais's height.
++		local courtR = if courtKind == "none"
++			then 0
++			elseif courtKind == "shrine" then between(rng, 5.6, 6.6)
++			else between(rng, 5, 6.2)
++		-- The court sits on the road over the footprint's middle, where the game camera
++		-- looks; a dogleg's court is its corner.
++		local heart: Point
++		if corner then
++			heart = { x = corner.x, z = corner.z }
++		else
++			local cx0, cz0 = (w + 1) / 2, (d + 1) / 2
++			local best, bestS = math.huge, 0
++			for _, sample in samples do
++				local dd = (sample.x - cx0) ^ 2 + (sample.z - cz0) ^ 2
++				if dd < best then
++					best, bestS = dd, sample.s
++				end
++			end
++			heart = atS(bestS)
++		end
++		if courtR > 0 then
++			local room = math.min(heart.x - 2, heart.z - 2, w - 1 - heart.x, d - 1 - heart.z)
++			courtR = math.max(math.min(courtR, room), 0)
++		end
++
++		-- The belvedere spur of a crossing: a side way out to a ring of stones.
++		local spur: { a: Point, b: Point }? = nil
++		local bel: Point? = nil
++		if route == "cross" then
++			local fs = between(rng, 0.28, 0.72)
++			local p, heading = atS(total * fs)
++			if courtR > 0 and (p.x - heart.x) ^ 2 + (p.z - heart.z) ^ 2 < (courtR + 4) ^ 2 then
++				fs = if fs < 0.5 then 0.8 else 0.2
++				p, heading = atS(total * fs)
++			end
++			local perp = { x = -math.sin(heading), z = math.cos(heading) }
++			local reach = between(rng, 5, 7)
++			local sign = if rng:NextNumber() < 0.5 then -1 else 1
++			local function fits(x: number, z: number): boolean
++				return x > BEL_R + 2 and x < w - BEL_R - 1 and z > BEL_R + 2 and z < d - BEL_R - 1
++			end
++			local ex, ez = p.x + perp.x * reach * sign, p.z + perp.z * reach * sign
++			if not fits(ex, ez) then
++				ex, ez = p.x - perp.x * reach * sign, p.z - perp.z * reach * sign
++			end
++			if fits(ex, ez) then
++				spur = { a = { x = p.x, z = p.z }, b = { x = ex, z = ez } }
++				bel = { x = ex, z = ez }
++			end
++		end
++
++		-- The shrine island: a walled plinth standing in the court off the road's side,
++		-- so the court is walked round it. It only stands when the court holds it whole,
++		-- a ring of walkable court still between it and the balustrade.
++		local island: Point? = nil
++		local islandCell = table.create(w * d, false)
++		if courtKind == "shrine" and courtR > 0 then
++			local _, heading = nearest(heart.x, heart.z)
++			local reach = between(rng, 3, math.max(3, courtR - 3))
++			local cx = math.floor(heart.x - math.sin(heading) * reach + 0.5)
++			local cz = math.floor(heart.z + math.cos(heading) * reach + 0.5)
++			local ok = true
++			for dz = -1, 1 do
++				for dx = -1, 1 do
++					local x, z = cx + dx, cz + dz
++					-- Wholly inside the court, clear of the border and never on the road's
++					-- own line: the processional passes it with the court still walkable round.
++					if
++						x < 2
++						or z < 2
++						or x > w - 1
++						or z > d - 1
++						or (x - heart.x) ^ 2 + (z - heart.z) ^ 2 > (courtR - 0.8) ^ 2
++						or nearest(x, z) < 2
++					then
++						ok = false
++					end
++				end
++			end
++			if ok then
++				island = { x = cx, z = cz }
++				for dz = -1, 1 do
++					for dx = -1, 1 do
++						islandCell[(cz + dz - 1) * w + cx + dx] = true
++					end
++				end
++			end
++		end
++
++		-- 4: the deck and its court, then the ground's heights.
++		local walk = table.create(w * d, false)
++		local routeS = table.create(w * d, 0)
++		local routeDist = table.create(w * d, 0)
++		local inCourt = table.create(w * d, false)
++		local inBel = table.create(w * d, false)
++		for z = 1, d do
++			for x = 1, w do
++				local i = (z - 1) * w + x
++				local dist, s = nearest(x, z)
++				routeS[i] = s
++				routeDist[i] = dist
++				inCourt[i] = courtR > 0 and (x - heart.x) ^ 2 + (z - heart.z) ^ 2 <= courtR ^ 2
++				inBel[i] = bel ~= nil and (x - bel.x) ^ 2 + (z - bel.z) ^ 2 <= BEL_R ^ 2
++				local onSpur = spur ~= nil and segmentDist2(x, z, spur.a, spur.b) <= 1.6 ^ 2
++				walk[i] = not islandCell[i] and (dist <= DECK_HALF or inCourt[i] or inBel[i] or onSpur)
++			end
++		end
++		local g = Grid.new(w, d, Grid.WALL)
++		local sources: { Grid.CellCoord } = {}
++		for i, ok in walk do
++			if ok then
++				g.cells[i] = Grid.FLOOR
++				local x, z = Grid.coords(g, i)
++				if x == 1 or z == 1 or x == w or z == d then
++					table.insert(sources, { x = x, z = z })
++				end
++			end
++		end
++		local heights = table.create(w * d, 0)
++		if #sources > 0 then
++			local field = DistanceField.fromCells(g, sources)
++			for i, ok in walk do
++				if ok then
++					local x, z = Grid.coords(g, i)
++					local border = x == 1 or z == 1 or x == w or z == d
++					heights[i] = if border then 0 else 2 * math.clamp(math.floor(field.distances[i] - 3), 0, crest)
++				end
++			end
++		end
++		-- The court is the summit dais. Then a relaxation pass carves the climb's steps,
++		-- so no two walkable neighbours are ever more than a step (2 studs) apart.
++		if courtR > 0 and crest > 0 then
++			for i, ok in walk do
++				if ok and inCourt[i] then
++					local x, z = Grid.coords(g, i)
++					if x > 1 and z > 1 and x < w and z < d then
++						heights[i] = crest * 2
++					end
++				end
++			end
++		end
++		for _ = 1, 16 do
++			local changed = false
++			for i, ok in walk do
++				if ok then
++					local x, z = Grid.coords(g, i)
++					for _, nb in Grid.NEIGHBOURS do
++						local nx, nz = x + nb[1], z + nb[2]
++						if Grid.inBounds(g, nx, nz) then
++							local j = (nz - 1) * w + nx
++							if walk[j] and heights[i] - heights[j] > 2 then
++								heights[i] = heights[j] + 2
++								changed = true
++							end
++						end
++					end
++				end
++			end
++			if not changed then
++				break
++			end
++		end
++
++		-- The balustrade: every wall cell that touches walkable ground, at its height.
++		local parapet = table.create(w * d, false)
++		for z = 1, d do
++			for x = 1, w do
++				local i = (z - 1) * w + x
++				if not walk[i] then
++					for _, nb in Grid.NEIGHBOURS do
++						local nx, nz = x + nb[1], z + nb[2]
++						if Grid.inBounds(g, nx, nz) then
++							local j = (nz - 1) * w + nx
++							if walk[j] then
++								parapet[i] = true
++								heights[i] = math.max(heights[i], heights[j])
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- 5: the dress. The cloud sea, its islets, the shrine island.
++		local nf = Noise.field(rng)
++		local cloudBase = -whole(rng, 10, 15)
++		-- The sea rolls in banks a few studs high and low; its hollows take the cooler
++		-- tone, so it reads as a sea from straight above, where no face shows.
++		local function cloudRoll(x: number, z: number): number
++			return Noise.sample(nf, x * 0.08, z * 0.08)
++		end
++		local function cloudAt(x: number, z: number): number
++			return math.max(-17, cloudBase + math.floor(cloudRoll(x, z) * 3 + 0.5))
++		end
++		local islet = table.create(w * d, false)
++		local isletTop = table.create(w * d, 0)
++		local islets: { Point } = {}
++		for _ = 1, whole(rng, 0, 3) do
++			for _ = 1, 40 do
++				local x, z = between(rng, 4, w - 4), between(rng, 4, d - 4)
++				local dr = nearest(x, z)
++				local dc = if courtR > 0 then math.sqrt((x - heart.x) ^ 2 + (z - heart.z) ^ 2) else math.huge
++				local ds = if spur then math.sqrt(segmentDist2(x, z, spur.a, spur.b)) else math.huge
++				if dr > 6.5 and dc > courtR + 4 and ds > 5 then
++					local r = between(rng, 1.5, 2.6)
++					local top = cloudAt(x, z) + between(rng, 3, 5)
++					local made = false
++					for zz = 1, d do
++						for xx = 1, w do
++							if (xx - x) ^ 2 + (zz - z) ^ 2 <= r ^ 2 and not walk[(zz - 1) * w + xx] then
++								local i = (zz - 1) * w + xx
++								islet[i] = true
++								isletTop[i] = top
++								made = true
++							end
++						end
++					end
++					if made then
++						table.insert(islets, { x = x, z = z })
++					end
++					break
++				end
++			end
++		end
++		-- The arches, before the painting, so their footing lights are paved in. An arch
++		-- that would stand in the court moves out to its shoulder, where the balustrade
++		-- runs and its piers have something to stand on.
++		local _, heartS = nearest(heart.x, heart.z)
++		local archCount = whole(rng, 2, 5)
++		local arches: { { p: Point, heading: number, s: number } } = {}
++		local archSs: { number } = {}
++		for k = 1, archCount do
++			local s = total * (k - 0.5) / archCount
++			if courtR > 0 and math.abs(s - heartS) < courtR + 3 then
++				s = heartS + (if s < heartS then -1 else 1) * (courtR + 3.5)
++			end
++			local p, heading = atS(s)
++			local clear = s > 4 and total - s > 4
++			for _, other in archSs do
++				if math.abs(other - s) < 4 then
++					clear = false
++				end
++			end
++			if
++				spur
++				and (
++					segmentDist2(p.x, p.z, spur.a, spur.b) < 5 ^ 2
++					or (p.x - bel.x) ^ 2 + (p.z - bel.z) ^ 2 < (BEL_R + 3) ^ 2
++				)
++			then
++				clear = false
++			end
++			if clear then
++				table.insert(archSs, s)
++				table.insert(arches, { p = p, heading = heading, s = s })
++			end
++		end
++		local litCell = table.create(w * d, false)
++		local marks: { FeatureDress.Landmark } = {}
++		for _, arch in arches do
++			table.insert(marks, {
++				sculpt = "domain_span_arch",
++				x = arch.p.x,
++				z = arch.p.z,
++				yaw = 90 - math.deg(arch.heading),
++				sink = -PARAPET_LIFT,
++				solid = true,
++			})
++			local x, z = math.floor(arch.p.x + 0.5), math.floor(arch.p.z + 0.5)
++			if Grid.inBounds(g, x, z) then
++				local i = (z - 1) * w + x
++				if walk[i] then
++					litCell[i] = true
++				end
++			end
++		end
++
++		-- The paving.
++		local kinds: { [number]: string } = {}
++		for z = 1, d do
++			for x = 1, w do
++				local i = (z - 1) * w + x
++				if walk[i] then
++					if inCourt[i] then
++						local rr = math.sqrt((x - heart.x) ^ 2 + (z - heart.z) ^ 2)
++						kinds[i] = if math.abs(rr - (courtR - 1.3)) < 0.9 then "gold" else "court"
++						if courtKind ~= "shrine" and rr < 1.2 then
++							kinds[i] = "gold"
++						end
++					elseif inBel[i] then
++						local rr = math.sqrt((x - bel.x) ^ 2 + (z - bel.z) ^ 2)
++						kinds[i] = if math.abs(rr - (BEL_R - 0.8)) < 0.5 then "gold" else "court"
++					elseif style == "gilded" and routeDist[i] < 0.8 then
++						kinds[i] = "gold"
++					elseif style == "banded" and math.floor(routeS[i] / 4) % 2 == 1 then
++						kinds[i] = "band"
++					else
++						kinds[i] = "paving"
++					end
++					if litCell[i] then
++						kinds[i] = "lit"
++					end
++				elseif island and math.abs(x - island.x) <= 1 and math.abs(z - island.z) <= 1 then
++					-- The shrine's plinth stands level with the court it rises from.
++					kinds[i] = "shrine"
++					local hx, hz = math.floor(heart.x + 0.5), math.floor(heart.z + 0.5)
++					heights[i] = heights[(hz - 1) * w + hx]
++				elseif parapet[i] then
++					kinds[i] = "parapet"
++				elseif islet[i] then
++					kinds[i] = "islet"
++					heights[i] = isletTop[i]
++				else
++					heights[i] = cloudAt(x, z)
++					kinds[i] = if cloudRoll(x, z) < -0.2 then "cloudDeep" else "cloud"
++				end
++			end
++		end
++
++		-- Braziers on the balustrades, paired between the arches and at the ends.
++		local brazierCells: { Point } = {}
++		local function nearestKind(tx: number, tz: number, kind: string, radius: number): Point?
++			local best, cell = math.huge, nil
++			local cx, cz = math.floor(tx + 0.5), math.floor(tz + 0.5)
++			for z = cz - math.ceil(radius), cz + math.ceil(radius) do
++				for x = cx - math.ceil(radius), cx + math.ceil(radius) do
++					if Grid.inBounds(g, x, z) then
++						local i = (z - 1) * w + x
++						if kinds[i] == kind then
++							local dd = (x - tx) ^ 2 + (z - tz) ^ 2
++							if dd < best then
++								best = dd
++								cell = { x = x, z = z }
++							end
++						end
++					end
++				end
++			end
++			return cell
++		end
++		for k = 0, archCount do
++			local p, heading = atS(math.clamp(total * k / archCount, 4, total - 4))
++			local perp = { x = -math.sin(heading), z = math.cos(heading) }
++			for sign = -1, 1, 2 do
++				local tx, tz = p.x + perp.x * 2.5 * sign, p.z + perp.z * 2.5 * sign
++				local cell = nearestKind(tx, tz, "parapet", 2)
++				if cell then
++					table.insert(marks, {
++						sculpt = "domain_brazier",
++						x = cell.x,
++						z = cell.z,
++						yaw = between(rng, 0, 360),
++						sink = -PARAPET_LIFT,
++					})
++					table.insert(brazierCells, { x = cell.x, z = cell.z })
++				end
++			end
++		end
++		-- The causeway's piers, standing out of the cloud against its flank, their tops
++		-- just under the deck: the road is carried over the sea, not a dyke through it.
++		for _, arch in arches do
++			local perp = { x = -math.sin(arch.heading), z = math.cos(arch.heading) }
++			local ax, az = math.floor(arch.p.x + 0.5), math.floor(arch.p.z + 0.5)
++			local deckH = if Grid.inBounds(g, ax, az) then heights[(az - 1) * w + ax] else 0
++			for sign = -1, 1, 2 do
++				local tx, tz = arch.p.x + perp.x * 3.75 * sign, arch.p.z + perp.z * 3.75 * sign
++				local cell = nearestKind(tx, tz, "cloud", 3) or nearestKind(tx, tz, "cloudDeep", 3)
++				if cell then
++					local cloudH = heights[(cell.z - 1) * w + cell.x]
++					local scale = math.clamp((deckH + 1.2 - cloudH) / 18, 0.45, 1.5)
++					table.insert(marks, {
++						sculpt = "domain_cloud_pier",
++						x = cell.x,
++						z = cell.z,
++						yaw = 90 - math.deg(arch.heading),
++						scale = scale,
++					})
++				end
++			end
++		end
++
++		-- The court's shrine monolith, and the belvedere's ring.
++		if island and courtR > 0 then
++			table.insert(marks, {
++				sculpt = "domain_waystone",
++				x = island.x,
++				z = island.z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.7, 0.9),
++				sink = -1.2,
++				solid = true,
++			})
++		end
++		if bel then
++			table.insert(marks, {
++				sculpt = "domain_wayring",
++				x = bel.x,
++				z = bel.z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.28, 0.36),
++				sink = -0.2,
++			})
++		end
++		-- The gilded trees out on their islets.
++		for _, isl in islets do
++			table.insert(marks, {
++				sculpt = "domain_gold_tree_low",
++				x = isl.x,
++				z = isl.z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.32, 0.46),
++				sink = -0.3,
++			})
++		end
++
++		-- The effects: the cloud sea's own light, and braziers alight.
++		local effects: { FeatureDress.Effect } = {}
++		for _ = 1, whole(rng, 2, 3) do
++			local p, heading = atS(total * between(rng, 0.15, 0.85))
++			local perp = { x = -math.sin(heading), z = math.cos(heading) }
++			local sign = if rng:NextNumber() < 0.5 then -1 else 1
++			local cell = nearestKind(
++				p.x + perp.x * between(rng, 5, 8) * sign,
++				p.z + perp.z * between(rng, 5, 8) * sign,
++				"cloud",
++				3
++			)
++			if cell then
++				table.insert(effects, { recipe = "domain_cloud_glory", x = cell.x, z = cell.z, lift = 0.4 })
++			end
++		end
++		for _ = 1, math.min(#brazierCells, whole(rng, 1, 3)) do
++			local pick = brazierCells[whole(rng, 1, #brazierCells)]
++			local dup = false
++			for _, e in effects do
++				if e.x == pick.x and e.z == pick.z then
++					dup = true
++				end
++			end
++			if not dup and #effects < MapFeature.MAX_EFFECTS then
++				table.insert(
++					effects,
++					{ recipe = "domain_brazier_fire", x = pick.x, z = pick.z, lift = PARAPET_LIFT + 11 }
++				)
++			end
++		end
++
++		-- The road: in at the border, along the line, out at the border. Any point off
++		-- the walkable ground (a court's shrine island) steps to the nearest cell of it.
++		local function settled(p: Point): Point
++			local x, z = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			if Grid.inBounds(g, x, z) and walk[(z - 1) * w + x] then
++				return p
++			end
++			for radius = 1, 3 do
++				for dz = -radius, radius do
++					for dx = -radius, radius do
++						local nx, nz = x + dx, z + dz
++						if Grid.inBounds(g, nx, nz) and walk[(nz - 1) * w + nx] then
++							return { x = nx, z = nz }
++						end
++					end
++				end
++			end
++			return p
++		end
++		local road: { Point } = {}
++		local steps = archCount * 3 + 4
++		for k = 0, steps do
++			local p = atS(total * k / steps)
++			if k == 0 or k == steps then
++				table.insert(road, { x = p.x, z = p.z })
++			else
++				table.insert(road, settled(p))
++			end
++		end
++
++		-- Stood back over the pad, looking down the procession to the court; and high
++		-- over the cloud sea, the whole crossing in its sea.
++		local out = OUTWARD[side]
++		local hx, hz = math.floor(heart.x + 0.5), math.floor(heart.z + 0.5)
++		local heartDeck = if Grid.inBounds(g, hx, hz) then heights[(hz - 1) * w + hx] else 0
++		-- The postcard: from high over the cloud sea, off the court's shoulder, the whole
++		-- crossing in its sea -- the court, the arches and the braziers all in one frame.
++		local aerial: MapFeature.Shot? = nil
++		local _, heartHeading = nearest(heart.x, heart.z)
++		local along = { x = math.cos(heartHeading), z = math.sin(heartHeading) }
++		local flank = { x = -math.sin(heartHeading), z = math.cos(heartHeading) }
++		for _, sign in { -1, 1 } do
++			local tx = heart.x + flank.x * 9 * sign - along.x * 5
++			local tz = heart.z + flank.z * 9 * sign - along.z * 5
++			local cell = nearestKind(tx, tz, "cloud", 2) or nearestKind(tx, tz, "cloudDeep", 2)
++			if cell and aerial == nil then
++				local cloudH = heights[(cell.z - 1) * w + cell.x]
++				aerial = {
++					name = "the crossing in its sea",
++					from = { x = cell.x, z = cell.z, lift = math.clamp(heartDeck + 26 - cloudH, 10, 50) },
++					to = { x = heart.x, z = heart.z, lift = 2 },
++					fov = 60,
++				}
++			end
++		end
++		local second: MapFeature.Shot = aerial
++			or {
++				name = "the crossing in its sea",
++				from = { x = entry.x + out[1] * 7, z = entry.z + out[2] * 7, lift = 16 },
++				to = { x = heart.x, z = heart.z, lift = 3 },
++				fov = 66,
++			}
++		local cameras: { MapFeature.Shot } = {
++			{
++				name = "down the procession",
++				from = { x = entry.x + out[1] * 7, z = entry.z + out[2] * 7, lift = 16 },
++				to = { x = heart.x, z = heart.z, lift = 3 },
++				fov = 62,
++			},
++			second,
++		}
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

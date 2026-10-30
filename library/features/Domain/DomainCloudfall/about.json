@@ -1,0 +1,28 @@
+{
+  "letter": "H",
+  "generator": "g11",
+  "run": "domain-features-1",
+  "intent": "The Domain's cloudfall: a paved terrace whose gilded brink breaks off over a sea of cloud, cloud pouring down past broken terraces, with god-columns drowned in the cloud and the road skirting the lip; its own gilded cell kind, balustrade and cloud-bank sculpts and two new domain set pieces make a place the game has not had.",
+  "variation": [
+    "sea border: north / east / west (never south: the game's camera looks north over a feature's middle)",
+    "bay: centre slid 0-9 cells along the shore, and its bite from a shallow cove to the middle of the map",
+    "brink: crescent / double cove / nose of land / fractured with 2-4 bites",
+    "broken terraces: 2-4 shelves, each its own width, fall and breaks",
+    "furniture: 0-3 colonnade runs of 2-5 piers, 0-2 ruined terrace walls of 6-12 cells with a gap, 1-3 falls"
+  ],
+  "critic": {
+    "idea": 7,
+    "photograph": 5,
+    "topology": 6,
+    "look": 5,
+    "camera": 5,
+    "usable": 6,
+    "total": 5.88,
+    "reads_as_itself": "partly: a balustraded terrace edge reads, but the drop reads as a ragged hole, not a sea of cloud",
+    "inorganic": 6,
+    "best_shot": "feature-whole-final, eye level seed 1: the curved terrace stepping down to the brink",
+    "why": "The idea the Domain most needs (an edge over cloud), but the edge is ragged and cluttered with shards, so it reads like a collapse."
+  },
+  "role": "Edge pieces for the platforms: the balustraded brink where a terrace stops over cloud, kept only once the edge is a clean line rather than a ragged hole.",
+  "notes": "# H: Cloudfall brink\n\nKeep: a terrace that ends at a gilded lip over open sky is exactly what the Domain needs to show its height, and the balustrade sculpt with its gold balusters is a good, crisp piece.\n\n1. The drop reads as a ragged black or blue hole in the ground, not a brink over a sea of cloud. Make the edge one long straight or cleanly curved lip with the balustrade running along it, and show pale cloud below rather than a void.\n2. The broken terraces and tall grey shards around the brink are chaotic and read as a rockfall. Fewer, larger pieces: a few clean stepped terraces going down, and whole columns standing up out of the cloud.\n3. The cloud bank sculpt reads as a heap of white boulders. Make it low, wide and flat-topped, or let the mist set piece carry the cloud alone.\n"
+}

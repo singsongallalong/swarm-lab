@@ -1,0 +1,823 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..f4e804c4 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,12 +2,14 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainBurningStair = require("../systems/features/DomainBurningStair")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	DomainBurningStair = DomainBurningStair,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index 490cc3f5..3cd30de9 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1220,4 +1220,20 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain's amphitheatre (the burning stair): the great fire bowl at
++-- the heart of its sunken arena. A wide, shallow chalice twenty-six studs
++-- across on three short legs, gold from the bowl to the foot, holding a dish of
++-- white-gold coals. The brazier kind paints the stand and bowl from its fourth
++-- colour and the coals from its fifth; the first three keep the Domain's ivory
++-- and pale gold. Deliberately wide and low, so from the game camera it reads as
++-- a ring of gold round a light, not as one more roadside brazier, and the
++-- pillar of holy fire (set piece domain_holy_pillar) rises out of its coals.
++Sculpts.domain_fire_bowl = {
++	kind = "brazier",
++	size = { 28, 9, 28 },
++	material = "Marble",
++	colors = { { 233, 226, 210 }, { 216, 208, 192 }, { 198, 189, 172 }, { 230, 188, 108 }, { 233, 228, 212 } },
++	maxPrims = 5,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 23f351b2..63bc45ce 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2145,4 +2145,101 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's amphitheatre (a burning stair): the pillar of holy fire
++-- that stands in the great fire bowl at the arena's heart. A tall, narrow
++-- column of white-gold flame climbing some thirty studs out of a slower gold
++-- body, gold rays rising through both, a handful of gilded sparks cracking off
++-- its crown and three warm lights breathing on the marble round it. Unlike the
++-- braziers' fire this is a pillar, so its emitters stack almost straight up: a
++-- short steep worm (a worm's climb only caps its pitch), the motes doing the
++-- climbing (rise x life about thirty studs) while the body and rays stay low
++-- so the column has width at its foot and burns thin at its crown (EF8). The
++-- path is short so the piece reads as one column, not a line, and the core's
++-- emitters stay few enough for a phone to keep the whole flame (EF3).
++recipes.domain_holy_pillar = {
++	about = "The pillar of holy fire at the heart of the Eternal Domain's amphitheatre: a white-gold column of flame in a gold body and rising rays, with gilded sparks.",
++	theme = "domain",
++	path = { kind = "worm", length = 5, step = 2, bend = 14, climb = 85, round = 1 },
++	layers = {
++		{
++			name = "core",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 1.6,
++				lift = 0.4,
++				toward = "up",
++				rise = 6.5,
++				life = { 3, 4 },
++				rate = 6,
++				size = 1.2,
++				tall = 4,
++				transparency = 0.35,
++				color = "core",
++				texture = "wisp",
++				lean = 3,
++				vary = 0.35,
++			},
++			motion = { kind = "sway", amplitude = 0.35, tilt = 5, span = 7, periods = { 2.3, 3.4 } },
++			priority = 1,
++		},
++		{
++			name = "body",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 3.5,
++				lift = 0.2,
++				toward = "up",
++				rise = 3.8,
++				life = { 3.6, 5 },
++				rate = 3.4,
++				size = 4,
++				tall = 2.4,
++				transparency = 0.75,
++				color = "gold",
++				texture = "smoke",
++				lean = 6,
++				vary = 0.45,
++			},
++			motion = { kind = "sway", amplitude = 1.1, tilt = 9, span = 9, periods = { 3.7, 5.3 } },
++			priority = 2,
++		},
++		{
++			name = "rays",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 6,
++				lift = 1,
++				toward = "up",
++				rise = 0.8,
++				life = { 5, 7 },
++				rate = 0.8,
++				size = 6,
++				tall = 2.6,
++				transparency = 0.92,
++				color = "gold",
++				texture = "rays",
++				lean = 4,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 1.4, tilt = 5, span = 12, periods = { 6.1, 8.7 } },
++			priority = 4,
++		},
++		{
++			name = "sparks",
++			look = { kind = "arcs", every = 5, pieces = 3, reach = 1.6, span = 2.4, width = 0.07, color = "gold" },
++			motion = { kind = "crackle", every = 0.18 },
++			priority = 5,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 6, max = 2, range = 24, brightness = 1.1, color = "glow" },
++			motion = { kind = "pulse", period = 3.4, depth = 0.28 },
++			priority = 3,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0edeb33a..a17bea48 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -426,6 +426,11 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's amphitheatre (the burning stair)
++	["sculpt:domain_fire_bowl"] = row(
++		"The Eternal Domain's great fire bowl: a wide gold chalice on three legs, heaped coals of white light at its heart.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainBurningStair.luau b/src/shared/systems/features/DomainBurningStair.luau
+new file mode 100644
+index 00000000..4efdfb4b
+--- /dev/null
++++ b/src/shared/systems/features/DomainBurningStair.luau
+@@ -0,0 +1,651 @@
++--!strict
++-- The Eternal Domain's amphitheatre: the burning stair. A long straight stair, its
++-- middle lane a gold runner of holy light, is cut down from the road through the
++-- gold-fronted seats of a sunken theatre into a broad marble arena; at the heart a
++-- great gold fire bowl holds the pillar of holy fire. A triumph arch straddles each
++-- stair head, braziers burn along the parapets, and the bowl is ringed with the
++-- Domain's ivory columns, waystones or braziers. This is the gods' reward: monumental,
++-- cold-perfect, a little terrible.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first,
++-- then look). The first draws choose the structure, the rest only dress it:
++--   1. the way in: one stair (the road down and back up a circuit of the fire), two
++--      opposite stairs (the road crosses the arena), or two crossed (it bends round);
++--   2. the bowl: round, an oval stretched along the main stair, or a squared court;
++--   3. the seats: three tiers, four, five, or three with a fallen sector of rubble
++--      that walks down to the arena; four footprints a side, always;
++--   4. the rim: open, a colonnade ring of columns, or ruined fragments on the paving;
++--   5. the heart: the fire bowl alone, ringed by standing waystones or by braziers.
++-- The stair comes in from any of the four sides, and the bowl's size, the stair's
++-- offset, the arc the road takes and every braziers' and column's place are drawn.
++-- Everything stands on the Domain's own kit (domain_* sculpts, the domain theme).
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++type MarkOpts = { yaw: number?, scale: number?, embed: number?, solid: boolean? }
++type Stair = { side: Point, lat: Point, off: number, uMax: number, uA: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- Radians between two angles, 0..pi.
++local function apart(a: number, b: number): number
++	return math.abs((a - b + math.pi) % (2 * math.pi) - math.pi)
++end
++
++local function deg(dx: number, dz: number): number
++	return math.deg(math.atan2(dx, dz))
++end
++
++local SHAPES = { "round", "oval", "squared" }
++local WAYS = { "single", "through", "crossed" }
++local SEATS = { "three", "four", "five", "broken" }
++local RIMS = { "open", "colonnade", "ruined" }
++local HEARTS = { "bowl", "ring", "braziers" }
++-- The four ways a stair comes in from a border, pointing out from the centre.
++local SIDES: { Point } = {
++	{ x = 0, z = -1 },
++	{ x = 0, z = 1 },
++	{ x = -1, z = 0 },
++	{ x = 1, z = 0 },
++}
++
++-- The Domain's own paving colour (Domain.luau's PAVING), so the plateau is the
++-- map's ground and not a second marble. Every other look takes a terrain material
++-- the tileset leaves free (Roblox colours a material once for the whole place).
++local CELLS: { [string]: FeatureDress.CellLook } = {
++	-- The ring of paving round the bowl, kept clear of the tileset's quiet props.
++	plateau = { ground = { material = "Marble", color = { 214, 208, 194 } }, clear = true },
++	-- The arena's broad floor: clean pale stone, a shade warmer than the paving.
++	arena = { ground = { material = "Concrete", color = { 226, 221, 208 } }, clear = true },
++	-- The gold rings inlaid in the floor and out on the paving: the precinct.
++	inlay = { ground = { material = "Rock", color = { 228, 190, 110 } }, clear = true },
++	-- The seats: ivory stone, and the gold front row of each tier.
++	seat = { ground = { material = "Cobblestone", color = { 214, 205, 188 } }, clear = true },
++	gild = { ground = { material = "Salt", color = { 224, 182, 104 } }, clear = true },
++	-- The stair treads and the parapets that hold its cut.
++	stair = { ground = { material = "Basalt", color = { 196, 186, 168 } }, clear = true },
++	parapet = {
++		ground = { material = "Slate", color = { 206, 198, 182 } },
++		clear = true,
++		lift = 1.2,
++	},
++	-- The theatre's outer wall, a step darker than the seats behind it.
++	wall = { ground = { material = "Ice", color = { 200, 192, 176 } }, clear = true, lift = 3.6 },
++	-- The road's lane down the stair and round the fire: a gold runner of light.
++	runner = {
++		ground = { material = "Glacier", color = { 234, 196, 112 } },
++		clear = true,
++		glow = { color = { 255, 226, 160 }, range = 22, brightness = 1.1, every = 16, height = 0.6 },
++	},
++	-- A fallen sector's rubble ramp down through the seats.
++	rubble = { ground = { material = "Sand", color = { 206, 196, 178 } }, clear = true },
++}
++
++local feature: MapFeature.Feature = {
++	name = "DomainBurningStair",
++	about = "The Eternal Domain's amphitheatre: a long gold-lit stair cut down through terraces of gilded seats into a sunken arena with a pillar of holy fire.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "centrepiece",
++	mood = { "monumental", "sunken", "holy", "burning", "theatre" },
++	cells = CELLS,
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1: the structure, first.
++		local shape = SHAPES[whole(rng, 1, #SHAPES)]
++		local way = WAYS[whole(rng, 1, #WAYS)]
++		local seatStyle = SEATS[whole(rng, 1, #SEATS)]
++		local rim = RIMS[whole(rng, 1, #RIMS)]
++		local heart = HEARTS[whole(rng, 1, #HEARTS)]
++		local main = SIDES[whole(rng, 1, #SIDES)]
++
++		-- 2: the size, and the bowl the seats are cut into.
++		local w = 2 * whole(rng, 22, 28)
++		local d = 2 * whole(rng, 22, 28)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		local tiers = if seatStyle == "three" or seatStyle == "broken" then 3 elseif seatStyle == "four" then 4 else 5
++		-- Kept above the offline preview's deepest drawn ground (18 studs), or the
++		-- arena's own floor falls out of the picture; the game builds it either way.
++		local rise = math.min(if seatStyle == "broken" then 3.6 else between(rng, 3.1, 3.7), 15.6 / tiers)
++		local depth = tiers * rise
++		local mX = whole(rng, 7, 9)
++		local mZ = whole(rng, 7, 9)
++		local rx = w / 2 - mX
++		local rz = d / 2 - mZ
++		if shape == "oval" then
++			-- Stretched along the main stair, so the long way in is longer still.
++			if math.abs(main.x) > 0.5 then
++				rx = math.min(w / 2 - 6, rx + 1.5)
++				rz = math.max(7, rz - 2)
++			else
++				rz = math.min(d / 2 - 6, rz + 1.5)
++				rx = math.max(7, rx - 2)
++			end
++		end
++		local expo = if shape == "squared" then 4 else 2
++		-- The arena's share of the bowl's radius: a broken ring is made thick
++		-- enough that its rubble ramp stays within a walkable step all the way.
++		local arenaFrac = if seatStyle == "broken"
++			then math.clamp(1 - depth * 0.98 / 1.9 / math.min(rx, rz), 0.32, 0.58)
++			else between(rng, 0.48, 0.58)
++
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function metric(x: number, z: number): number
++			local ex = math.abs(x - cx) / rx
++			local ez = math.abs(z - cz) / rz
++			if expo == 4 then
++				return (ex ^ 4 + ez ^ 4) ^ 0.25
++			end
++			return math.sqrt(ex * ex + ez * ez)
++		end
++		-- How far out the bowl's lip lies along world angle `a`, in cells.
++		local function rimRadius(a: number): number
++			local c, s = math.cos(a), math.sin(a)
++			local last = 0
++			local r = 0
++			while r < math.max(w, d) do
++				if metric(cx + c * r, cz + s * r) <= 1 then
++					last = r
++				else
++					break
++				end
++				r += 0.25
++			end
++			return last
++		end
++
++		-- The stairs: a straight cut, five cells wide, from a border to the arena.
++		local function latOf(side: Point): Point
++			return { x = -side.z, z = side.x }
++		end
++		local function uMaxOf(side: Point): number
++			return if math.abs(side.x) > 0.5 then w / 2 - 0.5 else d / 2 - 0.5
++		end
++		local function pointAt(side: Point, lat: Point, u: number, v: number): Point
++			return { x = cx + side.x * u + lat.x * v, z = cz + side.z * u + lat.z * v }
++		end
++		local stairs: { Stair } = {}
++		local function addStair(side: Point, off: number)
++			local lat = latOf(side)
++			local uMax = uMaxOf(side)
++			local uA = 0
++			local u = 0
++			while u <= uMax do
++				local p = pointAt(side, lat, u, off)
++				if metric(p.x, p.z) <= arenaFrac then
++					uA = u
++				else
++					break
++				end
++				u += 0.25
++			end
++			table.insert(stairs, { side = side, lat = lat, off = off, uMax = uMax, uA = math.min(uA, uMax - 2) })
++		end
++		local off1 = (if rng:NextNumber() < 0.5 then -1 else 1) * (0.5 + whole(rng, 0, 2))
++		addStair(main, off1)
++		if way == "through" then
++			addStair({ x = -main.x, z = -main.z }, -off1)
++		elseif way == "crossed" then
++			local perp = if rng:NextNumber() < 0.5 then { x = -main.z, z = main.x } else { x = main.z, z = -main.x }
++			addStair(perp, (if rng:NextNumber() < 0.5 then -1 else 1) * (0.5 + whole(rng, 0, 2)))
++		end
++		local function stairHeight(s: Stair, x: number, z: number): number?
++			local dx, dz = x - cx, z - cz
++			local u = dx * s.side.x + dz * s.side.z
++			local v = dx * s.lat.x + dz * s.lat.z
++			if math.abs(v - s.off) > 2.49 then
++				return nil
++			end
++			if u < s.uA - 1e-6 or u > s.uMax + 1e-6 then
++				return nil
++			end
++			local t = (s.uMax - u) / math.max(s.uMax - s.uA, 0.001)
++			return -depth * math.clamp(t, 0, 1)
++		end
++
++		-- 3: the bowl: arena, terraced seats (gold at each tier's front), paving.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local m = metric(x, z)
++				if m <= arenaFrac then
++					walk[i] = true
++					heights[i] = -depth
++					kinds[i] = "arena"
++				elseif m <= 1 then
++					walk[i] = false
++					heights[i] = -depth
++					local band = math.clamp((m - arenaFrac) / (1 - arenaFrac), 0, 1) * tiers
++					local tier = math.min(tiers - 1, math.floor(band))
++					kinds[i] = if band - tier < 0.5 then "gild" else "seat"
++					lifts[i] = depth * (tier + 1) / tiers
++				else
++					walk[i] = true
++					heights[i] = 0
++					kinds[i] = "plateau"
++				end
++			end
++		end
++
++		-- 4: a fallen sector or two, walked down through the seats as rubble.
++		if seatStyle == "broken" then
++			local ramps: { { a: number, half: number } } = {}
++			local rampCount = whole(rng, 1, 2)
++			local stairAngles: { number } = {}
++			for _, s in stairs do
++				local mouth = pointAt(s.side, s.lat, s.uA, s.off)
++				table.insert(stairAngles, math.atan2(mouth.z - cz, mouth.x - cx))
++			end
++			for _ = 1, 16 do
++				if #ramps >= rampCount then
++					break
++				end
++				local a = between(rng, 0, 2 * math.pi)
++				local ok = true
++				for _, sa in stairAngles do
++					ok = ok and apart(a, sa) > 0.7
++				end
++				for _, r in ramps do
++					ok = ok and apart(a, r.a) > 1.1
++				end
++				if ok then
++					table.insert(ramps, { a = a, half = 2.3 / (arenaFrac * math.min(rx, rz)) })
++				end
++			end
++			for z = 1, d do
++				for x = 1, w do
++					local m = metric(x, z)
++					if m > arenaFrac and m <= 1 then
++						local a = math.atan2(z - cz, x - cx)
++						for _, r in ramps do
++							if apart(a, r.a) < r.half then
++								local i = at(x, z)
++								walk[i] = true
++								heights[i] = -depth * 0.96 * (1 - m) / (1 - arenaFrac)
++								kinds[i] = "rubble"
++								lifts[i] = nil
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- 5: the stairs cut through seats and paving alike.
++		for _, s in stairs do
++			for z = 1, d do
++				for x = 1, w do
++					local h = stairHeight(s, x, z)
++					if h then
++						local i = at(x, z)
++						walk[i] = true
++						heights[i] = h
++						kinds[i] = "stair"
++						lifts[i] = nil
++					end
++				end
++			end
++		end
++		-- Their parapets: the paving either side of a deep cut is walled up to a
++		-- low gilded lip, so the stair reads as a stair and not a slope.
++		for _, s in stairs do
++			for z = 1, d do
++				for x = 1, w do
++					local h = stairHeight(s, x, z)
++					if h and h < -1.2 then
++						for _, sideSign in { -3, 3 } do
++							local nx, nz = x + s.lat.x * sideSign, z + s.lat.z * sideSign
++							if nx >= 1 and nx <= w and nz >= 1 and nz <= d then
++								local j = at(nx, nz)
++								if walk[j] and math.abs(heights[j] - h) > 1.6 then
++									walk[j] = false
++									kinds[j] = "parapet"
++									heights[j] = h
++									lifts[j] = -h + 1.2
++								end
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- 6: the theatre's outer wall: a thick ring of stone standing over the
++		-- paving, broken where a stair comes through, so the bowl has a face.
++		local wallLift = between(rng, 3, 4.6)
++		local band = 2.3 / math.min(rx, rz)
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local m = metric(x, z)
++				if m > 1 and m <= 1 + band and kinds[i] == "plateau" and walk[i] then
++					walk[i] = false
++					kinds[i] = "wall"
++					heights[i] = 0
++					lifts[i] = wallLift
++				end
++			end
++		end
++		-- The precinct: a gold ring inlaid in the paving round the wall.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local m = metric(x, z)
++				if m > 1 + band + 0.02 and m <= 1 + band + 0.09 and kinds[i] == "plateau" and walk[i] then
++					kinds[i] = "inlay"
++				end
++			end
++		end
++
++		-- 7: the dais and its gold ring, the fire's footing in the arena.
++		local arenaR = arenaFrac * math.min(rx, rz)
++		local daisR = math.clamp(between(rng, 2.9, 3.3), 2.4, arenaR - 3)
++		local ringR = daisR + 0.8
++		local rr = math.min(ringR + 1.9, arenaR - 1.1)
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local dist = math.sqrt((x - cx) ^ 2 + (z - cz) ^ 2)
++				if walk[i] and kinds[i] == "arena" then
++					if dist <= daisR then
++						kinds[i] = "gild"
++						heights[i] = -depth + 1
++					elseif dist > daisR + 1.1 and dist <= daisR + 1.7 then
++						kinds[i] = "inlay"
++					end
++				end
++			end
++		end
++
++		-- 8: the road: in off the border, down the stair, round the fire, and out.
++		local function liftAt(x: number, z: number): number
++			local cx2 = math.clamp(math.floor(x + 0.5), 1, w)
++			local cz2 = math.clamp(math.floor(z + 0.5), 1, d)
++			local i = at(cx2, cz2)
++			local kind = kinds[i]
++			local look = if kind then CELLS[kind] else nil
++			return lifts[i] or (if look then look.lift else nil) or 0
++		end
++		local entry = stairs[1]
++		local leave = stairs[#stairs]
++		local function mouthOf(s: Stair): Point
++			return pointAt(s.side, s.lat, s.uA - 0.9, s.off)
++		end
++		local p1 = mouthOf(entry)
++		local p2 = mouthOf(leave)
++		local a1 = math.atan2(p1.z - cz, p1.x - cx)
++		local a2 = math.atan2(p2.z - cz, p2.x - cx)
++		local sweep = (a2 - a1 + math.pi) % (2 * math.pi) - math.pi
++		if way == "single" then
++			sweep = (if rng:NextNumber() < 0.5 then 1 else -1) * (2 * math.pi - between(rng, 0.8, 1.2))
++		elseif rng:NextNumber() < 0.5 then
++			sweep = -sweep
++		end
++		local road: { Point } = {}
++		local function alongStair(s: Stair, fromU: number, toU: number, steps: number)
++			for k = 0, steps do
++				table.insert(road, pointAt(s.side, s.lat, fromU + (toU - fromU) * k / steps, s.off))
++			end
++		end
++		alongStair(entry, entry.uMax, entry.uA + 0.5, 5)
++		table.insert(road, p1)
++		local arcSteps = math.max(3, math.ceil(math.abs(sweep) / 0.4))
++		for k = 1, arcSteps do
++			local a = a1 + sweep * k / arcSteps
++			table.insert(road, { x = cx + math.cos(a) * rr, z = cz + math.sin(a) * rr })
++		end
++		table.insert(road, p2)
++		alongStair(leave, leave.uA + 0.5, leave.uMax, 5)
++		-- Every point must stand on walkable ground: nudge it in toward the arena.
++		for _, p in road do
++			for _ = 1, 12 do
++				local px, pz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++				if px >= 1 and px <= w and pz >= 1 and pz <= d and walk[at(px, pz)] then
++					break
++				end
++				p.x += (cx - p.x) * 0.08
++				p.z += (cz - p.z) * 0.08
++			end
++		end
++		-- The gold runner follows the road in: a lit lane down the stair and round
++		-- the fire, so the way through reads from the high camera.
++		for k = 2, #road do
++			local a, b = road[k - 1], road[k]
++			local n = math.max(1, math.ceil(math.max(math.abs(b.x - a.x), math.abs(b.z - a.z)) * 4))
++			for step = 0, n do
++				local t = step / n
++				local px, pz = math.floor(a.x + (b.x - a.x) * t + 0.5), math.floor(a.z + (b.z - a.z) * t + 0.5)
++				if px >= 1 and px <= w and pz >= 1 and pz <= d then
++					local i = at(px, pz)
++					local kind = kinds[i]
++					if walk[i] and (kind == "arena" or kind == "stair" or kind == "plateau") then
++						kinds[i] = "runner"
++						-- On a tread the lane is three cells broad, so the stair's
++						-- gold reads from the high camera and not as a thread.
++						if kind == "stair" then
++							for _, nb in Grid.NEIGHBOURS do
++								local nx, nz = px + nb[1], pz + nb[2]
++								if nx >= 1 and nx <= w and nz >= 1 and nz <= d then
++									local j = at(nx, nz)
++									if kinds[j] == "stair" and heights[j] == heights[i] then
++										kinds[j] = "runner"
++									end
++								end
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- A pocket the bowl's cuts shut off would split the walkable ground; wall
++		-- it and leave it as stone.
++		local g = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		Grid.keepLargestRegion(g)
++		for i, cell in g.cells do
++			if cell == Grid.WALL and walk[i] then
++				walk[i] = false
++				kinds[i] = kinds[i] or "seat"
++				lifts[i] = lifts[i] or 0
++			end
++		end
++
++		-- 9: what stands in it. Sunk onto the surface they stand on, lifted cells
++		-- and all.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local function mark(sculpt: string, x: number, z: number, opts: MarkOpts?)
++			local o = opts or {}
++			table.insert(marks, {
++				sculpt = sculpt,
++				x = x,
++				z = z,
++				yaw = o.yaw or 0,
++				scale = o.scale or 1,
++				sink = (o.embed or 0.2) - liftAt(x, z),
++				solid = if o.solid ~= nil then o.solid else true,
++			})
++		end
++		local function fire(recipe: string, x: number, z: number, lift: number)
++			table.insert(effects, { recipe = recipe, x = x, z = z, lift = lift })
++		end
++
++		-- The heart: the great bowl of holy fire.
++		local bowlScale = between(rng, 0.8, 0.92)
++		mark("domain_fire_bowl", cx, cz, { scale = bowlScale, yaw = between(rng, 0, 360) })
++		fire("domain_holy_pillar", cx, cz, 11 * bowlScale)
++		if heart == "ring" then
++			for k = 1, 6 do
++				local a = (k - 1) / 6 * 2 * math.pi + between(rng, 0.1, 0.4)
++				local x, z = cx + math.cos(a) * ringR, cz + math.sin(a) * ringR
++				mark("domain_waystone", x, z, {
++					yaw = deg(cx - x, cz - z),
++					scale = between(rng, 0.6, 0.7),
++				})
++			end
++		elseif heart == "braziers" then
++			for k = 1, 4 do
++				local a = (k - 1) / 4 * 2 * math.pi + between(rng, 0.2, 0.6)
++				local x, z = cx + math.cos(a) * ringR, cz + math.sin(a) * ringR
++				mark("domain_brazier_high", x, z, { yaw = between(rng, 0, 360), scale = between(rng, 0.85, 0.95) })
++				if k <= 2 then
++					fire("domain_brazier_fire", x, z, 13)
++				end
++			end
++		end
++
++		-- A triumph arch over each stair head, its holy light in the throat, and
++		-- two braziers on the paving beside it.
++		for _, s in stairs do
++			local arch = pointAt(s.side, s.lat, s.uMax - 3.5, s.off)
++			mark("domain_triumphal_arch", arch.x, arch.z, {
++				yaw = deg(-s.side.x, -s.side.z),
++				scale = between(rng, 1.12, 1.26),
++				solid = false,
++			})
++			fire("domain_gate_glory", arch.x, arch.z, 2.5)
++			for _, sideSign in { -1, 1 } do
++				local beside = pointAt(s.side, s.lat, s.uMax - 2.2, s.off + sideSign * 4.6)
++				mark("domain_brazier_low", beside.x, beside.z, {
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.7, 0.85),
++				})
++				local tree = pointAt(s.side, s.lat, s.uMax - 2.5, s.off + sideSign * 8)
++				mark("domain_gold_tree_low", tree.x, tree.z, {
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.72, 0.88),
++				})
++			end
++		end
++
++		-- 10: the rim.
++		local function nearAStair(a: number, margin: number): boolean
++			for _, s in stairs do
++				local mouth = pointAt(s.side, s.lat, s.uA, s.off)
++				if apart(a, math.atan2(mouth.z - cz, mouth.x - cx)) < margin then
++					return true
++				end
++			end
++			return false
++		end
++		if rim == "colonnade" then
++			local count = whole(rng, 9, 13)
++			local first = between(rng, 0, 2 * math.pi)
++			for k = 1, count do
++				local a = first + (k - 1) / count * 2 * math.pi
++				local radius = rimRadius(a) * between(rng, 1.07, 1.14)
++				local x, z = cx + math.cos(a) * radius, cz + math.sin(a) * radius
++				if not nearAStair(a, 0.34) then
++					mark("domain_column", x, z, { yaw = between(rng, 0, 360), scale = between(rng, 0.42, 0.54) })
++				end
++			end
++		elseif rim == "ruined" then
++			local count = whole(rng, 2, 3)
++			local placed = 0
++			for _ = 1, 18 do
++				if placed >= count then
++					break
++				end
++				local a = between(rng, 0, 2 * math.pi)
++				local radius = rimRadius(a) * between(rng, 1.08, 1.22)
++				local px = math.floor(cx + math.cos(a) * radius + 0.5)
++				local pz = math.floor(cz + math.sin(a) * radius + 0.5)
++				local bw, bd = whole(rng, 2, 4), whole(rng, 2, 4)
++				local ok = not nearAStair(a, 0.4)
++				for dz = 0, bd - 1 do
++					for dx = 0, bw - 1 do
++						local x, z = px + dx, pz + dz
++						local inside = x >= 3 and z >= 3 and x <= w - 2 and z <= d - 2
++						if not inside or kinds[at(x, z)] ~= "plateau" or not walk[at(x, z)] or metric(x, z) < 1.03 then
++							ok = false
++						end
++					end
++				end
++				if ok then
++					local lift = between(rng, 0.9, 2.4)
++					for dz = 0, bd - 1 do
++						for dx = 0, bw - 1 do
++							local i = at(px + dx, pz + dz)
++							walk[i] = false
++							kinds[i] = "parapet"
++							lifts[i] = lift
++						end
++					end
++					mark("domain_column_fallen", px + bw / 2, pz + bd / 2, {
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 1.2, 1.7),
++					})
++					placed += 1
++				end
++			end
++		else
++			for k = 1, 4 do
++				local a = (k - 1) / 4 * 2 * math.pi + between(rng, 0.2, 0.6)
++				local radius = rimRadius(a) * 1.09
++				local x, z = cx + math.cos(a) * radius, cz + math.sin(a) * radius
++				if not nearAStair(a, 0.3) then
++					mark("domain_brazier_high", x, z, { yaw = between(rng, 0, 360), scale = between(rng, 1, 1.15) })
++				end
++			end
++		end
++
++		-- The stair's own braziers, up on the parapets, so the descent burns.
++		for _, s in stairs do
++			for _, u in { s.uMax - 8, s.uMax - 13 } do
++				if u > s.uA + 1.5 then
++					for _, sideSign in { -1, 1 } do
++						local p = pointAt(s.side, s.lat, u, s.off + sideSign * 3)
++						mark("domain_brazier_low", p.x, p.z, { scale = between(rng, 0.5, 0.62) })
++					end
++				end
++			end
++		end
++
++		-- The camera: from the top of the seats across the arena, the near gold
++		-- tiers for a foreground, the fire at the centre and the stair's arch
++		-- standing over it beyond.
++		local backA = math.atan2(-entry.side.z, -entry.side.x) + between(rng, -0.5, 0.5)
++		local backR = rimRadius(backA) * between(rng, 0.88, 0.96)
++		local eyeX, eyeZ = cx + math.cos(backA) * backR, cz + math.sin(backA) * backR
++		local eyeI = at(math.clamp(math.floor(eyeX + 0.5), 1, w), math.clamp(math.floor(eyeZ + 0.5), 1, d))
++		local eyeLift = between(rng, 7, 10) - heights[eyeI]
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "across the fire, from the seats",
++					from = { x = eyeX, z = eyeZ, lift = eyeLift },
++					to = { x = cx, z = cz, lift = 7 },
++					fov = 64,
++				},
++			},
++		}
++	end,
++}
++
++return feature

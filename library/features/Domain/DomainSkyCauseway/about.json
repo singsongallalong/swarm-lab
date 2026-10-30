@@ -1,0 +1,28 @@
+{
+  "letter": "K",
+  "generator": "g00",
+  "run": "domain-features-1",
+  "intent": "A narrow ivory processional road carried across a sea of cloud on a high dyke on tall gilded arches, with gold braziers along its slate balustrades at every span, a gold-ringed court at its summit and islets adrift in the cloud below.",
+  "variation": [
+    "route: straight across / swept S / dogleg turning at the court / crossing with a belvedere spur",
+    "court: none (a narrow way) / an open round court / a court with a walled shrine island and a gold-banded monolith",
+    "road style: plain ivory paving / transverse bands / a gold processional line down its middle",
+    "summit: flat / a three- to five-step climb to a high dais, and the court's gold ring or centre medallion",
+    "spans: 2-5 tall gilded arches, each with piers in the cloud and a brazier pair between; 0-3 gold-tree islets and 2-3 lit spans"
+  ],
+  "critic": {
+    "idea": 7,
+    "photograph": 8,
+    "topology": 7,
+    "look": 6,
+    "camera": 6,
+    "usable": 8,
+    "total": 7.15,
+    "reads_as_itself": "yes: a causeway over cloud through repeated arches and braziers to a ringed court",
+    "inorganic": 9,
+    "best_shot": "feature-shots-final, row 3 left: down the processional through the arch and the stair",
+    "why": "The most usable and most varied road piece, strongly axial; cold slate-grey stone and cloud that reads as paving keep it from the holy look."
+  },
+  "role": "The main-route crossing: the causeway that carries the road between platforms over cloud, ending at its ringed court.",
+  "notes": "# K: Sky causeway\n\nKeep: a processional road through repeated arches, braziers at each span, to a gold-ringed summit court: strong axial perspective, real variety of road shape across seeds, and it plays as a road from the start.\n\n1. The arches and balustrades are cold slate-grey, which reads as a castle on a moor. Make them ivory with gold keystones and bands; keep grey nowhere in it.\n2. The cloud on either side reads as white stone paving. Lower it well below the deck and break it into soft, flat sheets so the road visibly hangs over a drop.\n3. The braziers are three-legged stools. Mount the bowls on short square pillars set into the balustrade so they read as part of the architecture.\n"
+}

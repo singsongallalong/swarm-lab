@@ -1,0 +1,28 @@
+{
+  "letter": "F",
+  "generator": "g02",
+  "run": "domain-features-1",
+  "intent": "A five-tier ivory-and-gold ziggurat whose road climbs broad axial stairs to a great gold brazier burning on the crown, standing on a sea of cloud: the game's first stepped ascent, with cloud moats and causeways, stair kerbs, gold-banded tiers and a crown fire of its own.",
+  "variation": [
+    "plan: open marble court / cloud-flanked ridge / round temple on a round court / cloud moat with causeways",
+    "ascent: a single axial stair / twin stairs with the road crossing the crown diagonally / a road that turns at the crown and leaves east, plus 0-2 further whole staircases and sometimes a flank stair",
+    "crown: the great brazier on a gold dais / ringed by waystones / in a colonnade of columns / on the bare summit",
+    "heights: even four-stud tiers / even six-stud tiers / a tier-by-tier mix, with the court flush or sunk two studs",
+    "look: ivory, white or gold stone, with the gold banding of the risers on or off"
+  ],
+  "critic": {
+    "idea": 6,
+    "photograph": 6,
+    "topology": 5,
+    "look": 6,
+    "camera": 5,
+    "usable": 7,
+    "total": 5.8,
+    "reads_as_itself": "yes: a stepped square terrace pyramid to a brazier, with cloud lumps at the corners",
+    "inorganic": 9,
+    "best_shot": "feature-shots-final, column 1: three-quarter of the nested terraces with the brazier on top",
+    "why": "Rigorously architectural, but too shallow to feel like an ascent at eye level; the crown brazier is a stool and dead trees leak in from the moor."
+  },
+  "role": "A landmark ascent: the stepped ziggurat as a summit or a waypoint seen across the cloud, once its tiers are taller.",
+  "notes": "# F: Ziggurat of the crown fire\n\nKeep: nested square terraces climbing to a crown on an axial stair are as architectural as a feature gets, and the round variant in some seeds is a welcome surprise.\n\n1. The terraces are too low to read as a ziggurat from the eye-level shots: they flatten into a grey stair-floor. Fewer, taller tiers (three tall steps rather than five shallow ones), with gold-banded risers that catch the eye, will sell the ascent.\n2. The great brazier is a three-legged stool. Seat the bowl on a stepped pedestal or a square plinth with a gold rim, sized for the crown, so the climb ends in a monument and not furniture.\n3. Bare dead trees show on the pad's edge in the eye-level shots, and the cloud banks read as icy boulders. Remove the trees from the feature's dressing, and flatten the cloud into low, wide sheets ringing the base so the ziggurat stands in cloud, not among rocks.\n"
+}

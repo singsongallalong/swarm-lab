@@ -1,0 +1,29 @@
+{
+  "letter": "B",
+  "generator": "g10",
+  "run": "domain-features-1",
+  "intent": "A sunken amphitheatre of the gods: a long gold-lit stair cut down through terraces of gilded seats into a broad arena, with a great gold fire bowl holding a pillar of holy fire at its heart, so the approach itself is the ceremony.",
+  "variation": [
+    "way in: one stair (the road down and back round the fire) / two opposite stairs (the road crosses the arena) / two crossed stairs (it bends round the fire)",
+    "bowl: round / an oval stretched along the main stair / a squared great court",
+    "seats: three tiers / four / five / three with a fallen sector walked down through the seats as rubble",
+    "rim: open / a colonnade ring of ivory columns / ruined fragments and fallen drums on the paving",
+    "heart: the great fire bowl alone / ringed by six standing waystones / ringed by four braziers",
+    "the stair's side (north, south, east or west), its lateral offset, the footprint (44 to 56 cells a side) and the arc the road takes round the fire"
+  ],
+  "critic": {
+    "idea": 7,
+    "photograph": 7,
+    "topology": 5,
+    "look": 5,
+    "camera": 7,
+    "usable": 7,
+    "total": 6.4,
+    "reads_as_itself": "yes: an amphitheatre stepping down to a central bowl under a pillar of light",
+    "inorganic": 9,
+    "best_shot": "feature-shots-final, column 2: down the gold-checkered stair into the arena with the bowl",
+    "why": "Clean, symmetrical, unmistakably built; held back by one bowl layout across seeds and a fire bowl that reads as a table."
+  },
+  "role": "A side court and event arena: the amphitheatre for a boss or a gathering, reached down its processional stair.",
+  "notes": "# B: Amphitheatre of the gods\n\nKeep: the concentric gold-and-ivory tiers stepping down to a round arena are clean, symmetrical and unmistakably built. The checkered paving and the stair cut through the seats are right for the Domain.\n\n1. The fire bowl reads as a round caf\u00e9 table on three splayed legs. Give it a solid stepped pedestal or a ring of short columns under the bowl, and set it on a raised dais, so it reads as an altar that holds a pillar of fire.\n2. The seeds are one bowl in different sizes and ovalness. Vary the plan: half-bowls open on one side to a drop, two arenas joined by the stair, the stair coming in from a corner, so the road meets it differently each time.\n3. The grey stone gate frame on the rim is weathered, menhir-grey and leans. Make it ivory and gold, square and plumb, and use it as a proper entrance at the top of the processional stair.\n"
+}

@@ -1,0 +1,28 @@
+{
+  "letter": "E",
+  "generator": "g05",
+  "run": "domain-features-1",
+  "intent": "A cluster of round marble landings raised on sheer drums out of a sea of cloud, joined by stairs off a processional causeway and by short bridges, each ringed with gilded columns and crowned with a gold cross between two gilded wing-fans, with holy light falling onto the great landing: a place the game has not got, made of its own geometry (heights, drums, kerbed cloud basin), its own winged standard and its own descent of light.",
+  "variation": [
+    "plan: a chain of landings strung along the road / a ring flanking the great landing / twin pairs facing each other across it / a cluster gathered off one shoulder of the road",
+    "lesser landings: two to four, each placed by the plan, its side of the road and its distance out, and dropped where it will not fit",
+    "heights: an ascent along the road / a crown of low ones round a high great landing / alternating high and low, all clamped by the length a stair can climb",
+    "cloud wells: none, one or two landings have a round pit of cloud sunk in the floor, a wall island that changes the plan's obstructions",
+    "road and cloud: the road's bend and width, and the cloud sea's depth (a shallow haze or a deep bank, in different height bands)"
+  ],
+  "critic": {
+    "idea": 8,
+    "photograph": 8,
+    "topology": 7,
+    "look": 6,
+    "camera": 5,
+    "usable": 6,
+    "total": 7.23,
+    "reads_as_itself": "yes: round landings on drums over a void, joined by stairs and bridges, crowned by gold spires",
+    "inorganic": 8,
+    "best_shot": "feature-whole-final, eye level: stairs climbing to the great landing with its spire against the sky",
+    "why": "Height, drops into the void and a skyline: a new kind of place. Crosses read Christian, wings read as a slab, and landing tops are cluttered from the game camera."
+  },
+  "role": "A main-route hub: a cluster of raised landings where the road branches, giving the Domain its skyline and its height.",
+  "notes": "# E: Valkyrie landings\n\nKeep: round landings on drums of different heights, joined by stairs and bridges over a pale void, with spires on the skyline: real height, a place the game hasn't got, and the eye-level shot of stairs climbing to the great spire is the best photograph in the run.\n\n1. The gold crosses read as Christian wayside crosses, not Valhalla, and the wing sculpt reads as a toppled gold slab, not wings. Swap the cross for a spear, an eagle-topped standard or a tall gold blade, and splay the wing shafts outward in a clear fan so the silhouette says \"wings\".\n2. The landing tops are crowded with lumpy gold blocks and walls, which from the game camera reads as clutter (the right-hand shots are a jumble). Clear the tops to clean ivory floors with a ring of columns at the edge, and keep the detail on the rims.\n3. The drums' sides read as rough grey fill. Make them sheer ivory cylinders with gold bands so the drop into cloud reads as masonry rising out of it.\n"
+}
