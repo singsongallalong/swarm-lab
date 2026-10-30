@@ -20,15 +20,16 @@ same area look, so colour alone tells you little.
 
 ## Score each candidate, 0 to 10 on each
 
-1. **The photograph (weight 4).** Take its single best shot as a photo. Is it novel, a place
+1. **The photograph (weight 3).** Take its single best shot as a photo. Is it novel, a place
    this game hasn't shown? Does it have a subject, a foreground, depth, a skyline, scale
    (something that towers or falls away)? Would someone stop scrolling? Empty frames, a
    camera inside a wall, a slab filling the view, or a flat field of ground score low.
 2. **Not the moor (weight 2.5).** Could any seed be taken for REF repainted: a flat bowl with
    a band of ground round a winding road, ruins and boulders sprinkled? Ground of its own
    making, real height and a shape of its own score high.
-3. **Scale and journey (weight 1.5).** Is it big, does the road go somewhere through changing
-   ground, are the three seeds different maps of one place?
+3. **Seeds and journey (weight 2.5).** In its twelve-seed sheet (`map-seeds`): different
+   layouts, paths and obstructions from seed to seed (most), and each visually distinct;
+   does the road go somewhere through changing ground?
 4. **The effect (weight 1).** Does its environment effect, and where it stands, make the place
    live, or is it decoration?
 5. **Playable (weight 1).** Open ground to fight on; nothing broken (slivers of floor, rims

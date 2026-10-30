@@ -11,10 +11,18 @@ index 524e8e18..73070c18 100644
  	},
  	["sound cues and the soundboard's candidates (docs/guides/sound.md)"] = {
 diff --git a/scripts/dresspreview.luau b/scripts/dresspreview.luau
-index b006907a..913f0302 100644
+index b006907a..f3795aa1 100644
 --- a/scripts/dresspreview.luau
 +++ b/scripts/dresspreview.luau
-@@ -53,6 +53,8 @@ local KitDraw = require("./render/KitDraw")
+@@ -39,6 +39,7 @@
+ -- are `whole`, a site kind it reserves (`ruin`, `graveyard`...), and `landmark`, the
+ -- first landmark the draft places itself, and `shots`, the whole map seen from the
+ -- (up to three) cameras the draft chooses itself (DraftedMap.Shot), its photographs.
++-- `seedsheet` draws every seed from above, small and four to a row, to judge variety.
+ local fs = require("@lune/fs")
+ local process = require("@lune/process")
+ local serde = require("@lune/serde")
+@@ -53,6 +54,8 @@ local KitDraw = require("./render/KitDraw")
  local Label = require("./render/Label")
  local LightingPresets = require("../src/shared/data/LightingPresets")
  local MapDress = require("../src/shared/systems/MapDress")
@@ -23,7 +31,7 @@ index b006907a..913f0302 100644
  local MapPlan = require("../src/shared/systems/MapPlan")
  local OutdoorTilesets = require("../src/shared/data/OutdoorTilesets")
  local OutdoorTypes = require("../src/shared/OutdoorTypes")
-@@ -197,13 +199,19 @@ end
+@@ -197,13 +200,19 @@ end
  local args: { string } = {}
  local lookName: string? = nil
  local draftName: string? = nil
@@ -43,7 +51,7 @@ index b006907a..913f0302 100644
  	else
  		table.insert(args, a)
  	end
-@@ -230,7 +238,26 @@ elseif lookName then
+@@ -230,7 +239,26 @@ elseif lookName then
  	end
  end
  local draft: DraftedMap.Draft? = nil
@@ -71,6 +79,75 @@ index b006907a..913f0302 100644
  	draft = DraftedMaps[draftName]
  	if not draft then
  		local names = {}
+@@ -312,10 +340,18 @@ local preset = if look and look.lighting then LightingPresets[look.lighting] els
+ if preset and preset.atmosphere then
+ 	haze = { color = preset.atmosphere.color, distance = 120 / preset.atmosphere.density }
+ end
+-local target = Raster.target(VIEWS, seeds, CELL, BACKGROUND)
++-- `seedsheet` (with layout= or feature=): every seed from straight above, four to a row
++-- and small, so a generator that repeats one layout shows it at a glance (MapVariety).
++local SHEET_COLS, SHEET_CELL = 4, 360
++local seedsheet = kind == "seedsheet" and draft ~= nil
++local target = if seedsheet
++	then Raster.target(SHEET_COLS, math.ceil(seeds / SHEET_COLS), SHEET_CELL, BACKGROUND)
++	else Raster.target(VIEWS, seeds, CELL, BACKGROUND)
+ for row = 0, seeds - 1 do
+ 	local seed = first + row
+-	local rng = TestRng.seeded(seed) :: any
++	-- Drafted layouts and features pick their structure with their first draws, so they
++	-- get TestRng.mixed (seeded's first draws barely move between small seeds).
++	local rng = (if draft then TestRng.mixed(seed) else TestRng.seeded(seed)) :: any
+ 	local townish = kind == "town"
+ 		or kind == "gate"
+ 		or kind == "tower"
+@@ -511,7 +547,7 @@ for row = 0, seeds - 1 do
+ 			site = around(mark.x / CS, mark.z / CS, 20)
+ 		end
+ 	end
+-	local wholeish = kind == "whole" or (kind == "shots" and draft ~= nil)
++	local wholeish = kind == "whole" or ((kind == "shots" or kind == "seedsheet") and draft ~= nil)
+ 	if wholeish then
+ 		-- Out to the first cells of a gorge's far wall, past its gap (A049).
+ 		local hills = tileset.beyond.hills
+@@ -583,7 +619,7 @@ for row = 0, seeds - 1 do
+ 		end
+ 	end
+ 	local span = math.max(w.x1 - w.x0, w.z1 - w.z0)
+-	local scale = CELL * (if wholeish then 0.85 else 0.62) / span
++	local scale = (if seedsheet then SHEET_CELL else CELL) * (if wholeish then 0.85 else 0.62) / span
+ 	-- Eyes stand on the ground at the leg's end, not at the map's zero.
+ 	local gy = if leg then MapDress.groundAt(dressing, leg.x, leg.z) else 0
+ 	local views: { Raster.View } = if leg
+@@ -593,6 +629,7 @@ for row = 0, seeds - 1 do
+ 			Raster.lookAt("ahead", { 0, gy + 5.5, 0 }, { leg.dx * 30, gy + 3, leg.dz * 30 }),
+ 			{ name = "top", forward = { 0, -1, 0 }, up = { 0, 0, -1 } },
+ 		}
++		elseif seedsheet then { { name = "top", forward = { 0, -1, 0 }, up = { 0, 0, -1 } } }
+ 		elseif kind == "shots" and draft then (function(): { Raster.View }
+ 			local cx, cz = (w.x0 + w.x1) / 2, (w.z0 + w.z1) / 2
+ 			local out: { Raster.View } = {}
+@@ -700,14 +737,18 @@ for row = 0, seeds - 1 do
+ 		}
+ 		else {}
+ 	for col, v in views do
+-		local frame = { view = v, col = col - 1, row = row, scale = scale, haze = haze }
++		local fcol, frow = col - 1, row
++		if seedsheet then
++			fcol, frow = row % SHEET_COLS, row // SHEET_COLS
++		end
++		local frame = { view = v, col = fcol, row = frow, scale = scale, haze = haze }
+ 		Raster.prims(target, frame, prims)
+ 		-- The sheet's top and bottom both mix in, so each takes half its opacity.
+ 		Raster.prims(target, frame, water, nil, 1 - math.sqrt(sheet.transparency))
+ 		Label.draw(
+ 			target.canvas,
+-			(col - 1) * CELL + 6,
+-			row * CELL + 6,
++			fcol * target.cell + 6,
++			frow * target.cell + 6,
+ 			`{if ash then "ash-" else ""}{kind}{if lookName then ` ({lookName})` else ""} seed {seed} {v.name}`
+ 		)
+ 	end
 diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
 new file mode 100644
 index 00000000..5aad1106
@@ -280,10 +357,10 @@ index a66bc460..25b079d1 100644
  			end
 diff --git a/src/shared/systems/MapFeature.luau b/src/shared/systems/MapFeature.luau
 new file mode 100644
-index 00000000..008a73e1
+index 00000000..285dc91f
 --- /dev/null
 +++ b/src/shared/systems/MapFeature.luau
-@@ -0,0 +1,368 @@
+@@ -0,0 +1,371 @@
 +--!strict
 +-- Map features (swarm-lab's features job, docs/feature-library.md): one structure of a
 +-- map, made and judged on its own and assembled into maps later. A frozen fall, a
@@ -549,7 +626,7 @@ index 00000000..008a73e1
 +-- The feature alone on a pad of plain walkable ground, a cliff rim round it: a
 +-- DraftedMap.Draft, so dresspreview (`layout=` through `feature=`) and
 +-- MapTrial.drafted draw it like any map. Its shots are the feature's own cameras
-+-- and an eye-level view in along its road.
++-- and the game camera over its middle.
 +function MapFeature.asDraft(feature: Feature): DraftedMap.Draft
 +	local pad = MapFeature.PAD
 +	local stamped: { [any]: Stamped } = setmetatable({}, { __mode = "k" }) :: any
@@ -610,12 +687,15 @@ index 00000000..008a73e1
 +				end
 +			end
 +		end
-+		local eyeFrom = road[1]
++		-- The game's own camera over the feature's middle (pitch 50, 35 studs back,
++		-- CameraTuning), which always sees it; an eye-level shot from the road's end
++		-- came back blocked or empty too often (rimeholt-features, 2026-10-30).
 +		local centre = { x = fp.width / 2 + pad + 1.5, z = fp.depth / 2 + pad + 1.5 }
++		local back = 35 * math.cos(math.rad(50)) / Terrain.cellSize
 +		table.insert(s.cameras, {
-+			name = "in along the road",
-+			from = { x = eyeFrom.x, z = eyeFrom.z, lift = 6 },
-+			to = { x = centre.x, z = centre.z, lift = 4 },
++			name = "the game camera over it",
++			from = { x = centre.x, z = centre.z + back, lift = 35 * math.sin(math.rad(50)) },
++			to = { x = centre.x, z = centre.z, lift = 0 },
 +		})
 +		stamped[map] = s
 +		return map
@@ -652,19 +732,207 @@ index 00000000..008a73e1
 +end
 +
 +return MapFeature
+diff --git a/src/shared/systems/MapVariety.luau b/src/shared/systems/MapVariety.luau
+new file mode 100644
+index 00000000..dbd22b22
+--- /dev/null
++++ b/src/shared/systems/MapVariety.luau
+@@ -0,0 +1,176 @@
++--!strict
++-- How different a generator's seeds are, measured (swarm-lab: features and drafted maps
++-- kept repeating one layout per seed). fafwa (2026-10-30) ranks the axes:
++--   1. topology: different layouts, branching paths, several obstructions;
++--   2. look: does each seed read as visually distinct.
++-- Pure: a footprint or map in, a signature out; two signatures in, distances out.
++local Grid = require("./Grid")
++
++local MapVariety = {}
++
++-- What a generator's seeds must reach (MapFeatures and DraftedMaps specs): the mean
++-- topology distance over six seeds, and the closest two seeds' (no near-copies).
++-- Calibrated on rimeholt-features (2026-10-30), where the critic called the features
++-- under these "one layout repeated" (0.00 to 0.18) and the ones over them varied.
++MapVariety.MIN_TOPOLOGY = 0.3
++MapVariety.MIN_CLOSEST = 0.12
++MapVariety.MIN_LOOK = 0.05
++
++-- The coarse grid layouts are compared on, cells a side: fine enough for a shape,
++-- coarse enough that a wall moved one cell isn't a new layout.
++MapVariety.COARSE = 12
++-- Wall islands (walls not touching the border) smaller than this many cells are clutter,
++-- not obstructions.
++MapVariety.MIN_OBSTRUCTION = 6
++
++export type Signature = {
++	occupancy: { number }, -- COARSE x COARSE shares of walkable ground, 0..1
++	obstructions: number, -- wall islands inside the walkable ground
++	kinds: { [string]: number }, -- share of cells by painted kind ("plain" for none)
++	lifts: { number }, -- share of cells in lift bands: 0, (0, 4], (4, 12], (12, 30], > 30
++	levels: number, -- distinct walkable heights
++}
++
++-- `walk[i]` true where walkable; `kinds[i]` a painted kind or nil; `lifts[i]` studs;
++-- `heights[i]` studs. Index = (z - 1) * width + x.
++function MapVariety.signature(
++	width: number,
++	depth: number,
++	walk: { boolean },
++	kinds: { [number]: string },
++	lifts: { [number]: number },
++	heights: { number }
++): Signature
++	local n = MapVariety.COARSE
++	local sums, counts = table.create(n * n, 0), table.create(n * n, 0)
++	for i = 1, width * depth do
++		local x, z = (i - 1) % width + 1, (i - 1) // width + 1
++		local cx = math.min(n, math.floor((x - 1) / width * n) + 1)
++		local cz = math.min(n, math.floor((z - 1) / depth * n) + 1)
++		local c = (cz - 1) * n + cx
++		counts[c] += 1
++		if walk[i] then
++			sums[c] += 1
++		end
++	end
++	local occupancy = table.create(n * n, 0)
++	for c = 1, n * n do
++		occupancy[c] = if counts[c] > 0 then sums[c] / counts[c] else 0
++	end
++	-- Obstructions: wall regions that don't touch the border.
++	local g = Grid.new(width, depth, Grid.WALL)
++	for i, w in walk do
++		-- Flip: walls become floor, so Grid.regions finds wall islands.
++		g.cells[i] = if w then Grid.WALL else Grid.FLOOR
++	end
++	local obstructions = 0
++	for _, region in Grid.regions(g) do
++		if #region >= MapVariety.MIN_OBSTRUCTION then
++			local border = false
++			for _, i in region do
++				local x, z = Grid.coords(g, i)
++				if x == 1 or z == 1 or x == width or z == depth then
++					border = true
++					break
++				end
++			end
++			if not border then
++				obstructions += 1
++			end
++		end
++	end
++	local total = width * depth
++	local kindShares: { [string]: number } = {}
++	local bands = { 0, 0, 0, 0, 0 }
++	local seen: { [number]: boolean } = {}
++	local levels = 0
++	for i = 1, total do
++		local k = kinds[i] or "plain"
++		kindShares[k] = (kindShares[k] or 0) + 1 / total
++		local l = lifts[i] or 0
++		local b = if l <= 0 then 1 elseif l <= 4 then 2 elseif l <= 12 then 3 elseif l <= 30 then 4 else 5
++		bands[b] += 1 / total
++		if walk[i] then
++			local h = math.floor(heights[i] + 0.5)
++			if not seen[h] then
++				seen[h] = true
++				levels += 1
++			end
++		end
++	end
++	return {
++		occupancy = occupancy,
++		obstructions = obstructions,
++		kinds = kindShares,
++		lifts = bands,
++		levels = levels,
++	}
++end
++
++-- Topology distance, 0 (same layout) to 1: how much of the coarse layout differs, plus
++-- a share for a different count of obstructions or of walkable levels.
++function MapVariety.topology(a: Signature, b: Signature): number
++	local diff, n = 0, #a.occupancy
++	for c = 1, n do
++		diff += math.abs(a.occupancy[c] - b.occupancy[c])
++	end
++	local layout = diff / n
++	local counts = 0
++	if a.obstructions ~= b.obstructions then
++		counts += 1
++	end
++	if a.levels ~= b.levels then
++		counts += 1
++	end
++	return math.min(1, layout * 2 + counts * 0.1)
++end
++
++-- Look distance, 0 to 1: how differently the cells divide among kinds and lift bands.
++function MapVariety.look(a: Signature, b: Signature): number
++	local kinds = 0
++	local all: { [string]: boolean } = {}
++	for k in a.kinds do
++		all[k] = true
++	end
++	for k in b.kinds do
++		all[k] = true
++	end
++	for k in all do
++		kinds += math.abs((a.kinds[k] or 0) - (b.kinds[k] or 0))
++	end
++	local lifts = 0
++	for i = 1, 5 do
++		lifts += math.abs(a.lifts[i] - b.lifts[i])
++	end
++	return math.min(1, (kinds + lifts) / 2)
++end
++
++export type Spread = {
++	topology: number, -- mean pairwise topology distance
++	look: number, -- mean pairwise look distance
++	closest: { a: number, b: number, topology: number }, -- the most alike pair, by topology
++}
++
++-- The spread over a set of seeds' signatures (index = seed).
++function MapVariety.spread(sigs: { Signature }): Spread
++	local t, l, pairs = 0, 0, 0
++	local closest = { a = 1, b = 2, topology = math.huge }
++	for i = 1, #sigs do
++		for j = i + 1, #sigs do
++			local d = MapVariety.topology(sigs[i], sigs[j])
++			t += d
++			l += MapVariety.look(sigs[i], sigs[j])
++			pairs += 1
++			if d < closest.topology then
++				closest = { a = i, b = j, topology = d }
++			end
++		end
++	end
++	return {
++		topology = if pairs > 0 then t / pairs else 0,
++		look = if pairs > 0 then l / pairs else 0,
++		closest = closest,
++	}
++end
++
++return MapVariety
 diff --git a/src/shared/systems/features/RimeholtFrozenFall.luau b/src/shared/systems/features/RimeholtFrozenFall.luau
 new file mode 100644
-index 00000000..db748c37
+index 00000000..93a88f83
 --- /dev/null
 +++ b/src/shared/systems/features/RimeholtFrozenFall.luau
-@@ -0,0 +1,116 @@
+@@ -0,0 +1,199 @@
 +--!strict
-+-- The worked example for the features job: a frozen waterfall in Rimeholt's colours.
-+-- A wall of dark granite crosses the footprint; through a notch in it a fall hangs
-+-- frozen mid-drop, its columns of ice highest at the lip and stepping down to a
-+-- sheet of pale ice at its foot, where a cold glow breathes under the surface. The
-+-- road skirts the pool and climbs through the gap beside the fall. Its photograph is
-+-- taken from the far shore of the pool, low, looking up the fall.
++-- The worked example for the features job: frozen waterfalls in Rimeholt's colours. A
++-- wall of dark granite crosses the footprint; through notches in it falls hang frozen
++-- mid-drop, their columns highest at the lip and stepping down to sheets of pale ice at
++-- their feet, where a cold glow breathes. The road climbs through a gap beside them.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first, then
++-- look). The first draws choose the structure, the rest only dress it:
++--   1. the wall's shape: a straight wall, a bend (an L from the top edge), or a straight
++--      wall with twin falls;
++--   2. its size and where the wall and the road's gap stand;
++--   3. how many granite outcrops (0 to 3) block the snow below;
++--   4. per fall: its width, height and how many steps it takes down.
 +local DraftedMap = require("../DraftedMap")
 +local MapFeature = require("../MapFeature")
 +
@@ -672,25 +940,30 @@ index 00000000..db748c37
 +	return lo + (hi - lo) * rng:NextNumber()
 +end
 +
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local SHAPES = { "straight", "bend", "twin" }
++
 +local feature: MapFeature.Feature = {
 +	name = "RimeholtFrozenFall",
-+	about = "A waterfall frozen mid-drop through a notch in a granite wall, over a sheet of glowing ice.",
++	about = "Waterfalls frozen mid-drop through a granite wall, over sheets of glowing ice.",
 +	palette = "Rimeholt",
 +	scale = "medium",
 +	role = "centrepiece",
 +	mood = { "frozen", "tall", "glowing", "still" },
 +	cells = {
-+		-- Columns of fall ice, lifted per cell (a draft's own lifts).
++		-- Columns of fall ice, lifted per cell (a draft's own lifts). Marble, which the
++		-- tileset leaves free, so the falls can be paler than its glacier.
 +		fall = {
-+			-- Marble, which the tileset leaves free, so the fall can be paler than its
-+			-- far glacier: up to the bible's accent value.
 +			ground = { material = "Marble", color = { 82, 98, 100 } },
 +			clear = true,
 +			glow = { color = { 120, 200, 200 }, range = 10, brightness = 0.8, every = 6, height = 2 },
 +		},
-+		-- The granite wall the fall breaks through.
++		-- The granite wall the falls break through, and the outcrops below it.
 +		wall = { ground = { material = "Basalt", color = { 50, 54, 62 } }, clear = true, lift = 14 },
-+		-- The frozen pool at its foot: walkable, a hair over the snow.
++		-- Frozen pools at their feet: walkable, a hair over the snow.
 +		pool = {
 +			ground = { material = "Ice", color = { 60, 72, 74 } },
 +			lift = 0.3,
@@ -699,50 +972,125 @@ index 00000000..db748c37
 +		},
 +	} :: { [string]: DraftedMap.CellLook },
 +	generate = function(rng: Random): MapFeature.Footprint
-+		local w, d = 26, 22
++		-- 1-2: the structure, first.
++		local shape = SHAPES[whole(rng, 1, #SHAPES)]
++		local w, d = whole(rng, 22, 30), whole(rng, 20, 28)
 +		local walk, heights, kinds, lifts = table.create(w * d, true), table.create(w * d, 0), {}, {}
 +		local function at(x: number, z: number): number
 +			return (z - 1) * w + x
 +		end
-+		local wallZ = math.floor(between(rng, 7, 9))
-+		local notch = math.floor(between(rng, 9, 15))
-+		local fallW = math.floor(between(rng, 4, 6))
-+		local gap = notch + fallW + 2 -- the road's way through, beside the fall
-+		local lip = between(rng, 16, 22)
-+		for x = 1, w do
-+			for z = wallZ, wallZ + 1 do
-+				local i = at(x, z)
-+				if x >= gap and x <= gap + 2 then
-+					continue -- the gap
-+				end
-+				walk[i] = false
-+				if x >= notch and x < notch + fallW then
-+					kinds[i] = "fall"
-+					lifts[i] = lip
-+				else
-+					kinds[i] = "wall"
-+					lifts[i] = 12 + math.floor(between(rng, 0, 5))
++		local function inside(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= w and z <= d
++		end
++		local wallZ = whole(rng, 6, math.floor(d / 2) - 2)
++		local gapX = whole(rng, 3, w - 6)
++		-- A bend's second arm runs up from the wall to the top edge, right of the gap.
++		local bendX = if shape == "bend" then whole(rng, math.min(gapX + 6, w - 4), w - 4) else w + 1
++		local function wallAt(x: number, z: number, lift: number)
++			local i = at(x, z)
++			walk[i] = false
++			kinds[i] = "wall"
++			lifts[i] = lift
++		end
++		for x = 1, math.min(bendX, w) do
++			if x < gapX or x > gapX + 2 then
++				for z = wallZ, wallZ + 1 do
++					wallAt(x, z, whole(rng, 12, 16))
 +				end
 +			end
 +		end
-+		-- The fall steps down toward the pool: a run of ice columns lower each row.
-+		for k = 1, 3 do
-+			for x = notch, notch + fallW - 1 do
-+				local i = at(x, wallZ + 1 + k)
-+				walk[i] = false
-+				kinds[i] = "fall"
-+				lifts[i] = math.max(lip - k * between(rng, 4, 6), 3)
-+			end
-+		end
-+		local cx, cz = notch + fallW / 2, wallZ + 7
-+		local rx, rz = fallW / 2 + between(rng, 3, 5), between(rng, 3, 4)
-+		for z = wallZ + 5, d do
-+			for x = 1, w do
-+				local i = at(x, z)
-+				if walk[i] and ((x - cx) / rx) ^ 2 + ((z - cz) / rz) ^ 2 <= 1 then
-+					kinds[i] = "pool"
++		if shape == "bend" then
++			for z = 1, wallZ + 1 do
++				for x = bendX, math.min(bendX + 1, w) do
++					wallAt(x, z, whole(rng, 12, 16))
 +				end
 +			end
++		end
++
++		-- The falls: one, or two for a twin wall, each in the wall away from the gap.
++		local spans: { { x0: number, x1: number } } = {}
++		if gapX > 8 then
++			table.insert(spans, { x0 = 2, x1 = gapX - 2 })
++		end
++		if math.min(bendX, w) - (gapX + 3) > 6 then
++			table.insert(spans, { x0 = gapX + 4, x1 = math.min(bendX, w) - 2 })
++		end
++		local count = if shape == "twin" then math.min(2, #spans) else math.min(1, #spans)
++		local pools: { { cx: number, cz: number } } = {}
++		for k = 1, count do
++			local span = spans[k]
++			local fw = math.min(whole(rng, 3, 6), span.x1 - span.x0 + 1)
++			local fx = whole(rng, span.x0, span.x1 - fw + 1)
++			local lip = between(rng, 16, 26)
++			local steps = whole(rng, 1, 4)
++			for x = fx, fx + fw - 1 do
++				for z = wallZ, wallZ + 1 do
++					kinds[at(x, z)] = "fall"
++					lifts[at(x, z)] = lip
++				end
++				for s = 1, steps do
++					local z = wallZ + 1 + s
++					if inside(x, z) then
++						walk[at(x, z)] = false
++						kinds[at(x, z)] = "fall"
++						lifts[at(x, z)] = math.max(lip - s * between(rng, 4, 7), 3)
++					end
++				end
++			end
++			table.insert(pools, { cx = fx + fw / 2, cz = wallZ + steps + 4 })
++		end
++		for _, p in pools do
++			local rx, rz = between(rng, 3, 5), between(rng, 2, 3.5)
++			for z = 1, d do
++				for x = 1, w do
++					local i = at(x, z)
++					if walk[i] and ((x - p.cx) / rx) ^ 2 + ((z - p.cz) / rz) ^ 2 <= 1 then
++						kinds[i] = "pool"
++					end
++				end
++			end
++		end
++
++		-- 3: outcrops in the snow below the wall, clear of the road, the pools and each other.
++		local road = gapX + 1
++		local outcrops = whole(rng, 0, 3)
++		local placed = 0
++		for _ = 1, 40 do
++			if placed >= outcrops then
++				break
++			end
++			local ox, oz = whole(rng, 3, w - 2), whole(rng, wallZ + 6, d - 3)
++			local r = between(rng, 1.4, 2.4)
++			local clear = math.abs(ox - road) > r + 2
++			for z = math.floor(oz - r - 2), math.ceil(oz + r + 2) do
++				for x = math.floor(ox - r - 2), math.ceil(ox + r + 2) do
++					if inside(x, z) and (not walk[at(x, z)] or kinds[at(x, z)] == "pool") then
++						clear = false
++					end
++				end
++			end
++			if clear then
++				placed += 1
++				for z = math.floor(oz - r), math.ceil(oz + r) do
++					for x = math.floor(ox - r), math.ceil(ox + r) do
++						if inside(x, z) and (x - ox) ^ 2 + (z - oz) ^ 2 <= r * r then
++							wallAt(x, z, whole(rng, 4, 9))
++						end
++					end
++				end
++			end
++		end
++
++		local first = pools[1] or { cx = road, cz = wallZ + 6 }
++		local marks: { DraftedMap.Landmark } = {
++			{ sculpt = "rimeholt_hillfire", x = road + 1, z = wallZ + 3 },
++		}
++		if first.cx + 7 <= w - 1 then
++			table.insert(marks, { sculpt = "rimeholt_runestones", x = first.cx + 6, z = first.cz + 1, scale = 0.7 })
++		end
++		local effects: { DraftedMap.Effect } = {}
++		for _, p in pools do
++			table.insert(effects, { recipe = "rimeholt_underice", x = p.cx, z = p.cz, lift = 0.4 })
 +		end
 +		return {
 +			width = w,
@@ -751,21 +1099,18 @@ index 00000000..db748c37
 +			heights = heights,
 +			kinds = kinds,
 +			lifts = lifts,
-+			marks = {
-+				{ sculpt = "rimeholt_runestones", x = cx + rx + 2, z = cz + 1, scale = 0.7 },
-+				{ sculpt = "rimeholt_hillfire", x = gap + 1, z = wallZ + 3 },
-+			},
-+			effects = { { recipe = "rimeholt_underice", x = cx, z = cz, lift = 0.4 } },
++			marks = marks,
++			effects = effects,
 +			road = {
-+				{ x = gap + 1, z = d },
-+				{ x = gap + 1, z = wallZ + 3 },
-+				{ x = gap + 1, z = 1 },
++				{ x = road, z = d },
++				{ x = road, z = wallZ + 3 },
++				{ x = road, z = 1 },
 +			},
 +			cameras = {
 +				{
 +					name = "up the fall",
-+					from = { x = cx - 1, z = d - 1, lift = 3 },
-+					to = { x = cx, z = wallZ, lift = lip * 0.7 },
++					from = { x = first.cx - 1, z = math.min(first.cz + 6, d - 1), lift = 3 },
++					to = { x = first.cx, z = wallZ, lift = 12 },
 +					fov = 60,
 +				},
 +			},
@@ -774,12 +1119,89 @@ index 00000000..db748c37
 +}
 +
 +return feature
+diff --git a/tests/systems/DraftedMaps.spec.luau b/tests/systems/DraftedMaps.spec.luau
+index 46fc221d..d7bea01a 100644
+--- a/tests/systems/DraftedMaps.spec.luau
++++ b/tests/systems/DraftedMaps.spec.luau
+@@ -5,7 +5,9 @@
+ -- DraftedMaps` (in a swarm worktree) prints which rule a draft breaks.
+ local DraftedMap = require("../../src/shared/systems/DraftedMap")
+ local DraftedMaps = require("../../src/shared/data/DraftedMaps")
++local Grid = require("../../src/shared/systems/Grid")
+ local MapCost = require("../../src/shared/systems/MapCost")
++local MapVariety = require("../../src/shared/systems/MapVariety")
+ local OutdoorTilesets = require("../../src/shared/data/OutdoorTilesets")
+ local PerfBudget = require("../../src/shared/data/PerfBudget")
+ local Terrain = require("../../src/shared/data/Terrain")
+@@ -15,7 +17,7 @@ local TestRng = require("./TestRng")
+ local SEEDS = 6
+ 
+ local function rngFor(seed: number): Random
+-	return TestRng.seeded(seed) :: any
++	return TestRng.mixed(seed) :: any
+ end
+ 
+ return function(api: TestApi.Api)
+@@ -68,6 +70,53 @@ return function(api: TestApi.Api)
+ 			end
+ 		end)
+ 
++		-- fafwa (2026-10-30): seeds must differ in topology first, then in look
++		-- (systems/MapVariety; `explain` prints the numbers).
++		it("gives six seeds different layouts and looks", function()
++			for key, draft in DraftedMaps do
++				local sigs = {}
++				for seed = 1, SEEDS do
++					local map = draft.generate(rngFor(seed))
++					local g = map.grid
++					local walk = {}
++					for i, c in g.cells do
++						walk[i] = c == Grid.FLOOR
++					end
++					local kinds = if draft.paint then draft.paint(map, rngFor(seed)) else {}
++					local lifts: { [number]: number } = if draft.lifts then draft.lifts(map, rngFor(seed)) else {}
++					local cells = draft.cells or {}
++					for i, k in kinds do
++						if lifts[i] == nil and cells[k] then
++							lifts[i] = cells[k].lift or 0
++						end
++					end
++					table.insert(sigs, MapVariety.signature(g.width, g.depth, walk, kinds, lifts, map.heights))
++				end
++				local s = MapVariety.spread(sigs)
++				local t = math.floor(s.topology * 100) / 100
++				expect({ key, "topology spread", t, s.topology >= MapVariety.MIN_TOPOLOGY }).toEqual({
++					key,
++					"topology spread",
++					t,
++					true,
++				})
++				local c = math.floor(s.closest.topology * 100) / 100
++				expect({
++					key,
++					`seeds {s.closest.a} and {s.closest.b} are near-copies`,
++					c,
++					s.closest.topology >= MapVariety.MIN_CLOSEST,
++				}).toEqual({
++					key,
++					`seeds {s.closest.a} and {s.closest.b} are near-copies`,
++					c,
++					true,
++				})
++				local l = math.floor(s.look * 100) / 100
++				expect({ key, "look spread", l, s.look >= MapVariety.MIN_LOOK }).toEqual({ key, "look spread", l, true })
++			end
++		end)
++
+ 		-- A failure here means the map is too heavy for phones once dressed: thin
+ 		-- what grew rather than raise the budget.
+ 		it("keeps every seed within the phone budget", function()
 diff --git a/tests/systems/MapFeatures.spec.luau b/tests/systems/MapFeatures.spec.luau
 new file mode 100644
-index 00000000..5e78c429
+index 00000000..a2c81de5
 --- /dev/null
 +++ b/tests/systems/MapFeatures.spec.luau
-@@ -0,0 +1,111 @@
+@@ -0,0 +1,165 @@
 +--!strict
 +-- Map features (systems/MapFeature, swarm-lab's features job): every one keeps its
 +-- contract on many seeds, is the same for a seed and varies with it, stands sound on
@@ -790,6 +1212,7 @@ index 00000000..5e78c429
 +local MapCost = require("../../src/shared/systems/MapCost")
 +local MapFeature = require("../../src/shared/systems/MapFeature")
 +local MapFeatures = require("../../src/shared/data/MapFeatures")
++local MapVariety = require("../../src/shared/systems/MapVariety")
 +local OutdoorTilesets = require("../../src/shared/data/OutdoorTilesets")
 +local Palette = require("../../src/shared/systems/Palette")
 +local Palettes = require("../../src/shared/data/Palettes")
@@ -801,7 +1224,7 @@ index 00000000..5e78c429
 +local SEEDS = 6
 +
 +local function rngFor(seed: number): Random
-+	return TestRng.seeded(seed) :: any
++	return TestRng.mixed(seed) :: any
 +end
 +
 +local function lookOf(feature: MapFeature.Feature): any
@@ -863,6 +1286,59 @@ index 00000000..5e78c429
 +			end
 +		end)
 +
++		-- fafwa (2026-10-30): seeds must differ in topology first (layouts, paths,
++		-- obstructions), then in look. Measured by systems/MapVariety; `explain` prints the
++		-- numbers, and the closest pair names the two seeds most alike.
++		it("gives six seeds different layouts and looks", function()
++			for key, f in MapFeatures do
++				local sigs = {}
++				for seed = 1, SEEDS do
++					local fp = f.generate(rngFor(seed))
++					table.insert(
++						sigs,
++						MapVariety.signature(fp.width, fp.depth, fp.walk, fp.kinds, fp.lifts or {}, fp.heights)
++					)
++				end
++				local s = MapVariety.spread(sigs)
++				local obs = {}
++				for _, g in sigs do
++					table.insert(obs, g.obstructions)
++				end
++				expect({
++					key,
++					"topology spread",
++					math.floor(s.topology * 100) / 100,
++					"obstructions by seed",
++					table.concat(obs, ","),
++					s.topology >= MapVariety.MIN_TOPOLOGY,
++				}).toEqual({
++					key,
++					"topology spread",
++					math.floor(s.topology * 100) / 100,
++					"obstructions by seed",
++					table.concat(obs, ","),
++					true,
++				})
++				expect({
++					key,
++					`seeds {s.closest.a} and {s.closest.b} are near-copies`,
++					math.floor(s.closest.topology * 100) / 100,
++					s.closest.topology >= MapVariety.MIN_CLOSEST,
++				}).toEqual({
++					key,
++					`seeds {s.closest.a} and {s.closest.b} are near-copies`,
++					math.floor(s.closest.topology * 100) / 100,
++					true,
++				})
++				expect({ key, "look spread", math.floor(s.look * 100) / 100, s.look >= MapVariety.MIN_LOOK }).toEqual({
++					key,
++					"look spread",
++					math.floor(s.look * 100) / 100,
++					true,
++				})
++			end
++		end)
++
 +		-- A feature is one part of a map, so it gets a third of a map's budget.
 +		it("keeps every seed within a third of the phone budget", function()
 +			local budget = PerfBudget.map
@@ -891,3 +1367,32 @@ index 00000000..5e78c429
 +		end)
 +	end)
 +end
+diff --git a/tests/systems/TestRng.luau b/tests/systems/TestRng.luau
+index 6e004a91..68ada655 100644
+--- a/tests/systems/TestRng.luau
++++ b/tests/systems/TestRng.luau
+@@ -1,6 +1,8 @@
+ --!strict
+ -- Stand-ins for Roblox's `Random`, which Lune doesn't provide. Systems only call
+ -- `NextNumber`, so that's all these implement.
++local Hash = require("../../src/shared/systems/Hash")
++
+ local TestRng = {}
+ 
+ export type Rng = {
+@@ -39,4 +41,15 @@ function TestRng.seeded(seed: number): Rng
+ 	}
+ end
+ 
++-- Like `seeded`, but neighbouring seeds start far apart. `seeded`'s first draw is
++-- about seed * 7.8e-6 (Park-Miller's first step), so for seeds 1 to 12 every first
++-- draw is under 0.0001: a generator whose first draw picks its structure picks the
++-- same one on every seed offline (swarm-lab, 2026-10-30: the frozen fall's three
++-- shapes never showed). Studio's Random has no such bias; this stands in for it in
++-- the specs and previews of generated layouts.
++function TestRng.mixed(seed: number): Rng
++	-- Hash.draw's mixer scatters neighbouring seeds across the whole range.
++	return TestRng.seeded(math.floor(Hash.draw(seed, 7919, 104729) * 2147483645) + 1)
++end
++
+ return TestRng

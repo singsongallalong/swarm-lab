@@ -4,7 +4,7 @@ skill = "Rimelake"
 family = "map"
 tileset = "rimeholt"
 # The frozen-lake look, applied to each run's base on top of the platform.
-patches = ["results/rimeholt-zones/candidate-C-on-b1d0ed0.patch"]
+# Rimeholt's look now comes with the job's platform.
 directions = "directions-rimelake.txt"
 brief = """
 Lay out the whole map of Rimeholt's frozen lake: a highland where a hill-folk's barrows and

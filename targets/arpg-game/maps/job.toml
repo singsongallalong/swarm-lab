@@ -23,7 +23,14 @@ needs = "src/shared/systems/DraftedMap.luau"
 # brief (`patches`). 0001 carried the Moonwell look too and only fits main 166b53d.
 # 0003 (2026-10-30) opens it up: a draft's own cell kinds, heights checked, up to 240 x 200,
 # its own set pieces and the cameras for its own photographs (dresspreview `shots`).
-patches = ["docs/map-drafting/0003-drafted-maps-open.patch"]
+# 0004, Rimeholt's look and 0005 (features) come too, for the seed-variety measure
+# (systems/MapVariety, TestRng.mixed) and dresspreview's seedsheet (2026-10-30).
+patches = [
+  "docs/map-drafting/0003-drafted-maps-open.patch",
+  "docs/map-drafting/0004-palettes.patch",
+  "results/rimeholt-zones/candidate-C-on-b1d0ed0.patch",
+  "docs/map-drafting/0005-map-features.patch",
+]
 
 [files."src/shared/systems/draftedmaps/{skill}*.luau"]
 mode = "new_file"

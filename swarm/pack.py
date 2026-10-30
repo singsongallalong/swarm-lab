@@ -72,6 +72,7 @@ def render_commands(brief: dict) -> tuple[str, str]:
         tileset = brief.get("tileset", "moonwell")
         ref = [f"lune run scripts/dresspreview whole .swarm/out/ref-whole-moor-{tileset}.png 2 1 tileset={tileset}"]
         mine = [
+            "lune run scripts/dresspreview seedsheet .swarm/out/map-seeds-r1.png 12 1 layout=<YourLook>",
             "lune run scripts/dresspreview whole .swarm/out/map-whole-r1.png 3 1 layout=<YourLook>",
             "lune run scripts/dresspreview shots .swarm/out/map-shots-r1.png 3 1 layout=<YourLook>",
             "lune run scripts/dresspreview landmark .swarm/out/map-landmark-r1.png 2 1 layout=<YourLook>",
@@ -90,6 +91,7 @@ def render_commands(brief: dict) -> tuple[str, str]:
             "lune run scripts/dresspreview whole .swarm/out/ref-whole-RimeholtFrozenFall.png 1 1 feature=RimeholtFrozenFall",
         ]
         mine = [
+            "lune run scripts/dresspreview seedsheet .swarm/out/feature-seeds-r1.png 12 1 feature=<YourLook>",
             "lune run scripts/dresspreview shots .swarm/out/feature-shots-r1.png 3 1 feature=<YourLook>",
             "lune run scripts/dresspreview whole .swarm/out/feature-whole-r1.png 2 1 feature=<YourLook>",
             "lune run scripts/sculptpreview <Sculpts> .swarm/out/feature-sculpts-r1.png 2",

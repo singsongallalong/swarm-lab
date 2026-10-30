@@ -11,6 +11,29 @@ This is a dark, gothic Roblox action RPG seen from a high camera (pitch 50, zoom
 is generated afresh for every run, so it is a generator, not a drawing: it must make a good
 map from **every** seed, and a different one from each.
 
+## Seeds: different places, not one place jittered
+
+The game draws a fresh map from a new seed every run, so a generator is judged on how
+**different its seeds are**, in this order (fafwa, 2026-10-30):
+
+1. **Topology, most of all:** different layouts, different paths through, branching ways,
+   a different number and arrangement of obstructions. One wreck, then three; a straight
+   wall, then a bend; a single crossing, then two.
+2. **Look:** each seed reads as visually distinct: different cell kinds take the space,
+   different heights.
+
+How to get it: **let your first random draws choose the structure** (which arrangement,
+how many of the big things, where they sit, how big the whole is), and only later draws
+dress it. Before you write code, write `variation` in your manifest: three to five
+structural axes your seeds vary along, each with its options ("shape: straight / bend /
+twin", "outcrops: 0-3"). The worked example's header does this.
+
+**It is measured.** The spec computes, over six seeds, a topology spread (how much of the
+coarse layout and its counts differ, 0 to 1) and a look spread, and fails under 0.3
+topology, under 0.12 between the two most alike seeds, or under 0.05 look; `explain`
+prints the numbers and names the two seeds most alike. The `seedsheet` render shows twelve
+seeds from above, four to a row: look at it first, every revision.
+
 ## Hard rules (a run that breaks one is discarded unread)
 
 1. **Edit only these, only as described:**
@@ -189,6 +212,7 @@ Write `.swarm/manifest.json`, and then stop:
   "look": "<your draft's name>",
   "rows_added": ["<every new sculpt row, or nothing>"],
   "setpiece": "<the effect you're proudest of, a SetPieces name you place>",
+  "variation": ["<axis: its options>", "..."],
   "intent": "<one sentence: the map's shape and how it reads from above>",
   "renders": ["<the paths of your final renders, the reference excluded>"],
   "revisions": 0,
