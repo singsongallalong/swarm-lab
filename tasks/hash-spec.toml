@@ -1,0 +1,38 @@
+# A first worker task (2026-10-30): a missing spec for a small pure system, with a mutation
+# score held out (does the spec catch a broken Hash?).
+title = "A spec for systems/Hash"
+name = "HashSpec"
+repo = "../arpg-game"
+ref = "origin/main"
+workers = 3
+model = "flash"
+turns = 40
+brief = '''
+`src/shared/systems/Hash.luau` (quoted below) has no spec. Write `tests/systems/Hash.spec.luau`
+in the house style (copy the shape of the quoted spec: `return function(api: TestApi.Api)`,
+`describe`/`it`/`expect`). A good spec here would catch a broken Hash, not just run it:
+
+- `Hash.unit` and `Hash.draw` always return numbers in [0, 1), over many inputs, negative
+  and large ones included.
+- The same three inputs always give the same number; changing any one of the three inputs
+  changes the result.
+- `draw` takes whole numbers: fractional inputs give the same draw as their floors.
+- `draw`'s stream looks random: over a few thousand consecutive inputs the mean is near 0.5
+  and the draws spread across the whole range (say every tenth of [0, 1) is hit).
+
+Change nothing but the new spec file.
+'''
+read = ["src/shared/systems/Hash.luau", "tests/systems/SpatialHash.spec.luau"]
+checks = ["lune run tests Hash.spec", "stylua --check tests/systems/Hash.spec.luau"]
+directions = [
+  "Write one `describe` per function, and test each property with many inputs in a loop.",
+  "Think of the ways Hash could be broken (a dropped input, a missing wrap, a lost floor) and write a test that would catch each one.",
+  "Keep the spec short: the fewest tests that pin down every property in the brief.",
+]
+[[files]]
+path = "tests/systems/Hash.spec.luau"
+mode = "new_file"
+[[held_out]]
+file = "~/.swarm-heldout/hash/mutants.sh"
+dest = ".swarm/mutants.sh"
+cmd = "bash .swarm/mutants.sh"

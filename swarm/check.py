@@ -78,8 +78,12 @@ def fill(template: str, skill: str) -> str:
 
 def check_rows(rel: str, mode: str, before: str | None, after: str, skill: str, spec_pattern: str | None = None,
                prefix: str | None = None) -> str | None:
-    if before is None and mode not in ("new_file",):
+    if before is None and mode not in ("new_file", "any"):
         return f"{rel}: is a new file, but this job only lets it be edited"
+    # A worker task's free modes (swarm task): `edit` changes an existing file however it
+    # likes, `any` may also create it. The checks are the task's own commands.
+    if mode in ("edit", "any"):
+        return None
     if mode == "owned_row":
         if _norm(luarows.without(before, {skill})) != _norm(luarows.without(after, {skill})):
             return f"{rel}: changed something besides the {skill} row"

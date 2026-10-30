@@ -52,6 +52,21 @@ def main(argv=None) -> None:
     p.add_argument("--turns", type=int, default=40, help="turns each (default 40)")
     p.add_argument("--concurrency", type=int, default=6)
 
+    p = sub.add_parser("task", help="hand a bounded task to a few DeepSeek workers (swarm/task.py)")
+    tsub = p.add_subparsers(dest="task_cmd", required=True)
+    tp = tsub.add_parser("run", help="run a task file: workers, checks, summary.md")
+    tp.add_argument("task_file", type=Path)
+    tp.add_argument("--workers", type=int)
+    tp.add_argument("--model", choices=["flash", "pro"])
+    tp.add_argument("--run-id")
+    tp.add_argument("--offpeak", action="store_true")
+    tp = tsub.add_parser("apply", help="apply a worker's patch to your checkout, uncommitted")
+    tp.add_argument("run_dir", type=Path)
+    tp.add_argument("gid")
+    tp.add_argument("--to", type=Path)
+    tp = tsub.add_parser("summary", help="rewrite a task run's summary.md")
+    tp.add_argument("run_dir", type=Path)
+
     p = sub.add_parser("when", help="is it off-peak (half price) now, and when can a run of this length start and stay off-peak")
     p.add_argument("--provider", default="deepseek")
     p.add_argument("--minutes", type=int, default=0, help="the run's length (default: the provider's wall-time cap)")
@@ -110,6 +125,14 @@ def main(argv=None) -> None:
         if res["survivors"]:
             sheet_mod.sheet(a.run_dir)
         report_mod.report(a.run_dir)
+    elif a.cmd == "task":
+        from . import task as task_mod
+        if a.task_cmd == "run":
+            task_mod.run(a.task_file.resolve(), a.run_id, a.workers, a.model, a.offpeak)
+        elif a.task_cmd == "apply":
+            task_mod.apply(a.run_dir, a.gid, a.to)
+        else:
+            task_mod.summarise(a.run_dir)
     elif a.cmd == "when":
         from datetime import datetime, timezone
         from . import offpeak

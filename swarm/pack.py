@@ -19,6 +19,8 @@ MODES = {
     "add_rows": "add new rows only, each named starting with `{prefix}`; every existing row stays exactly as it is",
     "new_file": "a new file of your own (its name must match this pattern); never an existing one",
     "add_lines": "add lines only, each one an entry for your own module; change nothing else",
+    "edit": "an existing file: change it as the task needs, and nothing it doesn't",
+    "any": "create it or change it as the task needs",
 }
 
 

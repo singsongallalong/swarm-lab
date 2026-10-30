@@ -409,8 +409,10 @@ def rework(run_dir: Path, turns: int = 40, concurrency: int = 6) -> Path:
 
 
 def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str | None = None,
-        concurrency: int = 4, dry: bool = False, seed: int | None = None, figure: str | None = None) -> Path:
-    t = config.target(target_name)
+        concurrency: int = 4, dry: bool = False, seed: int | None = None, figure: str | None = None,
+        target_override: config.Target | None = None) -> Path:
+    # A worker task (swarm/task.py) brings its own target: the repo at the agent's commit.
+    t = target_override or config.target(target_name)
     j = config.job(t, job_name)
     brief = j.brief(brief_name)
     figs = config.figures(t, j, brief, figure)
