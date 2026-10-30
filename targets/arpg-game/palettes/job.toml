@@ -20,7 +20,8 @@ mode = "new_file"
 
 [files."src/shared/data/Palettes.luau"]
 mode = "add_lines"
-pattern = '(local {skill}\w* = require\("\./palettes/{skill}\w*"\)|{skill}\w* = {skill}\w*,)'
+# The local may be any name (palettes-1: two good palettes named theirs `Pestgate`).
+pattern = '(local \w+ = require\("\./palettes/{skill}\w*"\)|{skill}\w* = \w+,)'
 
 [purity]
 first_line = "--!strict"

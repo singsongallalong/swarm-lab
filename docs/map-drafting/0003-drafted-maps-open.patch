@@ -210,10 +210,10 @@ index 00000000..b9f89061
 +return table.freeze(DraftedMaps)
 diff --git a/src/shared/systems/DraftedMap.luau b/src/shared/systems/DraftedMap.luau
 new file mode 100644
-index 00000000..5962a21f
+index 00000000..a66bc460
 --- /dev/null
 +++ b/src/shared/systems/DraftedMap.luau
-@@ -0,0 +1,488 @@
+@@ -0,0 +1,511 @@
 +--!strict
 +-- Drafted maps (swarm-lab's maps job): a whole outdoor layout written as one pure,
 +-- seeded module, with the landmarks it places itself, dressed by the same MapDress
@@ -296,6 +296,9 @@ index 00000000..5962a21f
 +DraftedMap.MAX_SHOTS = 3
 +-- Set pieces are emitters and lights; a map's own stay within this many.
 +DraftedMap.MAX_EFFECTS = 8
++-- The art bible's limit for a zone accent, the brightest surface it allows (section 2).
++local BIBLE_SATURATION = 0.5
++local BIBLE_VALUE = 0.4
 +-- Terrain materials a cell look might take, offered when it picks a taken one.
 +local FREE_MATERIALS = {
 +	"Ice",
@@ -501,6 +504,26 @@ index 00000000..5962a21f
 +			table.insert(out, `cell kind {kind}: ground needs a material name and a 3-number colour`)
 +		elseif look.ground then
 +			local c, have = look.ground.color, used[look.ground.material]
++			-- The art bible's loosest limit for anything that isn't a light (section 2,
++			-- the zone accent): ground a draft makes itself is a surface, never a lamp.
++			local hi, lo = math.max(c[1], c[2], c[3]) / 255, math.min(c[1], c[2], c[3]) / 255
++			local sat = if hi > 0 then (hi - lo) / hi else 0
++			if sat > BIBLE_SATURATION + 1e-9 or hi > BIBLE_VALUE + 1e-9 then
++				table.insert(
++					out,
++					string.format(
++						"cell kind %s: colour {%d, %d, %d} is saturation %.2f, value %.2f; the art bible allows a surface at most %.2f and %.2f (light belongs to lamps and effects)",
++						kind,
++						c[1],
++						c[2],
++						c[3],
++						sat,
++						hi,
++						BIBLE_SATURATION,
++						BIBLE_VALUE
++					)
++				)
++			end
 +			if have and (have[1] ~= c[1] or have[2] ~= c[2] or have[3] ~= c[3]) then
 +				local free = {}
 +				for _, name in FREE_MATERIALS do
