@@ -288,7 +288,16 @@ RESUME_PROMPT = (
 )
 
 
-def resume_one(t, p, wt: Path, log_dir: Path, gid: str, prior: dict, turns: int) -> dict:
+REWORK_PROMPT = (
+    "A critic who saw only your map's renders wrote notes on it in .swarm/CRITIQUE.md. Read "
+    "them, then rework your map to answer them: keep what they praise, change what they "
+    "fault. Re-render, look at every render, run the checks in .swarm/PACK.md's Commands and "
+    "fix what fails, update .swarm/manifest.json (revisions + 1, renders, intent), and stop."
+)
+
+
+def resume_one(t, p, wt: Path, log_dir: Path, gid: str, prior: dict, turns: int,
+               prompt: str = RESUME_PROMPT, tag: str = "resume") -> dict:
     """Continue a stopped generator's own conversation (claude --resume), so its work so
     far is kept and only finishing it costs. Usage and time add to the first attempt's."""
     out_path = log_dir / f"{gid}.out"
@@ -307,7 +316,7 @@ def resume_one(t, p, wt: Path, log_dir: Path, gid: str, prior: dict, turns: int)
         rec["status"] = "not resumed: no session recorded"
         return rec
     argv = runtime_argv(p, turns)
-    argv[argv.index("-p") + 1] = RESUME_PROMPT
+    argv[argv.index("-p") + 1] = prompt
     argv += ["--resume", session]
     t0 = time.time()
     try:
@@ -316,8 +325,8 @@ def resume_one(t, p, wt: Path, log_dir: Path, gid: str, prior: dict, turns: int)
     except subprocess.TimeoutExpired as e:
         out = e.stdout.decode() if isinstance(e.stdout, bytes) else (e.stdout or "")
         err, code = f"timed out after {p.timeout_s}s", -1
-    (log_dir / f"{gid}.resume.out").write_text(out)
-    (log_dir / f"{gid}.resume.err").write_text(err)
+    (log_dir / f"{gid}.{tag}.out").write_text(out)
+    (log_dir / f"{gid}.{tag}.err").write_text(err)
     try:
         res = json.loads(out.strip().splitlines()[-1]) if out.strip() else {}
     except (json.JSONDecodeError, IndexError):
@@ -333,6 +342,8 @@ def resume_one(t, p, wt: Path, log_dir: Path, gid: str, prior: dict, turns: int)
     rec["seconds"] = round(rec.get("seconds", 0) + time.time() - t0, 1)
     rec["turns"] = (rec.get("turns") or 0) + (res.get("num_turns") or 0)
     rec["resumed"] = True
+    if tag == "rework":
+        rec["reworked"] = (rec.get("reworked") or 0) + 1
     rec["status"] = "finished" if code == 0 else f"exit {code}"
     return rec
 
@@ -351,6 +362,33 @@ def resume(run_dir: Path, turns: int = 30, concurrency: int = 4) -> Path:
     with cf.ThreadPoolExecutor(max_workers=max(1, concurrency)) as pool:
         futs = {pool.submit(resume_one, t, provs[g["provider"]], run_dir / "gens" / g["gid"], run_dir / "logs",
                             g["gid"], recs.get(g["gid"], {}), turns): g for g in todo}
+        for f in cf.as_completed(futs):
+            rec = f.result()
+            recs[rec["gid"]] = rec
+            log(f"{rec['gid']} {rec['provider']}: {rec['status']}, total {rec.get('seconds')}s, ${rec.get('cost_usd')}")
+    (run_dir / "generators.json").write_text(json.dumps([recs[k] for k in sorted(recs)], indent=2))
+    return run_dir
+
+
+def rework(run_dir: Path, turns: int = 40, concurrency: int = 6) -> Path:
+    """Send each generator with a critique (run_dir/critique/<gid>.md) back to work on it,
+    in its own conversation: a critic's notes on its renders become .swarm/CRITIQUE.md."""
+    meta = json.loads((run_dir / "meta.json").read_text())
+    t = config.target(meta["target"])
+    provs = config.providers()
+    recs = {g["gid"]: g for g in json.loads((run_dir / "generators.json").read_text())}
+    todo = []
+    for g in meta["generators"]:
+        note = run_dir / "critique" / f"{g['gid']}.md"
+        wt = run_dir / "gens" / g["gid"]
+        if note.is_file() and wt.is_dir():
+            (wt / ".swarm" / "CRITIQUE.md").write_text(note.read_text())
+            todo.append(g)
+    log = lambda msg: print(f"[{meta['run']}] {msg}", flush=True)  # noqa: E731
+    log(f"reworking {len(todo)}: " + ", ".join(g["gid"] for g in todo) + f" (up to {turns} turns each)")
+    with cf.ThreadPoolExecutor(max_workers=max(1, concurrency)) as pool:
+        futs = {pool.submit(resume_one, t, provs[g["provider"]], run_dir / "gens" / g["gid"], run_dir / "logs",
+                            g["gid"], recs.get(g["gid"], {}), turns, REWORK_PROMPT, "rework"): g for g in todo}
         for f in cf.as_completed(futs):
             rec = f.result()
             recs[rec["gid"]] = rec

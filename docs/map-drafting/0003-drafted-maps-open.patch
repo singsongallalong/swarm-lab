@@ -1,0 +1,824 @@
+diff --git a/scripts/catalog/Families.luau b/scripts/catalog/Families.luau
+index f8b2c90e..558341db 100644
+--- a/scripts/catalog/Families.luau
++++ b/scripts/catalog/Families.luau
+@@ -201,6 +201,7 @@ Families.notRecipes = {
+ 		"Ruin",
+ 		"SculptCandidates",
+ 		"Terrain",
++		"DraftedMaps", -- drafted map layouts (systems/DraftedMap); their looks are tilesets
+ 		"TilesetContract",
+ 	},
+ 	["sound cues and the soundboard's candidates (docs/guides/sound.md)"] = {
+diff --git a/scripts/dresspreview.luau b/scripts/dresspreview.luau
+index f22a5438..4c60f692 100644
+--- a/scripts/dresspreview.luau
++++ b/scripts/dresspreview.luau
+@@ -34,11 +34,18 @@
+ -- ground and at eye level from the nearest road.
+ -- The name of any of a `tileset=` look's prop sets frames its first piece;
+ -- `landing` and `wayon` frame a whole moor plan's arrival and exit (MapEnds).
++-- `layout=<Name>` (anywhere) draws a drafted map (data/DraftedMaps, swarm-lab's maps
++-- job) instead, in its own tileset unless `tileset=` names another; with it the kinds
++-- are `whole`, a site kind it reserves (`ruin`, `graveyard`...), and `landmark`, the
++-- first landmark the draft places itself, and `shots`, the whole map seen from the
++-- (up to three) cameras the draft chooses itself (DraftedMap.Shot), its photographs.
+ local fs = require("@lune/fs")
+ local process = require("@lune/process")
+ local serde = require("@lune/serde")
+ 
+ local Aurora = require("../src/shared/systems/Aurora")
++local DraftedMap = require("../src/shared/systems/DraftedMap")
++local DraftedMaps = require("../src/shared/data/DraftedMaps")
+ local FieldSection = require("../src/shared/systems/FieldSection")
+ local Grid = require("../src/shared/systems/Grid")
+ local Heath = require("../src/shared/systems/Heath")
+@@ -187,10 +194,14 @@ end
+ -- `smoulder` and `giants` the first of those props.
+ local args: { string } = {}
+ local lookName: string? = nil
++local draftName: string? = nil
+ for _, a in process.args do
+ 	local name = string.match(a, "^tileset=(.+)$")
++	local drafted = string.match(a, "^layout=(.+)$")
+ 	if name then
+ 		lookName = name
++	elseif drafted then
++		draftName = drafted
+ 	else
+ 		table.insert(args, a)
+ 	end
+@@ -207,6 +218,24 @@ if lookName then
+ 		error(`no outdoor tileset {lookName}; registered: {table.concat(names, ", ")}`)
+ 	end
+ end
++local draft: DraftedMap.Draft? = nil
++if draftName then
++	draft = DraftedMaps[draftName]
++	if not draft then
++		local names = {}
++		for n in DraftedMaps do
++			table.insert(names, n)
++		end
++		table.sort(names)
++		error(`no drafted map {draftName}; registered: {table.concat(names, ", ")}`)
++	end
++	if not look then
++		look = OutdoorTilesets[draft.tileset]
++		if not look then
++			error(`drafted map {draftName} names tileset {draft.tileset}, which isn't registered`)
++		end
++	end
++end
+ local ash = string.match(args[1] or "", "^ash%-(.+)$")
+ local kind = ash or args[1] or "graveyard"
+ local outPath = args[2] or "dresspreview.png"
+@@ -300,16 +329,22 @@ for row = 0, seeds - 1 do
+ 		tileset = table.clone(tileset)
+ 		tileset.kits = kits
+ 	end
+-	local walk = if legAt then Route.field(seed) else nil
++	local walk = if legAt and not draft then Route.field(seed) else nil
+ 	local section = if walk
+ 		then walk.section
++		elseif draft then nil
+ 		elseif ash then FieldSection.generate(Terrain.field2, rng)
+ 		elseif townish then FieldSection.generate(Terrain.field, rng)
+ 		else nil
+-	local moor = if onMoor then Reaches.generate(Terrain.reaches, rng) else nil
+-	local map = if section then section.map elseif moor then moor.map else Heath.generate(Terrain.heath, rng)
++	local moor = if onMoor and not draft then Reaches.generate(Terrain.reaches, rng) else nil
++	local map = if draft
++		then draft.generate(rng)
++		elseif section then section.map
++		elseif moor then moor.map
++		else Heath.generate(Terrain.heath, rng)
+ 	local dressing = if walk
+ 		then walk.dressing
++		elseif draft then DraftedMap.dress(draft, map, tileset, CS, rng)
+ 		elseif section then FieldSection.dress(section, tileset, CS, rng)
+ 		elseif moor then MapPlan.lay(map, tileset, CS, Terrain.packSites, rng, moor.spans, moor.thresholds).dressing
+ 		else MapDress.dress(map, tileset, CS, rng)
+@@ -407,11 +442,19 @@ for row = 0, seeds - 1 do
+ 	-- Any prop set of a `tileset=` look frames its first piece by the set's
+ 	-- name (a concept place's landmark, say).
+ 	local ownProp = look ~= nil and look.props[kind] ~= nil
+-	if landmark or ownProp or mapEnd or kind == "cutting" or (ash and (kind == "smoulder" or kind == "giants")) then
++	if
++		landmark
++		or ownProp
++		or mapEnd
++		or (draft and kind == "landmark")
++		or kind == "cutting"
++		or (ash and (kind == "smoulder" or kind == "giants"))
++	then
+ 		local group = if kind == "cutting"
+ 			then "offmap"
+ 			elseif kind == "landing" then "arrival"
+ 			elseif kind == "wayon" then "exit"
++			elseif kind == "landmark" and draft then "landmark"
+ 			else `prop:{kind}`
+ 		for _, piece in dressing.pieces do
+ 			if piece.group == group and not site then
+@@ -457,7 +500,8 @@ for row = 0, seeds - 1 do
+ 			site = around(mark.x / CS, mark.z / CS, 20)
+ 		end
+ 	end
+-	if kind == "whole" then
++	local wholeish = kind == "whole" or (kind == "shots" and draft ~= nil)
++	if wholeish then
+ 		-- Out to the first cells of a gorge's far wall, past its gap (A049).
+ 		local hills = tileset.beyond.hills
+ 		local wide = if hills and hills.wide then hills.wide.gap else 0
+@@ -477,7 +521,7 @@ for row = 0, seeds - 1 do
+ 	-- A past-the-edge sheet shallow enough to draw is floodwater, not mist.
+ 	local sheet = tileset.beyond.mist
+ 	local flood = sheet.depth < SLAB
+-	local pad = if flood and kind == "whole" then FLOOD_PAD else 0
++	local pad = if flood and wholeish then FLOOD_PAD else 0
+ 	local w: Window = if leg
+ 		then { x0 = leg.x - LEG_LOOK, z0 = leg.z - LEG_LOOK, x1 = leg.x + LEG_LOOK, z1 = leg.z + LEG_LOOK }
+ 		else {
+@@ -489,7 +533,7 @@ for row = 0, seeds - 1 do
+ 	-- The whole map draws everything the dressing lays past it too (hills,
+ 	-- a far landmark), so the skyline from the road is the one Studio shows.
+ 	local b = dressing.bounds
+-	local reach: Window? = if kind == "whole"
++	local reach: Window? = if wholeish
+ 		then { x0 = (b.x0 - 1) * CS, z0 = (b.z0 - 1) * CS, x1 = b.x1 * CS, z1 = b.z1 * CS }
+ 		else nil
+ 	local prims = patch(dressing, w, tileset, reach)
+@@ -498,7 +542,7 @@ for row = 0, seeds - 1 do
+ 	-- view shows where the sky's wayfinding hangs. vortexpreview draws the
+ 	-- real thing.
+ 	local vortexLook = tileset.aurora and tileset.aurora.vortex
+-	if kind == "whole" and vortexLook and dressing.manaToward then
++	if wholeish and vortexLook and dressing.manaToward then
+ 		local at = dressing.manaToward
+ 		local y = MapDress.groundAt(dressing, at.x, at.z) + vortexLook.height
+ 		local cx, cz = (w.x0 + w.x1) / 2, (w.z0 + w.z1) / 2
+@@ -528,7 +572,7 @@ for row = 0, seeds - 1 do
+ 		end
+ 	end
+ 	local span = math.max(w.x1 - w.x0, w.z1 - w.z0)
+-	local scale = CELL * (if kind == "whole" then 0.85 else 0.62) / span
++	local scale = CELL * (if wholeish then 0.85 else 0.62) / span
+ 	-- Eyes stand on the ground at the leg's end, not at the map's zero.
+ 	local gy = if leg then MapDress.groundAt(dressing, leg.x, leg.z) else 0
+ 	local views: { Raster.View } = if leg
+@@ -538,6 +582,23 @@ for row = 0, seeds - 1 do
+ 			Raster.lookAt("ahead", { 0, gy + 5.5, 0 }, { leg.dx * 30, gy + 3, leg.dz * 30 }),
+ 			{ name = "top", forward = { 0, -1, 0 }, up = { 0, 0, -1 } },
+ 		}
++		elseif kind == "shots" and draft then (function(): { Raster.View }
++			local cx, cz = (w.x0 + w.x1) / 2, (w.z0 + w.z1) / 2
++			local out: { Raster.View } = {}
++			local shots = if draft.shots then draft.shots(map) else {}
++			for k = 1, math.min(#shots, VIEWS) do
++				local shot = shots[k]
++				local function at(p: { x: number, z: number, lift: number }): { number }
++					local x, z = Grid.toWorld(p.x, p.z, CS)
++					return { x - cx, MapDress.groundAt(dressing, x, z) + p.lift, z - cz }
++				end
++				table.insert(out, Raster.lookAt(shot.name, at(shot.from), at(shot.to), shot.fov))
++			end
++			if #out == 0 then
++				print(`seed {seed}: {draftName} chooses no shots (draft.shots)`)
++			end
++			return out
++		end)()
+ 		elseif kind == "whole" then {
+ 			Raster.orbit("three-quarter", -35, 35),
+ 			-- Standing on the road a quarter of the way along the map, looking
+diff --git a/src/shared/data/DraftedMaps.luau b/src/shared/data/DraftedMaps.luau
+new file mode 100644
+index 00000000..b9f89061
+--- /dev/null
++++ b/src/shared/data/DraftedMaps.luau
+@@ -0,0 +1,12 @@
++--!strict
++-- Every drafted map by name (systems/DraftedMap; swarm-lab's maps job). Each is one
++-- pure, seeded layout module in systems/draftedmaps, judged offline with
++-- `lune run scripts/dresspreview whole out.png 3 1 layout=<Name>` before anything
++-- builds it.
++local DraftedMap = require("../systems/DraftedMap")
++
++local DraftedMaps: { [string]: DraftedMap.Draft } = {
++	-- One line per draft, `Name = Name,`, with its require above.
++}
++
++return table.freeze(DraftedMaps)
+diff --git a/src/shared/systems/DraftedMap.luau b/src/shared/systems/DraftedMap.luau
+new file mode 100644
+index 00000000..5962a21f
+--- /dev/null
++++ b/src/shared/systems/DraftedMap.luau
+@@ -0,0 +1,488 @@
++--!strict
++-- Drafted maps (swarm-lab's maps job): a whole outdoor layout written as one pure,
++-- seeded module, with the landmarks it places itself, dressed by the same MapDress
++-- every map uses. A draft is judged offline (dresspreview layout=<Name>) before any
++-- builder, place or seam knows about it; making one a real map is planned work
++-- (docs/guides/adding-areas.md, "A new kind of map").
++local DistanceField = require("./DistanceField")
++local Grid = require("./Grid")
++local Heath = require("./Heath")
++local MapDress = require("./MapDress")
++local OutdoorTypes = require("../OutdoorTypes")
++local Sculpts = require("../data/Sculpts")
++local SetPieces = require("../data/SetPieces")
++local Terrain = require("../data/Terrain")
++
++local DraftedMap = {}
++
++-- A landmark the layout places itself, in fractional cells like the road; drawn as
++-- the named sculpt, standing on the ground.
++export type Landmark = {
++	sculpt: string,
++	x: number,
++	z: number,
++	yaw: number?, -- degrees
++	scale: number?,
++	sink: number?, -- studs into the ground
++}
++
++-- A kind of ground the draft makes itself, laid over the cells `paint` gives it:
++-- its own surface, lifted or not, its own scatter of sculpts, and the tileset's
++-- props kept off it if `clear`. Whether a cell is walkable is still the grid's.
++export type CellProp = {
++	sculpt: string, -- data/Sculpts
++	every: number, -- one per this many painted cells, on average (>= 1)
++	scale: { number }?, -- { min, max }; 1 when nil
++	sink: number?, -- studs into the ground; negative stands it up off it
++}
++
++export type CellLook = {
++	ground: OutdoorTypes.GroundLook?, -- { material = Enum.Material name, color = { r, g, b } }
++	-- Studs its surface stands over the cell's height: a sheet of ice 0.4, a
++	-- frozen wave or a pillar on a wall cell 20. Walkable cells at most WALK_LIFT.
++	lift: number?,
++	clear: boolean?,
++	props: { CellProp }?,
++}
++
++-- A camera the draft chooses for its own photographs (dresspreview `shots`):
++-- `from` and `to` in fractional cells, with `lift` studs over the ground there.
++export type Shot = {
++	name: string,
++	from: { x: number, z: number, lift: number },
++	to: { x: number, z: number, lift: number },
++	fov: number?, -- degrees; 70 like Roblox's camera
++}
++
++-- An environment set piece (data/SetPieces) the draft stands on its map, in
++-- fractional cells, `lift` studs over the ground there.
++export type Effect = { recipe: string, x: number, z: number, lift: number?, seed: number? }
++
++export type Draft = {
++	name: string,
++	about: string, -- one sentence: what the map is
++	tileset: string, -- the outdoor tileset it is drawn in (data/OutdoorTilesets)
++	generate: (rng: Random) -> Heath.Map,
++	landmarks: ((map: Heath.Map, rng: Random) -> { Landmark })?,
++	-- Its own kinds of ground, and which cells get each (cell index -> kind).
++	cells: { [string]: CellLook }?,
++	paint: ((map: Heath.Map, rng: Random) -> { [number]: string })?,
++	effects: ((map: Heath.Map, rng: Random) -> { Effect })?,
++	shots: ((map: Heath.Map) -> { Shot })?,
++}
++
++-- Bounds on a draft's size: up to about two moor reaches.
++DraftedMap.MAX_CELLS = 240 * 200
++DraftedMap.MIN_FLOOR = 1500
++-- The most a walkable cell's own ground may lift its surface, and any cell's.
++DraftedMap.WALK_LIFT = 1
++DraftedMap.MAX_LIFT = 60
++DraftedMap.MAX_SHOTS = 3
++-- Set pieces are emitters and lights; a map's own stay within this many.
++DraftedMap.MAX_EFFECTS = 8
++-- Terrain materials a cell look might take, offered when it picks a taken one.
++local FREE_MATERIALS = {
++	"Ice",
++	"Glacier",
++	"Snow",
++	"Slate",
++	"Basalt",
++	"Rock",
++	"Pavement",
++	"Salt",
++	"Limestone",
++	"Marble",
++	"CrackedLava",
++	"Sandstone",
++	"Asphalt",
++	"Mud",
++	"Ground",
++	"Grass",
++	"LeafyGrass",
++	"Sand",
++	"Cobblestone",
++	"Concrete",
++}
++
++-- Every way `map` breaks what MapDress and the game assume of a layout, in plain words;
++-- empty when it is sound. Mirrors tests/systems/Heath.spec.
++function DraftedMap.problems(map: Heath.Map): { string }
++	local out: { string } = {}
++	local function add(msg: string)
++		if #out < 12 then
++			table.insert(out, msg)
++		end
++	end
++	local g = map.grid
++	local n = g.width * g.depth
++	if n > DraftedMap.MAX_CELLS then
++		add(`grid is {g.width}x{g.depth}: more than {DraftedMap.MAX_CELLS} cells`)
++	end
++	if #g.cells ~= n or #map.kinds ~= n or #map.heights ~= n then
++		add(
++			`grid.cells, kinds and heights must each have width*depth = {n} entries (have {#g.cells}, {#map.kinds}, {#map.heights})`
++		)
++		return out
++	end
++	-- The outermost ring is never walkable: MapDress hangs the border's walls there.
++	for i, cell in g.cells do
++		local x, z = Grid.coords(g, i)
++		if (x == 1 or z == 1 or x == g.width or z == g.depth) and cell ~= Grid.WALL then
++			add(`cell {x},{z} on the map's outer edge is walkable; keep a wall ring round the map`)
++			break
++		end
++	end
++	local floor = 0
++	for i, kind in map.kinds do
++		local walkable = kind == "heath" or kind == "road"
++		if (g.cells[i] == Grid.FLOOR) ~= walkable then
++			local x, z = Grid.coords(g, i)
++			add(
++				`cell {x},{z}: kind {kind} but grid says {if g.cells[i] == Grid.FLOOR then "floor" else "wall"} (heath and road are floor, the rest wall)`
++			)
++			break
++		end
++		if walkable then
++			floor += 1
++		end
++	end
++	if floor < DraftedMap.MIN_FLOOR then
++		add(`only {floor} walkable cells; a map needs at least {DraftedMap.MIN_FLOOR}`)
++	end
++	local regions = #Grid.regions(g)
++	if regions ~= 1 then
++		add(`{regions} separate walkable regions; everything walkable must join up (Grid.keepLargestRegion)`)
++	end
++	local ends: { [string]: Grid.CellCoord } = { start = map.start, exit = map.exit }
++	for label, c in ends do
++		if not Grid.inBounds(g, c.x, c.z) or map.kinds[Grid.index(g, c.x, c.z)] ~= "road" then
++			add(`{label} at {c.x},{c.z} is not on a road cell`)
++		end
++	end
++	if #out == 0 then
++		local field = DistanceField.fromCells(g, { map.start })
++		if not (DistanceField.at(field, map.exit.x, map.exit.z) < math.huge) then
++			add("no walkable way from start to exit")
++		end
++	end
++	if #map.road < 2 then
++		add("road needs at least two centreline points, start to exit")
++	end
++	for _, p in map.road do
++		if p.x < 1 or p.z < 1 or p.x > g.width or p.z > g.depth then
++			add(`road point {p.x},{p.z} is off the grid`)
++			break
++		end
++	end
++	for i, kind in map.kinds do
++		local x, z = Grid.coords(g, i)
++		if (map.edges[i] ~= nil) ~= (kind == "rim") then
++			add(
++				`cell {x},{z}: {if kind == "rim"
++					then "a rim cell needs an edge kind"
++					else "only rim cells get an edge kind"}`
++			)
++			break
++		end
++		if kind == "rim" then
++			local touches = false
++			for _, d in Grid.NEIGHBOURS do
++				touches = touches or Grid.get(g, x + d[1], z + d[2]) == Grid.FLOOR
++			end
++			if not touches then
++				add(`rim cell {x},{z} touches no walkable cell; rims line the walkable ground`)
++				break
++			end
++		end
++	end
++	-- Walkable neighbours more than a step apart need a bluff (a wall cell) between.
++	for i, cell in g.cells do
++		if cell == Grid.FLOOR then
++			local x, z = Grid.coords(g, i)
++			for _, d in Grid.NEIGHBOURS do
++				local nx, nz = x + d[1], z + d[2]
++				if Grid.get(g, nx, nz) == Grid.FLOOR then
++					local step = math.abs(map.heights[i] - map.heights[Grid.index(g, nx, nz)])
++					if step > Terrain.terraces.maxStep then
++						add(
++							`cells {x},{z} and {nx},{nz} are walkable but {step} studs apart; at most {Terrain.terraces.maxStep}, or make the higher a bluff (wall) cell, or ramp between`
++						)
++						break
++					end
++				end
++			end
++		end
++	end
++	local seen: { [number]: boolean } = {}
++	for _, site in map.sites do
++		local where = `{site.kind} site at {site.x0},{site.z0}`
++		if (site.x1 - site.x0 + 1) % 2 ~= 0 or (site.z1 - site.z0 + 1) % 2 ~= 0 then
++			add(`{where}: width and depth must be even numbers of cells (buildings are 2 cells a unit)`)
++		elseif not Heath.onFloor(g, site) then
++			add(`{where}: not wholly on walkable ground`)
++		else
++			for z = site.z0, site.z1 do
++				for x = site.x0, site.x1 do
++					local i = Grid.index(g, x, z)
++					if seen[i] then
++						add(`{where}: overlaps another site`)
++					end
++					seen[i] = true
++				end
++			end
++		end
++	end
++	return out
++end
++
++-- Problems with a draft's landmarks on `map`.
++function DraftedMap.landmarkProblems(map: Heath.Map, marks: { Landmark }): { string }
++	local out: { string } = {}
++	for i, m in marks do
++		if not Sculpts[m.sculpt] then
++			table.insert(out, `landmark {i}: no sculpt named {m.sculpt}`)
++		elseif not Grid.inBounds(map.grid, math.floor(m.x), math.floor(m.z)) then
++			table.insert(out, `landmark {i} ({m.sculpt}) at {m.x},{m.z} is off the grid`)
++		end
++	end
++	return out
++end
++
++-- Problems with what a draft adds over its map: its own cells, effects and shots.
++-- `used`: every terrain material the draft's tileset already colours, by name.
++-- Roblox colours a terrain material once for the whole place, so a cell look
++-- may use one of those only in the same colour.
++function DraftedMap.materialsOf(tileset: any): { [string]: { number } }
++	local used: { [string]: { number } } = {}
++	local seen: { [any]: boolean } = {}
++	local function walk(t: any)
++		if type(t) ~= "table" or seen[t] then
++			return
++		end
++		seen[t] = true
++		if type(t.material) == "string" and type(t.color) == "table" and t.mesh == nil and t.size == nil then
++			used[t.material] = used[t.material] or t.color
++		end
++		for _, v in t do
++			walk(v)
++		end
++	end
++	walk(tileset)
++	return used
++end
++
++function DraftedMap.draftProblems(draft: Draft, map: Heath.Map, rng: Random, tileset: any?): { string }
++	local out: { string } = {}
++	local g = map.grid
++	local used = if tileset then DraftedMap.materialsOf(tileset) else {}
++	local cells: { [string]: CellLook } = draft.cells or {}
++	for kind, look in cells do
++		local lift = look.lift or 0
++		if lift < 0 or lift > DraftedMap.MAX_LIFT then
++			table.insert(out, `cell kind {kind}: lift {lift} outside 0..{DraftedMap.MAX_LIFT}`)
++		end
++		if look.ground and (typeof(look.ground.material) ~= "string" or #look.ground.color ~= 3) then
++			table.insert(out, `cell kind {kind}: ground needs a material name and a 3-number colour`)
++		elseif look.ground then
++			local c, have = look.ground.color, used[look.ground.material]
++			if have and (have[1] ~= c[1] or have[2] ~= c[2] or have[3] ~= c[3]) then
++				local free = {}
++				for _, name in FREE_MATERIALS do
++					if not used[name] then
++						table.insert(free, name)
++					end
++				end
++				table.insert(
++					out,
++					`cell kind {kind}: the tileset already colours {look.ground.material} \{{have[1]}, {have[2]}, {have[3]}\} (Roblox colours a material once for the whole map); use that colour or a material it leaves free: {table.concat(
++						free,
++						", "
++					)}`
++				)
++			end
++		end
++		local props: { CellProp } = look.props or {}
++		for _, prop in props do
++			if not Sculpts[prop.sculpt] then
++				table.insert(out, `cell kind {kind}: no sculpt named {prop.sculpt}`)
++			elseif prop.every < 1 then
++				table.insert(out, `cell kind {kind}: prop {prop.sculpt} every {prop.every}, at least 1`)
++			end
++		end
++	end
++	if draft.paint then
++		local painted = draft.paint(map, rng)
++		for i, kind in painted do
++			local look = cells[kind]
++			if not look then
++				table.insert(out, `paint names cell kind {kind}, which draft.cells lacks`)
++				break
++			elseif i < 1 or i > #g.cells then
++				table.insert(out, `paint names cell {i}, off the grid`)
++				break
++			elseif g.cells[i] == Grid.FLOOR and (look.lift or 0) > DraftedMap.WALK_LIFT then
++				local x, z = Grid.coords(g, i)
++				table.insert(
++					out,
++					`cell {x},{z} is walkable but kind {kind} lifts it {look.lift} (at most {DraftedMap.WALK_LIFT})`
++				)
++				break
++			end
++		end
++	end
++	if draft.effects then
++		local effects = draft.effects(map, rng)
++		if #effects > DraftedMap.MAX_EFFECTS then
++			table.insert(out, `{#effects} effects; at most {DraftedMap.MAX_EFFECTS}`)
++		end
++		for k, e in effects do
++			if not SetPieces[e.recipe] then
++				table.insert(out, `effect {k}: no set piece named {e.recipe}`)
++			elseif not Grid.inBounds(g, math.floor(e.x), math.floor(e.z)) then
++				table.insert(out, `effect {k} ({e.recipe}) at {e.x},{e.z} is off the grid`)
++			end
++		end
++	end
++	if draft.shots then
++		local shots = draft.shots(map)
++		if #shots > DraftedMap.MAX_SHOTS then
++			table.insert(out, `{#shots} shots; at most {DraftedMap.MAX_SHOTS}`)
++		end
++		for _, shot in shots do
++			for _, p in { shot.from, shot.to } do
++				if not Grid.inBounds(g, math.floor(p.x), math.floor(p.z)) then
++					table.insert(out, `shot {shot.name}: {p.x},{p.z} is off the grid`)
++				end
++			end
++		end
++	end
++	return out
++end
++
++-- Rows of same-kind, same-height painted cells, as rectangles one cell deep.
++local function paintedRuns(
++	map: Heath.Map,
++	painted: { [number]: string }
++): { { kind: string, rect: Grid.Rect, h: number } }
++	local g = map.grid
++	local out = {}
++	for z = 1, g.depth do
++		local x = 1
++		while x <= g.width do
++			local i = Grid.index(g, x, z)
++			local kind = painted[i]
++			if kind then
++				local h = map.heights[i]
++				local x1 = x
++				while x1 < g.width do
++					local j = Grid.index(g, x1 + 1, z)
++					if painted[j] ~= kind or map.heights[j] ~= h then
++						break
++					end
++					x1 += 1
++				end
++				table.insert(out, { kind = kind, rect = { x0 = x, z0 = z, x1 = x1, z1 = z }, h = h })
++				x = x1 + 1
++			else
++				x += 1
++			end
++		end
++	end
++	return out
++end
++
++-- The draft's map dressed in `tileset`, its own landmarks added to the pieces.
++function DraftedMap.dress(
++	draft: Draft,
++	map: Heath.Map,
++	tileset: OutdoorTypes.OutdoorTileset,
++	cellSize: number,
++	rng: Random
++): MapDress.Dressing
++	-- Landmarks first, so the dressing's quiet props keep clear of them.
++	local marks: { Landmark } = if draft.landmarks then draft.landmarks(map, rng) else {}
++	local keepOut: { MapDress.KeepOut } = {}
++	for _, m in marks do
++		local recipe = Sculpts[m.sculpt]
++		if recipe then
++			local reach = math.max(recipe.size[1], recipe.size[3]) * (m.scale or 1) / 2
++			table.insert(keepOut, { x = m.x, z = m.z, radius = reach / cellSize + 1 })
++		end
++	end
++	local dressing = MapDress.dress(map, tileset, cellSize, rng, nil, keepOut)
++	-- Its own cells: their surface over the dressing's ground, the tileset's
++	-- props cleared off them if asked, and their own scatter.
++	local cells: { [string]: CellLook } = draft.cells or {}
++	local painted: { [number]: string } = if draft.paint then draft.paint(map, rng) else {}
++	for _, run in paintedRuns(map, painted) do
++		local look = cells[run.kind]
++		if look and look.ground then
++			table.insert(dressing.ground, {
++				look = look.ground,
++				rect = run.rect,
++				top = run.h + (look.lift or 0),
++				bottom = run.h - 4,
++			})
++		end
++	end
++	local kept: { MapDress.PiecePlacement } = {}
++	for _, piece in dressing.pieces do
++		local quiet = string.sub(piece.group, 1, 5) == "prop:" or piece.group == "outcrop"
++		local cx, cz = Grid.toCell(piece.x, piece.z, cellSize)
++		local i = if Grid.inBounds(map.grid, cx, cz) then Grid.index(map.grid, cx, cz) else nil
++		local look = if i and painted[i] then cells[painted[i]] else nil
++		if not (quiet and look and look.clear) then
++			table.insert(kept, piece)
++		end
++	end
++	dressing.pieces = kept
++	for i, kind in painted do
++		local look = cells[kind]
++		local props: { CellProp } = (if look then look.props else nil) or {}
++		for _, prop in props do
++			local recipe = Sculpts[prop.sculpt]
++			if recipe and rng:NextNumber() < 1 / math.max(prop.every, 1) then
++				local x, z = Grid.coords(map.grid, i)
++				local wx, wz = Grid.toWorld(x - 0.5 + rng:NextNumber(), z - 0.5 + rng:NextNumber(), cellSize)
++				local range = prop.scale or { 1, 1 }
++				table.insert(dressing.pieces, {
++					look = { name = prop.sculpt, size = recipe.size, sculpt = prop.sculpt },
++					x = wx,
++					z = wz,
++					yaw = rng:NextNumber() * 360,
++					scale = range[1] + (range[2] - range[1]) * rng:NextNumber(),
++					sink = (prop.sink or 0) - ((look :: CellLook).lift or 0),
++					group = `cell:{kind}`,
++				})
++			end
++		end
++	end
++	if draft.effects then
++		local spots = dressing.setPieces or {}
++		for k, e in draft.effects(map, rng) do
++			local x, z = Grid.toWorld(e.x, e.z, cellSize)
++			table.insert(spots, { recipe = e.recipe, seed = e.seed or k, x = x, z = z, lift = e.lift or 0 })
++		end
++		dressing.setPieces = spots
++	end
++	do
++		for _, m in marks do
++			local recipe = Sculpts[m.sculpt]
++			if recipe then
++				local x, z = Grid.toWorld(m.x, m.z, cellSize)
++				table.insert(dressing.pieces, {
++					look = { name = m.sculpt, size = recipe.size, sculpt = m.sculpt },
++					x = x,
++					z = z,
++					yaw = m.yaw or 0,
++					scale = m.scale or 1,
++					sink = m.sink or 0,
++					group = "landmark",
++				})
++			end
++		end
++	end
++	return dressing
++end
++
++return DraftedMap
+diff --git a/src/shared/systems/draftedmaps/.gitkeep b/src/shared/systems/draftedmaps/.gitkeep
+new file mode 100644
+index 00000000..e69de29b
+diff --git a/tests/systems/DraftedMaps.spec.luau b/tests/systems/DraftedMaps.spec.luau
+new file mode 100644
+index 00000000..46fc221d
+--- /dev/null
++++ b/tests/systems/DraftedMaps.spec.luau
+@@ -0,0 +1,111 @@
++--!strict
++-- Drafted maps (systems/DraftedMap, swarm-lab's maps job): every one is a sound
++-- layout over many seeds, the same for a seed, inside the phone budget once dressed,
++-- and its landmarks are sculpts on its grid. `lune run .swarm/tools/explain
++-- DraftedMaps` (in a swarm worktree) prints which rule a draft breaks.
++local DraftedMap = require("../../src/shared/systems/DraftedMap")
++local DraftedMaps = require("../../src/shared/data/DraftedMaps")
++local MapCost = require("../../src/shared/systems/MapCost")
++local OutdoorTilesets = require("../../src/shared/data/OutdoorTilesets")
++local PerfBudget = require("../../src/shared/data/PerfBudget")
++local Terrain = require("../../src/shared/data/Terrain")
++local TestApi = require("../TestApi")
++local TestRng = require("./TestRng")
++
++local SEEDS = 6
++
++local function rngFor(seed: number): Random
++	return TestRng.seeded(seed) :: any
++end
++
++return function(api: TestApi.Api)
++	local describe, it, expect = api.describe, api.it, api.expect
++
++	describe("DraftedMaps", function()
++		it("names a registered tileset and says what it is", function()
++			for key, draft in DraftedMaps do
++				expect({ key, draft.name }).toEqual({ key, key })
++				expect({ key, OutdoorTilesets[draft.tileset] ~= nil }).toEqual({ key, true })
++				expect({ key, #draft.about > 0 }).toEqual({ key, true })
++			end
++		end)
++
++		it("is the same map for the same seed", function()
++			for key, draft in DraftedMaps do
++				local a, b = draft.generate(rngFor(3)), draft.generate(rngFor(3))
++				expect({ key, a.kinds }).toEqual({ key, b.kinds })
++				expect({ key, a.sites }).toEqual({ key, b.sites })
++			end
++		end)
++
++		it("lays a sound map on every seed", function()
++			for key, draft in DraftedMaps do
++				for seed = 1, SEEDS do
++					local map = draft.generate(rngFor(seed))
++					expect({ key, seed, DraftedMap.problems(map) }).toEqual({ key, seed, {} })
++					local tileset = OutdoorTilesets[draft.tileset]
++					expect({ key, seed, DraftedMap.draftProblems(draft, map, rngFor(seed), tileset) }).toEqual({
++						key,
++						seed,
++						{},
++					})
++					if draft.landmarks then
++						local marks = draft.landmarks(map, rngFor(seed))
++						expect({ key, seed, DraftedMap.landmarkProblems(map, marks) }).toEqual({ key, seed, {} })
++					end
++				end
++			end
++		end)
++
++		it("varies with the seed", function()
++			for key, draft in DraftedMaps do
++				local a, b = draft.generate(rngFor(1)), draft.generate(rngFor(2))
++				expect({
++					key,
++					"two seeds give the same map",
++					a.kinds == b.kinds or table.concat(a.kinds :: any) == table.concat(b.kinds :: any),
++				}).toEqual({ key, "two seeds give the same map", false })
++			end
++		end)
++
++		-- A failure here means the map is too heavy for phones once dressed: thin
++		-- what grew rather than raise the budget.
++		it("keeps every seed within the phone budget", function()
++			local budget = PerfBudget.map
++			for key, draft in DraftedMaps do
++				local tileset = OutdoorTilesets[draft.tileset]
++				for seed = 1, SEEDS do
++					local rng = rngFor(seed)
++					local map = draft.generate(rng)
++					local c =
++						MapCost.count(DraftedMap.dress(draft, map, tileset, Terrain.cellSize, rng), tileset, rngFor)
++					local where = `{key} seed {seed}`
++					expect({ where, "parts", c.parts, "of", budget.parts, c.parts <= budget.parts }).toEqual({
++						where,
++						"parts",
++						c.parts,
++						"of",
++						budget.parts,
++						true,
++					})
++					expect({ where, "lights", c.lights, "of", budget.lights, c.lights <= budget.lights }).toEqual({
++						where,
++						"lights",
++						c.lights,
++						"of",
++						budget.lights,
++						true,
++					})
++					expect({ where, "emitters", c.emitters, "of", budget.emitters, c.emitters <= budget.emitters }).toEqual({
++						where,
++						"emitters",
++						c.emitters,
++						"of",
++						budget.emitters,
++						true,
++					})
++				end
++			end
++		end)
++	end)
++end

@@ -71,7 +71,9 @@ def render_commands(brief: dict) -> tuple[str, str]:
         ref = [f"lune run scripts/dresspreview whole .swarm/out/ref-whole-moor-{tileset}.png 2 1 tileset={tileset}"]
         mine = [
             "lune run scripts/dresspreview whole .swarm/out/map-whole-r1.png 3 1 layout=<YourLook>",
+            "lune run scripts/dresspreview shots .swarm/out/map-shots-r1.png 3 1 layout=<YourLook>",
             "lune run scripts/dresspreview landmark .swarm/out/map-landmark-r1.png 2 1 layout=<YourLook>",
+            "lune run scripts/setpiecepreview <SetPiece> .swarm/out/map-setpiece-r1.png",
         ]
         return "\n".join(ref), "\n".join(mine)
     if brief["family"] == "zone":

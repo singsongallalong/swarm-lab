@@ -45,6 +45,11 @@ def main(argv=None) -> None:
     p.add_argument("--turns", type=int, default=30, help="more turns each (default 30)")
     p.add_argument("--concurrency", type=int, default=4)
 
+    p = sub.add_parser("rework", help="send generators back with a critic's notes (critique/<gid>.md), then check, tile and report")
+    p.add_argument("run_dir", type=Path)
+    p.add_argument("--turns", type=int, default=40, help="turns each (default 40)")
+    p.add_argument("--concurrency", type=int, default=6)
+
     p = sub.add_parser("probe", help="check a provider works and can see images, with the settings generators get")
     p.add_argument("provider")
     p.add_argument("image", nargs="?", type=Path, default=config.ROOT / "tests" / "probe-heavedrocks.png")
@@ -85,6 +90,13 @@ def main(argv=None) -> None:
         apply_mod.apply(a.run_dir, a.letter)
     elif a.cmd == "resume":
         run_mod.resume(a.run_dir, a.turns, a.concurrency)
+        print("check:")
+        res = check_mod.check(a.run_dir)
+        if res["survivors"]:
+            sheet_mod.sheet(a.run_dir)
+        report_mod.report(a.run_dir)
+    elif a.cmd == "rework":
+        run_mod.rework(a.run_dir, a.turns, a.concurrency)
         print("check:")
         res = check_mod.check(a.run_dir)
         if res["survivors"]:

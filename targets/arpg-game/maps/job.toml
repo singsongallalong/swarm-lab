@@ -10,7 +10,9 @@ directions = "directions.txt"
 select = "select.md"
 # A layout generator is real code. In glade-maps (2026-10-29) three of six ran out at 100
 # turns and finished within 30 more, so a run gets 140 (fafwa: "a heightened turn count").
-max_turns = 140
+max_turns = 160
+# rimelake-open (2026-10-30) loosened the job (own cells, heights, effects, shots), which
+# is more to write; 160.
 tools = ["../zones/tools/explain.luau"]
 
 rules = ["docs/guides/adding-areas.md", "docs/art/bible.md"]
@@ -19,7 +21,9 @@ rules = ["docs/guides/adding-areas.md", "docs/art/bible.md"]
 needs = "src/shared/systems/DraftedMap.luau"
 # 0002 is the platform alone, on main b1d0ed0 (2026-10-29); an area's look comes with its
 # brief (`patches`). 0001 carried the Moonwell look too and only fits main 166b53d.
-patches = ["docs/map-drafting/0002-drafted-maps-platform.patch"]
+# 0003 (2026-10-30) opens it up: a draft's own cell kinds, heights checked, up to 240 x 200,
+# its own set pieces and the cameras for its own photographs (dresspreview `shots`).
+patches = ["docs/map-drafting/0003-drafted-maps-open.patch"]
 
 [files."src/shared/systems/draftedmaps/{skill}*.luau"]
 mode = "new_file"
@@ -41,7 +45,7 @@ pattern = '(\["sculpt:{skill_lower}_\w+"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),
 # Loops are allowed (layouts need them); the specs' time limit catches one that hangs.
 [purity]
 first_line = "--!strict"
-max_lines = 800
+max_lines = 900
 requires = ["../DraftedMap", "../Heath", "../Grid", "../Noise", "../DistanceField", "../../TerrainTypes"]
 forbid = [
   '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',

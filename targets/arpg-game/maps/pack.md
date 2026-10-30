@@ -38,37 +38,75 @@ $files_section
    need none: the area's sculpts already exist (`${tileset}_...` in Sculpts).
 7. **Don't read files outside this pack** unless a command fails and its error names one.
    Don't browse the web. Don't explore the repo.
-8. **Stop after at most two revisions** of your first working map.
+8. **Stop after at most three revisions** of your first working map.
 
 ## The brief
 
 $brief
 
+## What you're free to do (and what's judged)
+
+The first frozen-lake run made six sound maps that were all **small, flat moor bowls with
+no effect**: fafwa called them "a little boring". This run is loosened on purpose. A critic
+who sees **only your renders** will judge you, and the most weight goes to **one striking,
+novel photograph from inside your map** (your `shots`). Second: that no seed could be taken
+for the moor. Then scale and journey, the environmental effect, and playability.
+
+You may:
+
+- **Make your own kinds of ground** (`draft.cells` and `draft.paint`, in the contract): a
+  surface of your own material and colour, lifted off the ground or not, the tileset's
+  props kept off it (`clear`), and your own scatter of sculpts. Paint them on walkable cells
+  (an ice sheet, lifted at most 1 stud) or on wall cells (black open water sunk in the ice,
+  pressure ridges of heaved ice 6-20 studs tall, a frozen waterfall, a forest of spires up
+  to 60 studs). Roblox colours a terrain material once for the whole map, so a cell kind
+  uses a material the tileset doesn't, or the tileset's own colour for it;
+  `draftProblems` names the free ones.
+- **Use height.** `heights` is studs per cell. Walkable neighbours may differ by at most 2
+  studs (a ramp is a run of 2-stud steps); a bigger step needs a `bluff` cell (a wall) on its
+  high side, and the dressing draws the cliff or retaining wall. Shelves, sunken basins,
+  a road that climbs: all fine. `terraces = {}` can stay empty.
+- **Go big.** Up to 240 x 200 cells (the moor is 96 x 96). Aim for a map that takes a
+  while to cross, inside the phone budget the spec checks.
+- **Place effects** (`draft.effects`): up to 8 environment set pieces from SetPieces, at
+  fractional cells and a lift. Existing ones that suit this area: `rimeholt_underice` (a
+  cold glow breathing under the ice, frost motes), `rimeholt_drift` (snow streaming low on
+  the wind), `aurora_curtain` and `aurora_arc` (aurora in the sky), `barrow_wisps` and
+  `barrow_pall` (ghost-lights and pall over barrows). Name the one you're proudest of as
+  `setpiece` in the manifest: it is rendered on its own for the critic.
+- **Choose your own photographs** (`draft.shots`): up to three cameras, `from` and `to` in
+  fractional cells with a `lift` in studs over the ground there, and an optional `fov`.
+  Compose them like a photographer: a subject, a foreground, depth, a skyline. Stand low on
+  the ice looking up at what towers, or on a ridge looking down a frozen fall. A shot
+  inside a wall or staring at a slab is wasted.
+
+The boundary stays as the moor's and the fen's: an outer ring of wall, with `rim` cells
+lining the walkable ground and an edge kind each (`drop` falls away into mist, `cliff`,
+`thicket`, `ruin_wall`). It works well in the game; vary which edges you use, not the rule.
+
 ## What a sound map is
 
-`DraftedMap.problems(map)` (in the contract below) lists every way a map breaks what the
-dressing and the game assume, and the spec runs it on six seeds. In short:
+`DraftedMap.problems(map)` and `DraftedMap.draftProblems(draft, map, rng, tileset)` (in the
+contract below) list every way a map breaks what the dressing and the game assume, and the
+spec runs them on six seeds. In short:
 
-- The grid is at most 160 x 128 cells, a cell 4 studs (the moor's is 96 x 96 or 128 x 96).
-  `grid.cells`, `kinds` and `heights` each have width x depth entries.
+- At most 240 x 200 cells, a cell 4 studs. `grid.cells`, `kinds` and `heights` each have
+  width x depth entries.
 - The outermost ring of cells is wall. At least 1,500 cells are walkable.
 - A cell is floor exactly when its kind is `heath` or `road`. Walls are `void` (off the
-  map), `outcrop` (rock inside it), `rim` (the edge, lining walkable ground) or `bluff`.
+  map), `outcrop` (rock inside it), `rim` (the edge, lining walkable ground) or `bluff`
+  (the high side of a step).
 - All the walkable ground is **one region** (`Grid.keepLargestRegion` helps), and start
-  and exit stand on road cells, joined by walkable ground.
-- Every `rim` cell, and only those, has an edge kind in `edges` (`drop`, `cliff`,
-  `thicket`, `ruin_wall`), and touches a floor cell.
+  and exit stand on road cells, joined by walkable ground. Walkable neighbours at most 2
+  studs apart.
+- Every `rim` cell, and only those, has an edge kind in `edges`, and touches a floor cell.
 - `road` is the centreline from start to exit, in fractional cells, at least two points.
-- Sites (`ruin` or `graveyard`; leave manor, house, tower and labyrinthGate alone) are
-  rectangles of even width and depth, wholly on floor, not overlapping. The dressing builds
-  a ruin or a fenced graveyard on each.
-- `heights` all 0 and `terraces = {}` is a flat map, and fine. Raised ground isn't part of
-  this job.
+- Sites (`ruin` or `graveyard`) are rectangles of even width and depth, wholly on floor,
+  not overlapping. The dressing builds a ruin or a fenced graveyard on each.
+- Cell kinds, effects and shots name things that exist and stay on the grid.
 
 A landmark is `{ sculpt, x, z, yaw?, scale?, sink? }` in fractional cells. It stands on the
-ground there and the dressing keeps its smaller props clear of it. Put the brief's landmark on
-open walkable ground where your road leads, scaled so it reads from above (a sculpt's size,
-in studs at scale 1, is in its row in Sculpts; the brief names the ones to use).
+ground there and the dressing keeps its smaller props clear of it.
 
 ## The contract
 
@@ -123,14 +161,17 @@ Render your map (again after each revision, with a new `r<n>` in the names):
 $render_cmds
 ```
 
-Then **look at every image you rendered** with your Read tool, `map-whole` first. Ask:
+Then **look at every image you rendered** with your Read tool, `map-shots` first. The
+renders are plain boxes in flat colour (no textures, simple haze), so judge shape,
+composition and scale, not surface. Ask:
 
-- From above, does each seed have a shape of its own that says what the brief's place is, apart
-  from the moor's band?
-- Does the road lead to the landmark, and does it read from above?
+- Would one of your shots stop someone scrolling? Is it a place nobody has seen in this
+  game: a subject, a foreground, depth, the effect or the strange ground in frame?
+- From above, does each seed have a shape of its own that says what the brief's place is,
+  nothing like the moor's band? Is it big, with height, more than one kind of ground?
 - Are the three seeds different maps, yet clearly the same place?
 - Is there room to fight in (open ground), and does anything look broken: slivers of
-  floor, rims floating in the open, sites crammed against walls?
+  floor, rims floating in the open, a shot inside a wall?
 
 Check everything (a failure means the run is discarded):
 
@@ -147,6 +188,7 @@ Write `.swarm/manifest.json`, and then stop:
   "skill": "$skill",
   "look": "<your draft's name>",
   "rows_added": ["<every new sculpt row, or nothing>"],
+  "setpiece": "<the effect you're proudest of, a SetPieces name you place>",
   "intent": "<one sentence: the map's shape and how it reads from above>",
   "renders": ["<the paths of your final renders, the reference excluded>"],
   "revisions": 0,
