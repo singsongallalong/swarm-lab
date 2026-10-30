@@ -1,0 +1,7 @@
+# One approach per animator: the brief is the same, so the approaches vary how it is keyed.
+Start from the blow: key the Smash pose first, render it alone held, and get it clean (the head on the ground a stride ahead, nothing through the body); then key backwards to the wind-up.
+Think in the weapon's path: sketch the head's arc from the gather over the top to the ground as a list of points before keying, and make each pose's `point` turn steadily one way along it.
+Lead with the body: key twist, lean and drop for every pose first, so the hips and chest carry the swing, then place the weapon on top of a body that is already moving.
+Exaggerate, then pull back: push every pose further than feels right (deeper gather, higher raise, deeper fold), render, and only then pull back what the lab flags.
+Key the silhouettes: make each pose read as a clear shape from the side view on its own, as if it were a single drawing; then check the moves between them.
+Contrast in time: make the wind-up slow and the blow very short, and hold the impact long enough to read; judge timing on the close-up render of the blow.
