@@ -33,7 +33,10 @@ $files_section
    a new `local` outside the tables fails the check.
 4. **Inside the area's colour limits** (the brief). The `Sculpt` spec checks them.
 5. **Don't read files outside this pack** unless a command fails and names one. No web.
-6. **Stop after at most three revisions** of your first piece that renders.
+6. **Every render goes under `.swarm/out/`.** A preview run without an output path writes an
+   image into the repo root, and a stray file there discards the run (two of twelve in
+   domain-kit-1).
+7. **Stop after at most three revisions** of your first piece that renders.
 
 ## The brief
 
