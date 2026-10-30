@@ -1,0 +1,75 @@
+# The kit job (2026-10-30): one piece of an area's kit per worker, for a Claude builder to
+# assemble a map from. fafwa: "having deepseek draw entire maps has so far been good, but not
+# acceptable for the final game ... try having deepseek meaningfully help my builder build a
+# map ... perhaps having deepseek generate features/cells". So workers make what the game's
+# real pipeline already takes (sculpt rows for props and landmarks, set piece rows for
+# effects), each from one line of a kit list in the directions, and the builder keeps
+# layout, composition and assembly. docs/kit-process.md has the process.
+
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+max_turns = 100
+tools = ["tools/explain.luau"]
+rules = ["docs/guides/set-pieces.md"]
+
+[platform]
+needs = "docs/kit-domain.marker"
+patches = ["docs/kit/0001-domain-theme-and-limits.patch"]
+
+[files."src/shared/data/Sculpts.luau"]
+mode = "add_rows"
+prefix = "{skill_lower}_"
+
+[files."src/shared/data/SetPieces.luau"]
+mode = "add_rows"
+prefix = "{skill_lower}_"
+
+[files."src/shared/data/catalog/World.luau"]
+mode = "add_lines"
+pattern = '(\["sculpt:{skill_lower}_\w+"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),)?|"[^"]{1,160}",|(MOOR|TOWN)|\),|--[^\n]{0,200})'
+
+[quotes.sculpt_types]
+file = "src/shared/SculptTypes.luau"
+note = "what a sculpt recipe is: the kinds are fixed code, a recipe picks one and its size, colours and options"
+
+[quotes.colossus]
+file = "src/shared/data/Sculpts.luau"
+row = "quarry_colossus"
+note = "an existing landmark sculpt, for the shape of a row (a different place's look)"
+
+[quotes.setpiece_types]
+file = "src/shared/SetPieceTypes.luau"
+note = "what a set piece and a theme are"
+
+[quotes.themes]
+file = "src/shared/data/EnvThemes.luau"
+note = "the themes; yours is `domain`, at the end"
+
+[quotes.setpieces]
+file = "src/shared/data/SetPieces.luau"
+note = "the set piece recipes: a new one goes at the end of the `recipes` table"
+
+[[specs]]
+name = "Sculpt"
+cmd = "lune run tests Sculpt"
+
+[[specs]]
+name = "SetPiece"
+cmd = "lune run tests SetPiece"
+
+[[specs]]
+name = "Catalog"
+cmd = "lune run tests Catalog"
+
+[[specs]]
+name = "ContentCompleteness"
+cmd = "lune run tests ContentCompleteness"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/data/Sculpts.luau src/shared/data/SetPieces.luau src/shared/data/catalog/World.luau"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/data/Sculpts.luau src/shared/data/SetPieces.luau src/shared/data/catalog/World.luau"

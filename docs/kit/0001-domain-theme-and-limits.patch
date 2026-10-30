@@ -1,0 +1,92 @@
+From 0571c3d2e1913e9123671fc33c8447dfe598c9ae Mon Sep 17 00:00:00 2001
+From: kit <a@b>
+Date: Fri, 30 Oct 2026 16:01:19 -0400
+Subject: [PATCH] kit platform: domain theme, domain_ sculpt limits
+
+---
+ docs/kit-domain.marker         |  1 +
+ src/shared/data/EnvThemes.luau | 18 ++++++++++++++++++
+ tests/systems/Sculpt.spec.luau | 20 ++++++++++++++++++--
+ 3 files changed, 37 insertions(+), 2 deletions(-)
+ create mode 100644 docs/kit-domain.marker
+
+diff --git a/docs/kit-domain.marker b/docs/kit-domain.marker
+new file mode 100644
+index 00000000..8d6e53a5
+--- /dev/null
++++ b/docs/kit-domain.marker
+@@ -0,0 +1 @@
++The Eternal Domain kit platform (swarm-lab docs/kit/0001): the domain theme and domain_ sculpt limits, a trial.
+diff --git a/src/shared/data/EnvThemes.luau b/src/shared/data/EnvThemes.luau
+index 6fa9ed51..44d6b90a 100644
+--- a/src/shared/data/EnvThemes.luau
++++ b/src/shared/data/EnvThemes.luau
+@@ -165,6 +165,24 @@ local themes: { [string]: Theme } = {
+ 			wisp = "rbxassetid://113245411673535", -- assets/vfx/worm-wisp.png (OpenArt, A19-D15)
+ 		},
+ 	},
++	-- The Eternal Domain (roadmap areas/eternal-domain.md), a TRIAL for swarm-lab's kit
++	-- smoke test (2026-10-30): holy light on white stone and gold. Borrows the aurora's
++	-- soft textures until it has its own (EF5).
++	domain = {
++		about = "The Eternal Domain's holy light: a white-gold core, warm gold glow, pale sky-blue haze and gold motes.",
++		colors = {
++			core = { 255, 250, 232 },
++			gold = { 255, 206, 110 },
++			glow = { 255, 226, 160 },
++			sky = { 190, 214, 255 },
++		},
++		kit = {
++			rays = "rbxassetid://125151833351357", -- assets/vfx/aurora-ray-side.png (the aurora's)
++			smoke = "rbxassetid://118279823035826", -- assets/vfx/worm-smoke.png (the aurora's)
++			veil = "rbxassetid://116287069271100", -- assets/vfx/worm-veil.png (the aurora's)
++			wisp = "rbxassetid://113245411673535", -- assets/vfx/worm-wisp.png (the aurora's)
++		},
++	},
+ }
+ 
+ return table.freeze(themes)
+diff --git a/tests/systems/Sculpt.spec.luau b/tests/systems/Sculpt.spec.luau
+index 56ff410c..533325cf 100644
+--- a/tests/systems/Sculpt.spec.luau
++++ b/tests/systems/Sculpt.spec.luau
+@@ -19,6 +19,21 @@ local FOOTPRINT_SLACK = 1.7
+ local TRIM = { saturation = 0.4, value = 0.4 }
+ -- And for the zone's one muted accent (bible §2), which a recipe may carry.
+ local ACCENT = { saturation = 0.5, value = 0.4 }
++-- The Eternal Domain (roadmap areas/eternal-domain.md), proposed as the bible's opposite:
++-- white stone and gold. TRIAL limits for swarm-lab's kit smoke test (2026-10-30), until
++-- fafwa amends the bible; recipes named domain_* only.
++local ZONES: { [string]: { trim: { saturation: number, value: number }, accent: { saturation: number, value: number } } } =
++	{
++		domain_ = { trim = { saturation = 0.55, value = 0.92 }, accent = { saturation = 0.75, value = 0.95 } },
++	}
++local function limitsFor(name: string): ({ saturation: number, value: number }, { saturation: number, value: number })
++	for prefix, zone in ZONES do
++		if string.sub(name, 1, #prefix) == prefix then
++			return zone.trim, zone.accent
++		end
++	end
++	return TRIM, ACCENT
++end
+ 
+ local function make(name: string, seed: number): SculptTypes.Sculpt
+ 	return Sculpt.make(Sculpts[name], TestRng.seeded(seed * 7919 + 13) :: any, name)
+@@ -139,11 +154,12 @@ return function(api: TestApi.Api)
+ 					local saturation = if hi > 0 then (hi - lo) / hi else 0
+ 					return saturation <= limit.saturation + 1e-9 and hi <= limit.value
+ 				end
++				local trim, accent = limitsFor(name)
+ 				for _, c in recipe.colors do
+-					expect(within(c, TRIM)).toBe(true)
++					expect(within(c, trim)).toBe(true)
+ 				end
+ 				if recipe.accent then
+-					expect(within(recipe.accent, ACCENT)).toBe(true)
++					expect(within(recipe.accent, accent)).toBe(true)
+ 				end
+ 			end)
+ 		end
+-- 
+2.43.0
+

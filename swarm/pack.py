@@ -98,6 +98,15 @@ def render_commands(brief: dict) -> tuple[str, str]:
             "lune run scripts/setpiecepreview <SetPiece> .swarm/out/feature-setpiece-r1.png",
         ]
         return "\n".join(ref), "\n".join(mine)
+    if brief["family"] == "kit":
+        # One piece of an area's kit (props and landmarks as sculpt rows, maybe a set piece),
+        # for a builder to assemble maps from: the sculpts over three seeds, and the effect.
+        ref = ["lune run scripts/sculptpreview quarry_colossus .swarm/out/ref-quarry_colossus.png 2"]
+        mine = [
+            "lune run scripts/sculptpreview <Sculpts> .swarm/out/kit-sculpts-r1.png 3",
+            "lune run scripts/setpiecepreview <SetPiece> .swarm/out/kit-setpiece-r1.png",
+        ]
+        return "\n".join(ref), "\n".join(mine)
     if brief["family"] == "motion":
         # A cast motion keyed as end-effector poses (CastDrafts), played by the motion lab
         # on the blocky R15 body with the weapon: the whole cast at shares of its cast time

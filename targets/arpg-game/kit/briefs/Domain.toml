@@ -1,0 +1,28 @@
+# The kit smoke test (2026-10-30): pieces of the Eternal Domain (arpg-game
+# docs/roadmap/areas/eternal-domain.md) for a Claude builder to assemble into a dungeon.
+skill = "Domain"
+family = "kit"
+brief = """
+The **Eternal Domain** is the game's endgame dungeon: the domain of the gods, a vast,
+Valhalla-like hall of white stone and gold standing on cloud, seemingly endless. It is the
+opposite of the rest of the game (dark night gothic): here everything is pale stone, gilt
+and holy light. It is reached at the level cap with keys, so it must feel like a reward:
+monumental, awe-struck, cold-perfect, a little terrible. Think colossal halls, colonnades
+running into haze, statues of gods many times a man's height, gold that glows.
+
+**Its look, in numbers** (a trial; the colour check enforces these for `domain_` rows):
+- Stone: warm ivory and pale marble, not pure white: value 0.75-0.92, saturation 0.05-0.20.
+  Use two or three stone tones so shapes read against each other; shaded faces darker.
+- Gold: saturation 0.45-0.55 in `colors`, up to 0.75 as a recipe's `accent`; value up to 0.92.
+  Gold is trim and crown, not whole surfaces.
+- A cool accent may appear sparingly: pale sky blue (190, 214, 255) as glass or light.
+- Materials: Marble, Limestone, Slate for stone; Metal or Foil for gold; Neon only for light.
+- Scale: a person is 5 studs (the red post). Doorways 20+, columns 30-60, colossi 40-90.
+
+**Your piece** is one line of the kit list, in `.swarm/DIRECTION.md`. A builder will place
+it many times in a generated dungeon, so it must read from the game's high camera (pitch 50,
+looking down) and stand up to a close look, and seeds should vary it (broken or whole,
+taller or shorter) without losing what it is. Make **one to three sculpt rows** for it (the
+piece and, if it needs them, its variants or parts), and, if your piece has light or
+movement, **one set piece** in the `domain` theme that goes with it.
+"""
