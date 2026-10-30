@@ -17,9 +17,10 @@ map from **every** seed, and a different one from each.
 $files_section
 2. **One layout module,** `src/shared/systems/draftedmaps/$skill<Something>.luau`, returning one
    `DraftedMap.Draft` (the contract below) whose `name` is its file name and its key, whose
-   `tileset` is `"moonwell"`, and whose `generate(rng)` returns a `Heath.Map`.
+   `tileset` is `"$tileset"`, and whose `generate(rng)` returns a `Heath.Map`.
 3. **Register it** in `DraftedMaps.luau`: one `local <Name> = require("../systems/draftedmaps/<Name>")`
-   line and one `<Name> = <Name>,` line in the table. Nothing else in that file changes.
+   line and one `<Name> = <Name>,` line in the table, under its comment. Nothing else in that
+   file changes: keep the comment.
 4. **Your own generator.** Read Heath (quoted below) to learn what a map holds and how the
    moor's is made, but write your own: calling `Heath.generate` fails the check. You may
    use its types and `Heath.onFloor`, and Grid, Noise and DistanceField.
@@ -34,7 +35,7 @@ $files_section
 6. **Optional new props** go as rows at the **end** of the `Sculpts` table, each named
    `${skill_lower}_<something>` with an existing kind, colours inline, and a catalog row
    `["sculpt:<name>"] = row("<one sentence>", MOOR),` in `catalog/World.luau`. Most maps
-   need none: the moonwell sculpts already exist.
+   need none: the area's sculpts already exist (`${tileset}_...` in Sculpts).
 7. **Don't read files outside this pack** unless a command fails and its error names one.
    Don't browse the web. Don't explore the repo.
 8. **Stop after at most two revisions** of your first working map.
@@ -65,9 +66,9 @@ dressing and the game assume, and the spec runs it on six seeds. In short:
   this job.
 
 A landmark is `{ sculpt, x, z, yaw?, scale?, sink? }` in fractional cells. It stands on the
-ground there and the dressing keeps its smaller props clear of it. Put the well's ring on
-open walkable ground where your road leads, scaled so it reads from above (the ring is
-about 28 studs across at scale 1).
+ground there and the dressing keeps its smaller props clear of it. Put the brief's landmark on
+open walkable ground where your road leads, scaled so it reads from above (a sculpt's size,
+in studs at scale 1, is in its row in Sculpts; the brief names the ones to use).
 
 ## The contract
 
@@ -124,9 +125,9 @@ $render_cmds
 
 Then **look at every image you rendered** with your Read tool, `map-whole` first. Ask:
 
-- From above, does each seed have a shape of its own that says "a sacred glade", apart
+- From above, does each seed have a shape of its own that says what the brief's place is, apart
   from the moor's band?
-- Does the road lead to the well, and does the ring read from above?
+- Does the road lead to the landmark, and does it read from above?
 - Are the three seeds different maps, yet clearly the same place?
 - Is there room to fight in (open ground), and does anything look broken: slivers of
   floor, rims floating in the open, sites crammed against walls?

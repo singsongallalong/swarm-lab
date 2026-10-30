@@ -2,6 +2,11 @@
 # new sculpt rows use it in lowercase (glade_...).
 skill = "Glade"
 family = "map"
+# The area look it is drawn in (in the platform patch).
+tileset = "moonwell"
+# Its look (moonwell-zones candidate F) was carried by the old platform 0001, on main 166b53d.
+# To run it again on today's main, port candidate-F.patch the way Rimelake's was and list it
+# here under `patches`.
 brief = """
 Lay out the whole map of the Moonwell glade: the drowned glade where an order of
 moon-priestesses kept a sacred well, long abandoned. Its look already exists: the

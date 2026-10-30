@@ -16,9 +16,9 @@ $candidates
 
 Judge, in order:
 
-1. **A shape of its own.** From above, each seed says "a sacred glade in a wood", not the
+1. **A shape of its own.** From above, each seed says what the brief's place is, not the
    moor's band repainted.
-2. **The well pulls.** The road leads to the ring, and the ring reads from above.
+2. **The landmark pulls.** The road leads to the brief's landmark, and it reads from above.
 3. **Variety with identity.** Three seeds, three different maps, clearly the same place.
 4. **Playable.** Open ground to fight on, no slivers or dead-end needles of floor, sites with
    room round them.

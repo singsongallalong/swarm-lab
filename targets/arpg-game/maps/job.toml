@@ -1,8 +1,8 @@
 # The maps job: a whole outdoor map's layout as one pure, seeded Luau module (a drafted
 # map, systems/DraftedMap), with the landmarks it places itself, dressed by the game's
 # own MapDress and judged offline. Code, not data, so the runs' base gets a platform
-# (the drafted-map contract, its registry, its spec and dresspreview's layout=) plus the
-# Moonwell barrow-glade look from moonwell-zones, so generators write the map alone.
+# (the drafted-map contract, its registry, its spec and dresspreview's layout=); each brief
+# brings the area look its map is drawn in, so generators write the map alone.
 # Making a draft a real map (a builder, a place, seams, packs) is human-planned work.
 
 template = "pack.md"
@@ -17,7 +17,9 @@ rules = ["docs/guides/adding-areas.md", "docs/art/bible.md"]
 
 [platform]
 needs = "src/shared/systems/DraftedMap.luau"
-patches = ["docs/map-drafting/0001-drafted-maps.patch"]
+# 0002 is the platform alone, on main b1d0ed0 (2026-10-29); an area's look comes with its
+# brief (`patches`). 0001 carried the Moonwell look too and only fits main 166b53d.
+patches = ["docs/map-drafting/0002-drafted-maps-platform.patch"]
 
 [files."src/shared/systems/draftedmaps/{skill}*.luau"]
 mode = "new_file"

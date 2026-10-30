@@ -87,6 +87,22 @@ def apply_platform(j: config.Job, base: Path, log) -> None:
         raise SystemExit(f"the platform patches didn't provide {plat['needs']}")
 
 
+def apply_brief_patches(brief: dict, base: Path, log) -> None:
+    """A brief may bring patches of its own (brief `patches`, paths in swarm-lab), applied to
+    the base clone after the job's platform: say the area look a map is drawn in. Three-way,
+    so a look made on an older main still lands."""
+    rels = brief.get("patches", [])
+    if not rels or (base / ".swarm-brief-patches").exists():
+        return
+    for rel in rels:
+        log(f"brief patch: {rel}")
+        sh(["git", "apply", "-3", "--whitespace=nowarn", str((config.ROOT / rel).resolve())], cwd=base)
+    (base / ".swarm-brief-patches").write_text("\n".join(rels) + "\n")
+    sh(["git", "add", "-A"], cwd=base)
+    sh(["git", "-c", "user.name=swarm-lab", "-c", "user.email=swarm-lab@localhost", "commit", "-qm",
+        f"swarm-lab: the brief's own patches ({', '.join(rels)})"], cwd=base)
+
+
 def make_base(t: config.Target, run_dir: Path, log, j: config.Job | None = None) -> str:
     base = run_dir / "base"
     if not base.exists():
@@ -351,7 +367,9 @@ def run(target_name: str, job_name: str, brief_name: str, gens: str, run_id: str
     (run_dir / "logs").mkdir(parents=True, exist_ok=True)
     log = lambda msg: print(f"[{run_id}] {msg}", flush=True)  # noqa: E731
 
-    commit = make_base(t, run_dir, log, j)
+    make_base(t, run_dir, log, j)
+    apply_brief_patches(brief, run_dir / "base", log)
+    commit = sh(["git", "rev-parse", "HEAD"], cwd=run_dir / "base").stdout.strip()
     pack_text = pack.build(j, brief, run_dir / "base", figs)
     (run_dir / "pack.md").write_text(pack_text)
     log(f"pack: {len(pack_text):,} chars (~{len(pack_text) // 4:,} tokens)")

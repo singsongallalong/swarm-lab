@@ -67,7 +67,8 @@ def render_commands(brief: dict) -> tuple[str, str]:
         # A drafted map's layout, dressed in its own tileset: the whole map over three
         # seeds, and its first landmark up close. The reference is the moor's own layout
         # in the same look, the map a draft must not merely repaint.
-        ref = ["lune run scripts/dresspreview whole .swarm/out/ref-whole-moor-moonwell.png 2 1 tileset=moonwell"]
+        tileset = brief.get("tileset", "moonwell")
+        ref = [f"lune run scripts/dresspreview whole .swarm/out/ref-whole-moor-{tileset}.png 2 1 tileset={tileset}"]
         mine = [
             "lune run scripts/dresspreview whole .swarm/out/map-whole-r1.png 3 1 layout=<YourLook>",
             "lune run scripts/dresspreview landmark .swarm/out/map-landmark-r1.png 2 1 layout=<YourLook>",
@@ -322,6 +323,7 @@ def build(job: Job, brief: dict, repo: Path, figures: list[Figure] | tuple = ())
         **quotes,
         skill=skill,
         skill_lower=skill.lower(),
+        tileset=brief.get("tileset", "moonwell"),
         family=brief["family"],
         brief=brief_text,
         current_look=brief.get("current_look", "none"),

@@ -1,0 +1,36 @@
+# The frozen lake of Rimeholt (rimeholt-zones candidate C, picked 2026-10-29) as a whole map.
+# Layout modules are draftedmaps/Rimelake<Something>.luau; new sculpt rows rimelake_...
+skill = "Rimelake"
+family = "map"
+tileset = "rimeholt"
+# The frozen-lake look, applied to each run's base on top of the platform.
+patches = ["results/rimeholt-zones/candidate-C-on-b1d0ed0.patch"]
+directions = "directions-rimelake.txt"
+brief = """
+Lay out the whole map of Rimeholt's frozen lake: a highland where a hill-folk's barrows and
+runestones lie under old snow beside a lake that never thaws. Its look already exists: the
+`rimeholt` tileset (blue-grey snow, black rimed pines, grey granite, an ice-blue accent, amber
+hill-fires along the road) with its sculpts in Sculpts:
+
+- `rimeholt_ice`: a sheet of pale ice, 24 x 24 studs at scale 1, flat on the ground. Scale it
+  and tile it to make the lake's surface.
+- `rimeholt_runestones`: a ring of standing runestones, 18 studs across.
+- `rimeholt_barrow`: a hill-king's barrow, 16 x 12 studs.
+- `rimeholt_pine`, `rimeholt_pine_snapped`, `rimeholt_boulder`, `rimeholt_hillfire` (a
+  burning brazier), `rimeholt_marker` (a waymarker stone).
+
+Your job is the map itself: the walkable ground, the road from start to exit, the rims, the
+sites, and the landmarks you place. **The frozen lake is the heart of the map and its
+landmark**: a wide sheet of ice the player crosses or walks around, with the runestone ring on
+its shore and barrows on the high ground. The lake is walkable ground (heath cells) covered by
+`rimeholt_ice` landmarks, so players can fight on the ice. Lay the ice so it reads as one lake
+from above, not scattered tiles.
+
+It must not be the moor's map in new paint. The moor (Heath) is one wide band around a road
+winding west to east; the frozen lake should have a shape that says "a highland round a frozen
+lake".
+
+It's judged from above over three seeds (the whole map) and up close at its first landmark,
+against the moor's layout in the same look. Every seed must be a sound map
+(DraftedMap.problems) inside the phone budget.
+"""

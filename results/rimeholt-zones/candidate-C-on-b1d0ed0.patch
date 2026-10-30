@@ -1,0 +1,762 @@
+diff --git a/src/shared/data/EnvThemes.luau b/src/shared/data/EnvThemes.luau
+index 6fa9ed51..f92fe5a3 100644
+--- a/src/shared/data/EnvThemes.luau
++++ b/src/shared/data/EnvThemes.luau
+@@ -165,6 +165,25 @@ local themes: { [string]: Theme } = {
+ 			wisp = "rbxassetid://113245411673535", -- assets/vfx/worm-wisp.png (OpenArt, A19-D15)
+ 		},
+ 	},
++	-- Rimeholt (the frozen highland): light inside old ice, pale and a little
++	-- green, never the violet of the Ashfields and never warm. The deep colour
++	-- is what lies under the lake ice; the kit is the aurora's soft textures,
++	-- so the cold costs no new art.
++	rimeholt = {
++		about = "Rimeholt's cold: pale ice-blue light under the lake ice, a deep green-blue glow and frost-white motes.",
++		colors = {
++			pale = { 206, 236, 230 },
++			ice = { 128, 204, 200 },
++			glow = { 96, 176, 184 },
++			deep = { 64, 148, 156 },
++			rime = { 176, 216, 214 },
++		},
++		kit = {
++			veil = "rbxassetid://116287069271100", -- assets/vfx/worm-veil.png (A19-D15)
++			wisp = "rbxassetid://113245411673535", -- assets/vfx/worm-wisp.png (A19-D15)
++			smoke = "rbxassetid://118279823035826", -- assets/vfx/worm-smoke.png (A19-D15)
++		},
++	},
+ }
+ 
+ return table.freeze(themes)
+diff --git a/src/shared/data/OutdoorTilesets.luau b/src/shared/data/OutdoorTilesets.luau
+index efede638..55ae4536 100644
+--- a/src/shared/data/OutdoorTilesets.luau
++++ b/src/shared/data/OutdoorTilesets.luau
+@@ -8,6 +8,7 @@ local Field = require("./outdoorTilesets/Field")
+ local Field2 = require("./outdoorTilesets/Field2")
+ local Moor = require("./outdoorTilesets/Moor")
+ local OutdoorTypes = require("../OutdoorTypes")
++local Rimeholt = require("./outdoorTilesets/Rimeholt")
+ local SunkenShelf = require("./outdoorTilesets/SunkenShelf")
+ local Wasteland = require("./outdoorTilesets/Wasteland")
+ 
+@@ -21,6 +22,7 @@ local OutdoorTilesets: { [string]: OutdoorTypes.OutdoorTileset } = {
+ 	chainedGorge = ChainedGorge,
+ 	charnelQuarry = CharnelQuarry,
+ 	drownedParish = DrownedParish,
++	rimeholt = Rimeholt,
+ }
+ 
+ return table.freeze(OutdoorTilesets)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index ec38d8d9..f409fe03 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -433,6 +433,113 @@ local Sculpts: { [string]: Recipe } = {
+ 			{ width = 36, depth = 38, rise = 12, steps = 8 },
+ 		},
+ 	},
++	-- Rimeholt, the frozen highland: the hill-folk's barrows and runestones
++	-- under old snow, black pines rimed pale, and tarns of ice that never
++	-- thaw. Every colour is inline in its row; the pale blue-green is the
++	-- zone's one accent (B8), the rest near-neutral granite and black wood.
++	rimeholt_ice = {
++		kind = "pool",
++		size = { 24, 0.1, 24 },
++		material = "Glass",
++		-- Old ice, pale blue with the faintest green in it, and a sky sheen so
++		-- the moon shows in it; thin, so the pools' lobes don't stack into a
++		-- slab.
++		colors = { { 74, 92, 100 }, { 68, 86, 94 } },
++		reflectance = 0.25,
++		maxPrims = 4,
++	},
++	rimeholt_runestones = {
++		kind = "waystones",
++		-- Taller than a man and a ring wide enough to stand in: the landmark
++		-- that draws the eye across the snow (B11). A third colour is the
++		-- accent, so a few stones still hold their cut runes.
++		size = { 18, 7, 1.8 },
++		material = "Slate",
++		colors = { { 74, 78, 86 }, { 66, 70, 78 }, { 62, 88, 90 } },
++		maxPrims = 10,
++		stones = 9,
++	},
++	rimeholt_barrow = {
++		kind = "crypt",
++		-- The hill-folk's great barrow: a vault of grey stone half sunk in the
++		-- snow, its iron door barred. The graveyard's vault and a landmark on
++		-- the open heath, and huge out past the way on (beyond.landmark).
++		size = { 16, 10, 12 },
++		material = "Slate",
++		colors = { { 72, 76, 84 }, { 64, 68, 76 } },
++		accent = { 44, 48, 56 },
++		maxPrims = 20,
++	},
++	rimeholt_pine = {
++		kind = "tree",
++		-- Black pine: bare, crooked, its bark the dark of a moonless trunk and
++		-- its upper branches rimed pale by the frost. Merged, so a rim's worth
++		-- of thicket costs a part a tree.
++		size = { 7, 13, 7 },
++		material = "Wood",
++		colors = { { 34, 36, 40 }, { 28, 30, 34 }, { 66, 74, 82 } },
++		maxPrims = 40,
++		segments = 4,
++		branches = 6,
++		bend = 10,
++		merge = 8,
++	},
++	rimeholt_pine_snapped = {
++		kind = "tree",
++		-- A pine snapped by a winter wind, rimed like the rest.
++		size = { 5, 9, 5 },
++		material = "Wood",
++		colors = { { 34, 36, 40 }, { 28, 30, 34 }, { 66, 74, 82 } },
++		maxPrims = 30,
++		segments = 4,
++		branches = 2,
++		bend = 10,
++		snapped = true,
++		merge = 8,
++	},
++	rimeholt_boulder = {
++		kind = "boulder",
++		-- A heap of cold granite chunks, the snow gathered round their feet.
++		size = { 5, 3.4, 4.2 },
++		material = "Basalt",
++		colors = { { 66, 72, 82 }, { 58, 64, 74 }, { 74, 80, 90 } },
++		maxPrims = 6,
++		chunks = 4,
++		tilt = 22,
++	},
++	rimeholt_fell_grass = {
++		kind = "tuft",
++		-- Frost-bitten fell grass through the snow: dead grey blades with a
++		-- grey-green cast, the last colour their frosted tips, the accent. Low
++		-- and blade-heavy, so it reads as grass, not stones. One union a clump.
++		size = { 3.4, 3, 3.4 },
++		material = "Grass",
++		colors = { { 68, 72, 68 }, { 60, 64, 62 }, { 52, 56, 54 }, { 84, 94, 98 } },
++		maxPrims = 10,
++		blades = 2,
++		body = 0.45,
++		rounded = true,
++		merge = 12,
++	},
++	rimeholt_hillfire = {
++		kind = "brazier",
++		-- An iron brazier of banked coals: the last hill-fires, along the road,
++		-- at the thresholds and in the ruins (the piece's light is the fire).
++		size = { 1.8, 3.6, 1.8 },
++		material = "Slate",
++		colors = { { 46, 48, 54 }, { 52, 54, 60 }, { 46, 48, 54 }, { 60, 62, 68 }, { 80, 60, 50 } },
++		maxPrims = 5,
++	},
++	rimeholt_marker = {
++		kind = "marker",
++		-- The threshold's marker stone, its rag in the accent's ice-blue, so a
++		-- way on reads the same every time (A012 step 2b).
++		size = { 3.4, 7, 1.8 },
++		material = "Slate",
++		colors = { { 74, 78, 86 }, { 66, 70, 78 } },
++		accent = { 62, 88, 90 },
++		maxPrims = 9,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 565681fc..88a1b18b 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1049,6 +1049,158 @@ local recipes: { [string]: Recipe } = {
+ 			},
+ 		},
+ 	},
++	-- Rimeholt (the frozen highland): the cold drawing light up out of the
++	-- lake. A lit crack in the ice, a low haze of cold over it, a few frost
++	-- motes lifting, and a dim light on the snow, all breathing on one slow
++	-- seven-second beat, so the lake pulses rather than flickers. Placed on
++	-- the ice tarns by the tileset's `setPieces`, and read from the game
++	-- camera, which looks down on the glow.
++	rimeholt_underice = {
++		about = "A cold blue-green glow breathing slowly under Rimeholt's lake ice: a lit crack in the ice with frost motes lifting off it.",
++		theme = "rimeholt",
++		path = { kind = "worm", length = 24, step = 2, bend = 45, climb = 0, round = 1 },
++		layers = {
++			{
++				name = "crack",
++				look = { kind = "neon", width = 0.5, segment = 3, transparency = 0.35, color = "ice" },
++				motion = { kind = "pulse", period = 7, depth = 0.5 },
++				priority = 1,
++			},
++			{
++				-- Little branching cracks springing off the lit one, so the ice
++				-- reads cracked rather than a wire laid on it (EF8).
++				name = "shards",
++				look = { kind = "arcs", every = 6, pieces = 3, reach = 1.1, span = 2.6, width = 0.12, color = "rime" },
++				motion = { kind = "crackle", every = 0.5 },
++				priority = 2,
++			},
++			{
++				name = "glow",
++				look = {
++					kind = "stream",
++					every = 10,
++					thick = 8,
++					lift = 0.5,
++					toward = "up",
++					rise = 0.4,
++					life = { 5, 7 },
++					rate = 1.5,
++					size = 6,
++					-- Laid flat over the ice: a sheet of cold light, not a column.
++					tall = 0.5,
++					transparency = 0.86,
++					color = "glow",
++					texture = "veil",
++					lean = 25,
++					vary = 0.5,
++				},
++				motion = { kind = "pulse", period = 7, depth = 0.4 },
++				priority = 3,
++			},
++			{
++				name = "motes",
++				look = {
++					kind = "stream",
++					every = 14,
++					thick = 5,
++					lift = 0.3,
++					toward = "up",
++					rise = 0.8,
++					life = { 4, 6 },
++					rate = 1.2,
++					size = 0.5,
++					tall = 1,
++					transparency = 0.3,
++					color = "rime",
++					texture = "wisp",
++					lean = 10,
++					vary = 0.4,
++				},
++				motion = { kind = "sway", amplitude = 0.6, tilt = 3, span = 8, periods = { 6, 9 } },
++				priority = 4,
++			},
++			{
++				name = "light",
++				look = { kind = "light", every = 8, max = 2, range = 18, brightness = 0.8, color = "glow" },
++				motion = { kind = "pulse", period = 7, depth = 0.5 },
++				priority = 5,
++			},
++		},
++	},
++	-- Rimeholt's weather (the pack's other signature): snow torn low off the
++	-- drift and running across the road on the wind, a pale sheet with grit
++	-- racing through it and a slow haze settling behind, all near ankle
++	-- height so the game camera sees it (EF8).
++	rimeholt_drift = {
++		about = "Snow drifting low across Rimeholt's road on the night wind, a pale sheet streaming downwind with a slow haze settling behind it.",
++		theme = "rimeholt",
++		path = { kind = "worm", length = 40, step = 4, bend = 8, climb = 1, round = 2 },
++		layers = {
++			{
++				name = "drift",
++				look = {
++					kind = "stream",
++					every = 20,
++					thick = 10,
++					lift = 0.6,
++					toward = "along",
++					rise = 8,
++					life = { 2.5, 4 },
++					rate = 8,
++					size = 3,
++					tall = 2,
++					transparency = 0.8,
++					color = "rime",
++					texture = "veil",
++					lean = 5,
++					vary = 0.6,
++				},
++				motion = { kind = "sway", amplitude = 2.5, tilt = 8, span = 26, periods = { 7, 10 } },
++				priority = 1,
++			},
++			{
++				name = "grit",
++				look = {
++					kind = "stream",
++					every = 24,
++					thick = 8,
++					lift = 0.3,
++					toward = "along",
++					rise = 11,
++					life = { 1.6, 2.4 },
++					rate = 14,
++					size = 0.4,
++					tall = 1,
++					transparency = 0.5,
++					color = "pale",
++					lean = 6,
++					vary = 0.3,
++				},
++				priority = 2,
++			},
++			{
++				name = "settle",
++				look = {
++					kind = "stream",
++					every = 40,
++					thick = 12,
++					lift = 2,
++					toward = "along",
++					rise = 1.2,
++					life = { 5, 8 },
++					rate = 1.5,
++					size = 9,
++					tall = 1.4,
++					transparency = 0.9,
++					color = "rime",
++					texture = "veil",
++					vary = 0.2,
++				},
++				motion = { kind = "sway", amplitude = 3, tilt = 5, span = 34, periods = { 9, 13 } },
++				priority = 3,
++			},
++		},
++	},
+ }
+ 
+ -- The Sunken Shelf (A037). Sea mist rolling in low over the flats: three
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index b6be56f9..0e4c0dc5 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -328,6 +328,40 @@ local rows: { [string]: Row } = {
+ 	-- data/Buildings
+ 	["building:Hut"] = row("A one-room hut plan built from a building kit.", MOOR),
+ 	["building:LHouse"] = row("An L-shaped house plan built from a building kit.", MOOR),
++	["sculpt:rimeholt_ice"] = row(
++		"A thin sheet of pale ice with a green cast, the frozen tarns and lake pools of Rimeholt.",
++		MOOR
++	),
++	["sculpt:rimeholt_runestones"] = row(
++		"A ring of tall rune-carved standing stones on Rimeholt's snow, a few still holding the ice-blue in their cut runes.",
++		MOOR
++	),
++	["sculpt:rimeholt_barrow"] = row(
++		"A great barrow vault of grey stone with a barred iron door, half sunk in the snow: Rimeholt's burial mound and the landmark past its way on.",
++		MOOR
++	),
++	["sculpt:rimeholt_pine"] = row("A black pine rimed pale with frost along Rimeholt's thicket edges.", MOOR),
++	["sculpt:rimeholt_pine_snapped"] = row(
++		"A black pine snapped part way up and rimed with frost, mixed into Rimeholt's thickets.",
++		MOOR
++	),
++	["sculpt:rimeholt_boulder"] = row("A tilted heap of cold grey granite boulders on Rimeholt's snow.", MOOR),
++	["sculpt:rimeholt_fell_grass"] = row(
++		"A low clump of frost-bitten fell grass poking through the snow on Rimeholt's heath.",
++		MOOR
++	),
++	["sculpt:rimeholt_hillfire"] = row(
++		"An iron brazier of banked coals, the last hill-fires along Rimeholt's road, at its thresholds and in its ruins.",
++		MOOR
++	),
++	["sculpt:rimeholt_marker"] = row(
++		"A tall marker stone with an ice-blue rag at Rimeholt's thresholds between reaches.",
++		MOOR
++	),
++	["outdoor:rimeholt"] = row(
++		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/data/outdoorTilesets/Rimeholt.luau b/src/shared/data/outdoorTilesets/Rimeholt.luau
+new file mode 100644
+index 00000000..6e222deb
+--- /dev/null
++++ b/src/shared/data/outdoorTilesets/Rimeholt.luau
+@@ -0,0 +1,380 @@
++--!strict
++-- Rimeholt, the frozen highland (the frozen lake direction): a night highland
++-- of blue-grey snow under the moor's faint moon, dark frozen earth under the
++-- ruins, black pines rimed pale along the thicket edges and grey granite in
++-- the cliffs. A hill-folk's barrows and standing stones lie under the old
++-- snow beside tarns that never thaw: the pools are sheets of pale ice, and
++-- the rings of runestones stand on their shores. The one warmth is the last
++-- hill-fires' amber, in iron braziers along the road and at every threshold
++-- (B2-B3). Its accent (B8) is a pale ice-blue with a touch of green, like
++-- light inside old ice: the ice sheets, the runes cut into the stones, the
++-- fell grass's frosted tips and the rag on each marker, and the light that
++-- breathes under the ice (set piece `rimeholt_underice`). The landmarks are
++-- the ring of runestones on the lake's shore and the great barrow out past
++-- the way on (B11). The moor's layout dressed as a highland, a concept place.
++local LightingPresets = require("../LightingPresets")
++local Moor = require("./Moor")
++local OutdoorTypes = require("../../OutdoorTypes")
++local Sculpts = require("../Sculpts")
++
++local function with<T>(base: T, changes: { [string]: any }): T
++	local out = table.clone(base :: any)
++	for key, value in changes do
++		out[key] = value
++	end
++	return table.freeze(out) :: any
++end
++
++-- Ground by terrain material, as the moor paints its own: Terrain keeps one
++-- colour per material, so every look on a material moves together
++-- (OutdoorTilesets.spec). Every ground is repainted, and none of the moor's
++-- living earth is left.
++-- Snow is never white (the bible's value cap): blue-grey, a shade under the
++-- large-surface limit, so the black pines and granite stand on it.
++local SNOW: OutdoorTypes.GroundLook = { material = "Snow", color = { 78, 83, 89 } }
++-- The old road, dark setts kicking through the snow, so the way on reads as a
++-- dark line across the highland from the game camera.
++local ROAD: OutdoorTypes.GroundLook = { material = "Cobblestone", color = { 56, 60, 68 } }
++-- Under the ruins and the barrows: frozen earth, near-neutral and low.
++local FROZEN_EARTH: OutdoorTypes.GroundLook = { material = "Ground", color = { 44, 46, 52 } }
++-- The frozen muck under the pines and along the old walls.
++local FROST_MUD: OutdoorTypes.GroundLook = { material = "Mud", color = { 38, 38, 43 } }
++-- Grey granite: the cliffs, outcrops, terrace faces and the abyss's plateau.
++local GRANITE: OutdoorTypes.GroundLook = { material = "Basalt", color = { 50, 54, 62 } }
++-- The bed under the ice sheets, in the accent's cold key: dark, so the ice
++-- reads pale over it.
++local ICE_BED: OutdoorTypes.GroundLook = { material = "Ice", color = { 60, 72, 74 } }
++-- The land climbing away behind the rim: old ice, a shade darker than the
++-- walkable snow, so the map's ground still stands out against the hills.
++local GLACIER: OutdoorTypes.GroundLook = { material = "Glacier", color = { 64, 72, 78 } }
++local ABYSS: OutdoorTypes.GroundLook = { material = "Slate", color = { 18, 20, 22 } }
++
++-- The moor's cliff meshes take Basalt's pale texture, so they are painted the
++-- highland's cold grey (as the moor paints its own).
++local COLD_ROCK = { 60, 64, 72 }
++
++local function rock(pieces: { OutdoorTypes.PieceLook }): { OutdoorTypes.PieceLook }
++	local out = {}
++	for i, piece in pieces do
++		out[i] = if piece.mesh then with(piece, { color = COLD_ROCK }) else piece
++	end
++	return out
++end
++
++-- A hill-fire in an iron brazier: the last warm light on the highland, and
++-- the only warmth (B2-B3). Saturated on purpose, the flames' colour the set
++-- may not use (B8). No cage: the coals show as an ember under a small flame,
++-- and a flicker, because a fire breathes unevenly.
++local FIRE_LIGHT: OutdoorTypes.LightLook = {
++	color = { 255, 168, 88 },
++	range = 20,
++	brightness = 1.4,
++	height = 3.9,
++	ember = 0.9,
++	flame = 3,
++	pulse = { style = "flicker", depth = 0.2, period = 1.6 },
++}
++local FIRE: OutdoorTypes.PieceLook = {
++	name = "HillFire",
++	size = Sculpts.rimeholt_hillfire.size,
++	sculpt = "rimeholt_hillfire",
++	light = FIRE_LIGHT,
++}
++-- A banked fire inside a ruin, one a ruin at most and shadowed (data/PerfBudget
++-- affords only a few shadow lights): someone, or something, was here lately.
++local RUIN_FIRE: OutdoorTypes.PieceLook = {
++	name = "RuinFire",
++	size = Sculpts.rimeholt_hillfire.size,
++	sculpt = "rimeholt_hillfire",
++	light = {
++		color = { 255, 168, 88 },
++		range = 22,
++		brightness = 1.3,
++		height = 3.9,
++		ember = 0.8,
++		flame = 4,
++		shadows = true,
++		pulse = { style = "flicker", depth = 0.25, period = 1.8 },
++	},
++}
++
++-- The moor's edges and props by name: their own types make every key optional.
++local MOOR_EDGES: { [string]: OutdoorTypes.EdgeLook } = Moor.edges :: any
++local MOOR_PROPS: { [string]: OutdoorTypes.PropSet } = Moor.props :: any
++
++local edges: { [string]: OutdoorTypes.EdgeLook } = table.clone(MOOR_EDGES)
++-- The rim: the moor's basalt crags, a little taller and colder, their feet in
++-- snow. The highland's edge is a granite scarp, not a bank of turf.
++edges.cliff = with(MOOR_EDGES.cliff, {
++	pieces = rock(MOOR_EDGES.cliff.pieces),
++	spacing = 7,
++	scale = { 1.2, 1.7 },
++	sink = 4,
++	ground = GRANITE,
++})
++-- Where the moor had dead thickets, black pines rimed pale (the zone's
++-- silhouette from above): a sculpt tree, merged into one part a tree, so a
++-- whole rim's worth costs what a thicket costs.
++edges.thicket = with(MOOR_EDGES.thicket, {
++	pieces = {
++		{ name = "RimedPine", size = Sculpts.rimeholt_pine.size, sculpt = "rimeholt_pine" },
++		{
++			name = "RimedPineSnapped",
++			size = Sculpts.rimeholt_pine_snapped.size,
++			sculpt = "rimeholt_pine_snapped",
++			weight = 0.3,
++		},
++	},
++	spacing = 7,
++	scale = { 1.2, 1.8 },
++	sink = 0.6,
++	ground = FROST_MUD,
++})
++-- The old field walls stay: the hill-folk built them, and the snow has kept
++-- their lines. Their strip of trodden ground is the frozen muck.
++edges.ruin_wall = with(MOOR_EDGES.ruin_wall, { ground = FROST_MUD })
++
++local props: { [string]: OutdoorTypes.PropSet } = table.clone(MOOR_PROPS)
++-- Frost-bitten fell grass where the moor had heather: sparse clumps through
++-- the snow, one part each (merged), breaking up the flat white.
++props.heather = with(MOOR_PROPS.heather, {
++	pieces = { { name = "FellGrass", size = Sculpts.rimeholt_fell_grass.size, sculpt = "rimeholt_fell_grass" } },
++	perHundredCells = 3.5,
++	scale = { 0.9, 1.3 },
++	sink = 0.3,
++})
++-- Cold granite boulders, the moor's dark heaps gone grey-blue in the snow.
++props.boulders = with(MOOR_PROPS.boulders, {
++	pieces = {
++		{
++			name = "ColdBoulder",
++			size = Sculpts.rimeholt_boulder.size,
++			sculpt = "rimeholt_boulder",
++			solid = true,
++		},
++	},
++	perHundredCells = 1,
++	scale = { 0.7, 1.3 },
++	sink = 0.7,
++})
++-- The road's lamps are iron braziers: the last hill-fires, few and far apart,
++-- amber pools to walk between (B2: warm light is rare and means someone).
++props.lanterns = with(MOOR_PROPS.lanterns, {
++	pieces = { FIRE },
++	perHundredCells = 1.6,
++	spacing = 100,
++	faceRoad = false,
++	scale = { 0.9, 1.1 },
++	sink = 0.2,
++})
++-- A banked fire in a ruin, where someone sheltered from the cold.
++props.embers = with(MOOR_PROPS.embers, { pieces = { RUIN_FIRE }, perHundredCells = 1.5 })
++-- Fewer graves than the moor's: the highland buried its dead in barrows.
++props.headstones = with(MOOR_PROPS.headstones, { perHundredCells = 24 })
++props.candles = with(MOOR_PROPS.candles, { perHundredCells = 6 })
++-- The moor's High Moor landmarks belong to the moor: the highland steers by
++-- its own (the runestone rings and the barrows).
++local looseProps: any = props
++looseProps.watchtower = nil
++looseProps.stone_circles = nil
++looseProps.caves = nil
++
++-- The landmark the eye finds across the snow (B11): a ring of tall runestones
++-- on the lake's shore, a few of them still holding the accent's cold blue in
++-- their cut runes. Two a map, clear of the road and the walls.
++props.runestones = table.freeze({
++	pieces = {
++		{ name = "RunestoneRing", size = Sculpts.rimeholt_runestones.size, sculpt = "rimeholt_runestones" },
++	},
++	perHundredCells = 0,
++	count = 2,
++	spacing = 140,
++	clearance = 4,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	-- A little larger than the High Moor's stone circle, so the ring reads as
++	-- a landmark from the game camera and not as a ring of posts.
++	scale = { 1.1, 1.3 },
++	sink = 0.4,
++} :: OutdoorTypes.PropSet)
++-- The hill-folk's great barrow: a grey stone vault half sunk in the snow, its
++-- iron door shut. One a map, out on the open heath, well clear of the road.
++props.barrow = table.freeze({
++	pieces = {
++		{
++			name = "GreatBarrow",
++			size = Sculpts.rimeholt_barrow.size,
++			sculpt = "rimeholt_barrow",
++		},
++	},
++	perHundredCells = 0,
++	count = 1,
++	clearance = 6,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	-- Big: a mound a player sees across the heath, not a shed in the snow.
++	scale = { 1.6, 1.8 },
++	sink = 1,
++} :: OutdoorTypes.PropSet)
++-- The lake itself, in pieces: broad tarns of old ice lying in the heath, kept
++-- off the road, the walls and the sites. The set piece `rimeholt_underice` is
++-- placed on each (systems/TilesetPieces), so the cold light breathes under
++-- every one.
++props.ice = table.freeze({
++	pieces = { { name = "IceSheet", size = Sculpts.rimeholt_ice.size, sculpt = "rimeholt_ice" } },
++	perHundredCells = 0,
++	count = 3,
++	spacing = 110,
++	clearance = 3,
++	on = { "heath" :: OutdoorTypes.PropGround },
++	-- Lake-sized: a tarn thirty-five to fifty studs across, so the ice reads
++	-- as water lying in the highland's hollows rather than a puddle.
++	scale = { 1.4, 2.2 },
++	sink = 0.1,
++} :: OutdoorTypes.PropSet)
++
++-- The frozen lake in the hollows: the pools system's sheet is old ice, its
++-- bed the dark water beneath, its crossing a line of flat stones (the ice is
++-- thinnest over the old ford, and the stones show where it will hold).
++local pools = {
++	sheet = { name = "LakeIce", size = Sculpts.rimeholt_ice.size, sculpt = "rimeholt_ice" },
++	bed = ICE_BED,
++	causeway = {
++		stones = {
++			{ name = "IceStep", size = { 2.4, 0.8, 3.4 }, material = "Slate", color = { 54, 60, 68 } },
++			{ name = "IceStep", size = { 3.0, 0.8, 2.6 }, material = "Slate", color = { 50, 56, 64 } },
++			{ name = "IceStep", size = { 2.0, 0.9, 2.8 }, material = "Slate", color = { 58, 62, 70 } },
++		},
++		step = 3,
++		sink = 0.35,
++	},
++}
++
++-- The map's two ends: the arrival's ring is the zone's runestones round a
++-- faint cold pool, its lamp a hill-fire; the way on opens under the moor's
++-- stone arch, its sheet a dim slate until the boss falls, then the ice's own
++-- green-blue (the way you came in is the way on).
++local ARRIVAL_POOL = { radius = 4, color = { 40, 62, 66 }, transparency = 0.6 }
++local ends: OutdoorTypes.EndsLook = {
++	arrival = {
++		ring = { name = "Waystones", size = Sculpts.rimeholt_runestones.size, sculpt = "rimeholt_runestones" },
++		lamp = FIRE,
++		pool = ARRIVAL_POOL,
++	},
++	exit = {
++		arch = { name = "ExitArch", size = Sculpts.moor_exit_arch.size, sculpt = "moor_exit_arch" },
++		sheet = {
++			width = 5.6,
++			height = 9.4,
++			dim = { 48, 54, 60 },
++			lit = { 150, 214, 208 },
++			transparency = 0.25,
++			light = { color = { 140, 208, 208 }, range = 24, brightness = 2 },
++		},
++	},
++	offMap = {
++		name = "RoadGate",
++		size = Sculpts.moor_threshold_gate.size,
++		sculpt = "moor_threshold_gate",
++		solid = true,
++	},
++}
++
++-- Thresholds between reaches: a hill-fire each side of the cleft's mouth and
++-- a marker stone with the accent's rag, so a way on reads the same every time
++-- (A012 step 2b). No gates: the hill-folk left their ways open.
++local thresholds: OutdoorTypes.ThresholdLook = {
++	lamp = FIRE,
++	marker = {
++		name = "ThresholdMarker",
++		size = Sculpts.rimeholt_marker.size,
++		sculpt = "rimeholt_marker",
++		solid = true,
++	},
++}
++
++-- A barrow vault at the back of the graveyard, its iron door facing the gate.
++local graveyard = {
++	run = "graveyard_railing",
++	gateWidth = 5,
++	inset = 1,
++	crypt = { name = "BarrowVault", size = Sculpts.rimeholt_barrow.size, sculpt = "rimeholt_barrow" },
++}
++
++-- Past every edge the highland climbs away in old ice, with snow hills round
++-- it so the map never shows as a slab over the abyss; and far past the way on
++-- the great barrow stands on its rock pad, on the skyline from the road every
++-- seed (B11).
++local beyond = with(Moor.beyond, {
++	ground = GLACIER,
++	rise = 1.5,
++	maxRise = 20,
++	roughness = 0.35,
++	reach = 24,
++	fade = 4,
++	rock = GRANITE,
++	lip = 1,
++	abyss = ABYSS,
++	abyssDepth = 110,
++	mist = with(Moor.beyond.mist, { color = (LightingPresets.mood.atmosphere :: any).color }),
++	hills = table.freeze({
++		reach = 70,
++		chunk = 8,
++		height = table.freeze({ 14, 30 }),
++		lane = 4,
++		laneReach = 12,
++		laneGround = ROAD,
++	}),
++	landmark = table.freeze({
++		piece = { name = "GreatBarrow", size = Sculpts.rimeholt_barrow.size, sculpt = "rimeholt_barrow" },
++		out = 150,
++		scale = 5,
++		sink = 2,
++		pad = 12,
++		lift = 8,
++		ground = GRANITE,
++	}),
++})
++
++-- The cold itself, placed by the map: the breathing glow on every ice sheet,
++-- and snow drifting low across the road (systems/TilesetPieces). Few and far
++-- apart, one on screen at a time.
++local setPieces: { OutdoorTypes.TilesetPiece } = {
++	{ recipe = "rimeholt_underice", along = "pieces", on = "prop:ice", every = 24, count = 3, lift = 0.2 },
++	{ recipe = "rimeholt_drift", along = "road", every = 220, count = 2, lift = 0.6 },
++}
++
++local rimeholt: OutdoorTypes.OutdoorTileset = with(Moor, {
++	name = "rimeholt",
++	lighting = "mood",
++	palette = "blue-grey snow over dark frozen earth, black pines rimed pale, grey granite, "
++		.. "a pale ice-blue with a touch of green as the one accent, warm amber hill-fires, "
++		.. "desaturated, matte, no highlights",
++	ground = { heath = SNOW, road = ROAD, ruin = FROZEN_EARTH },
++	edges = table.freeze(edges),
++	outcrop = with(Moor.outcrop, {
++		pieces = rock(Moor.outcrop.pieces),
++		spacing = 5,
++		scale = { 0.5, 0.9 },
++		sink = 1.5,
++		ground = GRANITE,
++	}),
++	props = table.freeze(props),
++	ends = ends,
++	thresholds = thresholds,
++	graveyard = graveyard,
++	pools = pools,
++	wallLights = with(Moor.wallLights, { chance = 0.25 }),
++	litWindows = with(Moor.litWindows :: any, { count = 1 }),
++	-- Cold blue-grey mist lying low over the snow, a little thinner than the
++	-- moor's: the wind takes it (B9).
++	groundMist = with(Moor.groundMist, {
++		color = { 152, 162, 182 },
++		perHundredCells = 0.7,
++		spacing = 46,
++		transparency = 0.84,
++	}),
++	bluff = with(Moor.bluff :: any, { backing = GRANITE, rock = GRANITE }),
++	beyond = beyond,
++	setPieces = setPieces,
++})
++
++return rimeholt
