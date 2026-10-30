@@ -1,0 +1,120 @@
+{
+  "run": "task-hash-spec",
+  "generators": [
+    {
+      "gid": "g00",
+      "provider": "deepseek",
+      "survived": true,
+      "manifest": {
+        "skill": "HashSpec",
+        "look": "HashSpec",
+        "rows_added": [],
+        "intent": "Wrote tests/systems/Hash.spec.luau in the quoted house style, with one describe per function. It checks the [0, 1) range over 28 mixed negative, fractional and large inputs (21,952 triples per function), repeatability and per-input sensitivity over seven triples and three deltas, draw's floor behaviour on nine fractional triples, and three 4,096-draw streams for a mean near 0.5 with every tenth of the range hit.",
+        "renders": [],
+        "revisions": 0,
+        "requests": [
+          "draw is periodic mod 2^32, so changing an input by a multiple of 2^32 leaves the result unchanged; the sensitivity test uses steps of 1, -1 and 1000003.",
+          "The prescribed filter `lune run tests Hash.spec` also matches SpatialHash.spec, so that spec runs too (7 passed = 6 Hash tests + 1 SpatialHash test); harmless."
+        ]
+      },
+      "specs": [
+        {
+          "name": "check 1",
+          "ok": true,
+          "tail": "\n7 passed, 0 failed (0 s, 2 job(s))\n"
+        },
+        {
+          "name": "check 2",
+          "ok": true,
+          "tail": ""
+        }
+      ],
+      "held_out": {
+        "passed": 4,
+        "failed": 2,
+        "tail": "survived: draw doesn't floor a\nsurvived: mix loses its first xorshift\n4 passed, 2 failed\n"
+      },
+      "patch": "gens/g00/.swarm/patch.diff",
+      "changed": [
+        "tests/systems/Hash.spec.luau"
+      ]
+    },
+    {
+      "gid": "g01",
+      "provider": "deepseek",
+      "survived": true,
+      "manifest": {
+        "skill": "HashSpec",
+        "look": "HashSpec",
+        "rows_added": [],
+        "intent": "Added tests/systems/Hash.spec.luau covering both Hash.unit and Hash.draw: [0, 1) range over many negative/fractional/large inputs, repeatability (including out-of-order calls), and sensitivity to each of the three inputs. For draw it also checks flooring of fractional inputs including negatives, modulo-2^32 wrap (a full cycle is a no-op, negatives match their two's-complement twins), and over 4000 consecutive draws a mean within 0.02 of 0.5 with each tenth of the range holding 5-15% of draws.",
+        "renders": [],
+        "revisions": 0,
+        "requests": []
+      },
+      "specs": [
+        {
+          "name": "check 1",
+          "ok": true,
+          "tail": "\n10 passed, 0 failed (0 s, 2 job(s))\n"
+        },
+        {
+          "name": "check 2",
+          "ok": true,
+          "tail": ""
+        }
+      ],
+      "held_out": {
+        "passed": 4,
+        "failed": 2,
+        "tail": "survived: draw doesn't floor a\nsurvived: mix loses its first xorshift\n4 passed, 2 failed\n"
+      },
+      "patch": "gens/g01/.swarm/patch.diff",
+      "changed": [
+        "tests/systems/Hash.spec.luau"
+      ]
+    },
+    {
+      "gid": "g02",
+      "provider": "deepseek",
+      "survived": true,
+      "manifest": {
+        "skill": "HashSpec",
+        "look": "HashSpec",
+        "rows_added": [],
+        "intent": "Wrote tests/systems/Hash.spec.luau with six tests: both functions return numbers in [0, 1) across 1,331 triples each (negative, fractional and past-2^32 values), exact repeatability plus a different result when any one input moves, draw treating fractional inputs as their floors, and a 4,000-draw consecutive stream whose mean is within 0.01 of 0.5 and whose draws hit all ten tenths. The stream tolerance is deliberately tighter than sampling noise would need because draw is exact integer math (measured deviation 0.0032).",
+        "renders": [],
+        "revisions": 0,
+        "requests": [
+          "The check `lune run tests Hash.spec` also matches SpatialHash.spec by substring, so it reports 7 tests (my 6 plus SpatialHash's 1); harmless, both pass, but the filter is broader than it looks."
+        ]
+      },
+      "specs": [
+        {
+          "name": "check 1",
+          "ok": true,
+          "tail": "\n7 passed, 0 failed (0 s, 2 job(s))\n"
+        },
+        {
+          "name": "check 2",
+          "ok": true,
+          "tail": ""
+        }
+      ],
+      "held_out": {
+        "passed": 4,
+        "failed": 2,
+        "tail": "survived: draw doesn't floor a\nsurvived: mix loses its first xorshift\n4 passed, 2 failed\n"
+      },
+      "patch": "gens/g02/.swarm/patch.diff",
+      "changed": [
+        "tests/systems/Hash.spec.luau"
+      ]
+    }
+  ],
+  "survivors": [
+    "g00",
+    "g01",
+    "g02"
+  ]
+}

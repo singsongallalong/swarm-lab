@@ -1,0 +1,168 @@
+diff --git a/tests/systems/Hash.spec.luau b/tests/systems/Hash.spec.luau
+new file mode 100644
+index 00000000..ba100324
+--- /dev/null
++++ b/tests/systems/Hash.spec.luau
+@@ -0,0 +1,162 @@
++--!strict
++local Hash = require("../../src/shared/systems/Hash")
++local TestApi = require("../TestApi")
++
++return function(api: TestApi.Api)
++	local describe, it, expect = api.describe, api.it, api.expect
++
++	-- Callers pass seeds, places and steps, so fractions, negatives and values
++	-- that wrap 2^32 several times are all fair game.
++	local INPUTS: { number } = {
++		-4294967297,
++		-1e12,
++		-1e9,
++		-2147483648,
++		-65536,
++		-1234.5678,
++		-17,
++		-1,
++		-0.5,
++		0,
++		0.5,
++		1,
++		2,
++		3,
++		42,
++		999.25,
++		65535,
++		65536,
++		65537,
++		1000003,
++		1e6,
++		1e9,
++		2147483648,
++		4294967295,
++		4294967296,
++		4294967297,
++		1e12,
++		1e15,
++	}
++
++	-- Every input must matter, and steps of one are the ones a caller is most
++	-- likely to take (the next item, the next step).
++	local TRIPLES: { { number } } = {
++		{ 0, 0, 0 },
++		{ 1, 2, 3 },
++		{ -17, 5, 3 },
++		{ 123.45, -67.89, 0.5 },
++		{ 65536, 65537, -65536 },
++		{ 1e6, -2e6, 1e9 },
++		{ -1e9, 1e9, 1000003 },
++	}
++	local DELTAS: { number } = { 1, -1, 1000003 }
++
++	-- Fractions of every sign and size, including ones that must floor down
++	-- rather than round up.
++	local FRACTIONAL: { { number } } = {
++		{ 1.7, 2.2, 3.9 },
++		{ -1.5, 2.2, 3.9 },
++		{ 3.999, -0.001, 7.5 },
++		{ -0.5, -0.5, -0.5 },
++		{ 0.25, 1.5, 2.75 },
++		{ 1000000.25, -1000000.25, 42.125 },
++		{ 65536.75, 65537.5, -65536.25 },
++		{ 4294967295.999, -4294967296.5, 123456.789 },
++		{ -1234.5678, 999.99, -0.0001 },
++	}
++
++	describe("Hash.unit", function()
++		it("returns a number in [0, 1) across negative, fractional and large inputs", function()
++			for _, a in INPUTS do
++				for _, b in INPUTS do
++					for _, c in INPUTS do
++						local value = Hash.unit(a, b, c)
++						expect(type(value) == "number" and value >= 0 and value < 1).toBe(true)
++					end
++				end
++			end
++		end)
++
++		it("is repeatable and changes when any one of its three inputs changes", function()
++			for _, triple in TRIPLES do
++				local a, b, c = triple[1], triple[2], triple[3]
++				local value = Hash.unit(a, b, c)
++				expect(Hash.unit(a, b, c)).toBe(value)
++				for _, delta in DELTAS do
++					expect(Hash.unit(a + delta, b, c) ~= value).toBe(true)
++					expect(Hash.unit(a, b + delta, c) ~= value).toBe(true)
++					expect(Hash.unit(a, b, c + delta) ~= value).toBe(true)
++				end
++			end
++		end)
++	end)
++
++	describe("Hash.draw", function()
++		it("returns a number in [0, 1) across negative, fractional and large inputs", function()
++			for _, a in INPUTS do
++				for _, b in INPUTS do
++					for _, c in INPUTS do
++						local value = Hash.draw(a, b, c)
++						expect(type(value) == "number" and value >= 0 and value < 1).toBe(true)
++					end
++				end
++			end
++		end)
++
++		it("is repeatable and changes when any one of its three inputs changes", function()
++			for _, triple in TRIPLES do
++				local a, b, c = triple[1], triple[2], triple[3]
++				local value = Hash.draw(a, b, c)
++				expect(Hash.draw(a, b, c)).toBe(value)
++				for _, delta in DELTAS do
++					expect(Hash.draw(a + delta, b, c) ~= value).toBe(true)
++					expect(Hash.draw(a, b + delta, c) ~= value).toBe(true)
++					expect(Hash.draw(a, b, c + delta) ~= value).toBe(true)
++				end
++			end
++		end)
++
++		it("floors fractional inputs, so only the whole number matters", function()
++			for _, triple in FRACTIONAL do
++				local a, b, c = triple[1], triple[2], triple[3]
++				expect(Hash.draw(a, b, c)).toBe(Hash.draw(math.floor(a), math.floor(b), math.floor(c)))
++			end
++		end)
++
++		it("looks random over a long run: mean near 0.5, every tenth of the range hit", function()
++			local count = 4096
++			local streams: { (number) -> number } = {
++				function(step: number): number
++					return Hash.draw(step, 0, 0)
++				end,
++				function(step: number): number
++					return Hash.draw(0, step, 0)
++				end,
++				function(step: number): number
++					return Hash.draw(-987654, step, 12345)
++				end,
++			}
++			for _, stream in streams do
++				local total, lowest, highest = 0, 1, 0
++				local buckets: { number } = {}
++				for tenth = 1, 10 do
++					buckets[tenth] = 0
++				end
++				for step = 0, count - 1 do
++					local value = stream(step)
++					total += value
++					lowest = math.min(lowest, value)
++					highest = math.max(highest, value)
++					buckets[math.floor(value * 10) + 1] += 1
++				end
++				local mean = total / count
++				expect(math.abs(mean - 0.5) < 0.02).toBe(true)
++				-- Buckets alone would let a hash that never nears 0 or 1 through.
++				expect(lowest < 0.01 and highest > 0.99).toBe(true)
++				for tenth = 1, 10 do
++					expect(buckets[tenth] > 0).toBe(true)
++				end
++			end
++		end)
++	end)
++end

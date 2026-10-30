@@ -1,0 +1,99 @@
+diff --git a/tests/systems/Hash.spec.luau b/tests/systems/Hash.spec.luau
+new file mode 100644
+index 00000000..30b16648
+--- /dev/null
++++ b/tests/systems/Hash.spec.luau
+@@ -0,0 +1,93 @@
++--!strict
++local Hash = require("../../src/shared/systems/Hash")
++local TestApi = require("../TestApi")
++
++return function(api: TestApi.Api)
++	local describe, it, expect = api.describe, api.it, api.expect
++
++	-- Crosses zero, carries fractions, and sits either side of 2^32.
++	local spread: { number } = { -1e9, -4294967295, -1000.5, -7, -0.5, 0, 0.5, 7, 1000.5, 4294967295, 1e9 }
++
++	local function isUnitFraction(value: number): boolean
++		return value >= 0 and value < 1
++	end
++
++	describe("Hash.unit", function()
++		it("returns numbers in [0, 1) across negative, zero and large inputs", function()
++			for _, a in spread do
++				for _, b in spread do
++					for _, c in spread do
++						expect(isUnitFraction(Hash.unit(a, b, c))).toBe(true)
++					end
++				end
++			end
++		end)
++
++		it("repeats for the same three inputs and moves when any one of them moves", function()
++			local triples: { { number } } = { { 0, 0, 0 }, { 1, 2, 3 }, { -5, 11.5, 1e6 }, { 1e9, -1e9, 42 } }
++			for _, triple in triples do
++				local a, b, c = triple[1], triple[2], triple[3]
++				local value = Hash.unit(a, b, c)
++				expect(Hash.unit(a, b, c)).toBe(value)
++				expect(Hash.unit(a + 1, b, c) ~= value).toBe(true)
++				expect(Hash.unit(a, b + 1, c) ~= value).toBe(true)
++				expect(Hash.unit(a, b, c + 1) ~= value).toBe(true)
++			end
++		end)
++	end)
++
++	describe("Hash.draw", function()
++		it("returns numbers in [0, 1) across negative, zero and large inputs", function()
++			for _, a in spread do
++				for _, b in spread do
++					for _, c in spread do
++						expect(isUnitFraction(Hash.draw(a, b, c))).toBe(true)
++					end
++				end
++			end
++		end)
++
++		it("repeats for the same three inputs and moves when any one of them moves", function()
++			local triples: { { number } } =
++				{ { 0, 0, 0 }, { 1, 2, 3 }, { -5, 11, 1e6 }, { 1e9, -1e9, 42 }, { 4294967295, 0, 0 } }
++			for _, triple in triples do
++				local a, b, c = triple[1], triple[2], triple[3]
++				local value = Hash.draw(a, b, c)
++				expect(Hash.draw(a, b, c)).toBe(value)
++				expect(Hash.draw(a + 1, b, c) ~= value).toBe(true)
++				expect(Hash.draw(a, b + 1, c) ~= value).toBe(true)
++				expect(Hash.draw(a, b, c + 1) ~= value).toBe(true)
++			end
++		end)
++
++		it("gives a fractional input the same draw as its floor", function()
++			local cases: { { number } } = {
++				{ 3.7, 1.2, 0.4 },
++				{ -2.25, -0.1, 7.9 },
++				{ -0.5, 0.5, -1.5 },
++				{ 1e6 + 0.75, -1e9 + 0.25, 2.5 },
++			}
++			for _, case in cases do
++				local a, b, c = case[1], case[2], case[3]
++				expect(Hash.draw(a, b, c)).toBe(Hash.draw(math.floor(a), math.floor(b), math.floor(c)))
++			end
++		end)
++
++		it("looks random along a long stream: mean near 0.5 and every tenth of the range hit", function()
++			local count = 4000
++			local total = 0
++			local hits: { number } = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
++			for i = 1, count do
++				local value = Hash.draw(1, 2, i)
++				total += value
++				local tenth = math.floor(value * 10) + 1
++				hits[tenth] += 1
++			end
++			local mean = total / count
++			expect(math.abs(mean - 0.5) < 0.01).toBe(true)
++			for tenth = 1, 10 do
++				expect(hits[tenth] > 0).toBe(true)
++			end
++		end)
++	end)
++end

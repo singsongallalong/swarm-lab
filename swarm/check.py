@@ -278,8 +278,10 @@ def check_one(wt: Path, t: config.Target, j: config.Job, meta: dict, gen: dict, 
             why = check_rows(rel, rule["mode"], before, after, skill, rule.get("pattern"), rule.get("prefix"))
         except ValueError as e:
             why = f"{rel}: couldn't read its rows ({e})"
-        if not why and rule["mode"] == "new_file":
-            why = check_code(rel, after, j.data.get("purity", {}))
+        # Purity rules apply where the job sets them; a worker task without [purity]
+        # leaves new files to its own checks.
+        if not why and rule["mode"] == "new_file" and j.data.get("purity"):
+            why = check_code(rel, after, j.data["purity"])
         if why:
             rec["reason"] = why
             return rec
