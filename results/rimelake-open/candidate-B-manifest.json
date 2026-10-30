@@ -1,0 +1,18 @@
+{
+  "skill": "Rimelake",
+  "look": "RimelakeCathedral",
+  "rows_added": [],
+  "setpiece": "barrow_wisps",
+  "intent": "A frozen crater lake whose rim breaks away into mist on one side each seed, its ice crossed by the hill-folk's road and split by black leads, with a cathedral of pale ice spires in rings and open courts around a great barrow altar at the nave's end, the wisps rising off its crown.",
+  "renders": [
+    ".swarm/out/map-shots-r4.png",
+    ".swarm/out/map-whole-r4.png",
+    ".swarm/out/map-landmark-r4.png",
+    ".swarm/out/map-setpiece-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A cell kind whose lift can vary per cell, so one spire family could be needles of many heights instead of five fixed steps.",
+    "A phone budget that scales with map area: ground mist alone is one emitter per ~150 heath cells, so the 40-emitter cap holds any drafted map to roughly moor-sized walkable ground."
+  ]
+}

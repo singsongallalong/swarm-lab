@@ -1,0 +1,1022 @@
+diff --git a/src/shared/data/DraftedMaps.luau b/src/shared/data/DraftedMaps.luau
+index b9f89061..636aa32a 100644
+--- a/src/shared/data/DraftedMaps.luau
++++ b/src/shared/data/DraftedMaps.luau
+@@ -4,9 +4,11 @@
+ -- `lune run scripts/dresspreview whole out.png 3 1 layout=<Name>` before anything
+ -- builds it.
+ local DraftedMap = require("../systems/DraftedMap")
++local RimelakeCathedral = require("../systems/draftedmaps/RimelakeCathedral")
+ 
+ local DraftedMaps: { [string]: DraftedMap.Draft } = {
+ 	-- One line per draft, `Name = Name,`, with its require above.
++	RimelakeCathedral = RimelakeCathedral,
+ }
+ 
+ return table.freeze(DraftedMaps)
+diff --git a/src/shared/systems/draftedmaps/RimelakeCathedral.luau b/src/shared/systems/draftedmaps/RimelakeCathedral.luau
+new file mode 100644
+index 00000000..d54c8b5e
+--- /dev/null
++++ b/src/shared/systems/draftedmaps/RimelakeCathedral.luau
+@@ -0,0 +1,1000 @@
++--!strict
++-- Rimelake: the ice cathedral, the whole map of Rimeholt's frozen lake. A
++-- highland of old snow rings a lake that never thaws; its ice is one sheet of
++-- the draft's own kind, crossed by the hill-folk's dark road, split by black
++-- leads and heaved pressure ridges, and in its middle a forest of ice spires
++-- rises in rings and aisles round a runestone ring at the heart. Drawn in
++-- `rimeholt`; dressed by MapDress like every other map.
++local DraftedMap = require("../DraftedMap")
++local Grid = require("../Grid")
++local Heath = require("../Heath")
++local Noise = require("../Noise")
++local TerrainTypes = require("../../TerrainTypes")
++
++-- The map: a highland ring round a lake big enough that crossing it is the run.
++-- The moor is 96 x 96; this is a bigger footprint (528 x 432 studs) with the
++-- lake as its heart, inside the phone budget the spec holds it to.
++local WIDTH = 132
++local DEPTH = 108
++-- Cells along the border that stay wall, so the outer ring is wall whatever the
++-- lake and the highland do.
++local MARGIN = 5
++-- Studs: the highland's shelf, and the ice down in the basin below it.
++local HIGHLAND_HEIGHT = 16
++local LAKE_HEIGHT = 0
++-- The lake's radii in cells, jittered a little per seed.
++local LAKE_RX = 26
++local LAKE_RZ = 20
++-- Where the ice meets the shore, as a fraction of the lake's radius (the outline
++-- is added on top): inside SHORE_IN is ice, between the two a bluff bank,
++-- outside SHORE_OUT the highland shelf, which runs out into the walls and the
++-- mist. The shelf holds out further to the north and south (two lobes the
++-- sites and barrows stand on). The bank is the lake's wall.
++local SHORE_IN = 0.98
++local SHORE_OUT = 1.35
++local SHELF_OUT = 1.62
++local SHELF_LOBE = 0.5
++-- Half-widths in cells: the road proper, the shoulders that carry it down the
++-- bank, and the two footpaths down to the ice.
++local ROAD_HALF = 1.6
++local ROAD_RAMP_HALF = 3.0
++local FOOT_RAMP_HALF = 2.4
++-- Studs two walkable neighbours may differ by (Terrain.terraces.maxStep).
++local MAX_STEP = 2
++-- Ramp cells per drop of MAX_STEP studs.
++local RAMP_STEPS = HIGHLAND_HEIGHT / MAX_STEP
++-- The road crosses the heart at this many cells south of it, so the nave leads
++-- past the runestones rather than through them.
++local NAVE_OFFSET = 4
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + rng:NextNumber() * (hi - lo)
++end
++
++local function catmullRom(p0: number, p1: number, p2: number, p3: number, t: number): number
++	local t2, t3 = t * t, t * t * t
++	return 0.5 * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (3 * p1 - p0 - 3 * p2 + p3) * t3)
++end
++
++-- The road's centreline: in off the west highland, through the nave at the lake's
++-- heart, and out east. Pinned just south of the heart through the cathedral, so
++-- the spire aisles line up with it and the runestones stand beside it.
++local function roadCentre(rng: Random, cx: number, cz: number, rx: number): { { x: number, z: number } }
++	local controls: { { x: number, z: number } } = {
++		{ x = cx - rx * 1.42, z = cz + 1 + between(rng, -1.5, 1.5) },
++		{ x = cx - rx * 1.3, z = cz + 3 + between(rng, -2, 2) },
++		{ x = cx - rx * 1.09, z = cz + NAVE_OFFSET },
++		{ x = cx - rx * 0.55, z = cz + NAVE_OFFSET + between(rng, -3, 3) },
++		{ x = cx - 3, z = cz + NAVE_OFFSET },
++		{ x = cx + 5, z = cz + NAVE_OFFSET },
++		{ x = cx + rx * 0.55, z = cz + NAVE_OFFSET + between(rng, -3, 3) },
++		{ x = cx + rx * 1.09, z = cz + NAVE_OFFSET },
++		{ x = cx + rx * 1.3, z = cz + 3 + between(rng, -2, 2) },
++		{ x = cx + rx * 1.42, z = cz + 1 + between(rng, -1.5, 1.5) },
++	}
++	local points: { { x: number, z: number } } = {}
++	for i = 1, #controls - 1 do
++		local p0 = controls[math.max(i - 1, 1)]
++		local p1 = controls[i]
++		local p2 = controls[i + 1]
++		local p3 = controls[math.min(i + 2, #controls)]
++		local length = math.sqrt((p2.x - p1.x) ^ 2 + (p2.z - p1.z) ^ 2)
++		local steps = math.max(1, math.ceil(length * 2))
++		for s = 0, steps - 1 do
++			local t = s / steps
++			table.insert(
++				points,
++				{ x = catmullRom(p0.x, p1.x, p2.x, p3.x, t), z = catmullRom(p0.z, p1.z, p2.z, p3.z, t) }
++			)
++		end
++	end
++	table.insert(points, { x = controls[#controls].x, z = controls[#controls].z })
++	return points
++end
++
++local function roadDistance(road: { { x: number, z: number } }, x: number, z: number): number
++	local best = math.huge
++	for _, p in road do
++		local dx, dz = p.x - x, p.z - z
++		local d = dx * dx + dz * dz
++		if d < best then
++			best = d
++		end
++	end
++	return math.sqrt(best)
++end
++
++local function distanceToSegment(px: number, pz: number, ax: number, az: number, bx: number, bz: number): number
++	local vx, vz = bx - ax, bz - az
++	local length = vx * vx + vz * vz
++	if length < 1e-9 then
++		return math.sqrt((px - ax) ^ 2 + (pz - az) ^ 2)
++	end
++	local u = math.clamp(((px - ax) * vx + (pz - az) * vz) / length, 0, 1)
++	local qx, qz = ax + vx * u, az + vz * u
++	return math.sqrt((px - qx) ^ 2 + (pz - qz) ^ 2)
++end
++
++-- The lake's outline: an ellipse with a slow noise wobble, so every seed's lake
++-- is a different lobed bay rather than a stamped oval.
++local function shoreT(field: Noise.Field, cx: number, cz: number, rx: number, rz: number, x: number, z: number): number
++	local dx, dz = (x - cx) / rx, (z - cz) / rz
++	local wobble = 0.115
++		* Noise.fractal(field, x * 0.055 + 37.1, z * 0.055 - 19.7, {
++			octaves = 2,
++			frequency = 1,
++			lacunarity = 2,
++			gain = 0.5,
++		})
++	return math.sqrt(dx * dx + dz * dz) + wobble
++end
++
++-- How far out the highland shelf runs at this point: further to the north and
++-- south, where the two lobes give the sites room.
++local function shelfLimit(cx: number, cz: number, rx: number, rz: number, x: number, z: number): number
++	local angle = math.atan2((z - cz) / rz, (x - cx) / rx)
++	local lobe = math.max(0, -math.cos(2 * angle)) ^ 2
++	return SHELF_OUT + SHELF_LOBE * lobe
++end
++
++-- A ramp cell's height: a staircase of MAX_STEP studs down from the highland
++-- (u = 0) to the ice (u = 1), so the descent is walkable all the way.
++local function rampHeightAt(u: number): number
++	return math.max(LAKE_HEIGHT, HIGHLAND_HEIGHT - MAX_STEP * math.floor(math.clamp(u, 0, 1) * RAMP_STEPS))
++end
++
++-- The draft's own ground. Roblox colours a terrain material once for the whole
++-- map, so every kind takes a material the rimeholt tileset leaves free.
++local CELLS: { [string]: DraftedMap.CellLook } = {}
++
++-- The lake's surface: a sheet of old ice in the accent's cold key, lifted off
++-- the snow so it reads as ice and not as bare ground, with the tileset's props
++-- kept off it. A few boulders frozen into it.
++CELLS.lake_ice = {
++	ground = { material = "Marble", color = { 44, 62, 68 } },
++	lift = 0.4,
++	clear = true,
++	props = {
++		{ sculpt = "rimeholt_boulder", every = 900, scale = { 0.6, 1.1 }, sink = 0.6 },
++	},
++}
++-- The road over the ice: the same dark setts as the highland's road, level with
++-- the sheet, its hill-fires left standing (clear off, so the lamps stay).
++CELLS.lake_road = {
++	ground = { material = "Concrete", color = { 64, 70, 80 } },
++	lift = 0.4,
++	clear = false,
++}
++-- The cathedral: ice spires in five heights, up to 58 studs, all one pale ice so
++-- the forest reads as a single body of ice.
++local SPIRE_LIFTS = { 12, 24, 34, 46, 58 }
++local SPIRE_KINDS: { string } = {}
++for index, lift in SPIRE_LIFTS do
++	local name = `spire_{index}`
++	SPIRE_KINDS[index] = name
++	CELLS[name] = {
++		ground = { material = "Limestone", color = { 80, 96, 110 } },
++		lift = lift,
++		clear = true,
++	}
++end
++-- Heaved pressure ridges: low walls of old ice across the sheet, up to 16 studs.
++CELLS.ice_ridge = {
++	ground = { material = "Sandstone", color = { 56, 70, 84 } },
++	lift = 9,
++	clear = true,
++}
++CELLS.ice_ridge_high = {
++	ground = { material = "Sandstone", color = { 56, 70, 84 } },
++	lift = 16,
++	clear = true,
++}
++-- Black open water: the ice broken along a lead, the lake's dark showing
++-- through. Painted just under the sheet's surface.
++CELLS.black_water = {
++	ground = { material = "Asphalt", color = { 6, 10, 16 } },
++	lift = 0.2,
++	clear = true,
++}
++
++-- What generate learned about the map it made, for the functions that place its
++-- landmarks, effects and cameras: the lake's centre and the painted cells.
++type MapInfo = {
++	cx: number,
++	cz: number,
++	painted: { [number]: string },
++	road: { { x: number, z: number } },
++	-- Which side of the lake keeps its shelf (the other side falls away), where
++	-- the runestones stand on it, and where the altar stands at the nave's end.
++	viewSide: number,
++	stonesX: number,
++	stonesZ: number,
++	altarX: number,
++	altarZ: number,
++}
++local INFO: { [any]: MapInfo } = {}
++
++local function infoOf(map: Heath.Map): MapInfo
++	local cx, cz = map.grid.width / 2, map.grid.depth / 2
++	return INFO[map]
++		or {
++			cx = cx,
++			cz = cz,
++			painted = {},
++			road = {},
++			viewSide = 1,
++			stonesX = cx,
++			stonesZ = cz,
++			altarX = cx,
++			altarZ = cz,
++		}
++end
++
++local function paint(map: Heath.Map, _rng: Random): { [number]: string }
++	return infoOf(map).painted
++end
++
++-- Marks every cell whose centre lies within `half` cells of the polyline.
++local function stampTube(
++	grid: Grid.Grid,
++	points: { { x: number, z: number } },
++	half: number,
++	mask: { [number]: boolean }
++)
++	local reach = math.ceil(half) + 1
++	for _, p in points do
++		for z = math.floor(p.z) - reach, math.ceil(p.z) + reach do
++			for x = math.floor(p.x) - reach, math.ceil(p.x) + reach do
++				if x >= 1 and x <= grid.width and z >= 1 and z <= grid.depth then
++					if (p.x - x) ^ 2 + (p.z - z) ^ 2 <= half * half then
++						mask[Grid.index(grid, x, z)] = true
++					end
++				end
++			end
++		end
++	end
++end
++
++local function generate(rng: Random): Heath.Map
++	local grid = Grid.new(WIDTH, DEPTH, Grid.WALL)
++	local n = WIDTH * DEPTH
++	local field = Noise.field(rng)
++	local cx = WIDTH / 2 + between(rng, -3, 3)
++	local cz = DEPTH / 2 + between(rng, -2, 2)
++	local rx = between(rng, LAKE_RX - 2, LAKE_RX + 2)
++	local rz = between(rng, LAKE_RZ - 2, LAKE_RZ + 2)
++	local road = roadCentre(rng, cx, cz, rx)
++
++	-- One side of the lake loses its bank each seed: the rim breaks into a drop,
++	-- the ice meeting the mist directly. The other side keeps its shelf, and
++	-- the cameras look in from there.
++	local breakNorth = rng:NextNumber() < 0.5
++	local breakAngle = (if breakNorth then -math.pi / 2 else math.pi / 2) + between(rng, -0.3, 0.3)
++	local viewSide = if breakNorth then 1 else -1
++	local stonesX, stonesZ = cx, cz + viewSide * rz * 1.5
++	local altarX, altarZ = cx, cz - 2
++
++	local function brokenSide(x: number, z: number): boolean
++		local angle = math.atan2((z - cz) / rz, (x - cx) / rx)
++		local diff = math.abs((angle - breakAngle + math.pi) % (2 * math.pi) - math.pi)
++		return diff < 0.42
++	end
++
++	local kinds = table.create(n, "void" :: Heath.CellKind) :: { Heath.CellKind }
++	local heights = table.create(n, HIGHLAND_HEIGHT) :: { number }
++	local shore = table.create(n, 1) :: { number }
++	for z = 1, DEPTH do
++		for x = 1, WIDTH do
++			shore[Grid.index(grid, x, z)] = shoreT(field, cx, cz, rx, rz, x, z)
++		end
++	end
++
++	-- The base: one wall ring, the highland shelf, the bluff bank, and the ice
++	-- down in the basin.
++	for z = 1, DEPTH do
++		for x = 1, WIDTH do
++			local i = Grid.index(grid, x, z)
++			local outside = x <= MARGIN or z <= MARGIN or x > WIDTH - MARGIN or z > DEPTH - MARGIN
++			-- Outside the margin, or on the seed's broken side, where the bank
++			-- and shelf fall away into mist and the ice meets the drop.
++			if outside or (brokenSide(x, z) and shore[i] >= SHORE_IN) then
++				kinds[i] = "void"
++			elseif shore[i] < SHORE_IN then
++				kinds[i] = "heath"
++				heights[i] = LAKE_HEIGHT
++			elseif shore[i] < SHORE_OUT then
++				kinds[i] = "bluff"
++			elseif shore[i] < shelfLimit(cx, cz, rx, rz, x, z) then
++				kinds[i] = "heath"
++			end
++		end
++	end
++
++	-- The road's tube, and the ramps through the bank. A ramp's height runs on
++	-- its own axis: from the bank's outer edge (16 studs, where it meets the
++	-- shelf) to its inner edge (0, where it meets the ice), stepped in MAX_STEP.
++	-- Projection along the axis is smooth whatever the lake's outline does, so
++	-- no two walkable neighbours end up more than one step apart.
++	local roadCell: { [number]: boolean } = {}
++	stampTube(grid, road, ROAD_HALF, roadCell)
++
++	type Ramp = { ax: number, az: number, bx: number, bz: number, half: number, out: number, inner: number }
++	local ramps: { Ramp } = {}
++
++	local function addRamp(ax: number, az: number, bx: number, bz: number, half: number)
++		local vx, vz = bx - ax, bz - az
++		local length = math.sqrt(vx * vx + vz * vz)
++		local samples = math.max(4, math.ceil(length * 4))
++		local out, inner = math.huge, math.huge
++		for s = 1, samples do
++			local u = s / samples
++			local t = shoreT(field, cx, cz, rx, rz, ax + vx * u, az + vz * u)
++			if out == math.huge and t < SHORE_OUT then
++				out = u * length
++			end
++			if out < math.huge and inner == math.huge and t < SHORE_IN then
++				inner = u * length
++			end
++		end
++		if out == math.huge then
++			out = 0
++		end
++		if inner == math.huge or inner <= out + 2 then
++			inner = out + 4
++		end
++		table.insert(ramps, { ax = ax, az = az, bx = bx, bz = bz, half = half, out = out, inner = inner })
++	end
++
++	-- (Outer anchor first: the slope runs from the highland to the ice.)
++	addRamp(cx - rx * 1.45, cz + NAVE_OFFSET, cx - rx * 0.88, cz + NAVE_OFFSET, ROAD_RAMP_HALF)
++	addRamp(cx + rx * 1.45, cz + NAVE_OFFSET, cx + rx * 0.88, cz + NAVE_OFFSET, ROAD_RAMP_HALF)
++	for _, angle in { math.pi + 0.55, 0.55 } do
++		local dx, dz = math.cos(angle), math.sin(angle)
++		addRamp(cx + dx * rx * 1.5, cz + dz * rz * 1.5, cx + dx * rx * 0.85, cz + dz * rz * 0.85, FOOT_RAMP_HALF)
++	end
++
++	local rampCell: { [number]: boolean } = {}
++	for _, ramp in ramps do
++		local reach = math.ceil(ramp.half) + 1
++		for z = math.floor(math.min(ramp.az, ramp.bz)) - reach, math.ceil(math.max(ramp.az, ramp.bz)) + reach do
++			for x = math.floor(math.min(ramp.ax, ramp.bx)) - reach, math.ceil(math.max(ramp.ax, ramp.bx)) + reach do
++				if x >= 1 and x <= WIDTH and z >= 1 and z <= DEPTH then
++					local i = Grid.index(grid, x, z)
++					if distanceToSegment(x, z, ramp.ax, ramp.az, ramp.bx, ramp.bz) <= ramp.half then
++						rampCell[i] = true
++						if kinds[i] == "bluff" then
++							kinds[i] = "heath"
++						end
++					end
++				end
++			end
++		end
++	end
++	-- The road over everything it crosses, never the wall ring.
++	for i in roadCell do
++		if kinds[i] ~= "void" then
++			kinds[i] = "road"
++		end
++	end
++	-- The slope, on the nearest ramp's axis.
++	for i in rampCell do
++		if kinds[i] == "heath" or kinds[i] == "road" then
++			local x, z = Grid.coords(grid, i)
++			local bestDistance = math.huge
++			local height = heights[i]
++			for _, ramp in ramps do
++				local d = distanceToSegment(x, z, ramp.ax, ramp.az, ramp.bx, ramp.bz)
++				if d < bestDistance then
++					bestDistance = d
++					local vx, vz = ramp.bx - ramp.ax, ramp.bz - ramp.az
++					local length = math.sqrt(vx * vx + vz * vz)
++					local along = math.clamp(((x - ramp.ax) * vx + (z - ramp.az) * vz) / length, 0, length)
++					local span = math.max(ramp.inner - ramp.out, 1)
++					height = rampHeightAt((along - ramp.out) / span)
++				end
++			end
++			heights[i] = height
++		end
++	end
++
++	-- Sites: the hill-folk's graves and ruins on the highland ring, each whole
++	-- on one level, clear of the road and the ramps, two cells off its
++	-- neighbours and clear of the bank.
++	local sites: { Heath.Site } = {}
++	local claimed: { [number]: boolean } = {}
++
++	local function siteFits(x0: number, z0: number, x1: number, z1: number): boolean
++		for z = z0 - 2, z1 + 2 do
++			for x = x0 - 2, x1 + 2 do
++				if x < MARGIN + 2 or x > WIDTH - MARGIN - 2 or z < MARGIN + 2 or z > DEPTH - MARGIN - 2 then
++					return false
++				end
++				local i = Grid.index(grid, x, z)
++				if kinds[i] ~= "heath" or heights[i] ~= HIGHLAND_HEIGHT or claimed[i] then
++					return false
++				end
++				local limit = shelfLimit(cx, cz, rx, rz, x, z)
++				if shore[i] < SHORE_OUT + 0.035 or shore[i] > limit - 0.02 then
++					return false
++				end
++			end
++		end
++		local mx, mz = (x0 + x1) / 2, (z0 + z1) / 2
++		local halfDiagonal = math.sqrt(((x1 - x0) / 2) ^ 2 + ((z1 - z0) / 2) ^ 2)
++		if roadDistance(road, mx, mz) < 9 + halfDiagonal then
++			return false
++		end
++		for _, path in ramps do
++			if distanceToSegment(mx, mz, path.ax, path.az, path.bx, path.bz) < 5 + halfDiagonal then
++				return false
++			end
++		end
++		return true
++	end
++
++	-- One graveyard on the shelf that survives, and one ruin across the lake
++	-- where the other shelf allows it.
++	for index, side in { viewSide, -viewSide } do
++		local kind = if index == 1 then "graveyard" else "ruin"
++		for _ = 1, 300 do
++			local w = 8 + 2 * math.floor(rng:NextNumber() * 2)
++			local d = 8 + 2 * math.floor(rng:NextNumber() * 2)
++			local angle = side * math.pi / 2 + between(rng, -0.5, 0.5)
++			local reach = between(rng, 1.6, 1.78)
++			local px = cx + math.cos(angle) * rx * reach
++			local pz = cz + math.sin(angle) * rz * reach
++			local x0 = math.floor(px - w / 2)
++			local z0 = math.floor(pz - d / 2)
++			local x1, z1 = x0 + w - 1, z0 + d - 1
++			if siteFits(x0, z0, x1, z1) then
++				table.insert(sites, { kind = kind :: TerrainTypes.SiteKind, x0 = x0, z0 = z0, x1 = x1, z1 = z1 })
++				for z = z0, z1 do
++					for x = x0, x1 do
++						claimed[Grid.index(grid, x, z)] = true
++					end
++				end
++				break
++			end
++		end
++	end
++
++	-- Rock outcrops break the highland into pockets, clear of the road, the
++	-- sites and the lake's bank, and never touching the wall ring.
++	local outcropCentres: { { x: number, z: number, r: number } } = {}
++	local outcropCount = 6 + math.floor(rng:NextNumber() * 3)
++	for _ = 1, outcropCount do
++		for _ = 1, 120 do
++			local angle = rng:NextNumber() * 2 * math.pi
++			local reach = between(rng, 1.22, 1.42)
++			local px = cx + math.cos(angle) * rx * reach
++			local pz = cz + math.sin(angle) * rz * reach
++			local radius = between(rng, 1.8, 3.2)
++			local ok = true
++			local r = math.ceil(radius)
++			for z = math.floor(pz) - r, math.floor(pz) + r do
++				for x = math.floor(px) - r, math.floor(px) + r do
++					if (x - px) ^ 2 + (z - pz) ^ 2 <= radius * radius then
++						if x < MARGIN + 2 or x > WIDTH - MARGIN - 2 or z < MARGIN + 2 or z > DEPTH - MARGIN - 2 then
++							ok = false
++						else
++							local i = Grid.index(grid, x, z)
++							local limit = shelfLimit(cx, cz, rx, rz, x, z)
++							if
++								kinds[i] ~= "heath"
++								or heights[i] ~= HIGHLAND_HEIGHT
++								or claimed[i]
++								or shore[i] > limit - 0.02
++							then
++								ok = false
++							end
++						end
++					end
++					if not ok then
++						break
++					end
++				end
++				if not ok then
++					break
++				end
++			end
++			if ok and roadDistance(road, px, pz) < radius + 6 then
++				ok = false
++			end
++			if ok then
++				for _, other in outcropCentres do
++					if (other.x - px) ^ 2 + (other.z - pz) ^ 2 < (other.r + radius + 5) ^ 2 then
++						ok = false
++						break
++					end
++				end
++			end
++			if ok then
++				table.insert(outcropCentres, { x = px, z = pz, r = radius })
++				for z = math.floor(pz) - r, math.floor(pz) + r do
++					for x = math.floor(px) - r, math.floor(px) + r do
++						if (x - px) ^ 2 + (z - pz) ^ 2 <= radius * radius then
++							kinds[Grid.index(grid, x, z)] = "outcrop"
++						end
++					end
++				end
++				break
++			end
++		end
++	end
++
++	-- Open courts in the pillar forest, wide enough to fight a pack in: a gap
++	-- between the rings where the ice runs clear.
++	local courts: { { x: number, z: number } } = {}
++	for _ = 1, 3 do
++		for _ = 1, 30 do
++			local angle = rng:NextNumber() * 2 * math.pi
++			local radius = between(rng, 8, 12.5)
++			local px, pz = cx + math.cos(angle) * radius, cz + math.sin(angle) * radius
++			local spaced = true
++			for _, other in courts do
++				if (other.x - px) ^ 2 + (other.z - pz) ^ 2 < 8 * 8 then
++					spaced = false
++					break
++				end
++			end
++			if spaced and roadDistance(road, px, pz) > 6 then
++				table.insert(courts, { x = px, z = pz })
++				break
++			end
++		end
++	end
++
++	-- The cathedral: rings of ice spires round the heart, broken by the nave
++	-- (along the road) and the cross-aisle (over the heart), so the rings are
++	-- aisles you can walk between them.
++	local obstaclePaint: { [number]: string } = {}
++	local SPIRE_STEPS = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }
++
++	local function spireCell(x: number, z: number, kind: string): boolean
++		if x < 1 or x > WIDTH or z < 1 or z > DEPTH then
++			return false
++		end
++		local i = Grid.index(grid, x, z)
++		if kinds[i] ~= "heath" or heights[i] ~= LAKE_HEIGHT then
++			return false
++		end
++		if roadCell[i] or rampCell[i] or obstaclePaint[i] then
++			return false
++		end
++		if shore[i] > SHORE_IN - 0.05 then
++			return false
++		end
++		kinds[i] = "outcrop"
++		obstaclePaint[i] = kind
++		return true
++	end
++
++	local function inHeart(px: number, pz: number): boolean
++		return (px - cx) ^ 2 + (pz - cz) ^ 2 < 7 * 7
++	end
++
++	local function inAisle(px: number, pz: number): boolean
++		if math.abs(pz - (cz + NAVE_OFFSET)) < 2.6 and math.abs(px - cx) < 20 then
++			return true
++		end
++		return math.abs(px - cx) < 1.9 and math.abs(pz - cz) < 20
++	end
++
++	local function spireAt(px: number, pz: number, kindIndex: number)
++		if inHeart(px, pz) or inAisle(px, pz) or roadDistance(road, px, pz) < 3.5 then
++			return
++		end
++		-- The altar's sight line down the nave, and the open courts, stay clear.
++		if distanceToSegment(px, pz, cx - 24, cz + NAVE_OFFSET, altarX, altarZ) < 3.2 then
++			return
++		end
++		for _, court in courts do
++			if (px - court.x) ^ 2 + (pz - court.z) ^ 2 < 5.5 * 5.5 then
++				return
++			end
++		end
++		local x, z = math.floor(px + 0.5), math.floor(pz + 0.5)
++		if not spireCell(x, z, SPIRE_KINDS[kindIndex]) then
++			return
++		end
++		-- A second cell one step lower, so a spire is a stepped tooth rather
++		-- than a post.
++		if rng:NextNumber() < 0.55 then
++			local step = SPIRE_STEPS[1 + math.floor(rng:NextNumber() * 4)]
++			spireCell(x + step[1], z + step[2], SPIRE_KINDS[math.max(1, kindIndex - 1)])
++		end
++	end
++
++	local rings = {
++		{ radius = 9, count = 10, low = 4, high = 5 },
++		{ radius = 11.5, count = 13, low = 3, high = 4 },
++		{ radius = 13.5, count = 16, low = 2, high = 3 },
++		{ radius = 15.5, count = 19, low = 1, high = 2 },
++	}
++	for _, ring in rings do
++		local base = rng:NextNumber() * 2 * math.pi
++		for k = 0, ring.count - 1 do
++			local angle = base + (k + between(rng, -0.25, 0.25)) * 2 * math.pi / ring.count
++			local radius = ring.radius + between(rng, -0.9, 0.9)
++			local kindIndex = ring.low + math.floor(rng:NextNumber() * (ring.high - ring.low + 1))
++			spireAt(cx + math.cos(angle) * radius, cz + math.sin(angle) * radius, kindIndex)
++		end
++	end
++
++	-- The west front: two towers flanking the nave's mouth, the tallest ice on
++	-- the lake and the frame of the photograph from down the nave.
++	for _, side in { -1, 1 } do
++		local tx = math.floor(cx - 17 + 0.5)
++		local tz = math.floor(cz + NAVE_OFFSET + side * 4.5 + 0.5)
++		for dz = 0, 1 do
++			for dx = 0, 1 do
++				local kind = if dx == 1 and dz == 1 then SPIRE_KINDS[4] else SPIRE_KINDS[5]
++				spireCell(tx + dx, tz + dz, kind)
++			end
++		end
++	end
++
++	-- Ice teeth scattered on the open lake outside the cathedral, so the forest
++	-- goes on past the rings.
++	for _ = 1, 14 do
++		for _ = 1, 10 do
++			local angle = rng:NextNumber() * 2 * math.pi
++			local reach = between(rng, 0.62, 0.9)
++			local px = cx + math.cos(angle) * rx * reach
++			local pz = cz + math.sin(angle) * rz * reach
++			if (px - cx) ^ 2 + (pz - cz) ^ 2 > 19 * 19 and roadDistance(road, px, pz) > 3.5 then
++				spireAt(px, pz, if rng:NextNumber() < 0.7 then 1 else 2)
++				break
++			end
++		end
++	end
++
++	-- Anything else thrown up on the ice: a ridge or a lead. It keeps clear of
++	-- the road and dies out before the bank, so the lake stays one crossing.
++	local function iceObstacle(x: number, z: number, kind: string): boolean
++		if x < 1 or x > WIDTH or z < 1 or z > DEPTH then
++			return false
++		end
++		local i = Grid.index(grid, x, z)
++		if kinds[i] ~= "heath" or heights[i] ~= LAKE_HEIGHT then
++			return false
++		end
++		if roadCell[i] or rampCell[i] or obstaclePaint[i] then
++			return false
++		end
++		if shore[i] > SHORE_IN - 0.06 or roadDistance(road, x, z) < 3 then
++			return false
++		end
++		kinds[i] = "outcrop"
++		obstaclePaint[i] = kind
++		return true
++	end
++
++	-- Heaved pressure ridges pushed up out of the ice.
++	for _ = 1, 5 do
++		local angle = rng:NextNumber() * 2 * math.pi
++		local reach = between(rng, 0.55, 0.82)
++		local px = cx + math.cos(angle) * rx * reach
++		local pz = cz + math.sin(angle) * rz * reach
++		local heading = rng:NextNumber() * 2 * math.pi
++		local kind = if rng:NextNumber() < 0.5 then "ice_ridge" else "ice_ridge_high"
++		for _ = 1, 8 + math.floor(rng:NextNumber() * 9) do
++			heading += between(rng, -0.4, 0.4)
++			px += math.cos(heading)
++			pz += math.sin(heading)
++			iceObstacle(math.floor(px + 0.5), math.floor(pz + 0.5), kind)
++			if rng:NextNumber() < 0.35 then
++				iceObstacle(math.floor(px + 0.5) + 1, math.floor(pz + 0.5), kind)
++			end
++		end
++	end
++
++	-- Black open water: the ice broken along four leads, the lake's dark
++	-- showing through.
++	for _ = 1, 4 do
++		local angle = rng:NextNumber() * 2 * math.pi
++		local reach = between(rng, 0.5, 0.8)
++		local px = cx + math.cos(angle) * rx * reach
++		local pz = cz + math.sin(angle) * rz * reach
++		local heading = rng:NextNumber() * 2 * math.pi
++		for _ = 1, 10 + math.floor(rng:NextNumber() * 9) do
++			heading += between(rng, -0.45, 0.45)
++			px += math.cos(heading)
++			pz += math.sin(heading)
++			iceObstacle(math.floor(px + 0.5), math.floor(pz + 0.5), "black_water")
++		end
++	end
++
++	-- A last guard on the slope: no walkable cell beside a ramp may sit more
++	-- than one step from it.
++	for _ = 1, 24 do
++		local changed = false
++		for i in rampCell do
++			if kinds[i] == "heath" or kinds[i] == "road" then
++				local x, z = Grid.coords(grid, i)
++				for _, d in Grid.NEIGHBOURS do
++					local nx, nz = x + d[1], z + d[2]
++					if Grid.inBounds(grid, nx, nz) then
++						local j = Grid.index(grid, nx, nz)
++						if (kinds[j] == "heath" or kinds[j] == "road") and heights[i] > heights[j] + MAX_STEP then
++							heights[i] = heights[j] + MAX_STEP
++							changed = true
++						end
++					end
++				end
++			end
++		end
++		if not changed then
++			break
++		end
++	end
++
++	-- The walkable grid, and a guard: if the ice's walls ever cut a pocket off,
++	-- bore through one of them rather than leave a dead pocket (a seed should
++	-- never need this).
++	for i, kind in kinds do
++		grid.cells[i] = if kind == "heath" or kind == "road" then Grid.FLOOR else Grid.WALL
++	end
++	for _ = 1, 6 do
++		local regions = Grid.regions(grid)
++		if #regions <= 1 then
++			break
++		end
++		for r = 2, #regions do
++			for _, i in regions[r] do
++				local x, z = Grid.coords(grid, i)
++				for _, d in Grid.NEIGHBOURS do
++					local nx, nz = x + d[1], z + d[2]
++					if Grid.inBounds(grid, nx, nz) then
++						local j = Grid.index(grid, nx, nz)
++						if kinds[j] == "outcrop" then
++							kinds[j] = "heath"
++							heights[j] = if shore[j] < SHORE_IN then LAKE_HEIGHT else heights[j]
++							obstaclePaint[j] = nil
++							grid.cells[j] = Grid.FLOOR
++						end
++					end
++				end
++			end
++		end
++	end
++
++	-- The rim: the wall ring round the highland, its edge kinds in long runs by
++	-- noise, so the boundary reads as scarp, pines and falls into mist.
++	local edges: { [number]: TerrainTypes.EdgeKind } = {}
++	local rim: { number } = {}
++	for i, kind in kinds do
++		if kind == "void" then
++			local x, z = Grid.coords(grid, i)
++			for _, d in Grid.NEIGHBOURS do
++				if Grid.get(grid, x + d[1], z + d[2]) == Grid.FLOOR then
++					kinds[i] = "rim"
++					table.insert(rim, i)
++					break
++				end
++			end
++		end
++	end
++	for _, i in rim do
++		local x, z = Grid.coords(grid, i)
++		if brokenSide(x, z) then
++			-- The broken side is one long drop into the mist.
++			edges[i] = "drop"
++		else
++			local v = Noise.fractal(field, x * 0.085 + 401.3, z * 0.085 - 233.7, {
++				octaves = 2,
++				frequency = 1,
++				lacunarity = 2,
++				gain = 0.5,
++			})
++			edges[i] = if v < -0.3
++				then "drop"
++				elseif v < 0.15 then "cliff"
++				elseif v < 0.62 then "thicket"
++				else "ruin_wall"
++		end
++	end
++
++	-- What the draft's own kinds cover: the lake sheet and the road over it,
++	-- and every ice wall the cathedral or the lake threw up.
++	local painted: { [number]: string } = {}
++	for i, kind in kinds do
++		if kind == "heath" and heights[i] == LAKE_HEIGHT then
++			painted[i] = "lake_ice"
++		elseif kind == "road" and heights[i] == LAKE_HEIGHT then
++			painted[i] = "lake_road"
++		elseif kind == "outcrop" then
++			painted[i] = obstaclePaint[i]
++		end
++	end
++
++	local first, last = road[1], road[#road]
++	local map: Heath.Map = {
++		grid = grid,
++		kinds = kinds,
++		edges = edges,
++		road = road,
++		start = { x = math.floor(first.x + 0.5), z = math.floor(first.z + 0.5) },
++		exit = { x = math.floor(last.x + 0.5), z = math.floor(last.z + 0.5) },
++		sites = sites,
++		heights = heights,
++		terraces = {},
++	}
++	INFO[map] = {
++		cx = cx,
++		cz = cz,
++		painted = painted,
++		road = road,
++		viewSide = viewSide,
++		stonesX = stonesX,
++		stonesZ = stonesZ,
++		altarX = altarX,
++		altarZ = altarZ,
++	}
++	return map
++end
++
++-- The nearest walkable cell to a point, so a camera or an effect never stands
++-- inside a spire.
++local function openNear(map: Heath.Map, x: number, z: number): (number, number)
++	for ring = 0, 6 do
++		for dz = -ring, ring do
++			for dx = -ring, ring do
++				if math.abs(dx) == ring or math.abs(dz) == ring then
++					local px, pz = x + dx, z + dz
++					local cellX, cellZ = math.floor(px), math.floor(pz)
++					if Grid.inBounds(map.grid, cellX, cellZ) then
++						local kind = map.kinds[Grid.index(map.grid, cellX, cellZ)]
++						if kind == "heath" or kind == "road" then
++							return px, pz
++						end
++					end
++				end
++			end
++		end
++	end
++	return x, z
++end
++
++-- The runestone ring at the cathedral's heart, and a hill-king's barrow just
++-- outside each graveyard, on the snow.
++local function landmarks(map: Heath.Map, rng: Random): { DraftedMap.Landmark }
++	local info = infoOf(map)
++	local marks: { DraftedMap.Landmark } = {
++		-- The altar at the end of the nave: a hill-king's barrow, its wisps
++		-- rising from the crown.
++		{
++			sculpt = "rimeholt_barrow",
++			x = info.altarX,
++			z = info.altarZ,
++			yaw = 0,
++			scale = 2.4,
++			sink = 1,
++		},
++	}
++	-- The runestone ring stands on the shelf the lake keeps, clear of the road.
++	local stonesCellX, stonesCellZ = math.floor(info.stonesX), math.floor(info.stonesZ)
++	if Grid.inBounds(map.grid, stonesCellX, stonesCellZ) then
++		if map.kinds[Grid.index(map.grid, stonesCellX, stonesCellZ)] == "heath" then
++			table.insert(marks, {
++				sculpt = "rimeholt_runestones",
++				x = info.stonesX,
++				z = info.stonesZ,
++				yaw = rng:NextNumber() * 360,
++				scale = 1.4,
++				sink = 0.2,
++			})
++		end
++	end
++	for _, site in map.sites do
++		if site.kind == "graveyard" then
++			local midZ = (site.z0 + site.z1) / 2
++			local midX = (site.x0 + site.x1) / 2
++			local candidates = {
++				{ x = site.x0 - 4, z = midZ },
++				{ x = site.x1 + 4, z = midZ },
++				{ x = midX, z = site.z0 - 4 },
++				{ x = midX, z = site.z1 + 4 },
++			}
++			for _, spot in candidates do
++				local cellX, cellZ = math.floor(spot.x), math.floor(spot.z)
++				if Grid.inBounds(map.grid, cellX, cellZ) then
++					local kind = map.kinds[Grid.index(map.grid, cellX, cellZ)]
++					if kind == "heath" then
++						table.insert(marks, {
++							sculpt = "rimeholt_barrow",
++							x = spot.x,
++							z = spot.z,
++							yaw = rng:NextNumber() * 360,
++							scale = 1.5,
++							sink = 0.8,
++						})
++						break
++					end
++				end
++			end
++		end
++	end
++	return marks
++end
++
++-- The lake's cold breathing under the ice at the heart and along the nave,
++-- wisps hanging between the spires, snow drifting across the open sheet, and
++-- the barrows' pall off the north shore.
++local function effects(map: Heath.Map, _rng: Random): { DraftedMap.Effect }
++	local info = infoOf(map)
++	local cx, cz = info.cx, info.cz
++	local under2X, under2Z = openNear(map, cx - 20, cz + NAVE_OFFSET + 4)
++	local under3X, under3Z = openNear(map, cx + 16, cz + 11)
++	local wisp1X, wisp1Z = info.altarX, info.altarZ
++	local wisp2X, wisp2Z = openNear(map, cx - 3, cz + 2)
++	local drift1X, drift1Z = openNear(map, cx - 17, cz + 12)
++	local drift2X, drift2Z = openNear(map, cx + 15, cz - 12)
++	local pallX, pallZ = openNear(map, cx + 3, cz - 17)
++	return {
++		{ recipe = "rimeholt_underice", x = cx, z = cz, lift = 0.6, seed = 1 },
++		{ recipe = "rimeholt_underice", x = under2X, z = under2Z, lift = 0.6, seed = 2 },
++		{ recipe = "rimeholt_underice", x = under3X, z = under3Z, lift = 0.6, seed = 3 },
++		{ recipe = "barrow_wisps", x = wisp1X, z = wisp1Z, lift = 20, seed = 4 },
++		{ recipe = "barrow_wisps", x = wisp2X, z = wisp2Z, lift = 0.3, seed = 5 },
++		{ recipe = "rimeholt_drift", x = drift1X, z = drift1Z, lift = 0.8, seed = 6 },
++		{ recipe = "rimeholt_drift", x = drift2X, z = drift2Z, lift = 0.8, seed = 7 },
++		{ recipe = "barrow_pall", x = pallX, z = pallZ, lift = 1, seed = 8 },
++	}
++end
++
++-- Three photographs: low on the ice down the nave, the whole basin from the
++-- highland, and looking up the west towers from their feet.
++local function shots(map: Heath.Map): { DraftedMap.Shot }
++	local info = infoOf(map)
++	local cx, cz = info.cx, info.cz
++	-- The road's own row at this x, so the nave camera stands on the road even
++	-- when the seed bends it.
++	local function roadZAt(x: number): number
++		local best, bestZ = math.huge, cz + NAVE_OFFSET
++		for _, p in info.road do
++			local d = math.abs(p.x - x)
++			if d < best then
++				best, bestZ = d, p.z
++			end
++		end
++		return bestZ
++	end
++	local naveX, naveZ = openNear(map, cx - 22, roadZAt(cx - 22))
++	local highX, highZ = openNear(map, cx + 12, cz + info.viewSide * 34)
++	local aisleX, aisleZ = openNear(map, cx - 0.8, cz + info.viewSide * 24)
++	return {
++		{
++			name = "the nave",
++			from = { x = naveX, z = naveZ, lift = 2.5 },
++			to = { x = info.altarX, z = info.altarZ, lift = 10 },
++			fov = 74,
++		},
++		{
++			name = "from the highland",
++			from = { x = highX, z = highZ, lift = 27 },
++			to = { x = cx, z = cz, lift = 2 },
++			fov = 70,
++		},
++		{
++			name = "the aisle",
++			from = { x = aisleX, z = aisleZ, lift = 12 },
++			to = { x = info.altarX, z = info.altarZ, lift = 6 },
++			fov = 70,
++		},
++	}
++end
++
++local draft: DraftedMap.Draft = {
++	name = "RimelakeCathedral",
++	about = "The ice cathedral: a highland of old snow round a lake that never thaws, its sheet crossed by the hill-folk's road and split by black leads, with a forest of ice spires rising in rings and aisles round a runestone ring at its heart.",
++	tileset = "rimeholt",
++	generate = generate,
++	cells = CELLS,
++	paint = paint,
++	landmarks = landmarks,
++	effects = effects,
++	shots = shots,
++}
++
++return draft

@@ -1,0 +1,16 @@
+{
+  "A": {"photo": 3, "not_moor": 5, "scale": 4, "effect": 3, "playable": 6, "total": 3.95,
+        "best_shot": "the frozen falls, seed 1", "why": "The terraced descent is a real shape, but no shot has a subject: flat ice to a far slab skyline, or a block at the lens."},
+  "B": {"photo": 5, "not_moor": 8, "scale": 5, "effect": 2, "playable": 5, "total": 5.45,
+        "best_shot": "the crater from the rim, seed 1", "why": "The crater of terraces round a spired isle is the most distinct shape here, but the photo lacks a foreground and the aurora is invisible from the game camera."},
+  "C": {"photo": 5, "not_moor": 6, "scale": 6, "effect": 3, "playable": 5, "total": 5.2,
+        "best_shot": "the causeway, seed 1", "why": "Ridged lake ice and a causeway give real leading lines and depth, but there is no subject at the end of the road and the ridges leave little open ground."},
+  "D": {"photo": 4, "not_moor": 5, "scale": 5, "effect": 3, "playable": 5, "total": 4.4,
+        "best_shot": "the long crossing, seed 1", "why": "A decent road-to-gate perspective, but the round bowl with dark patches is close to the moor, and two cameras are blank or blocked."},
+  "E": {"photo": 6, "not_moor": 7, "scale": 5, "effect": 6, "playable": 5, "total": 6.0,
+        "best_shot": "the nave, seed 1", "why": "An avenue of towering pillars gives the run's only frame with real scale, and the barrow wisps read from the game camera; the nave still needs a subject at its end."},
+  "F": {"photo": 6, "not_moor": 3, "scale": 5, "effect": 3, "playable": 5, "total": 4.7,
+        "best_shot": "the frozen crown, seed 1", "why": "The best gothic mood, with dead woods round a curling road, but the layout is the moor's oval bowl and winding road repainted."},
+  "ranking": ["E", "B", "C", "F", "D", "A"],
+  "notes": "No candidate has a store-page photo: every set has at least one camera jammed against a slab, and the seeds of each map barely differ. Four of six reuse the same faint under-ice line as their effect, and nobody built a single tall subject (a tower or arch) that the best shot is framed around."
+}

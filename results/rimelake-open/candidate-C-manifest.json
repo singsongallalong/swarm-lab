@@ -1,0 +1,18 @@
+{
+  "skill": "Rimelake",
+  "look": "RimelakeDrownedForest",
+  "rows_added": [],
+  "setpiece": "rimeholt_underice",
+  "intent": "A vast frozen crater lake fills the highland, its pale ice drowned in black pines and cut by heaved ridges and black leads, with the road crossing the wood to a runestone ring beneath a broken crown of ice teeth.",
+  "renders": [
+    ".swarm/out/map-shots-r4.png",
+    ".swarm/out/map-whole-r4.png",
+    ".swarm/out/map-landmark-r4.png",
+    ".swarm/out/map-setpiece-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A cell kind that paints its own ground without counting as heath for the tileset's ground-mist budget: a lake-sized sheet of ice has to be road-kind floor today to stay inside the phone budget.",
+    "A cell-look option for broken or sloped tops on lifted wall cells; a forest of spires built from square lifted cells reads as flat-topped slabs up close."
+  ]
+}

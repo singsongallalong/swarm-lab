@@ -1,0 +1,19 @@
+{
+  "skill": "Rimelake",
+  "look": "RimelakeCrater",
+  "rows_added": [],
+  "setpiece": "aurora_curtain",
+  "intent": "A vast round crater of banded terraced cliffs cut by pale ramps, its one pale road spiralling from the rim across cracked ice to a tall spire of ice off the centre, read from above as a dark-and-pale bullseye whose ramps and isle change with every seed.",
+  "renders": [
+    ".swarm/out/map-whole-r11.png",
+    ".swarm/out/map-shots-r11.png",
+    ".swarm/out/map-landmark-r11.png",
+    ".swarm/out/map-setpiece-r4.png"
+  ],
+  "revisions": 4,
+  "requests": [
+    "A cheap visible cliff for long terrace risers: the tileset's bluff runs cost about 16,600 parts on a 10k-cell crater wall, so the wall is drawn as painted outcrop bands instead.",
+    "A way to thin the ground-mist emitter density on large maps: mist is about one emitter per 170 walkable cells, which held this 180x180 crater to roughly 6,000 walkable cells under the 40-emitter budget.",
+    "A vertical face for a frozen fall: a painted cell ground only colours the terrace tops, so the falls read as pale patches on the steps rather than a curtain of ice down the cliff."
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "picked": ["D"],
+  "reasons": {
+    "D": "The shattered lake (RimelakeShattered): a 200 x 160 crevassed ice sheet with its own ridges, spires and black leads, the only map both critics placed in the top three. The second critic ranked it first (5.9) for ground of its own making and a real skyline."
+  },
+  "fixes": {
+    "D": "Its three seeds share one layout, and its shots have no foreground. In the offline renders the spires read as city blocks, which Studio will confirm or not (C384)."
+  },
+  "notes": "The loosened job made bigger, stranger maps than rimelake-maps, but no store-page photo. First critic: E 6.0, B 5.45, C 5.2, F 4.7, D 4.4, A 3.95. After one rework (two failed lint, four survived), the second critic: D (was C) 5.9, A (crater, was B) 4.9, B (cathedral, was E) 4.3, C (drowned forest, was F) 4.05. The rework helped one map and hurt the cathedral. Both critics said the same three things: cameras jammed against slabs, seeds that barely differ, and effects floating alone. Whole-map builders struggle with composition, and that is the case for the features library (docs/feature-library.md). Every builder asked for a per-cell lift on painted cells, and for cameras and props that can stand on a painted top."
+}

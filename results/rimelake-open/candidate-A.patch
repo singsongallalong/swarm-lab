@@ -1,0 +1,1062 @@
+diff --git a/src/shared/data/DraftedMaps.luau b/src/shared/data/DraftedMaps.luau
+index b9f89061..7a8d55fc 100644
+--- a/src/shared/data/DraftedMaps.luau
++++ b/src/shared/data/DraftedMaps.luau
+@@ -4,9 +4,11 @@
+ -- `lune run scripts/dresspreview whole out.png 3 1 layout=<Name>` before anything
+ -- builds it.
+ local DraftedMap = require("../systems/DraftedMap")
++local RimelakeCrater = require("../systems/draftedmaps/RimelakeCrater")
+ 
+ local DraftedMaps: { [string]: DraftedMap.Draft } = {
+ 	-- One line per draft, `Name = Name,`, with its require above.
++	RimelakeCrater = RimelakeCrater,
+ }
+ 
+ return table.freeze(DraftedMaps)
+diff --git a/src/shared/systems/draftedmaps/RimelakeCrater.luau b/src/shared/systems/draftedmaps/RimelakeCrater.luau
+new file mode 100644
+index 00000000..132a92dd
+--- /dev/null
++++ b/src/shared/systems/draftedmaps/RimelakeCrater.luau
+@@ -0,0 +1,1040 @@
++--!strict
++-- Rimelake: the crater lake of Rimeholt. A vast round crater in the highland, its
++-- wall of terraced rock and snow dropping to a frozen lake: the road comes in on a
++-- ledge along the rim, spirals down a cut carved through the crater wall, and crosses
++-- the cracked ice to a spire of ice at the centre. The rim carries the hill-folk's
++-- barrows and runestones; the ice carries black open water, heaved ridges and a
++-- frozen burial ground; the crater wall carries frozen falls.
++local DraftedMap = require("../DraftedMap")
++local Grid = require("../Grid")
++local Heath = require("../Heath")
++local Noise = require("../Noise")
++local TerrainTypes = require("../../TerrainTypes")
++
++local WIDTH = 180
++local DEPTH = 180
++local CX = 90.5
++local CZ = 90.5
++local TAU = math.pi * 2
++
++-- Studs between the crater terraces (the wall is drawn in four of these steps).
++local STEP = 12
++
++-- Half-width of the road's cut, in cells, and the sampling step along its centreline.
++local ROAD_HALF = 1.4
++local SAMPLE_STEP = 0.35
++
++-- Edge kinds, dealt along the rim in long runs.
++local EDGE_ORDER: { TerrainTypes.EdgeKind } = { "drop", "cliff", "thicket", "ruin_wall" }
++
++-- The crater's shape for one seed: the radii of its bands (in q, the distance from
++-- the centre plus the rim's wobble), the angles of its road and falls, and the road's
++-- ice crossing.
++type Shape = {
++	cx: number,
++	cz: number,
++	amp1: number,
++	amp2: number,
++	ph1: number,
++	ph2: number,
++	lake: number,
++	shore: number,
++	rim: number,
++	high: number,
++	bands: number,
++	a0: number,
++	spiralAngle: number,
++	sweep: number,
++	exitAngle: number,
++	exitQ: number,
++	isleX: number,
++	isleZ: number,
++	exitX: number,
++	exitZ: number,
++	heroAngle: number,
++	chuteAngle: { number },
++	fallAngle: { number },
++	icePath: { { x: number, z: number, q: number } },
++}
++
++type Node = { q: number, theta: number }
++type Sample = { x: number, z: number, q: number, theta: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + rng:NextNumber() * (hi - lo)
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(rng:NextNumber(lo, hi + 1))
++end
++
++-- The rim's wobble: a smooth periodic bend of the radius, so every band boundary is
++-- the same closed, irregular curve rather than a circle.
++local function wobble(shape: Shape, theta: number): number
++	return shape.amp1 * math.sin(3 * theta + shape.ph1) + shape.amp2 * math.sin(5 * theta + shape.ph2)
++end
++
++local function polar(shape: Shape, q: number, theta: number): (number, number)
++	local r = q - wobble(shape, theta)
++	return shape.cx + r * math.cos(theta), shape.cz + r * math.sin(theta)
++end
++
++local function angleGap(a: number, b: number): number
++	return math.abs((a - b + math.pi) % TAU - math.pi)
++end
++
++local function makeShape(rng: Random): Shape
++	local lake = 25 + whole(rng, 0, 5)
++	local shore = lake + 2
++	local rim = shore + 33 + whole(rng, 0, 2)
++	local high = rim + 6
++	local bands = 3 + whole(rng, 0, 1)
++	local cx = CX + (rng:NextNumber() - 0.5) * 6
++	local cz = CZ + (rng:NextNumber() - 0.5) * 6
++	local amp1 = 1.0 + rng:NextNumber() * 1.4
++	local amp2 = 0.4 + rng:NextNumber() * 0.6
++	local ph1 = rng:NextNumber() * TAU
++	local ph2 = rng:NextNumber() * TAU
++	local function bend(theta: number): number
++		return amp1 * math.sin(3 * theta + ph1) + amp2 * math.sin(5 * theta + ph2)
++	end
++	local a0 = math.rad(140 + rng:NextNumber() * 80)
++	local spiralAngle = a0 - 0.45
++	local sweep = math.rad(290 + rng:NextNumber() * 90)
++	local endAngle = spiralAngle - sweep
++	-- The hero shot looks in from a clear stretch of the rim; the isle sits off its axis.
++	local heroAngle = a0 + math.rad(105 + rng:NextNumber() * 70)
++	local isleAngle = heroAngle + math.rad(25 + rng:NextNumber() * 35)
++	local isleDist = 3 + rng:NextNumber() * 6
++	local isleX = cx + isleDist * math.cos(isleAngle)
++	local isleZ = cz + isleDist * math.sin(isleAngle)
++	-- Where the road leaves the ice and ends at the isle's foot.
++	local gateQ = (lake + shore) / 2
++	local gateR = gateQ - bend(endAngle)
++	local gateX = cx + gateR * math.cos(endAngle)
++	local gateZ = cz + gateR * math.sin(endAngle)
++	local gdx, gdz = gateX - isleX, gateZ - isleZ
++	local glen = math.max(math.sqrt(gdx * gdx + gdz * gdz), 1e-6)
++	local exitX = isleX + gdx / glen * 11
++	local exitZ = isleZ + gdz / glen * 11
++	local chuteAngle: { number } = {}
++	for i = 1, 1 + whole(rng, 0, 2) do
++		chuteAngle[i] = between(rng, -math.pi, math.pi)
++	end
++	return {
++		cx = cx,
++		cz = cz,
++		amp1 = amp1,
++		amp2 = amp2,
++		ph1 = ph1,
++		ph2 = ph2,
++		lake = lake,
++		shore = shore,
++		rim = rim,
++		high = high,
++		bands = bands,
++		a0 = a0,
++		spiralAngle = spiralAngle,
++		sweep = sweep,
++		exitAngle = endAngle - 0.3,
++		exitQ = 11,
++		isleX = isleX,
++		isleZ = isleZ,
++		exitX = exitX,
++		exitZ = exitZ,
++		heroAngle = heroAngle,
++		chuteAngle = chuteAngle,
++		fallAngle = {
++			spiralAngle - sweep * 0.35,
++			spiralAngle - sweep * 0.7,
++		},
++		icePath = {},
++	}
++end
++
++-- Because the wall is dead ground, the bands above the shore are all rock; the four
++-- terraces step up to the rim in STEPs.
++local function baseAt(shape: Shape, q: number): (Heath.CellKind, number)
++	if q <= shape.shore then
++		return "heath", 0
++	elseif q <= shape.rim then
++		local t = (q - shape.shore) / (shape.rim - shape.shore)
++		local level = math.min(shape.bands, math.max(1, math.ceil(t * shape.bands)))
++		return "outcrop", level * (4 * STEP / shape.bands)
++	elseif q <= shape.high then
++		return "heath", 4 * STEP
++	end
++	return "void", 4 * STEP
++end
++
++-- The road's height on its way down the wall: a smooth cut from the rim's level to
++-- the ice. Its slope is under two studs a cell, so walkable neighbours stay close.
++local function roadHeight(shape: Shape, q: number): number
++	local t = (q - shape.shore) / (shape.rim - shape.shore)
++	if t <= 0 then
++		return 0
++	elseif t >= 1 then
++		return 4 * STEP
++	end
++	return 4 * STEP * t
++end
++
++local function toPolar(shape: Shape, x: number, z: number): (number, number)
++	local dx, dz = x - shape.cx, z - shape.cz
++	local theta = math.atan2(dz, dx)
++	return math.sqrt(dx * dx + dz * dz) + wobble(shape, theta), theta
++end
++
++-- The road: a ledge along the rim, a spiral cut down the crater wall, then a curve
++-- across the ice to the isle's foot.
++local function sampleRoad(shape: Shape): { Sample }
++	local highQ = shape.rim + 3
++	local shoreMid = (shape.lake + shape.shore) / 2
++	local endAngle = shape.spiralAngle - shape.sweep
++	local gateX, gateZ = polar(shape, shoreMid, endAngle)
++	local ex, ez = shape.exitX, shape.exitZ
++	local dx, dz = ex - gateX, ez - gateZ
++	local len = math.max(math.sqrt(dx * dx + dz * dz), 1e-6)
++	local px, pz = -dz / len, dx / len
++	local m1x, m1z = gateX + dx * 0.42 + px * 1.6, gateZ + dz * 0.42 + pz * 1.6
++	local m2x, m2z = gateX + dx * 0.76 - px * 1.1, gateZ + dz * 0.76 - pz * 1.1
++	local q1, t1 = toPolar(shape, m1x, m1z)
++	local q2, t2 = toPolar(shape, m2x, m2z)
++	local qe, te = toPolar(shape, ex, ez)
++	local nodes: { Node } = {
++		{ q = highQ, theta = shape.a0 },
++		{ q = highQ, theta = shape.spiralAngle },
++		{ q = shoreMid, theta = endAngle },
++		{ q = q1, theta = t1 },
++		{ q = q2, theta = t2 },
++		{ q = qe, theta = te },
++	}
++	local samples: { Sample } = {}
++	for n = 1, #nodes - 1 do
++		local a, b = nodes[n], nodes[n + 1]
++		local dq = b.q - a.q
++		local length = math.abs(dq) + math.abs(b.theta - a.theta) * ((a.q + b.q) / 2)
++		local steps = math.max(1, math.ceil(length / SAMPLE_STEP))
++		for s = 0, steps - 1 do
++			local t = s / steps
++			local q = a.q + dq * t
++			local theta = a.theta + (b.theta - a.theta) * t
++			local x, z = polar(shape, q, theta)
++			table.insert(samples, { x = x, z = z, q = q, theta = theta })
++		end
++	end
++	local last = nodes[#nodes]
++	local lx, lz = polar(shape, last.q, last.theta)
++	table.insert(samples, { x = lx, z = lz, q = last.q, theta = last.theta })
++	return samples
++end
++
++local function roadDistance(samples: { Sample }, x: number, z: number): number
++	local best = math.huge
++	for _, p in samples do
++		local d = (p.x - x) ^ 2 + (p.z - z) ^ 2
++		if d < best then
++			best = d
++		end
++	end
++	return math.sqrt(best)
++end
++
++-- The draft's own ground. Roblox colours a material once for the whole map, so each
++-- kind takes a material the tile-set leaves free, at one colour of its own.
++local CELLS: { [string]: DraftedMap.CellLook } = {
++	ice = {
++		ground = { material = "Salt", color = { 74, 92, 104 } },
++		lift = 0.4,
++		clear = true,
++		props = {
++			{ sculpt = "rimeholt_boulder", every = 300, scale = { 0.5, 0.9 }, sink = 0.4 },
++		},
++	},
++	water = {
++		ground = { material = "Rock", color = { 8, 12, 20 } },
++		lift = 0,
++		clear = true,
++	},
++	ridge_low = {
++		ground = { material = "Marble", color = { 96, 112, 122 } },
++		lift = 6,
++		clear = true,
++	},
++	ridge_high = {
++		ground = { material = "Marble", color = { 96, 112, 122 } },
++		lift = 12,
++		clear = true,
++	},
++	spire_base = {
++		ground = { material = "Limestone", color = { 82, 100, 112 } },
++		lift = 12,
++		clear = true,
++	},
++	spire_low = {
++		ground = { material = "Limestone", color = { 82, 100, 112 } },
++		lift = 22,
++		clear = true,
++	},
++	spire_mid = {
++		ground = { material = "Limestone", color = { 82, 100, 112 } },
++		lift = 40,
++		clear = true,
++	},
++	spire_tall = {
++		ground = { material = "Limestone", color = { 82, 100, 112 } },
++		lift = 60,
++		clear = true,
++	},
++	fall = {
++		ground = { material = "Concrete", color = { 88, 104, 114 } },
++		lift = 6,
++		clear = true,
++	},
++	chute = {
++		ground = { material = "Concrete", color = { 88, 104, 114 } },
++		lift = 2,
++		clear = true,
++	},
++	spill = {
++		ground = { material = "Salt", color = { 74, 92, 104 } },
++		lift = 0.3,
++		clear = true,
++	},
++	path = {
++		ground = { material = "Sandstone", color = { 104, 108, 112 } },
++		lift = 0.2,
++		clear = true,
++	},
++	terrace_light = {
++		ground = { material = "Sand", color = { 84, 94, 100 } },
++		lift = 0,
++		clear = true,
++	},
++	terrace_dark = {
++		ground = { material = "Asphalt", color = { 42, 48, 56 } },
++		lift = 0,
++		clear = true,
++	},
++}
++
++type Build = {
++	grid: Grid.Grid,
++	kinds: { Heath.CellKind },
++	heights: { number },
++	paintKind: { [number]: string },
++	shape: Shape,
++}
++
++local function punch(build: Build, x: number, z: number, pkind: string, h: number)
++	if x < 2 or z < 2 or x > WIDTH - 1 or z > DEPTH - 1 then
++		return
++	end
++	local i = Grid.index(build.grid, x, z)
++	if build.kinds[i] ~= "heath" or build.paintKind[i] ~= nil then
++		return
++	end
++	build.kinds[i] = "outcrop"
++	build.heights[i] = h
++	build.paintKind[i] = pkind
++end
++
++-- Black open water: irregular pools well clear of the road and the shore.
++local function punchWater(build: Build, rng: Random, samples: { Sample })
++	local shape = build.shape
++	local made = 0
++	for _ = 1, 70 do
++		if made >= 3 then
++			break
++		end
++		local theta = between(rng, -math.pi, math.pi)
++		local radius = between(rng, 2.4, 4.6)
++		local q = between(rng, radius + 9, shape.lake - radius - 2)
++		if q > radius + 9 then
++			local x, z = polar(shape, q, theta)
++			if roadDistance(samples, x, z) > radius + ROAD_HALF + 5 then
++				local r = math.ceil(radius) + 1
++				for zz = math.floor(z) - r, math.floor(z) + r do
++					for xx = math.floor(x) - r, math.floor(x) + r do
++						local dx, dz = xx - x, zz - z
++						local edge = radius * (1 + 0.22 * math.sin((xx * 3 + zz * 2) * 0.7))
++						if dx * dx + dz * dz <= edge * edge then
++							punch(build, xx, zz, "water", 0)
++						end
++					end
++				end
++				made += 1
++			end
++		end
++	end
++end
++
++-- Heaved pressure ridges: short crooked lines of ice shoved up out of the lake.
++local function punchRidges(build: Build, rng: Random, samples: { Sample })
++	local shape = build.shape
++	local made = 0
++	for _ = 1, 40 do
++		if made >= 3 then
++			break
++		end
++		local q = between(rng, 14, shape.lake - 8)
++		local theta = between(rng, -math.pi, math.pi)
++		local x, z = polar(shape, q, theta)
++		local heading = rng:NextNumber() * TAU
++		local length = between(rng, 7, 15)
++		local points: { { x: number, z: number } } = {}
++		local ok = true
++		for _ = 0, math.floor(length) do
++			heading += (rng:NextNumber() - 0.5) * 0.22
++			x += math.cos(heading) * 0.85
++			z += math.sin(heading) * 0.85
++			local qq = math.sqrt((x - shape.cx) ^ 2 + (z - shape.cz) ^ 2)
++				+ wobble(shape, math.atan2(z - shape.cz, x - shape.cx))
++			if qq > shape.lake - 4 or qq < 13 or roadDistance(samples, x, z) < 5 then
++				ok = false
++				break
++			end
++			table.insert(points, { x = x, z = z })
++		end
++		if ok and #points > 3 then
++			for _, p in points do
++				for zz = math.floor(p.z) - 1, math.floor(p.z) + 1 do
++					for xx = math.floor(p.x) - 1, math.floor(p.x) + 1 do
++						if (xx - p.x) ^ 2 + (zz - p.z) ^ 2 <= 1.3 then
++							local heaved = math.sin(xx * 0.9 + zz * 0.7) > 0
++							punch(build, xx, zz, if heaved then "ridge_high" else "ridge_low", if heaved then 8 else 4)
++						end
++					end
++				end
++			end
++			made += 1
++		end
++	end
++end
++
++-- The isle: a stepped spire of ice standing off the crater's centre, with lesser
++-- spires out on the lake around it.
++local function punchSpires(build: Build, rng: Random, samples: { Sample })
++	local shape = build.shape
++	local phase = rng:NextNumber() * TAU
++	local step = rng:NextNumber() * TAU
++	local ix, iz = shape.isleX, shape.isleZ
++	for zz = math.floor(iz) - 10, math.floor(iz) + 10 do
++		for xx = math.floor(ix) - 10, math.floor(ix) + 10 do
++			local dx, dz = xx - ix, zz - iz
++			local d = math.sqrt(dx * dx + dz * dz)
++			local theta = math.atan2(dz, dx)
++			local reach = 4.4 + 1.2 * math.sin(3 * theta + phase) + 0.8 * math.sin(5 * theta + step)
++			if d <= reach and roadDistance(samples, xx, zz) > ROAD_HALF + 2 then
++				local pkind = if d <= reach * 0.34
++					then "spire_tall"
++					elseif d <= reach * 0.62 then "spire_mid"
++					elseif d <= reach * 0.86 then "spire_low"
++					else "spire_base"
++				punch(build, xx, zz, pkind, 0)
++			end
++		end
++	end
++	local placed: { { x: number, z: number } } = {}
++	local wanted = 3 + whole(rng, 0, 2)
++	for _ = 1, 90 do
++		if #placed >= wanted then
++			break
++		end
++		local q = between(rng, 15, shape.lake - 8)
++		local theta = between(rng, -math.pi, math.pi)
++		local x, z = polar(shape, q, theta)
++		local radius = between(rng, 1.0, 2.0)
++		local spaced = true
++		for _, p in placed do
++			if (p.x - x) ^ 2 + (p.z - z) ^ 2 < 36 then
++				spaced = false
++				break
++			end
++		end
++		if spaced and roadDistance(samples, x, z) > radius + 6 and (x - ix) ^ 2 + (z - iz) ^ 2 > (radius + 9) ^ 2 then
++			table.insert(placed, { x = x, z = z })
++			for zz = math.floor(z) - 2, math.floor(z) + 2 do
++				for xx = math.floor(x) - 2, math.floor(x) + 2 do
++					local d = math.sqrt((xx - x) ^ 2 + (zz - z) ^ 2)
++					local edge = radius * (1 + 0.2 * math.sin(xx * 1.7 + zz * 2.3))
++					if d <= edge then
++						punch(build, xx, zz, if d <= edge * 0.5 then "spire_mid" else "spire_low", 0)
++					end
++				end
++			end
++		end
++	end
++end
++
++-- Cut and lay the road: every cell within its half-width of the centreline becomes
++-- road at the cut's height, whether it was ice, snow ledge or crater wall.
++local function layRoad(build: Build, samples: { Sample })
++	for _, p in samples do
++		for zz = math.floor(p.z) - 2, math.floor(p.z) + 2 do
++			for xx = math.floor(p.x) - 2, math.floor(p.x) + 2 do
++				if xx >= 1 and zz >= 1 and xx <= WIDTH and zz <= DEPTH then
++					local i = Grid.index(build.grid, xx, zz)
++					if
++						(build.kinds[i] == "heath" or build.kinds[i] == "outcrop")
++						and (xx - p.x) ^ 2 + (zz - p.z) ^ 2 <= ROAD_HALF * ROAD_HALF
++					then
++						local r = math.sqrt((xx - build.shape.cx) ^ 2 + (zz - build.shape.cz) ^ 2)
++						local th = math.atan2(zz - build.shape.cz, xx - build.shape.cx)
++						build.kinds[i] = "road"
++						build.heights[i] = roadHeight(build.shape, r + wobble(build.shape, th))
++						build.paintKind[i] = "path"
++					end
++				end
++			end
++		end
++	end
++end
++
++local function edgeWeights(rng: Random): { [TerrainTypes.EdgeKind]: number }
++	return {
++		drop = 0.38 + rng:NextNumber() * 0.12,
++		cliff = 0.3 + rng:NextNumber() * 0.12,
++		thicket = 0.1 + rng:NextNumber() * 0.08,
++		ruin_wall = 0,
++	}
++end
++
++local function assignEdges(
++	grid: Grid.Grid,
++	edges: { [number]: TerrainTypes.EdgeKind },
++	rim: { number },
++	field: Noise.Field,
++	weights: { [TerrainTypes.EdgeKind]: number }
++)
++	local value: { [number]: number } = {}
++	for _, i in rim do
++		local x, z = Grid.coords(grid, i)
++		value[i] = Noise.sample(field, x * 0.035 + 517.3, z * 0.035)
++	end
++	table.sort(rim, function(a: number, b: number): boolean
++		if value[a] ~= value[b] then
++			return value[a] < value[b]
++		end
++		return a < b
++	end)
++	local total = 0
++	for _, kind in EDGE_ORDER do
++		total += weights[kind]
++	end
++	local dealt, which = 0, 1
++	for n, i in rim do
++		while which < #EDGE_ORDER and n > dealt + weights[EDGE_ORDER[which]] / total * #rim do
++			dealt += weights[EDGE_ORDER[which]] / total * #rim
++			which += 1
++		end
++		edges[i] = EDGE_ORDER[which]
++	end
++end
++
++-- A site on the flat ice: a rectangle of even width and depth, off the road, off the
++-- spires and the open water, clear of every other site.
++local function trySite(
++	build: Build,
++	rng: Random,
++	samples: { Sample },
++	claimed: { [number]: boolean },
++	size: number,
++	inner: number,
++	outer: number,
++	kind: TerrainTypes.SiteKind
++): Heath.Site?
++	local shape = build.shape
++	for _ = 1, 260 do
++		local theta = between(rng, -math.pi, math.pi)
++		local q = between(rng, inner, outer)
++		local px, pz = polar(shape, q, theta)
++		if roadDistance(samples, px, pz) <= size + 8 then
++			continue
++		end
++		if
++			angleGap(theta, shape.heroAngle) < 0.95
++			or angleGap(theta, shape.exitAngle) < 0.8
++			or angleGap(theta, shape.fallAngle[1]) < 0.8
++			or angleGap(theta, shape.fallAngle[2]) < 0.8
++		then
++			continue
++		end
++		local x0 = math.floor(px) - math.floor(size / 2)
++		local z0 = math.floor(pz) - math.floor(size / 2)
++		local ok = true
++		local level = build.heights[Grid.index(build.grid, math.clamp(x0, 1, WIDTH), math.clamp(z0, 1, DEPTH))]
++		for z = z0 - 1, z0 + size do
++			for x = x0 - 1, x0 + size do
++				if x < 2 or z < 2 or x > WIDTH - 1 or z > DEPTH - 1 then
++					ok = false
++					break
++				end
++				local i = Grid.index(build.grid, x, z)
++				local painted = build.paintKind[i]
++				if
++					build.kinds[i] ~= "heath"
++					or (painted ~= nil and painted ~= "ice")
++					or build.heights[i] ~= level
++					or claimed[i]
++				then
++					ok = false
++					break
++				end
++			end
++			if not ok then
++				break
++			end
++		end
++		if ok then
++			for z = z0 - 1, z0 + size do
++				for x = x0 - 1, x0 + size do
++					claimed[Grid.index(build.grid, x, z)] = true
++				end
++			end
++			return { kind = kind, x0 = x0, z0 = z0, x1 = x0 + size - 1, z1 = z0 + size - 1 }
++		end
++	end
++	return nil
++end
++
++local function generate(rng: Random): Heath.Map
++	local field = Noise.field(rng)
++	local shape = makeShape(rng)
++	local count = WIDTH * DEPTH
++	local grid = Grid.new(WIDTH, DEPTH, Grid.WALL)
++	local kinds: { Heath.CellKind } = table.create(count, "void")
++	local heights: { number } = table.create(count, 0)
++	local paintKind: { [number]: string } = {}
++
++	-- The crater, and the frozen falls painted down the wall.
++	for z = 1, DEPTH do
++		for x = 1, WIDTH do
++			local i = Grid.index(grid, x, z)
++			local dx, dz = x - shape.cx, z - shape.cz
++			local r = math.sqrt(dx * dx + dz * dz)
++			local theta = math.atan2(dz, dx)
++			local q = r + wobble(shape, theta)
++			local kind, h = baseAt(shape, q)
++			if kind == "outcrop" then
++				local level = math.floor(h / (4 * STEP / shape.bands) + 0.5)
++				paintKind[i] = if level % 2 == 1 then "terrace_light" else "terrace_dark"
++				for _, chute in shape.chuteAngle do
++					if angleGap(theta, chute) * r <= 2.6 then
++						h = roadHeight(shape, q)
++						paintKind[i] = "chute"
++						break
++					end
++				end
++				for _, fall in shape.fallAngle do
++					if angleGap(theta, fall) * r <= 2.8 then
++						paintKind[i] = "fall"
++						break
++					end
++				end
++			elseif kind == "heath" and q <= shape.shore and q > shape.lake - 3 then
++				for _, fall in shape.fallAngle do
++					if angleGap(theta, fall) * r <= 3.0 then
++						paintKind[i] = "spill"
++						break
++					end
++				end
++			end
++			kinds[i] = kind
++			heights[i] = h
++		end
++	end
++
++	local build: Build = { grid = grid, kinds = kinds, heights = heights, paintKind = paintKind, shape = shape }
++	local samples = sampleRoad(shape)
++	punchWater(build, rng, samples)
++	punchRidges(build, rng, samples)
++	punchSpires(build, rng, samples)
++	layRoad(build, samples)
++
++	-- Freeze the lake: every lake cell still open ground becomes ice.
++	for i, kind in kinds do
++		if kind == "heath" and paintKind[i] == nil then
++			local x, z = Grid.coords(grid, i)
++			local dx, dz = x - shape.cx, z - shape.cz
++			local q = math.sqrt(dx * dx + dz * dz) + wobble(shape, math.atan2(dz, dx))
++			if q <= shape.lake then
++				paintKind[i] = "ice"
++			end
++		end
++	end
++
++	for i, kind in kinds do
++		grid.cells[i] = if kind == "heath" or kind == "road" then Grid.FLOOR else Grid.WALL
++	end
++	Grid.keepLargestRegion(grid)
++	for i, kind in kinds do
++		if grid.cells[i] == Grid.WALL and (kind == "heath" or kind == "road") then
++			kinds[i] = "void"
++			paintKind[i] = nil
++		end
++	end
++
++	-- The rim: every void cell touching the walkable ground, with its edge kind.
++	local edges: { [number]: TerrainTypes.EdgeKind } = {}
++	local rim: { number } = {}
++	for i, kind in kinds do
++		if kind == "void" then
++			local x, z = Grid.coords(grid, i)
++			for _, d in Grid.NEIGHBOURS do
++				if Grid.get(grid, x + d[1], z + d[2]) == Grid.FLOOR then
++					kinds[i] = "rim"
++					table.insert(rim, i)
++					break
++				end
++			end
++		end
++	end
++	assignEdges(grid, edges, rim, field, edgeWeights(rng))
++
++	-- The frozen burial ground on the ice: a graveyard and a ruin, kept off the road.
++	local claimed: { [number]: boolean } = {}
++	local sites: { Heath.Site } = {}
++	local sizes = { 8, 6, 6 }
++	local siteKinds: { TerrainTypes.SiteKind } = { "ruin", "ruin", "ruin" }
++	for s = 1, #sizes do
++		local site = trySite(build, rng, samples, claimed, sizes[s], 13, shape.lake - 5, siteKinds[s])
++		if site then
++			table.insert(sites, site)
++		end
++	end
++
++	local road: { { x: number, z: number } } = {}
++	for n, p in samples do
++		if n % 5 == 1 then
++			table.insert(road, { x = p.x, z = p.z })
++		end
++	end
++	table.insert(road, { x = samples[#samples].x, z = samples[#samples].z })
++	local icePath: { { x: number, z: number, q: number } } = {}
++	for _, p in samples do
++		if p.q < shape.lake - 2 then
++			table.insert(icePath, { x = p.x, z = p.z, q = p.q })
++		end
++	end
++	shape.icePath = icePath
++
++	local first, last = samples[1], samples[#samples]
++	local startX, startZ = math.floor(first.x + 0.5), math.floor(first.z + 0.5)
++	local exitX, exitZ = math.floor(last.x + 0.5), math.floor(last.z + 0.5)
++	local startI = Grid.index(grid, startX, startZ)
++	local exitI = Grid.index(grid, exitX, exitZ)
++	if kinds[startI] == "heath" then
++		kinds[startI] = "road"
++		grid.cells[startI] = Grid.FLOOR
++	end
++	if kinds[exitI] == "heath" then
++		kinds[exitI] = "road"
++		grid.cells[exitI] = Grid.FLOOR
++	end
++
++	local map: Heath.Map = {
++		grid = grid,
++		kinds = kinds,
++		edges = edges,
++		road = road,
++		start = { x = startX, z = startZ },
++		exit = { x = exitX, z = exitZ },
++		sites = sites,
++		heights = heights,
++		terraces = {},
++	}
++	local anyMap = map :: any
++	anyMap.shape = shape
++	anyMap.paintKind = paintKind
++	anyMap.claimed = claimed
++	return map
++end
++
++local function shapeOf(map: Heath.Map): Shape
++	return (map :: any).shape :: Shape
++end
++
++local function paintOf(map: Heath.Map): { [number]: string }
++	return (map :: any).paintKind :: { [number]: string }
++end
++
++local function claimedOf(map: Heath.Map): { [number]: boolean }
++	return (map :: any).claimed :: { [number]: boolean }
++end
++
++local function paint(map: Heath.Map, _rng: Random): { [number]: string }
++	return paintOf(map)
++end
++
++-- A flat, clear spot on the rim path: all cells within `radius` walkable at one
++-- height, off the road, the ice and the sites.
++local function flatSpot(
++	map: Heath.Map,
++	rng: Random,
++	radius: number,
++	inner: number,
++	outer: number,
++	angle: number?,
++	spread: number?
++): (number?, number?)
++	local shape = shapeOf(map)
++	local claimed = claimedOf(map)
++	local paintKind = paintOf(map)
++	for _ = 1, 140 do
++		local theta = if angle
++			then angle + (rng:NextNumber() - 0.5) * 2 * (spread or 0.4)
++			else between(rng, -math.pi, math.pi)
++		if not angle then
++			local blocked = angleGap(theta, shape.heroAngle) < 0.5
++			for _, fall in shape.fallAngle do
++				blocked = blocked or angleGap(theta, fall) < 0.5
++			end
++			if blocked then
++				continue
++			end
++		end
++		local q = between(rng, inner, outer)
++		local x, z = polar(shape, q, theta)
++		local cx, cz = math.floor(x), math.floor(z)
++		if cx >= 3 and cz >= 3 and cx <= WIDTH - 2 and cz <= DEPTH - 2 then
++			local i0 = Grid.index(map.grid, cx, cz)
++			local level = map.heights[i0]
++			local ok = map.kinds[i0] == "heath" and paintKind[i0] == nil
++			local rr = math.ceil(radius)
++			for zz = cz - rr, cz + rr do
++				for xx = cx - rr, cx + rr do
++					if ok and (xx - cx) ^ 2 + (zz - cz) ^ 2 <= radius * radius then
++						local i = Grid.index(map.grid, xx, zz)
++						ok = map.kinds[i] == "heath"
++							and map.heights[i] == level
++							and paintKind[i] == nil
++							and not claimed[i]
++					end
++				end
++				if not ok then
++					break
++				end
++			end
++			if ok then
++				return x, z
++			end
++		end
++	end
++	return nil, nil
++end
++
++local function addMark(
++	marks: { DraftedMap.Landmark },
++	claimed: { [number]: boolean },
++	grid: Grid.Grid,
++	sculpt: string,
++	x: number,
++	z: number,
++	yaw: number?,
++	scale: number?,
++	sink: number?
++)
++	local cx, cz = math.floor(x), math.floor(z)
++	for zz = cz - 1, cz + 1 do
++		for xx = cx - 1, cx + 1 do
++			if xx >= 1 and zz >= 1 and xx <= grid.width and zz <= grid.depth then
++				claimed[Grid.index(grid, xx, zz)] = true
++			end
++		end
++	end
++	table.insert(marks, { sculpt = sculpt, x = x, z = z, yaw = yaw, scale = scale, sink = sink })
++end
++
++local function landmarks(map: Heath.Map, rng: Random): { DraftedMap.Landmark }
++	local shape = shapeOf(map)
++	local marks: { DraftedMap.Landmark } = {}
++	local claimed = claimedOf(map)
++	local function ground(x: number, z: number): boolean
++		local cx, cz = math.floor(x), math.floor(z)
++		if not Grid.inBounds(map.grid, cx, cz) then
++			return false
++		end
++		local i = Grid.index(map.grid, cx, cz)
++		return map.kinds[i] == "heath" or map.kinds[i] == "road"
++	end
++
++	-- A rune ring out on the ice, the road passing through it on the way to the isle.
++	local ring = shape.icePath[math.max(1, math.floor(#shape.icePath * 0.4))]
++	if ring then
++		addMark(marks, claimed, map.grid, "rimeholt_runestones", ring.x, ring.z, 0, 1.3, 0.4)
++	end
++
++	-- The great ring of runestones at the isle's foot, the road ending inside it.
++	addMark(marks, claimed, map.grid, "rimeholt_runestones", shape.exitX, shape.exitZ, rng:NextNumber() * 360, 2.2, 0.4)
++
++	-- A ring of standing stones at the crater's lip, filling the near left of the hero shot.
++	local lipX, lipZ = polar(shape, shape.rim - 5, shape.heroAngle - 0.05)
++	addMark(marks, claimed, map.grid, "rimeholt_runestones", lipX, lipZ, math.deg(shape.heroAngle) + 90, 1.5, 0.2)
++
++	-- Barrows of the hill-folk, half sunk in the rim's old snow.
++	for _ = 1, 3 do
++		local bx, bz = flatSpot(map, rng, 2.1, shape.rim + 1.5, shape.high - 1.5)
++		if bx and bz then
++			addMark(
++				marks,
++				claimed,
++				map.grid,
++				"rimeholt_barrow",
++				bx,
++				bz,
++				rng:NextNumber() * 360,
++				0.9 + rng:NextNumber() * 0.35,
++				1.2
++			)
++		end
++	end
++
++	-- The ring of runestones on the rim above the start, looking down the crater.
++	local rx, rz = flatSpot(map, rng, 2.2, shape.rim + 1.5, shape.high - 1.5, shape.a0 + 0.6, 0.5)
++	if rx and rz then
++		addMark(marks, claimed, map.grid, "rimeholt_runestones", rx, rz, rng:NextNumber() * 360, 1.1, 0)
++	end
++
++	-- The marker at the mouth of the stair down the crater wall.
++	local mx, mz = flatSpot(map, rng, 1.4, shape.rim + 1.5, shape.high - 1.5, shape.spiralAngle - 0.08, 0.1)
++	if mx and mz then
++		addMark(marks, claimed, map.grid, "rimeholt_marker", mx, mz, rng:NextNumber() * 360, 1, 0)
++	end
++
++	-- Hill-fires flanking the road where it comes in high on the rim.
++	local highQ = shape.rim + 3
++	for _, side in { -1, 1 } do
++		local hx, hz = polar(shape, highQ + 0.6, shape.a0 + side * 0.06)
++		if ground(hx, hz) then
++			addMark(marks, claimed, map.grid, "rimeholt_hillfire", hx, hz, 0, 1, 0)
++		end
++	end
++
++	-- The lake gate: a marker and a pair of hill-fires where the road steps onto the ice.
++	local gateQ = (shape.lake + shape.shore) / 2
++	local gx, gz = polar(shape, gateQ + 1, shape.exitAngle + 0.1)
++	if ground(gx, gz) then
++		addMark(marks, claimed, map.grid, "rimeholt_marker", gx, gz, 0, 1, 0)
++	end
++	for _, side in { -1, 1 } do
++		local hx, hz = polar(shape, gateQ, shape.exitAngle + side * 0.14)
++		if ground(hx, hz) then
++			addMark(marks, claimed, map.grid, "rimeholt_hillfire", hx, hz, 0, 1, 0)
++		end
++	end
++
++	-- Two more fires at the isle's foot, framing the road's end.
++	local gateX, gateZ = polar(shape, gateQ, shape.spiralAngle - shape.sweep)
++	local dx, dz = shape.exitX - gateX, shape.exitZ - gateZ
++	local len = math.max(math.sqrt(dx * dx + dz * dz), 1e-6)
++	local tx, tz = -dz / len, dx / len
++	for _, side in { -1, 1 } do
++		local hx = shape.exitX + tx * side * 3.5 - dx / len * 1.5
++		local hz = shape.exitZ + tz * side * 3.5 - dz / len * 1.5
++		if ground(hx, hz) then
++			addMark(marks, claimed, map.grid, "rimeholt_hillfire", hx, hz, 0, 1, 0)
++		end
++	end
++	return marks
++end
++
++local function effects(map: Heath.Map, _rng: Random): { DraftedMap.Effect }
++	local shape = shapeOf(map)
++	local out: { DraftedMap.Effect } = {}
++	local function put(recipe: string, x: number, z: number, lift: number)
++		table.insert(out, { recipe = recipe, x = x, z = z, lift = lift, seed = #out + 1 })
++	end
++	local path = shape.icePath
++	local function at(fraction: number)
++		local n = math.clamp(math.floor(#path * fraction), 1, #path)
++		return path[n]
++	end
++	-- The aurora hangs inside the crater, its hem round the isle; an arc burns low
++	-- over the far shore behind it, in view from the rim.
++	put("aurora_curtain", shape.isleX, shape.isleZ, 40)
++	local arcQ = (shape.lake + shape.shore) / 2
++	local ax, az = polar(shape, arcQ, shape.heroAngle + math.pi)
++	put("aurora_arc", ax, az, 24)
++	local p1 = at(0.3)
++	local p2 = at(0.6)
++	local p3 = at(0.85)
++	put("rimeholt_underice", p1.x, p1.z, 0)
++	put("rimeholt_drift", p2.x, p2.z, 1)
++	put("rimeholt_underice", p3.x, p3.z, 0)
++	local shore = at(0.12)
++	put("rimeholt_drift", shore.x, shore.z, 1)
++	-- Ghost-light over the ruined shrine on the ice.
++	for _, site in map.sites do
++		put("barrow_wisps", (site.x0 + site.x1) / 2, (site.z0 + site.z1) / 2, 1.5)
++		break
++	end
++	return out
++end
++
++local function shots(map: Heath.Map): { DraftedMap.Shot }
++	local shape = shapeOf(map)
++	local gateQ = (shape.lake + shape.shore) / 2
++	local heroX, heroZ = polar(shape, shape.rim + 0.4, shape.heroAngle)
++	local gateX, gateZ = polar(shape, gateQ + 1.5, shape.spiralAngle - shape.sweep)
++	local falls = shape.fallAngle[2]
++	local tx, tz = polar(shape, shape.shore + 12, falls)
++	-- Stand about twenty-five cells back on the ice, at the first open cell outside the
++	-- isle and every ruin, so the whole drop between two terraces is in frame.
++	local fx, fz = polar(shape, shape.lake - 12, falls)
++	local function clear(x: number, z: number): boolean
++		local cx, cz = math.floor(x), math.floor(z)
++		if not Grid.inBounds(map.grid, cx, cz) or Grid.get(map.grid, cx, cz) ~= Grid.FLOOR then
++			return false
++		end
++		for _, site in map.sites do
++			if cx >= site.x0 and cx <= site.x1 and cz >= site.z0 and cz <= site.z1 then
++				return false
++			end
++		end
++		return true
++	end
++	if not clear(fx, fz) then
++		for q = shape.lake - 14, shape.lake - 2 do
++			local x, z = polar(shape, q, falls)
++			if clear(x, z) then
++				fx, fz = x, z
++				break
++			end
++		end
++	end
++	return {
++		{
++			name = "The Crater from the Rim",
++			from = { x = heroX, z = heroZ, lift = 18 },
++			to = { x = shape.cx, z = shape.cz, lift = 28 },
++			fov = 82,
++		},
++		{
++			name = "The Spire on the Ice",
++			from = { x = gateX, z = gateZ, lift = 5 },
++			to = { x = shape.isleX, z = shape.isleZ, lift = 36 },
++			fov = 72,
++		},
++		{
++			name = "The Frozen Falls",
++			from = { x = fx, z = fz, lift = 4 },
++			to = { x = tx, z = tz, lift = 8 },
++			fov = 76,
++		},
++	}
++end
++
++local draft: DraftedMap.Draft = {
++	name = "RimelakeCrater",
++	about = "A vast frozen crater lake under Rimeholt's rim: banded terraced cliffs cut by pale ramps, one spiral road from the rim across the cracked ice, ruined shrines on the lake, and a tall spire of ice off the centre under the aurora.",
++	tileset = "rimeholt",
++	generate = generate,
++	landmarks = landmarks,
++	cells = CELLS,
++	paint = paint,
++	effects = effects,
++	shots = shots,
++}
++
++return draft

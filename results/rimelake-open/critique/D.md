@@ -1,0 +1,7 @@
+# D: notes for the rework
+
+Keep: the cracked ice sheet. The pale field split by frozen rivers and crevasses, with stone islands on it, is ground of its own making and nothing like the moor. "The spire sea" also has a real skyline.
+
+1. Make "the spire sea" a photograph. Today it's a long flat look across a carpet of same-height blocks to a distant skyline, with no foreground. Lift the camera 10 to 15 and stand it on an island's edge, with a broken ice slab or a crevasse lip in the near foreground and one spire much taller than the rest in the middle third. "The gate from the island" is close: back it off about 20 cells, so the near tower doesn't crop out of the top of the frame.
+2. The three seeds share one layout. The road's wiggle, the islands' places and the black holes barely move. Let the seed move the islands, route the road differently between them, and change where the crevasses run, so the journey changes from seed to seed. The eye-level road views are also walls of slab 5 studs out: lower or space the slabs along the road, so you can see down the crevasses.
+3. The under-ice light floats as a lone line in black from the game camera. Lay it under the ice along a main crevasse, or beneath the drowned gate, so it glows up through the cracks and leads toward the landmark. Also check the landmark: its eye-level view is a slab filling half the frame. Give the gate's walls a gap facing the road.

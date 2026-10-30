@@ -1,0 +1,16 @@
+{
+  "A": {"photo": 5, "not_moor": 6, "scale": 4, "effect": 2, "playable": 6, "total": 4.9,
+        "best_shot": "the crater from the rim, seed 1",
+        "why": "The terraced crater is a real shape, but its seeds are identical, its falls shot is an empty band and the aurora can't be seen from the game camera."},
+  "B": {"photo": 4, "not_moor": 4, "scale": 4, "effect": 6, "playable": 5, "total": 4.3,
+        "best_shot": "from the highland, seed 3",
+        "why": "The wisps are the best effect in the run, but every shot is blocked by a pillar close to the lens, and from above it's still a ringed bowl."},
+  "C": {"photo": 4, "not_moor": 3, "scale": 4, "effect": 5, "playable": 6, "total": 4.05,
+        "best_shot": "the drowned road, seed 2",
+        "why": "Good dead-tree silhouettes, but the map is the moor repainted, with the same sine road on every seed and shots that have no subject."},
+  "D": {"photo": 6, "not_moor": 7, "scale": 5, "effect": 5, "playable": 5, "total": 5.9,
+        "best_shot": "the spire sea, seed 1",
+        "why": "A crevassed ice sheet with islands is ground of its own and has a real skyline, but the shots lack a foreground and the seeds share one layout."},
+  "ranking": ["D", "A", "B", "C"],
+  "notes": "No candidate has a store-page photograph: cameras sit too close to slabs or look across flat fields with no foreground, and every map gives the same layout on all three seeds. The effects mostly float alone in the dark instead of living in the place."
+}

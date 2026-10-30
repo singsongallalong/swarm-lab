@@ -1,0 +1,7 @@
+# C: notes for the rework
+
+Keep: the lake scored by long pressure ridges with the causeway winding through them, and the small round islands. Ground of your own making.
+
+1. "The causeway" is your best frame, with its receding ridges and a skyline of spires, but it has no subject at the end of the road. Put something tall where the causeway vanishes: a drowned tower or a gate on the far island, 3–4 times the height of the ridges. Lift the camera about 8 so the road reads as a line through the ridges and not as the wall beside it.
+2. "The arrival cutting" and "the long lake" are crowded by pale slabs at the lens, and the landmark's eye-level frame (seed 1) is entirely wall. Pull each camera 20–30 cells back onto open ice. Aim across a gap between ridges, not along one.
+3. The ridges cover the whole lake at the same spacing, so there is no open ground to fight on and the journey never changes. Clear two or three wide flat floes beside the road, near the islands. Let the ridges grow taller and closer as the road nears the dark pit in seed 2, so the ground changes on the way there. Make the under-ice light run under those floes where it can be seen.

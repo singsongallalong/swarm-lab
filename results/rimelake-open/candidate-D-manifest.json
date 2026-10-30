@@ -1,0 +1,18 @@
+{
+  "skill": "Rimelake",
+  "look": "RimelakeShattered",
+  "rows_added": [],
+  "setpiece": "rimeholt_underice",
+  "intent": "A vast shattered ice-lake fills the map, its pressure ridges running in long cracked lines through a northern forest of frozen spires and southern black leads, with snowy barrow-headlands standing over it and one road threading the causeway across.",
+  "renders": [
+    ".swarm/out/map-whole-final.png",
+    ".swarm/out/map-shots-final.png",
+    ".swarm/out/map-landmark-final.png",
+    ".swarm/out/map-setpiece-final.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A painted wall cell's lift is invisible to map.heights and MapDress.groundAt, so a camera or prop cannot stand on a ridge's or spire's painted top (it lands inside the slab); a placement height on CellLook would let shots and props use the ice towers.",
+    "A cell look is one per kind, so three ridge kinds and three spire kinds exist only to carry three crest heights; a per-cell lift on painted cells would cut the kind count."
+  ]
+}
