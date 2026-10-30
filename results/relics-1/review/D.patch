@@ -1,0 +1,310 @@
+diff --git a/src/shared/data/Relics.luau b/src/shared/data/Relics.luau
+index a62bb8df..d0d4d55e 100644
+--- a/src/shared/data/Relics.luau
++++ b/src/shared/data/Relics.luau
+@@ -7,4 +7,87 @@ local RelicTypes = require("../RelicTypes")
+ -- One row per relic, `rows.<Name> = { ... }` keyed by its name, added above the return.
+ local rows: { [string]: RelicTypes.RelicDef } = {}
+ 
++-- PLACEHOLDER (Rhodri): the warden's line. Standing firm softens blows and
++-- leans into armour; awakened, a crowd pressing in feeds life back.
++rows.WardensSigil = {
++	name = "WardensSigil",
++	title = "Warden's Sigil",
++	about = "Holding your ground turns the line's weight against the horde: blows land softer, armour holds truer, and a pressing crowd only feeds your recovery.",
++	playstyle = "defence",
++	effects = {
++		{
++			stat = "DamageTaken",
++			kind = "more",
++			base = -0.04,
++			perRank = -0.006,
++			conditions = { { kind = "Stationary" } },
++		},
++		{
++			stat = "Armour",
++			kind = "increased",
++			base = 0.1,
++			perRank = 0.02,
++			conditions = { { kind = "Stationary" } },
++		},
++	},
++	awakened = {
++		{
++			stat = "LifeRegen",
++			kind = "flat",
++			base = 2,
++			perRank = 1,
++			conditions = { { kind = "EnemiesWithin", radius = 20, atLeast = 3 } },
++		},
++	},
++}
++
++-- PLACEHOLDER (Rhodri): the wind at your back. Moving quickens both stride
++-- and swing; awakened, cooldowns come back around sooner.
++rows.GaleFeather = {
++	name = "GaleFeather",
++	title = "Gale Feather",
++	about = "The wind at your back: swifter strides and swifter swings while you move, and cooldowns that come back around sooner.",
++	playstyle = "mobility",
++	effects = {
++		{ stat = "MovementSpeed", kind = "increased", base = 0.04, perRank = 0.01 },
++		{
++			stat = "AttackSpeed",
++			kind = "increased",
++			base = 0.04,
++			perRank = 0.008,
++			conditions = { { kind = "Moving" } },
++		},
++	},
++	awakened = {
++		{ stat = "CooldownRecovery", kind = "increased", base = 0.05, perRank = 0.01 },
++	},
++}
++
++-- PLACEHOLDER (Rhodri): a coal that never goes out. Fire spells burn
++-- brighter; awakened, a burning target feels every hit more keenly.
++rows.EmberHeart = {
++	name = "EmberHeart",
++	title = "Ember Heart",
++	about = "A coal that never goes out: fire spells burn brighter, and a target already burning feels every hit more keenly.",
++	playstyle = "spell",
++	effects = {
++		{
++			stat = "FireDamage",
++			kind = "increased",
++			base = 0.15,
++			perRank = 0.03,
++			tags = { "Spell" },
++		},
++	},
++	awakened = {
++		{
++			stat = "Damage",
++			kind = "more",
++			base = 0.05,
++			perRank = 0.01,
++			conditions = { { kind = "TargetHasStatus", status = "Burning" } },
++		},
++	},
++}
++
+ return table.freeze(rows)
+diff --git a/src/shared/systems/Relics.luau b/src/shared/systems/Relics.luau
+new file mode 100644
+index 00000000..58ff1edd
+--- /dev/null
++++ b/src/shared/systems/Relics.luau
+@@ -0,0 +1,212 @@
++--!strict
++-- Relics: the pure core of the endgame power layer (RelicTypes, the
++-- proposal's section 2). Grades, copies and ranks, dust, the four slots, a
++-- relic's modifiers by rank, and the synergy over the slotted. No Roblox API,
++-- no yielding; randomness only from the rng it is given; data in, data out.
++local RelicTypes = require("../RelicTypes")
++local SkillTypes = require("../SkillTypes")
++
++type Grade = RelicTypes.Grade
++type RelicDef = RelicTypes.RelicDef
++type RelicEffect = RelicTypes.RelicEffect
++type Owned = RelicTypes.Owned
++type Collection = RelicTypes.Collection
++type AddResult = RelicTypes.AddResult
++type Slots = RelicTypes.Slots
++type Modifier = SkillTypes.Modifier
++
++local Relics = {}
++
++-- A grade's place in GRADES, lowest first; "higher" means further along it.
++local GRADE_INDEX: { [Grade]: number } = {}
++for i, grade in RelicTypes.GRADES do
++	GRADE_INDEX[grade] = i
++end
++
++-- One modifier from one effect: its value at `rank` measured from `start`
++-- (rank 1, or AWAKEN_RANK for awakened effects). tags and conditions are
++-- copied, so the def's frozen tables are never handed out.
++local function makeMod(def: RelicDef, e: RelicEffect, rank: number, start: number): Modifier
++	local mod: Modifier = {
++		stat = e.stat,
++		kind = e.kind,
++		value = e.base + e.perRank * (rank - start),
++		source = "Relic: " .. def.title,
++	}
++	if e.tags then
++		mod.tags = table.clone(e.tags)
++	end
++	if e.conditions then
++		mod.conditions = table.clone(e.conditions)
++	end
++	return mod
++end
++
++function Relics.rollGrade(weights: { [Grade]: number }, rng: Random): Grade
++	local total = 0
++	for _, grade in RelicTypes.GRADES do
++		total += weights[grade] or 0
++	end
++	-- One roll across the total weight, then the grades take it lowest first.
++	local roll = rng:NextNumber() * total
++	local seen = 0
++	for _, grade in RelicTypes.GRADES do
++		local weight = weights[grade] or 0
++		if weight > 0 then
++			seen += weight
++			if roll < seen then
++				return grade
++			end
++		end
++	end
++	-- Unreachable for a roll in [0, total); keeps the type checker happy.
++	return RelicTypes.GRADES[#RelicTypes.GRADES]
++end
++
++function Relics.newCollection(): Collection
++	return { relics = {}, dust = 0 }
++end
++
++function Relics.addCopy(c: Collection, name: string, grade: Grade): AddResult
++	local owned = c.relics[name]
++	if not owned then
++		c.relics[name] = { grade = grade, rank = 1, spare = 0 }
++		return { kind = "new", upgraded = false, rank = 1, dust = 0 }
++	end
++
++	local result: AddResult = { kind = "progress", upgraded = false, rank = owned.rank, dust = 0 }
++
++	-- A higher grade takes over the held one, keeping its rank and spare.
++	if GRADE_INDEX[grade] > GRADE_INDEX[owned.grade] then
++		owned.grade = grade
++		result.upgraded = true
++	end
++
++	if owned.rank >= RelicTypes.MAX_RANK[owned.grade] then
++		-- Past the cap the copy is only worth its dust.
++		c.dust += RelicTypes.DUST_PER_SPARE
++		result.kind = "dust"
++		result.dust = RelicTypes.DUST_PER_SPARE
++	else
++		owned.spare += 1
++		if owned.spare >= RelicTypes.COPIES[owned.rank + 1] then
++			owned.rank += 1
++			owned.spare = 0
++			result.kind = "rank"
++		end
++		result.rank = owned.rank
++	end
++	return result
++end
++
++function Relics.copiesToMax(o: Owned): number
++	local cap = RelicTypes.MAX_RANK[o.grade]
++	if o.rank >= cap then
++		return 0
++	end
++	local needed = 0
++	for rank = o.rank + 1, cap do
++		needed += RelicTypes.COPIES[rank]
++	end
++	return needed - o.spare
++end
++
++function Relics.buyCopy(c: Collection, name: string): (boolean, AddResult?)
++	local owned = c.relics[name]
++	if not owned or owned.rank >= RelicTypes.MAX_RANK[owned.grade] or c.dust < RelicTypes.DUST_COST then
++		return false, nil
++	end
++	c.dust -= RelicTypes.DUST_COST
++	return true, Relics.addCopy(c, name, "Lesser")
++end
++
++function Relics.modifiers(def: RelicDef, rank: number): { Modifier }
++	if rank < 1 then
++		return {}
++	end
++	rank = math.min(rank, 10) -- the highest cap any grade reaches
++	local mods: { Modifier } = {}
++	for _, e in def.effects do
++		table.insert(mods, makeMod(def, e, rank, 1))
++	end
++	if rank >= RelicTypes.AWAKEN_RANK then
++		for _, e in def.awakened do
++			table.insert(mods, makeMod(def, e, rank, RelicTypes.AWAKEN_RANK))
++		end
++	end
++	return mods
++end
++
++function Relics.slot(slots: Slots, index: number, name: string, c: Collection): (boolean, string?)
++	if index < 1 or index > RelicTypes.SLOTS or index % 1 ~= 0 then
++		return false, "slot out of range"
++	end
++	if not c.relics[name] then
++		return false, "relic not owned"
++	end
++	for i, slotted in slots do
++		if slotted == name and i ~= index then
++			return false, "relic already slotted"
++		end
++	end
++	slots[index] = name
++	return true, nil
++end
++
++function Relics.unslot(slots: Slots, index: number)
++	slots[index] = nil
++end
++
++function Relics.synergy(totalRanks: number): number
++	local steps = totalRanks // RelicTypes.SYNERGY_RANKS
++	local bonus = steps * RelicTypes.SYNERGY_STEP
++	if totalRanks > RelicTypes.SYNERGY_BEND then
++		-- Full steps to the bend, then half a step per SYNERGY_RANKS past it.
++		local past = (totalRanks - RelicTypes.SYNERGY_BEND) // RelicTypes.SYNERGY_RANKS
++		bonus = (RelicTypes.SYNERGY_BEND / RelicTypes.SYNERGY_RANKS) * RelicTypes.SYNERGY_STEP
++			+ past * (RelicTypes.SYNERGY_STEP / 2)
++	end
++	return bonus
++end
++
++function Relics.loadout(slots: Slots, c: Collection, defs: { [string]: RelicDef }): { Modifier }
++	local mods: { Modifier } = {}
++	local totalRanks = 0
++	for index = 1, RelicTypes.SLOTS do
++		local name = slots[index]
++		if name then
++			local owned = c.relics[name]
++			local def = defs[name]
++			if owned and def then
++				totalRanks += owned.rank
++				for _, mod in Relics.modifiers(def, owned.rank) do
++					table.insert(mods, mod)
++				end
++			end
++		end
++	end
++	local bonus = Relics.synergy(totalRanks)
++	if bonus > 0 then
++		table.insert(
++			mods,
++			{
++				stat = "Damage",
++				kind = "increased",
++				value = bonus,
++				source = RelicTypes.SYNERGY_SOURCE,
++			} :: Modifier
++		)
++		table.insert(
++			mods,
++			{
++				stat = "MaxLife",
++				kind = "increased",
++				value = bonus,
++				source = RelicTypes.SYNERGY_SOURCE,
++			} :: Modifier
++		)
++	end
++	return mods
++end
++
++return table.freeze(Relics)

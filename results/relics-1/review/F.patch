@@ -1,0 +1,365 @@
+diff --git a/src/shared/data/Relics.luau b/src/shared/data/Relics.luau
+index a62bb8df..3b12a14d 100644
+--- a/src/shared/data/Relics.luau
++++ b/src/shared/data/Relics.luau
+@@ -7,4 +7,82 @@ local RelicTypes = require("../RelicTypes")
+ -- One row per relic, `rows.<Name> = { ... }` keyed by its name, added above the return.
+ local rows: { [string]: RelicTypes.RelicDef } = {}
+ 
++-- PLACEHOLDER (Rhodri): the warden who holds the line. Standing still buys both effects;
++-- awakened, a crowd within reach keeps the warden on their feet.
++rows.WardensSigil = {
++	name = "WardensSigil",
++	title = "Warden's Sigil",
++	about = "A warden's promise: hold your ground and the line holds.",
++	playstyle = "defence",
++	effects = {
++		{
++			stat = "DamageTaken",
++			kind = "more",
++			base = -0.06,
++			perRank = -0.01,
++			conditions = { { kind = "Stationary" } },
++		},
++		{
++			stat = "Armour",
++			kind = "increased",
++			base = 0.12,
++			perRank = 0.03,
++			conditions = { { kind = "Stationary" } },
++		},
++	},
++	awakened = {
++		{
++			stat = "LifeRegen",
++			kind = "flat",
++			base = 2,
++			perRank = 1,
++			conditions = { { kind = "EnemiesWithin", radius = 12, atLeast = 3 } },
++		},
++	},
++}
++
++-- PLACEHOLDER (Rhodri): the wind at your back. Movement speed always, attack speed while
++-- moving; awakened, a shorter wait between skills.
++rows.GaleFeather = {
++	name = "GaleFeather",
++	title = "Gale Feather",
++	about = "A feather of the high wind, pulling always at your back.",
++	playstyle = "mobility",
++	effects = {
++		{ stat = "MovementSpeed", kind = "increased", base = 0.08, perRank = 0.02 },
++		{
++			stat = "AttackSpeed",
++			kind = "increased",
++			base = 0.05,
++			perRank = 0.015,
++			conditions = { { kind = "Moving" } },
++		},
++	},
++	awakened = {
++		{ stat = "CooldownRecovery", kind = "increased", base = 0.05, perRank = 0.01 },
++	},
++}
++
++-- PLACEHOLDER (Rhodri): a coal that never goes out. Fire and spell damage grow with
++-- rank; awakened, its heat bites deeper into a target already Burning.
++rows.EmberHeart = {
++	name = "EmberHeart",
++	title = "Ember Heart",
++	about = "A coal that never goes out, banked for the next spell.",
++	playstyle = "spell",
++	effects = {
++		{ stat = "FireDamage", kind = "increased", base = 0.15, perRank = 0.03 },
++		{ stat = "SpellDamage", kind = "increased", base = 0.05, perRank = 0.01 },
++	},
++	awakened = {
++		{
++			stat = "Damage",
++			kind = "more",
++			base = 0.05,
++			perRank = 0.02,
++			conditions = { { kind = "TargetHasStatus", status = "Burning" } },
++		},
++	},
++}
++
+ return table.freeze(rows)
+diff --git a/src/shared/systems/Relics.luau b/src/shared/systems/Relics.luau
+new file mode 100644
+index 00000000..91b0bc1a
+--- /dev/null
++++ b/src/shared/systems/Relics.luau
+@@ -0,0 +1,272 @@
++--!strict
++-- systems/Relics: the pure core of relics (RelicTypes is the contract; docs/design/
++-- endgame-power.md section 2, a proposal). Grades, copies and ranks, dust, slots, a
++-- relic's modifiers by rank, and the synergy over the four slotted. Data in, data out:
++-- no game, no Instances, and randomness only from the rng it is given.
++local RelicTypes = require("../RelicTypes")
++local SkillTypes = require("../SkillTypes")
++
++type Grade = RelicTypes.Grade
++type RelicEffect = RelicTypes.RelicEffect
++type RelicDef = RelicTypes.RelicDef
++type Owned = RelicTypes.Owned
++type Collection = RelicTypes.Collection
++type AddResult = RelicTypes.AddResult
++type Slots = RelicTypes.Slots
++
++local Relics = {}
++
++-- Lowest to highest, as the contract has them: a copy's grade is "higher" by this order.
++local GRADES: { Grade } = RelicTypes.GRADES
++
++-- Where a grade sits in GRADES (1 Lesser, 2 Greater, 3 Exalted).
++local function gradeOrder(grade: Grade): number
++	for index, candidate in GRADES do
++		if candidate == grade then
++			return index
++		end
++	end
++	return 0
++end
++
++-- How far a grade's rank may go (RelicTypes.MAX_RANK: Lesser 5, Greater 8, Exalted 10).
++local function maxRankOf(grade: Grade): number
++	if grade == "Lesser" then
++		return RelicTypes.MAX_RANK.Lesser
++	elseif grade == "Greater" then
++		return RelicTypes.MAX_RANK.Greater
++	end
++	return RelicTypes.MAX_RANK.Exalted
++end
++
++-- One rng:NextNumber() in [0, 1) times the total weight, walked through GRADES lowest
++-- first; a grade with no weight (missing or 0) is never rolled.
++function Relics.rollGrade(weights: { [Grade]: number }, rng: Random): Grade
++	local total = 0
++	for _, grade in GRADES do
++		total += weights[grade] or 0
++	end
++	local roll = rng:NextNumber() * total
++	local walked = 0
++	local last = GRADES[1]
++	for _, grade in GRADES do
++		local weight = weights[grade] or 0
++		if weight > 0 then
++			walked += weight
++			last = grade
++			if roll < walked then
++				return grade
++			end
++		end
++	end
++	-- Only a weights table with no weight at all reaches here; the lowest grade is harmless.
++	return last
++end
++
++-- The contract's empty collection: no relics held, 0 dust.
++function Relics.newCollection(): Collection
++	return { relics = {}, dust = 0 }
++end
++
++-- At the grade's cap, a copy turns to DUST_PER_SPARE dust and nothing else changes.
++local function turnToDust(c: Collection, held: Owned, upgraded: boolean): AddResult
++	local dust = RelicTypes.DUST_PER_SPARE
++	c.dust += dust
++	return { kind = "dust", upgraded = upgraded, rank = held.rank, dust = dust }
++end
++
++-- One copy fed toward the next rank; COPIES[rank + 1] of them raise the rank, one only.
++local function addSpare(held: Owned, upgraded: boolean): AddResult
++	held.spare += 1
++	if held.spare >= RelicTypes.COPIES[held.rank + 1] then
++		held.rank += 1
++		held.spare = 0
++		return { kind = "rank", upgraded = upgraded, rank = held.rank, dust = 0 }
++	end
++	return { kind = "progress", upgraded = upgraded, rank = held.rank, dust = 0 }
++end
++
++-- Changes `c` in place. A new relic joins at rank 1, spare 0, with the copy's grade; an
++-- owned one first takes a higher grade (keeping rank and spare), then either turns to
++-- dust at its grade's cap or feeds a spare toward the next rank.
++function Relics.addCopy(c: Collection, name: string, grade: Grade): AddResult
++	local held = c.relics[name]
++	if held == nil then
++		c.relics[name] = { grade = grade, rank = 1, spare = 0 }
++		return { kind = "new", upgraded = false, rank = 1, dust = 0 }
++	end
++
++	-- A copy of a higher grade replaces the held grade, keeping rank and spare.
++	local upgraded = gradeOrder(grade) > gradeOrder(held.grade)
++	if upgraded then
++		held.grade = grade
++	end
++
++	if held.rank >= maxRankOf(held.grade) then
++		return turnToDust(c, held, upgraded)
++	end
++	return addSpare(held, upgraded)
++end
++
++-- Copies still needed to reach MAX_RANK of the grade, 0 at the cap; the spare already
++-- fed toward the next rank counts toward the total.
++function Relics.copiesToMax(o: Owned): number
++	local cap = maxRankOf(o.grade)
++	if o.rank >= cap then
++		return 0
++	end
++	local copies = 0
++	for rank = o.rank + 1, cap do
++		copies += RelicTypes.COPIES[rank]
++	end
++	return math.max(copies - o.spare, 0)
++end
++
++-- DUST_COST dust buys one Lesser copy of an owned relic. Refused (false, nil, nothing
++-- changed) when it isn't owned, is at its cap, or the dust isn't enough.
++function Relics.buyCopy(c: Collection, name: string): (boolean, AddResult?)
++	local held = c.relics[name]
++	if held == nil or held.rank >= maxRankOf(held.grade) then
++		return false, nil
++	end
++	if c.dust < RelicTypes.DUST_COST then
++		return false, nil
++	end
++	c.dust -= RelicTypes.DUST_COST
++	return true, Relics.addCopy(c, name, "Lesser")
++end
++
++-- Copies a tag list so a modifier never shares a table with the def.
++local function copyTags(tags: { SkillTypes.Tag }): { SkillTypes.Tag }
++	return table.clone(tags)
++end
++
++-- Copies a condition list, each condition included, so a modifier never shares a table
++-- with the def (`nil` stays nil: the caller only copies a list that is there).
++local function copyConditions(conditions: { SkillTypes.Condition }): { SkillTypes.Condition }
++	local copy: { SkillTypes.Condition } = {}
++	for index, condition in conditions do
++		copy[index] = table.clone(condition)
++	end
++	return copy
++end
++
++-- One effect's modifier at `rank`: base + perRank * (rank - fromRank), sourced by title
++-- and carrying its tags and conditions.
++local function effectModifier(effect: RelicEffect, rank: number, fromRank: number, title: string): SkillTypes.Modifier
++	local modifier: SkillTypes.Modifier = {
++		stat = effect.stat,
++		kind = effect.kind,
++		value = effect.base + effect.perRank * (rank - fromRank),
++		source = "Relic: " .. title,
++	}
++	local tags = effect.tags
++	if tags ~= nil then
++		modifier.tags = copyTags(tags)
++	end
++	local conditions = effect.conditions
++	if conditions ~= nil then
++		modifier.conditions = copyConditions(conditions)
++	end
++	return modifier
++end
++
++-- The contract caps a relic's rank at 10 (Exalted's MAX_RANK).
++local RANK_CAP = 10
++
++-- A relic's modifiers at `rank`: under rank 1 none; `effects` in order from rank 1, then
++-- `awakened` in order from AWAKEN_RANK. New tables only: the def is never changed.
++function Relics.modifiers(def: RelicDef, rank: number): { SkillTypes.Modifier }
++	local modifiers: { SkillTypes.Modifier } = {}
++	if rank < 1 then
++		return modifiers
++	end
++	local capped = math.min(rank, RANK_CAP)
++	for _, effect in def.effects do
++		table.insert(modifiers, effectModifier(effect, capped, 1, def.title))
++	end
++	if capped >= RelicTypes.AWAKEN_RANK then
++		for _, effect in def.awakened do
++			table.insert(modifiers, effectModifier(effect, capped, RelicTypes.AWAKEN_RANK, def.title))
++		end
++	end
++	return modifiers
++end
++
++-- Puts an owned relic in slot `index` (1..SLOTS, a whole number), replacing what was
++-- there. It may sit in only one slot; slotting it where it already is is fine. A
++-- refusal returns the reason.
++function Relics.slot(slots: Slots, index: number, name: string, c: Collection): (boolean, string?)
++	if index % 1 ~= 0 or index < 1 or index > RelicTypes.SLOTS then
++		return false, "slot out of range"
++	end
++	if c.relics[name] == nil then
++		return false, "relic not owned"
++	end
++	for other = 1, RelicTypes.SLOTS do
++		if other ~= index and slots[other] == name then
++			return false, "already in another slot"
++		end
++	end
++	slots[index] = name
++	return true, nil
++end
++
++-- Empties a slot; a slot index is a name or an absent key, so the write is nil.
++function Relics.unslot(slots: Slots, index: number)
++	slots[index] = nil :: any
++end
++
++-- SYNERGY_STEP per whole SYNERGY_RANKS ranks, half that per whole step past
++-- SYNERGY_BEND: synergy(20) = 0.05, synergy(24) = 0.055.
++function Relics.synergy(totalRanks: number): number
++	if totalRanks <= 0 then
++		return 0
++	end
++	local wholeSteps = math.floor(totalRanks / RelicTypes.SYNERGY_RANKS)
++	local stepsToBend = math.floor(RelicTypes.SYNERGY_BEND / RelicTypes.SYNERGY_RANKS)
++	local atFull = math.min(wholeSteps, stepsToBend)
++	local pastBend = math.max(wholeSteps - stepsToBend, 0)
++	return (atFull + pastBend * 0.5) * RelicTypes.SYNERGY_STEP
++end
++
++-- Each slotted relic that is owned and has a def, in slot order (1 to SLOTS), at its
++-- rank; then, when their summed ranks bend, `increased` Damage and MaxLife of the
++-- synergy's value, sourced SYNERGY_SOURCE.
++function Relics.loadout(slots: Slots, c: Collection, defs: { [string]: RelicDef }): { SkillTypes.Modifier }
++	local modifiers: { SkillTypes.Modifier } = {}
++	local totalRanks = 0
++	for index = 1, RelicTypes.SLOTS do
++		local name = slots[index]
++		if name ~= nil then
++			local held = c.relics[name]
++			local def = defs[name]
++			if held ~= nil and def ~= nil then
++				for _, modifier in Relics.modifiers(def, held.rank) do
++					table.insert(modifiers, modifier)
++				end
++				totalRanks += held.rank
++			end
++		end
++	end
++	local bonus = Relics.synergy(totalRanks)
++	if bonus > 0 then
++		local damage: SkillTypes.Modifier = {
++			stat = "Damage",
++			kind = "increased",
++			value = bonus,
++			source = RelicTypes.SYNERGY_SOURCE,
++		}
++		local maxLife: SkillTypes.Modifier = {
++			stat = "MaxLife",
++			kind = "increased",
++			value = bonus,
++			source = RelicTypes.SYNERGY_SOURCE,
++		}
++		table.insert(modifiers, damage)
++		table.insert(modifiers, maxLife)
++	end
++	return modifiers
++end
++
++return Relics

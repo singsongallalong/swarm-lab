@@ -15,7 +15,7 @@ a whole build.
   faster attacks while `Moving`; awakened, it shortens cooldowns.
 - **EmberHeart** (playstyle `spell`): a coal that never goes out. More fire damage for
   spells; awakened, more damage against targets already burning (`TargetHasStatus` with
-  the status `Burning`).
+  the status `Ignite`, the game's burning).
 
 Relics shape the whole character, not one skill: at most one effect may name a tag.
 """

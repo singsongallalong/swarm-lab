@@ -153,10 +153,10 @@ index 00000000..a62bb8df
 +return table.freeze(rows)
 diff --git a/tests/systems/RelicRows.spec.luau b/tests/systems/RelicRows.spec.luau
 new file mode 100644
-index 00000000..7cc9fb1c
+index 00000000..76e448a1
 --- /dev/null
 +++ b/tests/systems/RelicRows.spec.luau
-@@ -0,0 +1,172 @@
+@@ -0,0 +1,179 @@
 +--!strict
 +-- data/Relics: each row is a well-formed relic whose effects are real stats that grow
 +-- with rank, build-wide rather than one skill's (endgame-power.md 2.3: a relic seldom
@@ -164,6 +164,7 @@ index 00000000..7cc9fb1c
 +-- Rhodri's power table; it keeps a draft from shipping a relic worth a whole build.
 +local RelicTypes = require("../../src/shared/RelicTypes")
 +local Relics = require("../../src/shared/data/Relics")
++local Statuses = require("../../src/shared/data/Statuses")
 +local TestApi = require("../TestApi")
 +
 +-- Stats a relic may touch: build-wide ones. Not costs, not added-damage ranges (an
@@ -268,6 +269,12 @@ index 00000000..7cc9fb1c
 +						})
 +						for _, cond in e.conditions or {} do
 +							expect({ key, cond.kind, CONDITIONS[cond.kind] == true }).toEqual({ key, cond.kind, true })
++							-- A status a condition names must exist, or the bonus never applies
++							-- (relics-1: every EmberHeart asked for "Burning"; the status is "Ignite").
++							local c: any = cond
++							for _, id in (if c.status then { c.status } else c.statuses or {}) :: { string } do
++								expect({ key, "status", id, Statuses[id] ~= nil }).toEqual({ key, "status", id, true })
++							end
 +						end
 +						if e.tags and #e.tags > 0 then
 +							tagged += 1

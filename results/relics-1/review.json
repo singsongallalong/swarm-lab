@@ -1,0 +1,95 @@
+{
+  "scale": "each criterion 0-10; total = (4*correct + 3*fit + 3*relics) / 10",
+  "A": {
+    "correct": 8,
+    "fit": 8,
+    "relics": 7,
+    "total": 7.7,
+    "bugs": [
+      "modifiers shallow-clones conditions, so the condition tables are still shared with the def: m = Relics.modifiers(Relics.WardensSigil, 5); m[#m].conditions[1].radius = 999 changes data/Relics WardensSigil.awakened[1].conditions[1].radius to 999 (the rows are only frozen at the top). This breaks the contract's 'New tables: the def is never changed', and the comment 'never shared or changed' is false.",
+      "Row: EmberHeart awakened TargetHasStatus status = \"Burning\" never holds. No status has that id; the fire damage over time is \"Ignite\" (data/Statuses), so the awakened effect does nothing."
+    ],
+    "why": "The core is tight and readable, and every other edge case I probed matches the contract: grade upgrade before the cap check, spare counted in copiesToMax, buyCopy refusals, whole-number slot index, synergy(24)=0.055, synergy floored at 0. Its one contract miss is the shallow copy of conditions. The rows are good: Warden has unconditional armour plus Stationary flat armour and damage reduction, Gale works as described, and Ember adds mana regen as 'fuel', which is an interesting touch. The Ember payoff is dead because of the Burning id."
+  },
+  "B": {
+    "correct": 8,
+    "fit": 8,
+    "relics": 7,
+    "total": 7.7,
+    "bugs": [
+      "modifiers shallow-clones conditions, so Relics.modifiers(WardensSigil, 5)[3].conditions[1].radius = 999 rewrites the row's EnemiesWithin radius. The def does change, and the comment 'nothing can reach back into the def' is false.",
+      "Nit, outside the contract: synergy(-4) = -0.01, because nothing clamps negative ranks. loadout guards with > 0, so this is harmless today.",
+      "Row: EmberHeart awakened status \"Burning\" is not a status id (the fire damage over time is \"Ignite\"), so the effect never applies."
+    ],
+    "why": "A clean module of local functions behind a frozen export table, correct apart from the shallow copy of conditions. The rows start small and climb steeply, so rank feels like it matters. Warden gives 23% less damage taken and 46% armour while stationary at rank 10, and Gale gives 22% movement and attack speed. Both sit near the budget caps and play as briefed. The Ember payoff is dead because of the Burning id."
+  },
+  "C": {
+    "correct": 10,
+    "fit": 9,
+    "relics": 6,
+    "total": 8.5,
+    "bugs": [
+      "Row: EmberHeart awakened status \"Burning\" is not a status id (\"Ignite\" is), so the effect never applies."
+    ],
+    "why": "No contract bugs in any case I probed. It deep-copies conditions, falls back to Lesser on all-zero weights (and skips negative weights), counts the spare in copiesToMax, and handles slot index 1.5 and NaN and synergy past the bend. An edge-case header pins down each unspecified choice, which is the 'why' this repo asks of comments. The rows are on the weak side: Warden's damage reduction is only 2.5% to 6.1%, its regen at rank 10 is 3.5 with a 20-stud radius, and Gale's cooldown recovery tops out at 8%. They are rather flat."
+  },
+  "D": {
+    "correct": 7,
+    "fit": 7,
+    "relics": 5,
+    "total": 6.4,
+    "bugs": [
+      "modifiers shallow-clones conditions, so Relics.modifiers(WardensSigil, 5)[3].conditions[1].radius = 999 rewrites the row's condition.",
+      "rollGrade({}, rng) and rollGrade({Lesser=0, Greater=0, Exalted=0}, rng) return \"Exalted\", the rarest grade, even though it has no weight. The comment calls this path 'Unreachable', which is false: total = 0 reaches it every time.",
+      "synergy computes the steps to the bend as SYNERGY_BEND / SYNERGY_RANKS without flooring, so a bend that isn't a multiple of SYNERGY_RANKS would pay fractional steps. It is correct with today's constants. Nit, outside the contract: synergy(-4) = -0.01.",
+      "Row: EmberHeart awakened status \"Burning\" is not a status id (\"Ignite\"), so the effect never applies."
+    ],
+    "why": "Mostly correct, but it has the shared-conditions leak and a misleading comment on a real path. addCopy builds a result and then mutates it, which reads worse than the early returns the others use. The rows play as briefed but are thin: EmberHeart has a single effect plus a dead awakened one, and Gale tops out at 13% movement speed and 11% attack speed."
+  },
+  "E": {
+    "correct": 9,
+    "fit": 7,
+    "relics": 8,
+    "total": 8.1,
+    "bugs": [
+      "rollGrade({}, rng) and rollGrade({Lesser=0, Greater=0, Exalted=0}, rng) return \"Exalted\", a weightless grade and the jackpot, on a misconfigured table. The contract leaves this case unspecified, but Lesser is the safer fallback.",
+      "Row: EmberHeart awakened status \"Burning\" is not a status id (\"Ignite\"), so the effect never applies."
+    ],
+    "why": "Correct elsewhere: conditions are deep-copied, and every refusal and edge case I probed holds. Fit is lower because nearly every comment repeats the contract text (what, not why), and the module is split into helpers whose job a one-line comment already said. The rows are the most interesting set. Warden has a flat armour floor plus Stationary armour and 14% damage reduction. Gale adds Evasion while Moving. Ember layers increased fire and spell damage with a Spell-tagged 'more' fire effect, using 0.24 of the 0.25 'more' budget. The Ember payoff is dead because of the Burning id."
+  },
+  "F": {
+    "correct": 10,
+    "fit": 6,
+    "relics": 6,
+    "total": 7.6,
+    "bugs": [
+      "maxRankOf hardcodes \"Lesser\" and \"Greater\" in if-branches instead of indexing RelicTypes.MAX_RANK, so a new grade silently gets Exalted's cap. It is correct today; a fit problem (rule 2, content is data) rather than a live bug.",
+      "Row: EmberHeart awakened status \"Burning\" is not a status id (\"Ignite\"), so the effect never applies."
+    ],
+    "why": "No contract bugs found: conditions are deep-copied, the all-zero fallback is Lesser, and the synergy steps are floored correctly. The module is padded, though. It has the maxRankOf ladder, a copyTags wrapper around table.clone, unslot's `nil :: any` cast with a muddled comment ('a slot index is a name or an absent key'), and 272 lines in all. In the rows, EmberHeart's FireDamage is untagged, so it is general fire rather than 'fire spells'. The about lines are vague ('A coal that never goes out, banked for the next spell.'), and the numbers are fine but plain."
+  },
+  "G": {
+    "correct": 10,
+    "fit": 9,
+    "relics": 5,
+    "total": 8.2,
+    "bugs": [
+      "Nit, outside the contract: synergy(-4) = -0.01 (no clamp). loadout guards with > 0.",
+      "Row: EmberHeart awakened status \"Burning\" is not a status id (\"Ignite\"), so the effect never applies."
+    ],
+    "why": "No contract bugs found. It deep-copies conditions, skips non-positive weights, falls back to Lesser, and counts the spare. The header pins down each edge case with its reason, and the code is plain and tidy. The rows are its weak side. EmberHeart is a single tagged effect, and with the dead Burning payoff it is effectively one stat. Gale starts at 3% movement speed. The about lines don't say what the relic does ('A coal from the first fire, still warm.')."
+  },
+  "H": {
+    "correct": 6,
+    "fit": 8,
+    "relics": 5,
+    "total": 6.3,
+    "bugs": [
+      "copiesToMax ignores spare: copiesToMax({grade=\"Lesser\", rank=3, spare=1}) returns 5, but only 4 more copies reach rank 5 (rank 4 costs COPIES[4]=2 and 1 is already fed, so 1 more, then COPIES[5]=3), so it overstates every relic holding spare. The patch flagged the choice, but 'copies still needed' plainly counts copies already fed.",
+      "Row: EmberHeart awakened status \"Burning\" is not a status id (\"Ignite\"), so the effect never applies."
+    ],
+    "why": "Clean and correct apart from copiesToMax, which is a real bug players will see in a 'copies to max' readout. Conditions are deep-copied, slot reasons are helpful, and synergy is right. Aliasing every RelicTypes constant to a local is noise but harmless. The rows read clearly but are thin: EmberHeart has one effect plus the dead awakened one, and Warden's damage reduction is only 3% to 7.5%."
+  },
+  "ranking": ["C", "G", "E", "A", "B", "F", "D", "H"],
+  "notes": "Method: I applied each patch to its own scratch copy of base/src and base/tests, then ran a probe script through lune covering empty or all-zero weights, one draw per roll, copiesToMax with spare, an upgrade at the cap, lower-grade copies, buyCopy refusals, rank above 10 and below 1, deep copy of tags and conditions, slot index 1.5, 0 and NaN, same-slot reslot, synergy 0 to 40 and -4, duplicate, unowned and def-less slots in loadout, and the synergy order. stylua --check and selene were clean on all eight. I could not reproduce the repo's luau-lsp type check offline (no Roblox definitions file inside the allowed paths), and its errors were identical noise across all eight, so types were judged by reading. I did not rerun the visible specs (the runner exceeded the time limit); select.md says all eight pass them. Defects shared by all eight: every EmberHeart uses TargetHasStatus status=\"Burning\", but the fire damage over time in data/Statuses is \"Ignite\" and no 'Burning' status exists, so every EmberHeart awakened effect is dead. RelicRows.spec does not check status ids, which is worth adding. All eight also count a relic twice if it sits in two slots of a hand-built Slots table, which the contract leaves open. What separates them: H's copiesToMax ignores spare; A, B and D leak condition tables back into the def through shallow clones; D and E return Exalted for an all-zero weight table, and D's comment calls that path unreachable. C and G are the cleanest correct cores. E has the best rows on a correct core but over-comments, so its rows are worth grafting onto C or G."
+}
