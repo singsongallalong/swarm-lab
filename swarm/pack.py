@@ -98,6 +98,20 @@ def render_commands(brief: dict) -> tuple[str, str]:
             "lune run scripts/setpiecepreview <SetPiece> .swarm/out/feature-setpiece-r1.png",
         ]
         return "\n".join(ref), "\n".join(mine)
+    if brief["family"] == "motion":
+        # A cast motion keyed as end-effector poses (CastDrafts), played by the motion lab
+        # on the blocky R15 body with the weapon: the whole cast at shares of its cast time
+        # (past 1 runs into the after-swing), then the blow up close. The reference is
+        # Ground Slam's one-handed swing, one of fafwa's "ideal references".
+        weapon = brief.get("weapon", "EmberMace")
+        shares = brief.get("shares", "0,0.15,0.3,0.45,0.6,0.75,0.9,1,1.2,1.5,2")
+        close = brief.get("close_shares", "0.8,0.85,0.9,0.95,1,1.05,1.1,1.2")
+        ref = [f"lune run scripts/motionlab GroundSlam body weapon={weapon} combat shares={shares} .swarm/out/ref-GroundSlam.png"]
+        mine = [
+            f"lune run scripts/motionlab <YourLook> body weapon={weapon} combat keys shares={shares} .swarm/out/motion-whole-r1.png",
+            f"lune run scripts/motionlab <YourLook> body weapon={weapon} combat keys shares={close} .swarm/out/motion-blow-r1.png",
+        ]
+        return "\n".join(ref), "\n".join(mine)
     if brief["family"] == "palette":
         # An area palette made ahead of its area: its swatches against the bible's limits,
         # and the moor's own dressing repainted in it (a stand-in look). The reference is

@@ -1,0 +1,37 @@
+# The motion pilot, arm B, pass 1 of 2 (docs/motion-pilot.md): blocking. Key poses only, at
+# fixed times; the best block goes on to a timing and polish pass (job motions-polish).
+skill = "SmashBlock"
+family = "motion"
+weapon = "EmberMace"
+brief = """
+A one-handed overhead smash with a mace. `castTime = 0.6`: the blow lands 0.6 s after the
+press. `layer = "FullBody"` (the hips drop and lunge with it). In words, key by key:
+
+1. **Gather** (about a quarter of the way to the blow): the weight sinks back, the mace
+   drawn down and back past the right hip, its head trailing low behind.
+2. **Raise** (about two thirds of the way): the mace held high above the head, its head
+   pointing back and down behind the shoulders, the chest arched back and turned a little
+   to the right, the body risen tall.
+3. **Smash** (the blow, at 0.6 s): the mace brought over the top and down in front, its
+   head meeting the ground a stride ahead, the chest folded forward over it, the knees bent
+   deep, the hips lunging forward behind the blow. Cue `Impact` here.
+4. **Settle** (just after the blow): held low for a beat, the weight forward, the head on
+   the ground.
+5. **Recover** (about half a second after): straightening, the mace lifted back toward the
+   carry, and the body handed back to the rig by about 0.9 s after the blow.
+
+**This is the blocking pass.** Animators work pose to pose: first the key poses, each one
+right as a drawing, then timing and polish. Your job is only the first. Key exactly these
+five poses, named `Gather`, `Raise`, `Smash`, `Settle` and `Recover`, on exactly this
+timeline, and make each pose as good as it can be:
+
+```lua
+windUp = { { at = 0.25, pose = "Gather" }, { at = 0.65, pose = "Raise" } },
+release = { pose = "Smash", cue = "Impact" },
+afterSwing = after({ { after = 0.1, pose = "Settle" }, { after = 0.5, pose = "Recover" }, { after = 0.9 } }),
+```
+
+No other poses, no kicks, no changed times: the next pass adds in-betweens, holds and
+timing. The critic judges your poses: each moment recognisable, the blow heavy, the body
+clean, the arc over the top.
+"""

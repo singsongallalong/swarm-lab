@@ -1,0 +1,58 @@
+# The motions job (2026-10-30, fafwa: "an animation described in words in keyframes ... and
+# then deepseek agents work on generating keyframes"). A cast motion is already keyed as
+# end-effector poses (the weapon's grip from the shoulder, the way its head points, the
+# chest's twist and lean, the hips' drop), which the rig solves into joints; builders write
+# those, never joint angles. The pilot compares two ways of getting one motion from words:
+#   Smash       the whole motion in one go (pose, time and polish together);
+#   SmashBlock  pose-to-pose: a blocking pass (key poses at fixed times), then the best
+#               block goes to a timing and polish pass (job motions-polish).
+# Judged together, blind, on the same renders. docs/motion-pilot.md has the plan.
+
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+max_turns = 120
+tools = ["../zones/tools/explain.luau"]
+rules = ["docs/guides/animation-bible.md", "docs/design/animation.md"]
+
+[files."src/shared/data/CastDrafts.luau"]
+mode = "add_rows"
+prefix = "{skill}"
+
+[quotes.vocab]
+file = "docs/guides/cast-motions.md"
+from = "## Anatomy of a motion"
+to = "## The physics"
+note = "what a pose is (every field and its frame), weapon poses, and the timeline"
+
+[quotes.heavy]
+file = "docs/guides/cast-motions.md"
+from = "## The physics"
+to = "### Baked tracks"
+note = "how the muscles play keys, and how to make a swing feel heavy"
+
+[quotes.example]
+file = "src/shared/data/CastDrafts.luau"
+row = "Chop"
+note = "the nearest existing draft, a one-handed chop. It breaks several lab rules (run it and see); yours is a different motion, not this one tuned"
+
+[quotes.example2]
+file = "src/shared/data/CastDrafts.luau"
+row = "Uppercut"
+note = "a short FullBody draft, for the shape of a row"
+
+[[specs]]
+name = "CastDrafts"
+cmd = "lune run tests CastDrafts"
+
+[[specs]]
+name = "Choreography"
+cmd = "lune run tests Choreography"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/data/CastDrafts.luau"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/data/CastDrafts.luau"
