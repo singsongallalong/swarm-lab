@@ -78,3 +78,31 @@ What it suggests (guessed, from one critic and small numbers):
 - **The arms were uneven at the end:** two polish finishers against six. A rerun with balance would settle the polish question.
 
 Files: `results/motion-pilot/` holds the winner's and the runner-up's patches and renders, the blind critique, and the key.
+
+## fafwa's verdict in Studio (C393, 2026-10-30)
+
+"The animation looked pretty good actually ... wow! I am pleasantly surprised with the
+animation. Excellent!" It was SmashBlock, the winning block, on arpg-game branch
+`claude/smash-draft`.
+
+The one fault was the effects. Ground Slam's effects fired out of time with the mace landing.
+
+- **Likely cause (measured):** the draft plays over its own 0.6 s, but the skill's hit and its
+  looks keep Ground Slam's `use.time` of 0.15 s. So they land about 0.45 s before the mace.
+- **Why the lab missed it:** the lab draws no effects for a draft without its own, so its
+  `EffectTiming` check had nothing to compare.
+
+## Next time
+
+fafwa: draft with the effects turned on, or have a Claude repair the disconnect later.
+
+1. **Draft with effects on.** A motions brief names the skill the motion is for, and the job
+   renders it with that skill's effects on its cues. Then `EffectTiming` warns builders and
+   critics when an `Impact` fires off the blow. This needs the lab to give a draft the effects
+   of the skill it plays, as `CastPick.swing` does for moveset swings, and the brief's cast
+   time to be the one the skill will have.
+2. **Or repair afterwards:** a Claude session promotes the swing at its own cast time, keys
+   the effects to its cues, and checks it in the lab, then in Studio.
+3. **Brief as a blocking pass.** Named poses on a fixed timeline won here. Skip polish
+   passes; spend the budget on more blocks.
+4. **Rerun when the account has balance,** if the polish question still matters.
