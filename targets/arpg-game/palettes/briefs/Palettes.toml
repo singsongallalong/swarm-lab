@@ -1,0 +1,15 @@
+# A first batch of area palettes made ahead of the areas (2026-10-30).
+skill = "Palette"
+family = "palette"
+brief = """
+Make the palette of one future area of the game, the place your direction names. The game's
+world is a dark, gothic night: a silver-blue moon, rare warm lamplight, ruins and the dead,
+each zone with one muted accent hue. Existing places, which yours must not repeat: the moor
+(grey-brown heath, charcoal stone), the field round town (lived-in greens and
+browns, gorse gold), the Ashfields (ash and ember), Rimeholt (blue-grey snow, ice accent).
+
+A palette is judged later by a critic who sees only its swatches and the moor's map
+repainted in it: does it read as its own place at night, does the road read from the high
+camera, is its accent one clear idea, and is it inside the bible's limits. Many palettes are
+being made at once; the strongest will become areas.
+"""

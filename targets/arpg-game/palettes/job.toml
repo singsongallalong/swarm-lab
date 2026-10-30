@@ -1,0 +1,56 @@
+# The palettes job: area palettes made ahead of the areas (fafwa, 2026-10-30: "palettes
+# ahead of time ... so we can decouple things"). Data only: one palette module each,
+# judged as swatches and as the moor's dressing repainted in it. Features, props and
+# monsters for a future area are then generated against a named palette.
+
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+# Small data: 40 was enough for skill looks.
+max_turns = 50
+rules = ["docs/art/bible.md"]
+
+[platform]
+needs = "src/shared/systems/Palette.luau"
+# 0003 (drafted maps) then 0004 (palettes), the latter made on top of the former.
+patches = ["docs/map-drafting/0003-drafted-maps-open.patch", "docs/map-drafting/0004-palettes.patch"]
+
+[files."src/shared/data/palettes/{skill}*.luau"]
+mode = "new_file"
+
+[files."src/shared/data/Palettes.luau"]
+mode = "add_lines"
+pattern = '(local {skill}\w* = require\("\./palettes/{skill}\w*"\)|{skill}\w* = {skill}\w*,)'
+
+[purity]
+first_line = "--!strict"
+max_lines = 80
+requires = ["../../systems/Palette"]
+forbid = [
+  '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b', '\btask\.',
+  '\bos\.', '\bdebug\.', '\bgetfenv\b', '\bsetfenv\b', '\bloadstring\b', '\b_G\b', '\bshared\b',
+]
+
+[quotes.contract]
+file = "src/shared/systems/Palette.luau"
+note = "the contract: what a palette holds, the bible's limits it is checked against, and the stand-in look it derives"
+
+[quotes.example]
+file = "src/shared/data/palettes/Rimeholt.luau"
+note = "a worked example: Rimeholt, the frozen highland. Yours must be a different place, not this one recoloured"
+
+[[specs]]
+name = "Palettes"
+cmd = "lune run tests Palettes"
+
+[[specs]]
+name = "Catalog"
+cmd = "lune run tests Catalog"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/data/palettes src/shared/data/Palettes.luau"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/data/palettes src/shared/data/Palettes.luau"

@@ -76,6 +76,20 @@ def render_commands(brief: dict) -> tuple[str, str]:
             "lune run scripts/setpiecepreview <SetPiece> .swarm/out/map-setpiece-r1.png",
         ]
         return "\n".join(ref), "\n".join(mine)
+    if brief["family"] == "palette":
+        # An area palette made ahead of its area: its swatches against the bible's limits,
+        # and the moor's own dressing repainted in it (a stand-in look). The reference is
+        # Rimeholt's palette, the worked example.
+        ref = [
+            "lune run scripts/palettepreview Rimeholt .swarm/out/ref-palette-Rimeholt.png",
+            "lune run scripts/dresspreview whole .swarm/out/ref-whole-Rimeholt.png 1 1 tileset=palette:Rimeholt",
+        ]
+        mine = [
+            "lune run scripts/palettepreview <YourLook> .swarm/out/palette-swatches-r1.png",
+            "lune run scripts/dresspreview whole .swarm/out/palette-whole-r1.png 2 1 tileset=palette:<YourLook>",
+            "lune run scripts/dresspreview ruin .swarm/out/palette-ruin-r1.png 1 1 tileset=palette:<YourLook>",
+        ]
+        return "\n".join(ref), "\n".join(mine)
     if brief["family"] == "zone":
         # A whole area's look: its tileset dressing the moor's layouts (dresspreview's
         # tileset=), its pieces, its props and its set piece. The reference is the

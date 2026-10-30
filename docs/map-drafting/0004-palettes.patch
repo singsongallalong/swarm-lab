@@ -1,0 +1,427 @@
+diff --git a/scripts/catalog/Families.luau b/scripts/catalog/Families.luau
+index 558341db..524e8e18 100644
+--- a/scripts/catalog/Families.luau
++++ b/scripts/catalog/Families.luau
+@@ -202,6 +202,7 @@ Families.notRecipes = {
+ 		"SculptCandidates",
+ 		"Terrain",
+ 		"DraftedMaps", -- drafted map layouts (systems/DraftedMap); their looks are tilesets
++		"Palettes", -- area palettes made ahead of the areas (systems/Palette); stand-in looks only
+ 		"TilesetContract",
+ 	},
+ 	["sound cues and the soundboard's candidates (docs/guides/sound.md)"] = {
+diff --git a/scripts/dresspreview.luau b/scripts/dresspreview.luau
+index 4c60f692..b006907a 100644
+--- a/scripts/dresspreview.luau
++++ b/scripts/dresspreview.luau
+@@ -56,6 +56,8 @@ local MapDress = require("../src/shared/systems/MapDress")
+ local MapPlan = require("../src/shared/systems/MapPlan")
+ local OutdoorTilesets = require("../src/shared/data/OutdoorTilesets")
+ local OutdoorTypes = require("../src/shared/OutdoorTypes")
++local Palette = require("../src/shared/systems/Palette")
++local Palettes = require("../src/shared/data/Palettes")
+ local Raster = require("./render/Raster")
+ local Reaches = require("../src/shared/systems/Reaches")
+ local Route = require("./playtest/Route")
+@@ -207,7 +209,16 @@ for _, a in process.args do
+ 	end
+ end
+ local look: OutdoorTypes.OutdoorTileset? = nil
+-if lookName then
++-- `tileset=palette:<Name>`: a palette's stand-in look (Palette.tileset), the moor's
++-- dressing repainted in it, so a palette is judged before any area uses it.
++local paletteName = if lookName then string.match(lookName, "^palette:(.+)$") else nil
++if paletteName then
++	local p = Palettes[paletteName]
++	if not p then
++		error(`no palette {paletteName} in data/Palettes`)
++	end
++	look = Palette.tileset(p)
++elseif lookName then
+ 	look = OutdoorTilesets[lookName]
+ 	if not look then
+ 		local names = {}
+diff --git a/scripts/palettepreview.luau b/scripts/palettepreview.luau
+new file mode 100644
+index 00000000..09a673c3
+--- /dev/null
++++ b/scripts/palettepreview.luau
+@@ -0,0 +1,86 @@
++--!strict
++-- Draws an area palette (data/Palettes, systems/Palette) as labelled swatches, each
++-- with its HSV against the art bible's limit for its role, so a palette is read at a
++-- glance before its stand-in look is dressed (dresspreview whole <out> 1 1
++-- tileset=palette:<Name>):
++--   lune run scripts/palettepreview <Name> <out.png>
++local fs = require("@lune/fs")
++local process = require("@lune/process")
++local serde = require("@lune/serde")
++
++local Canvas = require("./motionlab/Canvas")
++local Label = require("./render/Label")
++local Palette = require("../src/shared/systems/Palette")
++local Palettes = require("../src/shared/data/Palettes")
++
++local name = process.args[1]
++local outPath = process.args[2] or "palettepreview.png"
++local p = name and Palettes[name]
++if not p then
++	local names = {}
++	for n in Palettes do
++		table.insert(names, n)
++	end
++	table.sort(names)
++	error(`no palette {name}; registered: {table.concat(names, ", ")}`)
++end
++
++type Swatch = { label: string, color: { number } }
++local rows: { { Swatch } } = {
++	{
++		{ label = `walk {p.walk.material}`, color = p.walk.color },
++		{ label = `road {p.road.material}`, color = p.road.color },
++		{ label = `earth {p.earth.material}`, color = p.earth.color },
++		{ label = `rock {p.rock.material}`, color = p.rock.color },
++	},
++	{
++		{ label = `far {p.far.material}`, color = p.far.color },
++		{ label = `bed {p.bed.material}`, color = p.bed.color },
++		{ label = `abyss {p.abyss.material}`, color = p.abyss.color },
++		{ label = "rock meshes", color = p.rockTint },
++	},
++	{
++		{ label = "trim wood", color = p.trim.wood },
++		{ label = "trim metal", color = p.trim.metal },
++		{ label = "trim foliage", color = p.trim.foliage },
++		{ label = "ACCENT", color = p.accent.color },
++	},
++	{
++		{ label = "lamp light", color = p.lamp },
++		{ label = "ground mist", color = p.mist },
++	},
++}
++
++local SW, SH, PAD, HEAD = 260, 150, 16, 70
++local canvas = Canvas.new(4 * (SW + PAD) + PAD, HEAD + #rows * (SH + PAD) + 60, { 26, 28, 34 })
++Label.draw(canvas, PAD, 14, `PALETTE {string.upper(p.name)}  LIGHTING {string.upper(p.lighting)}`, 2)
++for r, row in rows do
++	for c, sw in row do
++		local x, y = PAD + (c - 1) * (SW + PAD), HEAD + (r - 1) * (SH + PAD)
++		Canvas.rect(canvas, x, y, SW, SH - 34, sw.color)
++		local hi = math.max(sw.color[1], sw.color[2], sw.color[3]) / 255
++		local lo = math.min(sw.color[1], sw.color[2], sw.color[3]) / 255
++		local s = if hi > 0 then (hi - lo) / hi else 0
++		Label.draw(canvas, x, y + SH - 30, string.upper(sw.label))
++		Label.draw(
++			canvas,
++			x,
++			y + SH - 16,
++			string.format("%d %d %d  S%.2f V%.2f", sw.color[1], sw.color[2], sw.color[3], s, hi)
++		)
++	end
++end
++local problems = Palette.problems(p)
++Label.draw(
++	canvas,
++	PAD,
++	canvas.height - 40,
++	if #problems == 0 then "INSIDE THE BIBLE'S LIMITS" else string.upper(problems[1])
++)
++fs.writeFile(
++	outPath,
++	Canvas.png(canvas, function(s: string): string
++		return serde.compress("zlib", s)
++	end)
++)
++print(`wrote {outPath}`)
+diff --git a/src/shared/data/Palettes.luau b/src/shared/data/Palettes.luau
+new file mode 100644
+index 00000000..d4754f55
+--- /dev/null
++++ b/src/shared/data/Palettes.luau
+@@ -0,0 +1,12 @@
++--!strict
++-- Area palettes made ahead of the areas (systems/Palette, swarm-lab's palettes job):
++-- what a future area's features, props and monsters are generated against.
++local Palette = require("../systems/Palette")
++local Rimeholt = require("./palettes/Rimeholt")
++
++local Palettes: { [string]: Palette.Palette } = {
++	-- One line per palette, `Name = Name,`, with its require above.
++	Rimeholt = Rimeholt,
++}
++
++return table.freeze(Palettes)
+diff --git a/src/shared/data/palettes/Rimeholt.luau b/src/shared/data/palettes/Rimeholt.luau
+new file mode 100644
+index 00000000..7ca92b65
+--- /dev/null
++++ b/src/shared/data/palettes/Rimeholt.luau
+@@ -0,0 +1,30 @@
++--!strict
++-- Rimeholt's colours (the frozen highland, swarm-lab rimeholt-zones C), as a palette:
++-- the worked example for the palettes job. Blue-grey snow never white (the bible's
++-- value cap), dark frozen earth, grey granite, a pale ice-blue with a touch of green
++-- as the one accent, amber hill-fires.
++local Palette = require("../../systems/Palette")
++
++local rimeholt: Palette.Palette = {
++	name = "Rimeholt",
++	about = "A frozen night highland of old snow, barrows and runestones round a lake that never thaws.",
++	words = "blue-grey snow over dark frozen earth, black pines rimed pale, grey granite, a pale ice-blue with a touch of green as the one accent, warm amber hill-fires, desaturated, matte, no highlights",
++	walk = { material = "Snow", color = { 78, 83, 89 } },
++	road = { material = "Cobblestone", color = { 56, 60, 68 } },
++	earth = { material = "Ground", color = { 44, 46, 52 } },
++	rock = { material = "Basalt", color = { 50, 54, 62 } },
++	far = { material = "Glacier", color = { 64, 72, 78 } },
++	bed = { material = "Ice", color = { 60, 72, 74 } },
++	abyss = { material = "Slate", color = { 18, 20, 22 } },
++	rockTint = { 60, 64, 72 },
++	trim = { wood = { 40, 38, 40 }, metal = { 52, 54, 58 }, foliage = { 30, 34, 36 } },
++	accent = {
++		color = { 84, 100, 100 },
++		carriers = "ice sheets, runes cut in the stones, frosted grass tips, marker rags",
++	},
++	lamp = { 255, 168, 88 },
++	mist = { 152, 162, 182 },
++	lighting = "mood",
++}
++
++return rimeholt
+diff --git a/src/shared/systems/Palette.luau b/src/shared/systems/Palette.luau
+new file mode 100644
+index 00000000..e6698c3b
+--- /dev/null
++++ b/src/shared/systems/Palette.luau
+@@ -0,0 +1,191 @@
++--!strict
++-- Area palettes, made ahead of the areas (swarm-lab's palettes job, fafwa 2026-10-30:
++-- "palettes ahead of time ... so we can decouple things"): the colours a future area's
++-- ground, trim, accent and light are drawn from, checked against the art bible, so its
++-- features, props and monsters can be made in parallel against one named palette before
++-- the area itself is designed. `Palette.tileset` derives a stand-in look (the moor's
++-- dressing repainted) for judging a palette offline; a real area still gets its own
++-- tileset (docs/guides/adding-areas.md).
++local LightingPresets = require("../data/LightingPresets")
++local Moor = require("../data/outdoorTilesets/Moor")
++local OutdoorTypes = require("../OutdoorTypes")
++
++type GroundLook = OutdoorTypes.GroundLook
++
++local Palette = {}
++
++export type Palette = {
++	name: string,
++	about: string, -- one sentence: the place it is for
++	words: string, -- the prompt line, like a tileset's `palette`
++	-- Ground, each a Terrain material and colour (one colour per material per palette).
++	walk: GroundLook, -- the walkable ground
++	road: GroundLook,
++	earth: GroundLook, -- under ruins and thickets, trodden ground
++	rock: GroundLook, -- cliffs, outcrops, terrace faces
++	far: GroundLook, -- the land rising past the rim
++	bed: GroundLook, -- under water or ice
++	abyss: GroundLook, -- the drop's floor, near black
++	rockTint: { number }, -- paint for rock meshes
++	trim: { wood: { number }, metal: { number }, foliage: { number } },
++	accent: { color: { number }, carriers: string }, -- the one muted accent (B8) and what wears it
++	lamp: { number }, -- the warm light's colour (B2-B3: amber unless the place says otherwise)
++	mist: { number }, -- ground mist
++	lighting: string, -- a LightingPresets name
++	-- Living ground may run to the field's saturation (bible, 2026-10-24: 0.35); else 0.2.
++	lived: boolean?,
++}
++
++-- The art bible's starting limits (section 2), HSV.
++Palette.LIMITS = table.freeze({
++	ground = { saturation = 0.2, value = 0.35 },
++	lived = { saturation = 0.35, value = 0.35 },
++	trim = { saturation = 0.4, value = 0.4 },
++	accent = { saturation = 0.5, value = 0.4 },
++	-- The abyss and the bed sit under everything; they only need to be dark.
++	under = { saturation = 0.3, value = 0.3 },
++})
++
++Palette.GROUNDS = table.freeze({ "walk", "road", "earth", "rock", "far", "bed", "abyss" })
++
++local function hsv(c: { number }): (number, number)
++	local r, g, b = c[1] / 255, c[2] / 255, c[3] / 255
++	local hi, lo = math.max(r, g, b), math.min(r, g, b)
++	return if hi > 0 then (hi - lo) / hi else 0, hi
++end
++
++-- Every way `p` breaks the bible's colour limits or Terrain's one colour per material,
++-- in plain words, with the numbers; empty when it is sound.
++function Palette.problems(p: Palette): { string }
++	local out: { string } = {}
++	local function color(where: string, c: any, limit: { saturation: number, value: number })
++		if type(c) ~= "table" or #c ~= 3 then
++			table.insert(out, `{where}: needs a colour \{r, g, b\}`)
++			return
++		end
++		for _, v in c do
++			if type(v) ~= "number" or v < 0 or v > 255 then
++				table.insert(out, `{where}: channels are 0-255`)
++				return
++			end
++		end
++		local s, v = hsv(c)
++		if s > limit.saturation + 1e-9 or v > limit.value + 1e-9 then
++			table.insert(
++				out,
++				string.format(
++					"%s: {%d, %d, %d} is saturation %.2f, value %.2f; at most %.2f and %.2f",
++					where,
++					c[1],
++					c[2],
++					c[3],
++					s,
++					v,
++					limit.saturation,
++					limit.value
++				)
++			)
++		end
++	end
++	local byMaterial: { [string]: { name: string, color: { number } } } = {}
++	local ground = if p.lived then Palette.LIMITS.lived else Palette.LIMITS.ground
++	for _, key in Palette.GROUNDS do
++		local look = (p :: any)[key] :: GroundLook?
++		if type(look) ~= "table" or type(look.material) ~= "string" then
++			table.insert(out, `{key}: needs \{ material = "<Terrain material>", color = \{r, g, b\} \}`)
++			continue
++		end
++		local limit = if key == "abyss" or key == "bed" then Palette.LIMITS.under else ground
++		color(key, look.color, limit)
++		local seen = byMaterial[look.material]
++		if seen and #look.color == 3 then
++			local a, b = seen.color, look.color
++			if a[1] ~= b[1] or a[2] ~= b[2] or a[3] ~= b[3] then
++				table.insert(
++					out,
++					`{key} and {seen.name} are both {look.material} in different colours; Terrain keeps one colour per material, so share it or pick another material`
++				)
++			end
++		else
++			byMaterial[look.material] = { name = key, color = look.color }
++		end
++	end
++	color("rockTint", p.rockTint, ground)
++	if type(p.trim) == "table" then
++		for _, key in { "wood", "metal", "foliage" } do
++			color(`trim.{key}`, (p.trim :: any)[key], Palette.LIMITS.trim)
++		end
++	else
++		table.insert(out, "trim: needs wood, metal and foliage colours")
++	end
++	if type(p.accent) == "table" then
++		color("accent.color", p.accent.color, Palette.LIMITS.accent)
++		if type(p.accent.carriers) ~= "string" or #p.accent.carriers == 0 then
++			table.insert(out, "accent.carriers: say what wears the accent (cloth, runes, moss...)")
++		end
++	else
++		table.insert(out, "accent: needs a colour and its carriers")
++	end
++	for _, key in { "lamp", "mist" } do
++		local c = (p :: any)[key]
++		if type(c) ~= "table" or #c ~= 3 then
++			table.insert(out, `{key}: needs a colour \{r, g, b\}`)
++		end
++	end
++	if not LightingPresets[p.lighting] then
++		table.insert(out, `lighting: no LightingPresets named {p.lighting}`)
++	end
++	for _, key in { "name", "about", "words" } do
++		local v = (p :: any)[key]
++		if type(v) ~= "string" or #v == 0 then
++			table.insert(out, `{key}: needs words`)
++		end
++	end
++	return out
++end
++
++local function with<T>(base: T, changes: { [string]: any }): T
++	local out = table.clone(base :: any)
++	for key, value in changes do
++		out[key] = value
++	end
++	return table.freeze(out) :: any
++end
++
++-- The moor's dressing repainted in `p`: its ground, rock and mist, for judging a
++-- palette on the moor's own layouts (dresspreview tileset=palette:<Name>). Props
++-- keep the moor's sculpts and colours: a stand-in, never a shipped look.
++function Palette.tileset(p: Palette): OutdoorTypes.OutdoorTileset
++	local moor: any = Moor
++	local function rock(pieces: { OutdoorTypes.PieceLook }): { OutdoorTypes.PieceLook }
++		local out = {}
++		for i, piece in pieces do
++			out[i] = if piece.mesh then with(piece, { color = p.rockTint }) else piece
++		end
++		return out
++	end
++	local edges = table.clone(moor.edges)
++	edges.cliff = with(moor.edges.cliff, { pieces = rock(moor.edges.cliff.pieces), ground = p.rock })
++	edges.thicket = with(moor.edges.thicket, { ground = p.earth })
++	edges.ruin_wall = with(moor.edges.ruin_wall, { ground = p.earth })
++	local hills = moor.beyond.hills
++	return with(moor, {
++		name = `palette:{p.name}`,
++		lighting = p.lighting,
++		palette = p.words,
++		ground = { heath = p.walk, road = p.road, ruin = p.earth },
++		edges = table.freeze(edges),
++		outcrop = with(moor.outcrop, { pieces = rock(moor.outcrop.pieces), ground = p.rock }),
++		pools = with(moor.pools, { bed = p.bed }),
++		groundMist = with(moor.groundMist, { color = p.mist }),
++		bluff = with(moor.bluff, { backing = p.rock, rock = p.rock }),
++		beyond = with(moor.beyond, {
++			ground = p.far,
++			rock = p.rock,
++			abyss = p.abyss,
++			hills = if hills then with(hills, { laneGround = p.road }) else nil,
++		}),
++	}) :: any
++end
++
++return Palette
+diff --git a/tests/systems/Palettes.spec.luau b/tests/systems/Palettes.spec.luau
+new file mode 100644
+index 00000000..86784c82
+--- /dev/null
++++ b/tests/systems/Palettes.spec.luau
+@@ -0,0 +1,35 @@
++--!strict
++-- Area palettes (systems/Palette): every registered one sits inside the art bible's
++-- colour limits, keeps one colour per Terrain material, and dresses the moor.
++local Palette = require("../../src/shared/systems/Palette")
++local Palettes = require("../../src/shared/data/Palettes")
++local TestApi = require("../TestApi")
++
++return function(api: TestApi.Api)
++	local describe, it, expect = api.describe, api.it, api.expect
++
++	describe("Palettes", function()
++		it("are named by their key and inside the bible's limits", function()
++			for key, p in Palettes do
++				expect({ key, p.name }).toEqual({ key, key })
++				expect({ key, Palette.problems(p) }).toEqual({ key, {} })
++			end
++		end)
++
++		it("derive a stand-in tileset on the moor's dressing", function()
++			for key, p in Palettes do
++				local t = Palette.tileset(p)
++				expect({ key, t.ground.heath }).toEqual({ key, p.walk })
++				expect({ key, t.beyond.abyss }).toEqual({ key, p.abyss })
++			end
++		end)
++
++		it("catches an over-bright ground and a material in two colours", function()
++			local p = table.clone(Palettes.Rimeholt) :: any
++			p.walk = { material = "Snow", color = { 230, 235, 240 } }
++			p.far = { material = "Snow", color = { 60, 60, 60 } }
++			local problems = Palette.problems(p)
++			expect(#problems >= 2).toEqual(true)
++		end)
++	end)
++end
