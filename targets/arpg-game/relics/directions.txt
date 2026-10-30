@@ -2,3 +2,4 @@
 Write the system first, run its spec until it passes, then the rows. Keep the module short and plain.
 Read the contract twice and list its edge cases as comments before writing any code; then write the system, then the rows.
 Write the rows first (they shape what the system must carry), then the system to the contract.
+Favour small helper functions with one job each, and make every rule in the contract findable by a comment that names it.
