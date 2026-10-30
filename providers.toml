@@ -49,6 +49,36 @@ CLAUDE_CODE_AUTO_COMPACT_WINDOW = "786432"
 # it). DeepSeek allows far more per reply.
 CLAUDE_CODE_MAX_OUTPUT_TOKENS = "64000"
 
+# DeepSeek V4 Pro (2026-10-30, the relics code trial): stronger at code than Flash by
+# repute, and it can't see images, so it is for code-only jobs (renders = false). Prices
+# from computeprices.com (2026-10-30): $1.32 in, $3.96 out; its cache-hit price wasn't
+# listed, so 0.05 is a guess on the high side. Same off-peak windows as Flash.
+[deepseek-pro]
+runtime = "claude-code"
+base_url = "https://api.deepseek.com/anthropic"
+key_env = "DEEPSEEK_API_KEY"
+model = "deepseek-v4-pro[1m]"
+small_model = "deepseek-flash"
+price_in = 1.32
+price_cached = 0.05
+price_out = 3.96
+max_turns = 40
+timeout_s = 2400
+budget_tokens = 300_000_000
+
+[deepseek-pro.peak]
+beijing = ["09:00-12:00", "14:00-18:00"]
+weekends_off = true
+
+[deepseek-pro.env]
+ANTHROPIC_DEFAULT_OPUS_MODEL = "deepseek-v4-pro[1m]"
+ANTHROPIC_DEFAULT_SONNET_MODEL = "deepseek-v4-pro[1m]"
+ANTHROPIC_DEFAULT_HAIKU_MODEL = "deepseek-flash"
+CLAUDE_CODE_SUBAGENT_MODEL = "deepseek-flash"
+CLAUDE_CODE_EFFORT_LEVEL = "max"
+CLAUDE_CODE_AUTO_COMPACT_WINDOW = "786432"
+CLAUDE_CODE_MAX_OUTPUT_TOKENS = "64000"
+
 [qwen]
 runtime = "claude-code"
 # VERIFY: Alibaba Model Studio's Anthropic-compatible endpoint and the exact model id

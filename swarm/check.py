@@ -12,6 +12,7 @@ Writes runs/<run>/check.json.
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -91,7 +92,7 @@ def check_rows(rel: str, mode: str, before: str | None, after: str, skill: str, 
             if row.text(before) != new[name].text(after):
                 return f"{rel}: changed the existing row {name}"
         added = set(new) - set(old)
-        start = fill(prefix, skill) if prefix else skill
+        start = fill(prefix, skill) if prefix is not None else skill
         bad = sorted(n for n in added if not n.startswith(start))
         if bad:
             return f"{rel}: new row {bad[0]} doesn't start with {start}"
@@ -157,6 +158,32 @@ def run_specs(wt: Path, specs: list[dict], env: dict, timeout: int = 600) -> tup
         if not ok:
             return results, f"spec {s['name']} failed"
     return results, None
+
+
+def run_held_out(wt: Path, held: list[dict], env: dict) -> dict:
+    """Copy each held-out spec in, run it, take it out again; count what passed."""
+    import shutil
+    out = {"passed": 0, "failed": 0, "tail": ""}
+    for h in held:
+        src = Path(os.path.expanduser(h["file"]))
+        dest = wt / h["dest"]
+        shutil.copy(src, dest)
+        try:
+            r = subprocess.run(h["cmd"], cwd=wt, env=env, shell=True, text=True, capture_output=True, timeout=600)
+            text = r.stdout + r.stderr
+            m = re.search(r"(\d+) passed, (\d+) failed", text)
+            if m:
+                out["passed"] += int(m.group(1))
+                out["failed"] += int(m.group(2))
+            else:
+                out["failed"] += 1  # it didn't even run (a missing function, a crash)
+            out["tail"] += text[-1500:]
+        except subprocess.TimeoutExpired:
+            out["failed"] += 1
+            out["tail"] += "timed out"
+        finally:
+            dest.unlink(missing_ok=True)
+    return out
 
 
 def skill_color(wt: Path, skill: str, fallback) -> list[int]:
@@ -253,7 +280,8 @@ def check_one(wt: Path, t: config.Target, j: config.Job, meta: dict, gen: dict, 
             rec["reason"] = why
             return rec
 
-    why = check_renders(wt, manifest)
+    # A code-only job (job.toml `renders = false`) has nothing to draw.
+    why = check_renders(wt, manifest) if j.data.get("renders", True) else None
     if why:
         rec["reason"] = why
         return rec
@@ -262,6 +290,11 @@ def check_one(wt: Path, t: config.Target, j: config.Job, meta: dict, gen: dict, 
         # The figures' checks run after the job's own specs (meta from before figures has none).
         figure_checks = [c for name in meta.get("figures", []) for c in config.figure(t, name).checks(skill)]
         rec["specs"], why = run_specs(wt, j.data.get("specs", []) + figure_checks, t.env())
+        # Held-out specs (job.toml [[held_out]]): tests the generators never saw, copied in
+        # only now and removed after, scored but never a reason to reject. They live
+        # outside swarm-lab's tree while a run is on, where no generator can read them.
+        if j.data.get("held_out"):
+            rec["held_out"] = run_held_out(wt, j.data["held_out"], t.env())
         if why:
             rec["reason"] = why
             return rec

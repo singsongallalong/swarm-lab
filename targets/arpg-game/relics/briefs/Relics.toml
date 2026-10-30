@@ -1,0 +1,21 @@
+# Relics' pure core and first three rows (2026-10-30), for comparing Flash and V4 Pro.
+skill = "Relics"
+family = "code"
+brief = """
+Relics are the endgame's power treadmill (a
+proposal; the contract's header sums it up). Build `systems/Relics` to the contract, then design
+three relics as rows. Every number is a placeholder a designer will tune, but make them
+sensible: a relic at rank 10 should feel like a strong, interesting part of a build, never
+a whole build.
+
+- **WardensSigil** (playstyle `defence`): the warden who holds the line. Rewards standing
+  your ground (the `Stationary` condition) with less damage taken and more armour;
+  awakened, it also regenerates life while enemies crowd you (`EnemiesWithin`).
+- **GaleFeather** (playstyle `mobility`): the wind at your back. Faster movement, and
+  faster attacks while `Moving`; awakened, it shortens cooldowns.
+- **EmberHeart** (playstyle `spell`): a coal that never goes out. More fire damage for
+  spells; awakened, more damage against targets already burning (`TargetHasStatus` with
+  the status `Burning`).
+
+Relics shape the whole character, not one skill: at most one effect may name a tag.
+"""

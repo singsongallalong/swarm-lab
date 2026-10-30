@@ -76,6 +76,9 @@ def render_commands(brief: dict) -> tuple[str, str]:
             "lune run scripts/setpiecepreview <SetPiece> .swarm/out/map-setpiece-r1.png",
         ]
         return "\n".join(ref), "\n".join(mine)
+    if brief["family"] == "code":
+        # Code with specs and nothing to draw (job.toml `renders = false`).
+        return "", ""
     if brief["family"] == "feature":
         # One map feature alone on a pad of plain ground (MapFeature.asDraft): its own
         # photographs first, the pad from above, its new sculpts and its set piece. The

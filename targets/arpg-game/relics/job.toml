@@ -1,0 +1,85 @@
+# The relics job (2026-10-30, fafwa: "pick a few items, write a contract / tests, and see
+# how a deepseek agent loop performs"): a real gameplay system's pure core and its first
+# content rows, against a contract and specs Claude wrote, with held-out specs scoring how
+# well the rules were understood. Code only: nothing to draw. Run with Flash and with V4
+# Pro on the same pack to compare them. A trial in swarm-lab; relics are a proposal
+# (docs/design/endgame-power.md on claude/endgame-power-layer, PR #914).
+
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+max_turns = 120
+tools = ["../zones/tools/explain.luau"]
+renders = false
+rules = []
+
+[platform]
+needs = "src/shared/RelicTypes.luau"
+patches = ["docs/relics/0001-relics-contract.patch"]
+
+[files."src/shared/systems/Relics.luau"]
+mode = "new_file"
+
+[files."src/shared/data/Relics.luau"]
+mode = "add_rows"
+prefix = ""
+
+[purity]
+first_line = "--!strict"
+max_lines = 400
+requires = ["../RelicTypes", "../SkillTypes"]
+forbid = [
+  '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
+  '\btask\.', '\bwait\s*\(', '\bspawn\s*\(', '\bdelay\s*\(', '\bcoroutine\.',
+  '\bos\.', '\bdebug\.', '\bgetfenv\b', '\bsetfenv\b', '\bloadstring\b', '\b_G\b', '\bshared\b',
+  '\bRandom\.new\b', '\bmath\.random\b',
+]
+
+[quotes.contract]
+file = "src/shared/RelicTypes.luau"
+note = "the contract: the types, the numbers, and exactly what systems/Relics must do"
+
+[quotes.spec]
+file = "tests/systems/Relics.spec.luau"
+note = "the spec your systems/Relics must pass"
+
+[quotes.rows_spec]
+file = "tests/systems/RelicRows.spec.luau"
+note = "the checks every relic row must pass, its power budget included"
+
+[quotes.data]
+file = "src/shared/data/Relics.luau"
+note = "where the rows go"
+
+[quotes.supports]
+file = "src/shared/data/Supports.luau"
+note = "the nearest existing rows (supports): how modifiers are written and sourced in this game"
+
+[quotes.skill_types]
+file = "src/shared/SkillTypes.luau"
+note = "stats, modifier kinds, tags and conditions"
+
+[[specs]]
+name = "Relics"
+cmd = "lune run tests Relics.spec"
+
+[[specs]]
+name = "RelicRows"
+cmd = "lune run tests RelicRows"
+
+[[specs]]
+name = "rows named"
+cmd = "grep -q 'WardensSigil = {' src/shared/data/Relics.luau && grep -q 'GaleFeather = {' src/shared/data/Relics.luau && grep -q 'EmberHeart = {' src/shared/data/Relics.luau"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/systems/Relics.luau src/shared/data/Relics.luau"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/systems/Relics.luau src/shared/data/Relics.luau"
+
+[[held_out]]
+file = "~/.swarm-heldout/relics/RelicsHeldOut.spec.luau"
+dest = "tests/systems/RelicsHeldOut.spec.luau"
+cmd = "lune run tests RelicsHeldOut"
