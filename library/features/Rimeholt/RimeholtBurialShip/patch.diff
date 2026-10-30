@@ -1,0 +1,517 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 5aad1106..8c0729fb 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -3,11 +3,13 @@
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 3 1
+ -- feature=<Name>` and assembled into maps later.
+ local MapFeature = require("../systems/MapFeature")
++local RimeholtBurialShip = require("../systems/features/RimeholtBurialShip")
+ local RimeholtFrozenFall = require("../systems/features/RimeholtFrozenFall")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	RimeholtFrozenFall = RimeholtFrozenFall,
++	RimeholtBurialShip = RimeholtBurialShip,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index f409fe03..26d8b6c8 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1047,5 +1047,78 @@ Sculpts.parish_bell_tower = {
+ 	accent = PARISH_MOSS,
+ 	maxPrims = 34,
+ }
++-- Rimeholt's burial longship, frozen into the lake at a tilt: the hill-folk
++-- laid their dead in a boat and sank it in the tarn, and the winter kept it.
++-- Clinker strakes of dark timber rime-pale on the weather side, its keel and
++-- stem painted the zone's ice-blue, and the lower strakes gone so the ribs
++-- show. Pitched nose-high out of the ice, it stands on the skyline of its own
++-- bay as the feature's landmark.
++Sculpts.rimeholt_burial_ship = {
++	kind = "hull",
++	form = "beached",
++	-- Long and deep in the beam: a sea boat for a great hill-folk chief. Its
++	-- pitched length is most of the sculpture, so it reads from the top camera
++	-- as a hull, not a shed.
++	size = { 64, 30, 22 },
++	material = "WoodPlanks",
++	colors = { { 52, 50, 48 }, { 40, 38, 36 }, { 74, 82, 86 } },
++	accent = { 62, 88, 90 },
++	maxPrims = 40,
++	worn = 0.45,
++	tilt = 32,
++}
++-- The mast that stood when the lake took her: a squared timber heaved over in
++-- the ice, its top broken and rimed, still canted toward the bow. One column
++-- of the rock kit, leaned, so it reads as a hand-hewn spar and not a pole.
++-- The burial ship heaved further up out of the ice: the same clinker hull
++-- pitched near halfway to standing, her stern deep under the lake. Each seed
++-- takes one of the two, so no two maps meet the same wreck.
++Sculpts.rimeholt_burial_ship_steep = {
++	kind = "hull",
++	form = "beached",
++	size = { 64, 34, 22 },
++	material = "WoodPlanks",
++	colors = { { 52, 50, 48 }, { 40, 38, 36 }, { 74, 82, 86 } },
++	accent = { 62, 88, 90 },
++	maxPrims = 40,
++	worn = 0.45,
++	tilt = 44,
++}
++Sculpts.rimeholt_ship_mast = {
++	kind = "columns",
++	columns = 1,
++	size = { 6.5, 26, 6.5 },
++	material = "Wood",
++	colors = { { 48, 46, 44 }, { 36, 34, 32 }, { 70, 78, 82 } },
++	maxPrims = 4,
++	jag = 0.18,
++	lean = 4,
++}
++-- Her exposed ribs, standing out of the ice where the strakes are gone: a row
++-- of broken timbers of uneven height, the tallest still holding the sheer.
++Sculpts.rimeholt_ship_ribs = {
++	kind = "columns",
++	columns = 7,
++	size = { 30, 10, 2.4 },
++	material = "Wood",
++	colors = { { 48, 46, 44 }, { 36, 34, 32 }, { 70, 78, 82 } },
++	maxPrims = 16,
++	jag = 0.55,
++	lean = 8,
++}
++-- The ice that broke round the hull: a crown of pale shards standing where the
++-- lake heaved, their tops slanted like broken glass.
++Sculpts.rimeholt_ice_shards = {
++	kind = "columns",
++	-- Three great shards, not a rubble of boxes: tall slabs still leaned out
++	-- where the ice stood up, so they splay away from the hull they ring.
++	columns = 2,
++	size = { 18, 13, 4.5 },
++	material = "Glass",
++	colors = { { 88, 98, 100 }, { 78, 90, 94 }, { 92, 100, 102 } },
++	maxPrims = 6,
++	jag = 0.85,
++	lean = 12,
++}
+ 
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 88a1b18b..11303170 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1590,4 +1590,98 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- Rimeholt's burial longship (systems/features/RimeholtBurialShip): the
++-- wreck breathing the lake's cold back out over the ice. Frost slides off
++-- her flank in a sheet, creeps low over the ice as a haze that comes and
++-- goes in long slow swells, and the last of it lifts away as frozen
++-- motes, with a couple of cold lights sitting in it. Placed at her side,
++-- where the open ice is.
++recipes.rimeholt_ship_breath = {
++	about = "The cold breath of Rimeholt's burial ship: frost sliding off her flank, creeping low over the lake ice and lifting away as frozen motes.",
++	theme = "rimeholt",
++	path = { kind = "worm", length = 36, step = 3, bend = 12, climb = 1, round = 1 },
++	layers = {
++		{
++			name = "spill",
++			look = {
++				kind = "stream",
++				every = 9,
++				thick = 3,
++				lift = 7,
++				toward = "down",
++				rise = 1.5,
++				life = { 7, 10 },
++				rate = 2.2,
++				size = 8,
++				-- Laid flat as it falls: a sheet of frost, not a plume.
++				tall = 0.55,
++				transparency = 0.86,
++				color = "pale",
++				texture = "veil",
++				lean = 12,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 10, span = 20, periods = { 8, 13 } },
++			priority = 1,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 7,
++				thick = 3,
++				lift = 0.2,
++				toward = "up",
++				rise = 0.7,
++				life = { 4, 7 },
++				rate = 1.6,
++				size = 0.5,
++				tall = 1.4,
++				transparency = 0.4,
++				color = "rime",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 5, span = 9, periods = { 6, 9 } },
++			priority = 2,
++		},
++		{
++			name = "creep",
++			look = {
++				kind = "stream",
++				every = 14,
++				thick = 8,
++				lift = 0.4,
++				toward = "along",
++				rise = 1.3,
++				life = { 9, 13 },
++				rate = 1.6,
++				size = 14,
++				tall = 0.5,
++				transparency = 0.9,
++				color = "ice",
++				texture = "veil",
++				lean = 5,
++				vary = 0.6,
++			},
++			motion = {
++				kind = "worm",
++				amplitude = 1.2,
++				across = 0.7,
++				periods = { 14, 9 },
++				twist = 9,
++				swell = { wavelength = 46, speed = 2.4, depth = 0.6 },
++			},
++			priority = 3,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 9, max = 2, range = 16, brightness = 0.7, color = "deep" },
++			motion = { kind = "pulse", period = 6.5, depth = 0.35 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0e4c0dc5..c93406e7 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -362,6 +362,26 @@ local rows: { [string]: Row } = {
+ 		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
+ 		MOOR
+ 	),
++	["sculpt:rimeholt_burial_ship"] = row(
++		"A hill-folk burial longship frozen at a tilt in Rimeholt's lake ice, her strakes rime-pale and her stem painted ice-blue.",
++		MOOR
++	),
++	["sculpt:rimeholt_burial_ship_steep"] = row(
++		"The burial longship heaved far steeper out of Rimeholt's ice, her stern deep under the lake and her bow high.",
++		MOOR
++	),
++	["sculpt:rimeholt_ship_mast"] = row(
++		"The burial longship's mast, a squared spar heaved over in the ice and broken at the top, rimed pale.",
++		MOOR
++	),
++	["sculpt:rimeholt_ship_ribs"] = row(
++		"The burial longship's exposed ribs standing out of Rimeholt's ice where the strakes are gone.",
++		MOOR
++	),
++	["sculpt:rimeholt_ice_shards"] = row(
++		"A crown of pale ice shards standing where the lake heaved round Rimeholt's burial ship.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/RimeholtBurialShip.luau b/src/shared/systems/features/RimeholtBurialShip.luau
+new file mode 100644
+index 00000000..199c0e18
+--- /dev/null
++++ b/src/shared/systems/features/RimeholtBurialShip.luau
+@@ -0,0 +1,276 @@
++--!strict
++-- Rimeholt's burial longship: the hill-folk laid a chief in a boat and sank her
++-- in the tarn that never thaws, and the winter kept her. She lies canted in the
++-- lake ice, her bow lifted clear of it, her mast heaved over and the ribs
++-- standing where the strakes are gone; the pale water-ice has closed over her
++-- stern, and a cold light breathes up through it along the drowned hull. A band
++-- of heaved ice and pale shards marks where she broke through; the winter road
++-- crosses the snow along the shore, the way on to the next barrow.
++local DraftedMap = require("../DraftedMap")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local feature: MapFeature.Feature = {
++	name = "RimeholtBurialShip",
++	about = "A hill-folk burial longship frozen at a tilt in the lake ice, mast and ribs standing out of the shattered ice over the light in her drowned hull.",
++	palette = "Rimeholt",
++	scale = "centrepiece",
++	role = "centrepiece",
++	mood = { "frozen", "buried", "tilted", "glowing" },
++	cells = {
++		-- The tarn's old ice: a pale sheet a hair over the lake's bed, the
++		-- cold green of light inside it showing at the edges.
++		ice = {
++			ground = { material = "Ice", color = { 60, 72, 74 } },
++			lift = 0.35,
++			clear = true,
++		},
++		-- Her stern, drowned under the ice: a hull's plan in near-black seen
++		-- through the pale surface.
++		drowned = {
++			ground = { material = "Slate", color = { 18, 20, 22 } },
++			lift = 0.45,
++			clear = true,
++		},
++		-- The cold light under the ice, laid as one long narrow strip along
++		-- her drowned hull's near gunwale, so it traces her outline beside
++		-- the ship instead of smearing over the lake.
++		seam = {
++			ground = { material = "Marble", color = { 82, 96, 98 } },
++			lift = 0.5,
++			clear = true,
++			glow = { color = { 110, 196, 204 }, range = 14, brightness = 1.2, every = 2, height = 0.4 },
++		},
++		-- The ice heaved up where she broke through: pale slabs standing out
++		-- of the lake, their faces catching the moon.
++		heave = {
++			ground = { material = "Salt", color = { 82, 96, 98 } },
++			lift = 0.35,
++			clear = true,
++		},
++	} :: { [string]: DraftedMap.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		local w, d = 46, 38
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++
++		-- The tarn: a broad oval of old ice lying a step below the highland.
++		local cx = w / 2 + between(rng, -1.5, 1.5)
++		local cz = d / 2 - 3 + between(rng, -1, 1)
++		local rx = between(rng, 14, 15.5)
++		local rz = between(rng, 9, 10.5)
++		local function lake(x: number, z: number): boolean
++			return ((x - cx) / rx) ^ 2 + ((z - cz) / rz) ^ 2 <= 1
++		end
++		for z = 1, d do
++			for x = 1, w do
++				if lake(x, z) then
++					local i = at(x, z)
++					heights[i] = -1
++					kinds[i] = "ice"
++					lifts[i] = 0.35
++				end
++			end
++		end
++
++		-- Her heading: bow lifted toward the winter road, swung widely each
++		-- seed. `fx, fz` is the bow's way in cells; `px, pz` is across her
++		-- toward the open side. Seeds also pick how steeply she stands and
++		-- how deep the lake has her, so no two maps meet the same wreck.
++		local steep = rng:NextNumber() < 0.5
++		local shipSink = between(rng, 1.5, 6)
++		local shipScale = between(rng, 1, 1.2)
++		local yaw = -38 + between(rng, -20, 20)
++		local rad = math.rad(yaw)
++		local fx, fz = math.cos(rad), -math.sin(rad)
++		local px, pz = -fz, fx
++		local sx, sz = cx + between(rng, -1, 1), cz - between(rng, 0.5, 2)
++
++		-- Her drowned stern, under the ice: a hull's plan running on from the
++		-- wreck's stern, pointed at its far end, near-black under the surface.
++		local drownFrom = -4.2
++		local drownTo = drownFrom - between(rng, 5.5, 8)
++		local drownBeam = between(rng, 1.7, 2.5)
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if kinds[i] == "ice" then
++					local dx, dz = x - sx, z - sz
++					local along = dx * fx + dz * fz
++					if along <= drownFrom and along >= drownTo then
++						local t = (along - drownTo) / (drownFrom - drownTo)
++						local across = dx * px + dz * pz
++						local beam = drownBeam * math.sqrt(t)
++						if math.abs(across) <= beam then
++							kinds[i] = "drowned"
++							lifts[i] = 0.45
++							-- The lit strip runs the near gunwale's length: a
++							-- narrow lane the cold shows through.
++							if across >= beam * 0.35 and across <= beam * 0.98 then
++								kinds[i] = "seam"
++								lifts[i] = 0.5
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- The ice heaved where she came through: broken bands of pale slab
++		-- along her stern's flanks, highest where the weight came down, open
++		-- at the bow so the lake still walks round her.
++		local sternX, sternZ = sx + fx * drownFrom, sz + fz * drownFrom
++		local phase = between(rng, 0, math.pi * 2)
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if kinds[i] == "ice" then
++					local dx, dz = x - sx, z - sz
++					local side = math.abs(dx * px + dz * pz)
++					local along = dx * fx + dz * fz
++					local wobble = math.sin(along * 1.7 + phase) * 0.9 + math.sin(along * 3.3 - phase) * 0.5
++					if along < 1.5 and side + wobble >= 2.6 and side + wobble <= 4.0 then
++						if between(rng, 0, 1) < 0.62 then
++							walk[i] = false
++							kinds[i] = "heave"
++							heights[i] = between(rng, 0.8, 2.8) - math.max(along, -6) * 0.08
++							lifts[i] = between(rng, 0, 0.4)
++						end
++					end
++				end
++			end
++		end
++
++		-- Any pocket the slabs closed over is ice, not a trap: fill the small
++		-- walkable regions so the lake is one sheet underfoot.
++		local grid = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			grid.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		local regions = Grid.regions(grid)
++		for r = 2, #regions do
++			for _, i in regions[r] do
++				walk[i] = false
++				kinds[i] = "heave"
++				heights[i] = between(rng, 0.3, 1.2)
++				lifts[i] = 0.35
++			end
++		end
++
++		-- The winter road: in off the south snow, along the tarn's shore and
++		-- out east, so the wreck is met across the ice and then walked past.
++		local road = {
++			{ x = 4, z = d },
++			{ x = 4 + between(rng, -1, 1), z = 33 },
++			{ x = 9 + between(rng, -1, 1), z = 31 },
++			{ x = 17 + between(rng, -1, 1), z = 30.5 + between(rng, -1, 1) },
++			{ x = 26 + between(rng, -1, 1), z = 30.5 + between(rng, -1, 1) },
++			{ x = 36 + between(rng, -1, 1), z = 31.5 + between(rng, -1, 1) },
++			{ x = w, z = 32 + between(rng, -1.5, 1.5) },
++		}
++
++		-- The grave-fire on the shore, halfway along the lake's south edge
++		-- between the road and the ice: the last hill-fire, left for her.
++		local fireX = cx + between(rng, 1, 4)
++		local fireZ = cz + rz + between(rng, 1.2, 2.4)
++
++		-- The longship herself, her mast and ribs, and the shards where the
++		-- ice broke under her.
++		local ribX, ribZ = sx + px * 2.6 - fx * 0.4, sz + pz * 2.6 - fz * 0.4
++		local mastX, mastZ = sx - px * 1.6 + fx * 1.2, sz - pz * 1.6 + fz * 1.2
++		-- Three great shards splayed outward where the lake stood up round
++		-- her, each leaned away from the hull along its own radius.
++		local shafts = {}
++		for k = 1, 3 do
++			local angle = math.rad(between(rng, -70, 70) + (k - 2) * 70 + 180)
++			local out = between(rng, 5.5, 8)
++			local ox, oz = math.cos(angle), math.sin(angle)
++			table.insert(shafts, {
++				sculpt = "rimeholt_ice_shards",
++				x = sternX + ox * out,
++				z = sternZ + oz * out,
++				yaw = math.deg(math.atan2(-oz, ox)),
++				scale = between(rng, 1.1, 1.6),
++				sink = 0.4,
++			})
++		end
++
++		local effects = {
++			{
++				recipe = "rimeholt_ship_breath",
++				x = ribX - px * 0.6,
++				z = ribZ - pz * 0.6,
++				lift = 1,
++			},
++		}
++		-- The light under the ice runs the strip's whole length: the area's
++		-- own under-ice glow, laid in a line along her drowned gunwale.
++		for k = 1, 3 do
++			local along = drownFrom - 1 - (k - 1) * 2.4
++			local t = math.clamp((along - drownTo) / (drownFrom - drownTo), 0, 1)
++			local beam = drownBeam * math.sqrt(t) * 0.7
++			table.insert(effects, {
++				recipe = "rimeholt_underice",
++				x = sx + fx * along + px * beam,
++				z = sz + fz * along + pz * beam,
++				lift = 0.55,
++			})
++		end
++
++		local marks = {
++			{
++				-- Two hulls: she may stand steep out of the ice or lie low in
++				-- it, and each seed takes one, with its own depth and size.
++				sculpt = if steep then "rimeholt_burial_ship_steep" else "rimeholt_burial_ship",
++				x = sx,
++				z = sz,
++				yaw = yaw,
++				sink = shipSink,
++				scale = shipScale,
++			},
++			{ sculpt = "rimeholt_ship_mast", x = mastX, z = mastZ, yaw = yaw, sink = 0.5 },
++			{ sculpt = "rimeholt_ship_ribs", x = ribX, z = ribZ, yaw = yaw, sink = 1.4 },
++			{ sculpt = "rimeholt_hillfire", x = fireX, z = fireZ },
++		}
++		for _, shard in shafts do
++			table.insert(marks, shard)
++		end
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "the lit hull under the ice",
++					from = { x = sx + px * 13 + fx * 2, z = sz + pz * 13 + fz * 2, lift = 26 },
++					to = { x = sx - fx * 1, z = sz - fz * 1, lift = 8 },
++					fov = 54,
++				},
++				{
++					name = "her whole length, from the bow",
++					from = { x = sx + fx * 14 + px * 6, z = sz + fz * 14 + pz * 6, lift = 30 },
++					to = { x = sx, z = sz, lift = 6 },
++					fov = 54,
++				},
++			},
++		}
++	end,
++}
++
++return feature

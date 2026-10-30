@@ -1,0 +1,542 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 5aad1106..e3af471f 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -3,11 +3,13 @@
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 3 1
+ -- feature=<Name>` and assembled into maps later.
+ local MapFeature = require("../systems/MapFeature")
++local RimeholtAuroraWell = require("../systems/features/RimeholtAuroraWell")
+ local RimeholtFrozenFall = require("../systems/features/RimeholtFrozenFall")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	RimeholtFrozenFall = RimeholtFrozenFall,
++	RimeholtAuroraWell = RimeholtAuroraWell,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index f409fe03..2bae7c3c 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -540,6 +540,29 @@ local Sculpts: { [string]: Recipe } = {
+ 		accent = { 62, 88, 90 },
+ 		maxPrims = 9,
+ 	},
++	rimeholt_wellstone = {
++		kind = "marker",
++		-- One stone of the ring round the aurora well's lip: few, tall and dark,
++		-- so the ring reads against the pale snow. The ice-blue rag is the only
++		-- light thing on it.
++		size = { 3.6, 13.5, 2.2 },
++		material = "Slate",
++		colors = { { 44, 48, 56 }, { 38, 42, 50 } },
++		accent = { 62, 88, 90 },
++		maxPrims = 9,
++	},
++	rimeholt_ice_shards = {
++		kind = "columns",
++		-- Splinters of pale old ice standing out of the well's terraces, so a
++		-- ring read close shows crystal rather than a smooth staircase.
++		size = { 4.5, 5, 3.8 },
++		material = "Ice",
++		colors = { { 66, 84, 92 }, { 58, 76, 84 }, { 74, 90, 96 } },
++		maxPrims = 14,
++		columns = 3,
++		jag = 0.3,
++		lean = 6,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 88a1b18b..41af77c3 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1590,4 +1590,124 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- Rimeholt's aurora well: the cold light of the lake drawn up out of the ice
++-- shaft in a column. A pale ribbon core and a softer ice-blue body wind round
++-- each other (their coils set half a turn apart) so the column braids as it
++-- climbs, a wide haze breathes round them, frost motes race up through it, and
++-- one slow light lies on the well's floor. The path is a short near-vertical
++-- worm; the column's height is the particles' own rise, so it climbs out of the
++-- shaft and fades into the night instead of ending in a cap. Narrow and seen
++-- from across the snow (a landmark, B11), and from the well's floor it is the
++-- light you stand in.
++recipes.rimeholt_aurora_well = {
++	about = "A column of pale aurora light climbing out of Rimeholt's ice well: a braided ribbon core and ice body in a breathing haze, with frost motes rising through it.",
++	theme = "rimeholt",
++	radius = 700,
++	path = { kind = "worm", length = 8, step = 2, bend = 10, climb = 80, round = 2 },
++	layers = {
++		{
++			name = "core",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 1.6,
++				lift = 0.2,
++				toward = "up",
++				rise = 6.5,
++				life = { 6, 8 },
++				rate = 3.5,
++				size = 1.4,
++				tall = 5,
++				transparency = 0.42,
++				color = "pale",
++				texture = "wisp",
++				lean = 3,
++				vary = 0.3,
++			},
++			motion = { kind = "worm", amplitude = 1.4, across = 1, periods = { 12, 8 }, twist = 9, coil = 1 },
++			priority = 1,
++		},
++		{
++			name = "body",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 3.2,
++				lift = 0.2,
++				toward = "up",
++				rise = 5,
++				life = { 6, 9 },
++				rate = 2.5,
++				size = 4,
++				tall = 3.5,
++				transparency = 0.62,
++				color = "ice",
++				texture = "veil",
++				lean = 4,
++				vary = 0.4,
++			},
++			motion = {
++				kind = "worm",
++				amplitude = 2.2,
++				across = 1,
++				periods = { 12, 8 },
++				twist = 9,
++				coil = 1,
++				turn = 180,
++			},
++			priority = 2,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 9,
++				thick = 7,
++				lift = 0.5,
++				toward = "up",
++				rise = 2.4,
++				life = { 7, 10 },
++				rate = 1.2,
++				size = 10,
++				tall = 1.6,
++				transparency = 0.88,
++				color = "ice",
++				texture = "veil",
++				lean = 6,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 6, span = 18, periods = { 13, 9 } },
++			priority = 3,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 3,
++				lift = 0.3,
++				toward = "up",
++				rise = 10,
++				life = { 3, 5 },
++				rate = 2,
++				size = 0.4,
++				tall = 2,
++				transparency = 0.3,
++				color = "rime",
++				texture = "wisp",
++				lean = 8,
++				vary = 0.6,
++			},
++			motion = { kind = "worm", amplitude = 2.6, across = 1, periods = { 7, 5 }, twist = 14, coil = 1, turn = 90 },
++			priority = 4,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 6, max = 2, range = 22, brightness = 1, color = "glow" },
++			motion = { kind = "pulse", period = 7.5, depth = 0.45 },
++			priority = 5,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0e4c0dc5..45178188 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -362,6 +362,11 @@ local rows: { [string]: Row } = {
+ 		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
+ 		MOOR
+ 	),
++	["sculpt:rimeholt_wellstone"] = row(
++		"A tall, dark rune stone with an ice-blue rag tied at its shoulder, from the ring round the aurora well's lip.",
++		MOOR
++	),
++	["sculpt:rimeholt_ice_shards"] = row("Splinters of pale old ice standing out of the aurora well's terraces.", MOOR),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/RimeholtAuroraWell.luau b/src/shared/systems/features/RimeholtAuroraWell.luau
+new file mode 100644
+index 00000000..f13061af
+--- /dev/null
++++ b/src/shared/systems/features/RimeholtAuroraWell.luau
+@@ -0,0 +1,339 @@
++--!strict
++-- The aurora well: a round shaft cut into Rimeholt's ice, rune stones round its
++-- lip, and a column of pale aurora light climbing out of its frozen floor (the
++-- set piece rimeholt_aurora_well). Two to four one-cell terraces of dark ice
++-- step down from the lip to a cut stone kerb, and inside the kerb the shaft
++-- falls sheer eight studs to a floor of pale, lit ice, reached by a stair cut
++-- through the kerb. Each seed gets its own well: its width and place in the
++-- footprint shift, its terrace count changes, one sector of the rim is broken
++-- in, and the ring of rune stones is set to it. The road runs round the well's
++-- south lip; the stones stand between it and the drop. Its photographs are
++-- taken from above the rim: one wide, with the well in its snow, and one close
++-- down the shaft, where the bright floor is the subject.
++local DraftedMap = require("../DraftedMap")
++local MapFeature = require("../MapFeature")
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function angularDistance(a: number, b: number): number
++	return math.abs(((a - b + 540) % 360) - 180)
++end
++
++local feature: MapFeature.Feature = {
++	name = "RimeholtAuroraWell",
++	about = "A round shaft of stepped dark ice ringed with tall rune stones, a column of pale aurora light rising out of its bright frozen floor.",
++	palette = "Rimeholt",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "frozen", "deep", "glowing", "ritual" },
++	cells = {
++		-- The flat ice of the lip, round the mouth; the road and the stones cross it.
++		-- Glacier is the tileset's own ice, so it keeps the tileset's colour.
++		lip = {
++			ground = { material = "Glacier", color = { 64, 72, 78 } },
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_fell_grass", every = 20, scale = { 0.45, 0.85 }, sink = 0.1 },
++			},
++		},
++		-- The terraces: dark rings of old ice, alternating two tints so the
++		-- steps read from straight above. Salt and Limestone are materials the
++		-- tileset leaves free; they are kept well below the floor's value so the
++		-- bright floor is the only light in the bowl.
++		step = {
++			ground = { material = "Salt", color = { 44, 54, 62 } },
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_ice_shards", every = 12, scale = { 0.4, 0.85 }, sink = 0.2 },
++			},
++		},
++		step_pale = {
++			ground = { material = "Limestone", color = { 52, 64, 72 } },
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_fell_grass", every = 16, scale = { 0.4, 0.8 }, sink = 0.1 },
++			},
++		},
++		-- The stone kerb: a cut ring round the mouth of the sheer shaft, its top
++		-- two studs over the lowest ice step and its inner face eight studs down.
++		kerb = {
++			ground = { material = "Rock", color = { 36, 40, 48 } },
++			lift = 8,
++			clear = true,
++		},
++		-- The cut stair through the kerb, the only way down to the floor.
++		stair = {
++			ground = { material = "Rock", color = { 36, 40, 48 } },
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_ice_shards", every = 5, scale = { 0.35, 0.7 }, sink = 0.2 },
++			},
++		},
++		-- The bottom: the pale sheet the light comes up through. Its colour sits
++		-- at the bible's surface limit and its own glows make it the light source
++		-- the rim reads against.
++		floor = {
++			ground = { material = "Marble", color = { 92, 102, 102 } },
++			lift = 0.35,
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_ice_shards", every = 6, scale = { 0.35, 0.7 }, sink = 0.3 },
++			},
++			glow = { color = { 140, 215, 220 }, range = 18, brightness = 1.2, every = 1, height = 0.8 },
++		},
++		-- Chunks of broken rime and old ice: the fallen rim and the blocks
++		-- heaved up between the stones.
++		iceblock = {
++			ground = { material = "Limestone", color = { 52, 64, 72 } },
++			lift = 2.2,
++			clear = true,
++		},
++	} :: { [string]: DraftedMap.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		local w, d = 30, 30
++		local fc = (w + 1) / 2
++		local cx = fc + between(rng, -1, 1)
++		local cz = fc + between(rng, -1, 1)
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		-- The mouth and the shaft are seeded: the lip's width and radius, how
++		-- many ice terraces step down to the kerb (two to four), and where the
++		-- well sits in its footprint.
++		local lipOut = between(rng, 8.2, 10)
++		local lipIn = lipOut - between(rng, 1.7, 2.4)
++		local lo = math.max(2, math.ceil(lipIn - 4.4))
++		local hi = math.min(4, math.floor(lipIn - 3.4))
++		local terraces = math.clamp(lo + math.floor(rng:NextNumber() * (hi - lo + 1)), lo, hi)
++		local kerbOut = lipIn - terraces
++		local floorR = kerbOut - 2
++		local floorH = -2 * terraces - 6
++		local spin = between(rng, 0, 360)
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local dx, dz = x - cx, z - cz
++				local r = math.sqrt(dx * dx + dz * dz)
++				if r > lipOut then
++					continue -- the heath round the well: the area's own ground
++				elseif r > lipIn then
++					kinds[i] = "lip"
++				elseif r > kerbOut then
++					-- One-cell terrace rings, two studs down each from the lip.
++					local ring = math.clamp(math.ceil(lipIn - r), 1, terraces)
++					heights[i] = -2 * ring
++					kinds[i] = if ring % 2 == 1 then "step" else "step_pale"
++				elseif r > floorR then
++					-- The kerb: wall, its top two studs over the last terrace and
++					-- its inner face eight studs down to the floor.
++					walk[i] = false
++					kinds[i] = "kerb"
++					heights[i] = floorH
++				else
++					kinds[i] = "floor"
++					heights[i] = floorH
++				end
++			end
++		end
++		-- The stair: cut through the kerb on the well's north side, two cells
++		-- wide. A tread's height is read from how far inside the kerb it lies, so
++		-- each neighbour falls two studs, down to the floor.
++		local notchLo = math.floor(cx)
++		for z = 1, d do
++			for x = notchLo, notchLo + 1 do
++				local i = at(x, z)
++				if kinds[i] ~= "kerb" or z >= cz then
++					continue
++				end
++				local dx, dz = x - cx, z - cz
++				local r = math.sqrt(dx * dx + dz * dz)
++				local row = math.clamp(math.floor(kerbOut - r), 0, 2)
++				walk[i] = true
++				kinds[i] = "stair"
++				heights[i] = -2 * terraces - 2 - 2 * row
++			end
++		end
++		-- One sector of the rim is broken in: a run of fallen blocks where the
++		-- lip has given way, seeded in place and width.
++		local breakAngle = between(rng, 0, 360)
++		local breakHalf = between(rng, 12, 26)
++		local broke = 0
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if kinds[i] ~= "lip" then
++					continue
++				end
++				local dx, dz = x - cx, z - cz
++				local r = math.sqrt(dx * dx + dz * dz)
++				local a = math.deg(math.atan2(dz, dx)) % 360
++				if angularDistance(a, breakAngle) < breakHalf and r > lipIn + 0.8 and rng:NextNumber() < 0.55 then
++					walk[i] = false
++					kinds[i] = "iceblock"
++					broke += 1
++				end
++			end
++		end
++		if broke == 0 then
++			-- Never leave a seed without its collapse: break the outer lip cell
++			-- nearest the sector's middle.
++			local bestIndex, bestScore = nil, math.huge
++			for z = 1, d do
++				for x = 1, w do
++					local i = at(x, z)
++					if kinds[i] ~= "lip" then
++						continue
++					end
++					local dx, dz = x - cx, z - cz
++					local r = math.sqrt(dx * dx + dz * dz)
++					local a = math.deg(math.atan2(dz, dx)) % 360
++					local score = angularDistance(a, breakAngle) + math.abs(r - (lipIn + 1)) * 4
++					if score < bestScore then
++						bestIndex, bestScore = i, score
++					end
++				end
++			end
++			if bestIndex then
++				walk[bestIndex] = false
++				kinds[bestIndex] = "iceblock"
++			end
++		end
++		-- Broken blocks heaved up along the lip between the stones, so the rim
++		-- is not one clean ring.
++		local stoneCount = 7 + math.floor(rng:NextNumber() * 3)
++		local blocks = 3 + math.floor(rng:NextNumber() * 3)
++		local firstGap = math.floor(rng:NextNumber() * stoneCount)
++		local stride = 2 + math.floor(rng:NextNumber() * 3)
++		local gapAngles: { number } = {}
++		for b = 0, blocks - 1 do
++			local gap = (firstGap + b * stride) % stoneCount
++			table.insert(gapAngles, spin + (gap + 0.5) * (360 / stoneCount))
++		end
++		local best: { { index: number, score: number } } = {}
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if kinds[i] ~= "lip" then
++					continue
++				end
++				local dx, dz = x - cx, z - cz
++				local r = math.sqrt(dx * dx + dz * dz)
++				local a = math.deg(math.atan2(dz, dx)) % 360
++				for g, angle in gapAngles do
++					local score = angularDistance(a, angle) + math.abs(r - (lipIn + 1)) * 10
++					local held = best[g]
++					if not held or score < held.score then
++						best[g] = { index = i, score = score }
++					end
++				end
++			end
++		end
++		for _, pick in best do
++			walk[pick.index] = false
++			kinds[pick.index] = "iceblock"
++		end
++		-- Rune stones round the lip: few, tall and dark, set a little
++		-- differently each, one broken to a stump and one gap where a boulder
++		-- has rolled. The broken sector of the rim is left stoneless.
++		local marks: { DraftedMap.Landmark } = {}
++		local skip = math.floor(rng:NextNumber() * stoneCount)
++		local stoneRadius = lipIn + 0.9
++		for k = 0, stoneCount - 1 do
++			local baseAngle = spin + k * (360 / stoneCount)
++			if k == skip or angularDistance(baseAngle, breakAngle) < breakHalf then
++				continue
++			end
++			local angle = math.rad(baseAngle + between(rng, -4, 4))
++			local radius = stoneRadius + between(rng, -0.25, 0.25)
++			local x = cx + math.cos(angle) * radius
++			local z = cz + math.sin(angle) * radius
++			local yaw = math.deg(angle) + 180 + between(rng, -12, 12)
++			if k == (skip + 4) % stoneCount then
++				table.insert(marks, {
++					sculpt = "rimeholt_wellstone",
++					x = x,
++					z = z,
++					yaw = yaw,
++					scale = 0.85,
++					sink = 4,
++				})
++			else
++				table.insert(marks, {
++					sculpt = "rimeholt_wellstone",
++					x = x,
++					z = z,
++					yaw = yaw,
++					scale = between(rng, 0.9, 1.2),
++					sink = between(rng, 0, 0.5),
++				})
++			end
++		end
++		local gapAngle = math.rad(spin + (skip + 0.5) * (360 / stoneCount))
++		table.insert(marks, {
++			sculpt = "rimeholt_boulder",
++			x = cx + math.cos(gapAngle) * (lipIn + 1),
++			z = cz + math.sin(gapAngle) * (lipIn + 1),
++			yaw = between(rng, 0, 360),
++			scale = between(rng, 0.9, 1.2),
++		})
++		table.insert(marks, {
++			sculpt = "rimeholt_boulder",
++			x = cx + math.cos(gapAngle + 0.35) * (lipOut + 0.7),
++			z = cz + math.sin(gapAngle + 0.35) * (lipOut + 0.7),
++			yaw = between(rng, 0, 360),
++			scale = between(rng, 0.6, 0.9),
++			sink = 0.4,
++		})
++		-- The road: an arc round the well, clear of the lip whatever the seed's
++		-- shift, joining the footprint's west and east borders.
++		local roadR = math.min(lipOut + 2.6, 29 - cz)
++		local function onArc(deg: number): { x: number, z: number }
++			local a = math.rad(deg)
++			return { x = cx + math.cos(a) * roadR, z = cz + math.sin(a) * roadR }
++		end
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = {
++				{ recipe = "rimeholt_aurora_well", x = cx, z = cz, lift = 0.6 },
++			},
++			road = {
++				{ x = 1, z = cz + 4 },
++				onArc(148),
++				onArc(118),
++				onArc(90),
++				onArc(62),
++				onArc(32),
++				{ x = 30, z = cz + 4 },
++			},
++			cameras = {
++				{
++					name = "the well in the snow",
++					from = { x = 2.5, z = 2.5, lift = 60 },
++					to = { x = cx, z = cz, lift = 0 },
++					fov = 62,
++				},
++				{
++					name = "down the shaft",
++					from = { x = cx + 0.8, z = cz + 0.8, lift = 42 },
++					to = { x = cx, z = cz, lift = 0 },
++					fov = 70,
++				},
++			},
++		}
++	end,
++}
++
++return feature

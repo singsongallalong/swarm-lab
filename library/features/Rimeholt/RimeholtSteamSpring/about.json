@@ -1,0 +1,38 @@
+{
+  "name": "RimeholtSteamSpring",
+  "intent": "The one unfrozen water on the highland: a hot spring welling black through the snow into an irregular pool broken by low sinter islets, its waterline a thin ice-blue rim, broad rounded sinter terraces stepping down to it, the snow melted back to dark earth in a downhill fan, with rag-bound offering stones, cairns and a hill-fire on seeded sides, and its own curling steam set piece; the pool, its shape, the fan, the fire and the road's line all move with the seed.",
+  "sculpts": [
+    "rimeholt_sinter_shelf",
+    "rimeholt_offering_cairn"
+  ],
+  "setpiece": "rimeholt_spring_steam",
+  "requests": [
+    "Water: a cell kind has no reflectance, so the black pool cannot catch the moon the way the rimeholt_ice sculpt does and reads as a flat black sheet from above.",
+    "The ice-blue rim cannot be brighter than a surface (the bible's value cap of 0.40), so its bright edge is carried by small glow glints on the wet mineral rather than by the mineral itself.",
+    "The steam cannot show in the feature's own photographs: dresspreview draws a draft's ground, sculpts and lit props but not its set pieces, so the spring's shots carry the idea without its steam.",
+    "The spillway is one cell (4 studs) wide at best, so the overflow notch reads chunky rather than as a stream."
+  ],
+  "critic_pass1": {
+    "idea": 6,
+    "photo": 5,
+    "camera": 6,
+    "seeds": 5,
+    "usable": 7,
+    "total": 5.7,
+    "best_shot": "shots seed 2, over the spring",
+    "why": "Steam is a real new effect and the black pool reads, but the sinter mound looks like stacked crates and the pool is a flat sheet."
+  },
+  "critic_pass2": {
+    "idea": 6,
+    "photo": 7,
+    "camera": 7,
+    "seeds": 4,
+    "usable": 6,
+    "total": 6.25,
+    "better_than_before": "yes",
+    "best_shot": "shots seed 2 over the spring",
+    "why": "The rework turned a muddle of tan blocks into a clean black pool ringed by rounded sinter, glinting rim lights and a lit hill-fire, but the pool now reads as a squared basin in a square frame, not an irregular spring, every seed has the same layout, and all three 'in along the road' shots are empty or blocked."
+  },
+  "run": "rimeholt-features",
+  "generator": "g09"
+}

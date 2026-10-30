@@ -1,0 +1,638 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 5aad1106..6b709614 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -4,10 +4,12 @@
+ -- feature=<Name>` and assembled into maps later.
+ local MapFeature = require("../systems/MapFeature")
+ local RimeholtFrozenFall = require("../systems/features/RimeholtFrozenFall")
++local RimeholtSteamSpring = require("../systems/features/RimeholtSteamSpring")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	RimeholtFrozenFall = RimeholtFrozenFall,
++	RimeholtSteamSpring = RimeholtSteamSpring,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index f409fe03..5b8fa2c0 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1048,4 +1048,34 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- Rimeholt's hot spring (features/RimeholtSteamSpring): the pale mineral the
++-- water builds and the offerings the hill-folk leave on it.
++Sculpts.rimeholt_sinter_shelf = {
++	kind = "tuft",
++	-- A broad, rounded boss of sinter: a few pale mineral drums heaped low, round
++	-- from above, so a run of them along a terrace lip reads as one soft shelf
++	-- stepping down to the pool rather than a pile of blocks. Limestone, the one
++	-- material the highland's tileset leaves free, so the pale bone of the
++	-- deposit can stand against the blue snow.
++	size = { 7, 1.6, 7 },
++	material = "Limestone",
++	colors = { { 96, 98, 98 }, { 90, 92, 92 }, { 102, 102, 100 } },
++	maxPrims = 6,
++	body = 1,
++	rounded = true,
++	blades = 0,
++}
++Sculpts.rimeholt_offering_cairn = {
++	kind = "boulder",
++	-- A small cairn of grey stones left at the spring, a chip or two of the
++	-- zone's ice-blue among them (the last colour, B8). Many small stones, not
++	-- a few big ones, so a heap reads as piled by hands rather than a boulder.
++	size = { 2.4, 1.7, 2.0 },
++	material = "Slate",
++	colors = { { 70, 74, 82 }, { 60, 66, 76 }, { 62, 88, 88 } },
++	maxPrims = 12,
++	chunks = 8,
++	tilt = 40,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 88a1b18b..b7fc598f 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1201,6 +1201,93 @@ local recipes: { [string]: Recipe } = {
+ 			},
+ 		},
+ 	},
++	-- Rimeholt's hot spring (features/RimeholtSteamSpring): steam drawn up off
++	-- the black water and curling. Three layers on one short worm that wanders
++	-- over the pool, so the boil has a body from every side (EF8): a rime-grey
++	-- billow first, since a phone keeps the core and must still read as steam,
++	-- then a thin pale core of wisps rising fast and curling on a tight sway,
++	-- and a wide faint sheet lying low over the water and drifting. Nothing
++	-- climbs past about 14 studs: the steam reads under the game camera (about
++	-- 27 over the player) and never crosses it.
++	rimeholt_spring_steam = {
++		about = "Steam curling up off Rimeholt's black spring water: a rime-grey billow, pale wisps twisting up out of it and a low sheet drifting over the pool.",
++		theme = "rimeholt",
++		-- Short, so the emitters stay over the water rather than wandering off
++		-- the pool; its bends keep them from standing in a line.
++		path = { kind = "worm", length = 12, step = 3, bend = 30, climb = 4, round = 2 },
++		layers = {
++			{
++				name = "body",
++				look = {
++					kind = "stream",
++					every = 5,
++					thick = 7,
++					lift = 0.35,
++					toward = "up",
++					rise = 1.1,
++					life = { 8, 11 },
++					rate = 0.7,
++					size = 10,
++					tall = 1.4,
++					transparency = 0.88,
++					color = "rime",
++					texture = "smoke",
++					lean = 16,
++					vary = 0.5,
++				},
++				-- The billow turns as it climbs, so the column is not a flat wall.
++				motion = { kind = "worm", amplitude = 2, across = 0.6, periods = { 8, 11 }, twist = 7 },
++				priority = 1,
++			},
++			{
++				name = "wisps",
++				look = {
++					kind = "stream",
++					every = 5,
++					thick = 4,
++					lift = 0.3,
++					toward = "up",
++					rise = 2,
++					life = { 5, 8 },
++					rate = 1.2,
++					size = 4.5,
++					tall = 2.2,
++					transparency = 0.84,
++					color = "pale",
++					texture = "wisp",
++					lean = 22,
++					vary = 0.6,
++				},
++				-- Standing waves a few studs long: the tongues of steam curl and let
++				-- go rather than swaying as one curtain.
++				motion = { kind = "sway", amplitude = 2, tilt = 26, span = 7, periods = { 5, 7.5 } },
++				priority = 2,
++			},
++			{
++				name = "sheet",
++				look = {
++					kind = "stream",
++					every = 6,
++					thick = 10,
++					lift = 0.2,
++					toward = "up",
++					rise = 0.35,
++					life = { 10, 14 },
++					rate = 0.7,
++					size = 12,
++					tall = 0.5,
++					transparency = 0.93,
++					color = "pale",
++					texture = "veil",
++					lean = 12,
++					vary = 0.5,
++				},
++				-- Laid flat over the water: a sheet of breath, not a column.
++				motion = { kind = "sway", amplitude = 3.2, tilt = 8, span = 12, periods = { 11, 15 } },
++				priority = 3,
++			},
++		},
++	},
+ }
+ 
+ -- The Sunken Shelf (A037). Sea mist rolling in low over the flats: three
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0e4c0dc5..1a0f96d8 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -358,6 +358,14 @@ local rows: { [string]: Row } = {
+ 		"A tall marker stone with an ice-blue rag at Rimeholt's thresholds between reaches.",
+ 		MOOR
+ 	),
++	["sculpt:rimeholt_sinter_shelf"] = row(
++		"A broken shelf of pale sinter columns at the lip of Rimeholt's steaming spring.",
++		MOOR
++	),
++	["sculpt:rimeholt_offering_cairn"] = row(
++		"A small cairn of grey stones left as an offering at Rimeholt's steaming spring, a few ice-blue chips among them.",
++		MOOR
++	),
+ 	["outdoor:rimeholt"] = row(
+ 		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
+ 		MOOR
+diff --git a/src/shared/systems/features/RimeholtSteamSpring.luau b/src/shared/systems/features/RimeholtSteamSpring.luau
+new file mode 100644
+index 00000000..45c7205a
+--- /dev/null
++++ b/src/shared/systems/features/RimeholtSteamSpring.luau
+@@ -0,0 +1,459 @@
++--!strict
++-- RimeholtSteamSpring: the one unfrozen water on the highland. A hot spring
++-- wells up through the old snow into an irregular pool of black water; its
++-- minerals build broad, rounded terraces of bone-pale sinter round the pool,
++-- wetter and ice-blue at the waterline, the heat melts the snow back to dark
++-- earth in a ragged ring that fans downhill, and the overflow cuts a black
++-- notch through the terraces before it soaks away. The hill-folk leave their
++-- offerings here: rags tied to standing stones and small cairns on the melted
++-- earth, and a hill-fire burns on one lip. The steam is the feature's own set
++-- piece (`rimeholt_spring_steam`), rising off the water and curling. The road
++-- follows the spring's east side, bending with it, and the photographs are
++-- taken from above the fire's side and from the road as the game camera stands.
++local DraftedMap = require("../DraftedMap")
++local MapFeature = require("../MapFeature")
++local Noise = require("../Noise")
++
++local W, D = 32, 32
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local feature: MapFeature.Feature = {
++	name = "RimeholtSteamSpring",
++	about = "An unfrozen spring of black water welling through the highland snow, its steam curling inside a ring of rag-bound offering stones.",
++	palette = "Rimeholt",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "steaming", "unfrozen", "black water", "offerings", "still" },
++	cells = {
++		-- Every kind above the snow carries a hand's-breadth of lift: the
++		-- tileset's own heath lies over the whole pad at each cell's height, so
++		-- a painted surface level with it draws in the same place and loses
++		-- (dresspreview draws the first to arrive). The lift is also the truth
++		-- of the place: meltwater and mineral stand a little proud of the snow.
++		--
++		-- The pool: black water a hair over the basin's floor, so the surface
++		-- reads as water and not as the hole it lies in.
++		spring = {
++			ground = { material = "Slate", color = { 18, 20, 22 } },
++			lift = 0.15,
++			clear = true,
++		},
++		-- The wet rim at the waterline, in the zone's ice-blue accent, as bright as
++		-- a surface may be: a thin unbroken edge round the black water, with a
++		-- glint of its own where the wet mineral catches the heat (Salt, which the
++		-- highland leaves free, so it can carry the accent).
++		crust = {
++			ground = { material = "Salt", color = { 90, 102, 102 } },
++			lift = 0.5,
++			clear = true,
++			glow = { color = { 120, 200, 196 }, range = 6, brightness = 1.2, every = 4, height = 0.4 },
++			props = {
++				{ sculpt = "rimeholt_offering_cairn", every = 40, scale = { 0.35, 0.5 }, sink = 0.3 },
++			},
++		},
++		-- The broad terraces the water has built: warm bone pale against the blue
++		-- snow, their rounded ledges lying along the lips.
++		sinter = {
++			ground = { material = "Limestone", color = { 96, 98, 98 } },
++			lift = 0.1,
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_sinter_shelf", every = 52, scale = { 0.6, 0.95 }, sink = 0.3 },
++			},
++		},
++		-- The snow melted back to the highland's dark frozen earth, with small
++		-- cairns and the last dead grass at its edge.
++		melt = {
++			ground = { material = "Ground", color = { 44, 46, 52 } },
++			lift = 0.08,
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_offering_cairn", every = 28, scale = { 0.45, 0.7 }, sink = 0.35 },
++				{ sculpt = "rimeholt_fell_grass", every = 16, scale = { 0.8, 1.2 }, sink = 0.3 },
++			},
++		},
++		-- The ground within the footprint that the spring has not touched: the
++		-- highland's own snow, painted so the feature is judged on itself and the
++		-- tileset's frozen tarns stay off it (the one unfrozen water is the pool).
++		snow = {
++			ground = { material = "Snow", color = { 78, 83, 89 } },
++			lift = 0.05,
++			clear = true,
++		},
++		-- The one cell a hill-fire stands on: the same sinter underfoot, and the
++		-- fire's warmth in the air over it (a light, so it may be bright).
++		hearth = {
++			ground = { material = "Limestone", color = { 96, 94, 84 } },
++			lift = 0.1,
++			clear = true,
++			glow = { color = { 255, 168, 88 }, range = 14, brightness = 1.5, every = 1, height = 1.6 },
++		},
++	} :: { [string]: DraftedMap.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		local walk = table.create(W * D, true)
++		local heights = table.create(W * D, 0)
++		local kinds: { [number]: string } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * W + x
++		end
++		local function inside(x: number, z: number): boolean
++			return x >= 1 and x <= W and z >= 1 and z <= D
++		end
++
++		local field = Noise.field(rng)
++		-- The shore's outline: one fractal bends the ellipse into lobes and
++		-- inlets, a slower one eats whole bays out of it, so no seed gives the
++		-- same waterline twice.
++		local warp: Noise.Fractal = { octaves = 3, frequency = 0.3, lacunarity = 2.1, gain = 0.55 }
++		local lobes: Noise.Fractal = { octaves = 2, frequency = 0.1, lacunarity = 2, gain = 0.5 }
++		-- The waterline's teeth: a noise at a cell or two a wave, so the shore is
++		-- jagged at the scale of a step and never reads as a rectangle.
++		local teeth: Noise.Fractal = { octaves = 2, frequency = 0.62, lacunarity = 2, gain = 0.5 }
++
++		-- The spring is as round or as long as the seed makes it, and sits where
++		-- the seed puts it: as far off centre as the footprint and the road leave
++		-- room for, so no two seeds stand in the same place.
++		local rp = between(rng, 2.8, 3.6)
++		local ws = between(rng, 1.5, 2.1)
++		local wm = between(rng, 1.6, 2.2)
++		local aspect = between(rng, 0.8, 1.24)
++		local spin = rng:NextNumber() * math.pi
++		local warpAmp = between(rng, 1.0, 1.35)
++		local base = rp + ws + wm + warpAmp + 0.9
++		local cx = between(rng, base + 1.2, math.min(14.5, math.max(base + 1.2, 12.6)))
++		local cz = between(rng, base + 1.2, math.min(D - 1.2 - base, 20.5))
++		-- The melt runs further downhill, and the sinter terraces build on the
++		-- uphill side, so the mound is never a ring of one width.
++		local fan = between(rng, 0.5, 1.6)
++		local shelfW = between(rng, 1.4, 2.8)
++		local function clear(angle: number, extra: number): boolean
++			local r = base + extra
++			local px, pz = cx + math.cos(angle) * r, cz + math.sin(angle) * r
++			return px >= 1.5 and px <= W - 1.5 and pz >= 1.5 and pz <= D - 1.5
++		end
++		-- A downhill that keeps the fan and the shelf on the feature's own ground.
++		local downAngle = rng:NextNumber() * 2 * math.pi
++		for _ = 1, 10 do
++			if clear(downAngle, fan) and clear(downAngle + math.pi, shelfW) then
++				break
++			end
++			downAngle = rng:NextNumber() * 2 * math.pi
++		end
++		local shelfAngle = downAngle + math.pi
++		local function reachAt(angle: number): number
++			local fanShare = math.max(0, math.cos(angle - downAngle)) ^ 2 * fan
++			local shelfShare = math.max(0, math.cos(angle - shelfAngle)) ^ 2 * shelfW
++			return base + fanShare + shelfShare
++		end
++
++		-- The road up the highland's east side, bending with the seed's spring: in
++		-- off the south, closest at the spring's own latitude, out north.
++		local eastReach = math.max(reachAt(-0.5), reachAt(0), reachAt(0.5))
++		local roadX = math.clamp(cx + eastReach + 2.8, cx + 5, W - 4.5)
++		local road: { { x: number, z: number } } = {
++			{ x = roadX + 1.6, z = D },
++			{ x = roadX + 0.9, z = cz + (D - cz) * 0.55 },
++			{ x = roadX + 0.3, z = cz + (D - cz) * 0.24 },
++			{ x = roadX, z = cz },
++			{ x = roadX + 0.3, z = cz * 0.76 },
++			{ x = roadX + 0.9, z = cz * 0.45 },
++			{ x = roadX + 1.6, z = 1 },
++		}
++		-- The road keeps a verge of untouched snow: the spring's paint stops this
++		-- far from its centre line.
++		local function roadDistance(x: number, z: number): number
++			local best = math.huge
++			for k = 2, #road do
++				local a, b = road[k - 1], road[k]
++				local vx, vz = b.x - a.x, b.z - a.z
++				local len2 = vx * vx + vz * vz
++				local t = if len2 > 0 then math.clamp(((x - a.x) * vx + (z - a.z) * vz) / len2, 0, 1) else 0
++				local px, pz = a.x + vx * t, a.z + vz * t
++				best = math.min(best, math.sqrt((x - px) ^ 2 + (z - pz) ^ 2))
++			end
++			return best
++		end
++
++		-- The mound: black water in its crown, the wet rim and the broad sinter
++		-- terraces round it, the melted earth beyond, and the highland's snow past
++		-- that. Every walkable step is one or two studs, so the climb from the
++		-- snow to the top terrace stays one the game will walk.
++		for z = 1, D do
++			for x = 1, W do
++				if roadDistance(x, z) < 2 then
++					continue
++				end
++				local i = at(x, z)
++				local dx, dz = x - cx, z - cz
++				local ex = dx * math.cos(spin) + dz * math.sin(spin)
++				local ez = -dx * math.sin(spin) + dz * math.cos(spin)
++				local dist = math.sqrt(ex * ex + (ez / aspect) ^ 2)
++				local angle = math.atan2(dz, dx)
++				local edge = dist
++					+ Noise.fractal(field, x * 0.3, z * 0.3, warp) * warpAmp
++					+ Noise.fractal(field, x * 0.12 + 7.3, z * 0.12 - 4.7, lobes) * 0.8
++					+ Noise.fractal(field, x * 0.62 + 3.1, z * 0.62 - 9.3, teeth) * 0.7
++				local finger = math.max(0, Noise.fractal(field, x * 0.1 + 23.7, z * 0.1 - 11.9, lobes))
++				local shelf = math.max(0, math.cos(angle - shelfAngle))
++				local fanOut = math.max(0, math.cos(angle - downAngle))
++				local sinterEdge = rp + ws + shelf ^ 2 * shelfW
++				local meltEdge = sinterEdge + wm + finger * 1.2 + fanOut ^ 2 * fan
++				if edge < rp then
++					walk[i] = false
++					kinds[i] = "spring"
++				elseif edge < sinterEdge then
++					kinds[i] = "sinter"
++					heights[i] = if edge > rp + ws then 2 else 1
++				elseif edge < meltEdge then
++					kinds[i] = "melt"
++				else
++					kinds[i] = "snow"
++				end
++			end
++		end
++
++		-- The waterline: every walkable cell that touches the pool is the wet rim,
++		-- so the accent edge round the water is unbroken however the noise bends
++		-- the shore.
++		for z = 1, D do
++			for x = 1, W do
++				local i = at(x, z)
++				if walk[i] and kinds[i] ~= nil and kinds[i] ~= "snow" then
++					for _, nb in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
++						local nx, nz = x + nb[1], z + nb[2]
++						if inside(nx, nz) and not walk[at(nx, nz)] then
++							kinds[i] = "crust"
++							heights[i] = 0
++							break
++						end
++					end
++				end
++			end
++		end
++
++		-- The overflow: down the mound's low side, the water cuts a notch through
++		-- the terraces to its own level, a black spillway interrupting the pale
++		-- rim before it soaks away into the melted earth.
++		local outAngle = downAngle + between(rng, -0.4, 0.4)
++		local lastX: number?, lastZ: number? = nil, nil
++		for step = 1, 30 do
++			-- A slow meander, so the thread wanders like water and not a rule.
++			local angle = outAngle + math.sin(step * 0.4) * 0.07
++			local r = rp * 0.7 + step * 0.45
++			local x = math.floor(cx + math.cos(angle) * r + 0.5)
++			local z = math.floor(cz + math.sin(angle) * r + 0.5)
++			if x ~= lastX or z ~= lastZ then
++				local px, pz = lastX, lastZ
++				lastX, lastZ = x, z
++				if not inside(x, z) then
++					break
++				end
++				local i = at(x, z)
++				local here = kinds[i]
++				if here == "crust" or here == "sinter" then
++					kinds[i] = "spring"
++					heights[i] = 0
++				elseif here ~= "spring" then
++					-- The notch stops at the sinter's outer lip: past it the water
++					-- soaks into the melted earth rather than running in a channel.
++					break
++				end
++				-- A diagonal step leaves a corner gap: close it with the two cells
++				-- beside it, so the thread reads as one stream.
++				if px and pz and x ~= px and z ~= pz then
++					for _, c in { { x = px, z = z }, { x = x, z = pz } } do
++						local j = at(c.x, c.z)
++						local kind = kinds[j]
++						if kind == "crust" or kind == "sinter" then
++							kinds[j] = "spring"
++							heights[j] = 0
++						end
++					end
++				end
++			end
++		end
++
++		-- The first painted cell of `want` walking out from the pool, and the last
++		-- before it gives way: where a ring of stones stands, and where the ledges
++		-- and the fire sit at the terraces' lips.
++		local function firstCell(angle: number, want: string): (number?, number?)
++			for step = 2, 20 do
++				local r = rp * 0.5 + step * 0.45
++				local x = math.floor(cx + math.cos(angle) * r + 0.5)
++				local z = math.floor(cz + math.sin(angle) * r + 0.5)
++				if inside(x, z) then
++					local i = at(x, z)
++					if kinds[i] == want and walk[i] then
++						return x, z
++					end
++				end
++			end
++			return nil, nil
++		end
++
++		local function lastCell(angle: number, want: string): (number?, number?)
++			local bx: number?, bz: number? = nil, nil
++			for step = 2, 20 do
++				local r = rp * 0.5 + step * 0.45
++				local x = math.floor(cx + math.cos(angle) * r + 0.5)
++				local z = math.floor(cz + math.sin(angle) * r + 0.5)
++				if not inside(x, z) then
++					break
++				end
++				local i = at(x, z)
++				if kinds[i] == want and walk[i] then
++					bx, bz = x, z
++				elseif bx then
++					break
++				end
++			end
++			return bx, bz
++		end
++
++		local marks: { DraftedMap.Landmark } = {}
++
++		-- The offering stones: the hill-folk's marker stones set on the terraces'
++		-- inner lip, a full ring on some seeds and an open arc laid toward the
++		-- fire on others, each stone a little out of true.
++		local stones = 4 + math.floor(rng:NextNumber() * 5)
++		local fullRing = rng:NextNumber() < 0.5
++		local arc = between(rng, 2.2, 4.6)
++		local start = rng:NextNumber() * 2 * math.pi
++		local stepAngle = if fullRing then 2 * math.pi / stones else arc / math.max(stones - 1, 1)
++		for k = 1, stones do
++			local angle = start + (k - 1) * stepAngle + between(rng, -0.1, 0.1)
++			local x, z = firstCell(angle, "sinter")
++			if x and z then
++				table.insert(marks, {
++					sculpt = "rimeholt_marker",
++					x = x + between(rng, -0.16, 0.16),
++					z = z + between(rng, -0.16, 0.16),
++					yaw = rng:NextNumber() * 360,
++					scale = between(rng, 0.72, 1.02),
++					sink = 0.2,
++				})
++			end
++		end
++
++		-- Small cairns left on the melted earth, round from the fire's side.
++		local cairns = 3 + math.floor(rng:NextNumber() * 3)
++		local cairnStart = rng:NextNumber() * 2 * math.pi
++		for k = 1, cairns do
++			local angle = cairnStart + (k - 1) / cairns * 2 * math.pi + between(rng, -0.28, 0.28)
++			local x, z = firstCell(angle, "melt")
++			if x and z then
++				table.insert(marks, {
++					sculpt = "rimeholt_offering_cairn",
++					x = x + between(rng, -0.18, 0.18),
++					z = z + between(rng, -0.18, 0.18),
++					yaw = rng:NextNumber() * 360,
++					scale = between(rng, 0.75, 1.1),
++					sink = 0.3,
++				})
++			end
++		end
++
++		-- The rounded ledges of sinter lying along the top terrace's lip, set
++		-- downhill so they read as the shelf's edge rather than its crown.
++		for _, side in { -1, 1 } do
++			local angle = shelfAngle + side * between(rng, 0.3, 0.8)
++			local x, z = lastCell(angle, "sinter")
++			if x and z then
++				table.insert(marks, {
++					sculpt = "rimeholt_sinter_shelf",
++					x = x + between(rng, -0.15, 0.15),
++					z = z + between(rng, -0.15, 0.15),
++					yaw = rng:NextNumber() * 360,
++					scale = between(rng, 0.95, 1.35),
++					sink = 0.3,
++				})
++			end
++		end
++
++		-- A low islet of sinter standing in the water, so the black pool breaks
++		-- into lobes instead of lying as one flat sheet.
++		local islets = 1 + (if rng:NextNumber() < 0.5 then 1 else 0)
++		for _ = 1, islets do
++			for _ = 1, 8 do
++				local angle = rng:NextNumber() * 2 * math.pi
++				local r = rp * between(rng, 0.2, 0.55)
++				local x = math.floor(cx + math.cos(angle) * r + 0.5)
++				local z = math.floor(cz + math.sin(angle) * r + 0.5)
++				if inside(x, z) and not walk[at(x, z)] then
++					table.insert(marks, {
++						sculpt = "rimeholt_sinter_shelf",
++						x = x,
++						z = z,
++						yaw = rng:NextNumber() * 360,
++						scale = between(rng, 0.55, 0.8),
++						sink = 0.15,
++					})
++					break
++				end
++			end
++		end
++
++		-- The last hill-fire, kept on one of the lips: the warm light the highland
++		-- allows itself, and the lit subject of the close photograph.
++		local fireAngle = rng:NextNumber() * 2 * math.pi
++		local fireX, fireZ = nil, nil
++		for attempt = 0, 9 do
++			local angle = fireAngle + (if attempt % 2 == 0 then 1 else -1) * math.ceil(attempt / 2) * 0.35
++			fireX, fireZ = lastCell(angle, "sinter")
++			if fireX and fireZ then
++				break
++			end
++		end
++		if fireX and fireZ then
++			kinds[at(fireX, fireZ)] = "hearth"
++			table.insert(marks, {
++				sculpt = "rimeholt_hillfire",
++				x = fireX,
++				z = fireZ,
++				yaw = rng:NextNumber() * 360,
++				sink = 0.1,
++			})
++		end
++
++		local effects: { DraftedMap.Effect } = {
++			{ recipe = "rimeholt_spring_steam", x = cx, z = cz, lift = 0.2 },
++		}
++
++		-- The photographs: over the fire's shoulder down across the water (a lit
++		-- subject in front, the black pool between, the terraces and stones
++		-- behind), and from the road as the game camera stands.
++		local heroAngle = if fireX and fireZ then math.atan2(fireZ - cz, fireX - cx) else fireAngle
++		local heroR = reachAt(heroAngle) + 1.2
++		local cameras: { DraftedMap.Shot } = {
++			{
++				name = "over the spring",
++				from = { x = cx + math.cos(heroAngle) * heroR, z = cz + math.sin(heroAngle) * heroR, lift = 19 },
++				to = { x = cx, z = cz, lift = 0.6 },
++				fov = 55,
++			},
++			{
++				name = "beside the road",
++				from = { x = roadX + 0.4, z = cz + 3.5, lift = 18 },
++				to = { x = cx, z = cz, lift = 0.6 },
++				fov = 45,
++			},
++		}
++
++		return {
++			width = W,
++			depth = D,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

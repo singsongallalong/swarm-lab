@@ -1,0 +1,482 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 5aad1106..219df512 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -3,11 +3,13 @@
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 3 1
+ -- feature=<Name>` and assembled into maps later.
+ local MapFeature = require("../systems/MapFeature")
++local RimeholtFrostCourt = require("../systems/features/RimeholtFrostCourt")
+ local RimeholtFrozenFall = require("../systems/features/RimeholtFrozenFall")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	RimeholtFrozenFall = RimeholtFrozenFall,
++	RimeholtFrostCourt = RimeholtFrostCourt,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index f409fe03..3176541e 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -540,6 +540,45 @@ local Sculpts: { [string]: Recipe } = {
+ 		accent = { 62, 88, 90 },
+ 		maxPrims = 9,
+ 	},
++	-- The Frost Court (feature RimeholtFrostCourt): a frost-giant of the
++	-- hill-folk, carved half out of its block and sunk to the waist by the
++	-- feature, so only the bowed, hooded upper body rises from its mound, its
++	-- face toward +Z and the pool it kneels at. Lean and tall as a hooded
++	-- figure, not a broad shrine: dark granite carved, rime-crusted hood and
++	-- shoulders, and the accent's ice-blue in its cut niches. A landmark many
++	-- times a man's height, seen across the court.
++	rimeholt_kneeler = {
++		kind = "colossus",
++		size = { 20, 48, 18 },
++		material = "Slate",
++		colors = { { 58, 64, 74 }, { 88, 94, 100 }, { 44, 48, 56 }, { 30, 32, 38 }, { 64, 84, 86 }, { 42, 40, 40 } },
++		materials = { [1] = "Slate", [2] = "Glacier", [3] = "Basalt", [4] = "Slate", [5] = "Ice", [6] = "Wood" },
++		maxPrims = 48,
++	},
++	-- Shards of old ice pushed up through the lake ice and the snow at its rim,
++	-- a few per tarn: the Frost Court's close detail, catching the cold glow.
++	rimeholt_ice_shards = {
++		kind = "columns",
++		size = { 3.2, 4.2, 2.8 },
++		material = "Ice",
++		colors = { { 74, 92, 100 }, { 80, 98, 100 }, { 64, 82, 92 } },
++		maxPrims = 10,
++		columns = 2,
++		jag = 0.35,
++		merge = 6,
++	},
++	-- A small rune-cut slab at a frost-giant's knee, its cut face still holding
++	-- the accent's ice-blue on some stones.
++	rimeholt_rune_slab = {
++		kind = "headstone",
++		size = { 2.4, 4.2, 1.3 },
++		material = "Slate",
++		colors = { { 70, 76, 84 }, { 62, 82, 84 } },
++		maxPrims = 5,
++		top = "pointed",
++		plinth = true,
++		lean = 7,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 88a1b18b..23fa51fb 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1201,6 +1201,117 @@ local recipes: { [string]: Recipe } = {
+ 			},
+ 		},
+ 	},
++	-- Rimeholt's Frost Court: snow falling straight down only inside the ring
++	-- of kneeling frost-giants, where the air is still. Fat flakes drift slowly
++	-- down through finer grains, bright rime glints among both, and a cold haze
++	-- of the pool's own light lies at their feet, all breathing on one slow
++	-- beat. No wind, so nothing runs along the ground (rimeholt_drift is the
++	-- road's weather); the court's weather only falls.
++	rimeholt_ring_snow = {
++		about = "A slow snowfall drifting straight down only inside Rimeholt's ring of kneeling frost-giants, over a cold haze on the frozen pool.",
++		theme = "rimeholt",
++		-- A wandering point inside the ring, so the fall fills the court rather
++		-- than standing on one line; kept short and thick-set, so the snow
++		-- makes one slow column over the pool and not a wide haze.
++		path = { kind = "worm", length = 20, step = 3, bend = 30, climb = 0, round = 2 },
++		layers = {
++			{
++				-- Few, big flakes: at the game camera's distance a dust of small
++				-- ones reads as nothing, so the court's snow is drawn as fat
++				-- slow flakes that show from the road.
++				name = "fall",
++				look = {
++					kind = "stream",
++					every = 14,
++					thick = 22,
++					lift = 12,
++					toward = "down",
++					rise = 1.6,
++					life = { 10, 14 },
++					rate = 5,
++					size = 0.9,
++					tall = 1,
++					transparency = 0.28,
++					color = "pale",
++					texture = "wisp",
++					lean = 3,
++					vary = 0.35,
++				},
++				motion = { kind = "sway", amplitude = 2, tilt = 4, span = 16, periods = { 11, 7 } },
++				priority = 1,
++			},
++			{
++				name = "flakes",
++				look = {
++					kind = "stream",
++					every = 16,
++					thick = 18,
++					lift = 11,
++					toward = "down",
++					rise = 1,
++					life = { 14, 20 },
++					rate = 2,
++					size = 2,
++					tall = 1,
++					transparency = 0.45,
++					color = "rime",
++					texture = "wisp",
++					lean = 4,
++					vary = 0.45,
++				},
++				motion = { kind = "sway", amplitude = 3, tilt = 5, span = 22, periods = { 13, 9 } },
++				priority = 2,
++			},
++			{
++				name = "glints",
++				look = {
++					kind = "stream",
++					every = 12,
++					thick = 20,
++					lift = 9,
++					toward = "down",
++					rise = 2.2,
++					life = { 6, 9 },
++					rate = 8,
++					size = 0.35,
++					tall = 1,
++					transparency = 0.15,
++					color = "ice",
++					lean = 5,
++					vary = 0.5,
++				},
++				priority = 3,
++			},
++			{
++				name = "haze",
++				look = {
++					kind = "stream",
++					every = 20,
++					thick = 18,
++					lift = 0.6,
++					toward = "up",
++					rise = 0.25,
++					life = { 9, 12 },
++					rate = 0.9,
++					size = 7,
++					tall = 0.35,
++					transparency = 0.9,
++					color = "glow",
++					texture = "veil",
++					lean = 2,
++					vary = 0.4,
++				},
++				motion = { kind = "pulse", period = 7, depth = 0.35 },
++				priority = 4,
++			},
++			{
++				name = "light",
++				look = { kind = "light", every = 34, max = 1, range = 20, brightness = 0.5, color = "ice" },
++				motion = { kind = "pulse", period = 7, depth = 0.4 },
++				priority = 5,
++			},
++		},
++	},
+ }
+ 
+ -- The Sunken Shelf (A037). Sea mist rolling in low over the flats: three
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0e4c0dc5..746868b4 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -362,6 +362,18 @@ local rows: { [string]: Row } = {
+ 		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
+ 		MOOR
+ 	),
++	["sculpt:rimeholt_kneeler"] = row(
++		"A colossal frost-giant of Rimeholt's hill-folk, carved half out of its block and kneeling bowed at the Frost Court's pool.",
++		MOOR
++	),
++	["sculpt:rimeholt_ice_shards"] = row(
++		"A cluster of pale old ice shards pushing up through Rimeholt's lake ice and the snow at its rim.",
++		MOOR
++	),
++	["sculpt:rimeholt_rune_slab"] = row(
++		"A small rune-cut slab with an ice-blue cut face standing at a frost-giant's knee.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/RimeholtFrostCourt.luau b/src/shared/systems/features/RimeholtFrostCourt.luau
+new file mode 100644
+index 00000000..49f6dc6c
+--- /dev/null
++++ b/src/shared/systems/features/RimeholtFrostCourt.luau
+@@ -0,0 +1,263 @@
++--!strict
++-- Rimeholt's Frost Court: four colossal frost-giants of the hill-folk kneel in a
++-- ring round a frozen pool, lean hooded figures bowed toward the ice, carved
++-- half out of their blocks and sunk to the waist in low granite mounds. They
++-- sit at the inner lip of their mounds, so the court leans in over the pool.
++-- Snow falls straight down only inside their ring, where the air is still, over
++-- the cold light that breathes under the ice; the road crosses the pool between
++-- them. Its photograph is taken from the ice, across the pool, at one giant.
++local DraftedMap = require("../DraftedMap")
++local MapFeature = require("../MapFeature")
++
++-- The kneeler's recipe height, and the share of it its raw block takes up
++-- (sculpts/Colossus tops the block at 0.4 of the recipe, less the hood above).
++-- Sinking the figure by this much buries the block and leaves it kneeling; the
++-- court sinks each a little differently, as the ground has settled.
++local KNEELER_HEIGHT = 48
++local KNEELER_SINK = { 0.45, 0.5 }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function clamp(n: number, lo: number, hi: number): number
++	return math.max(lo, math.min(hi, n))
++end
++
++local feature: MapFeature.Feature = {
++	name = "RimeholtFrostCourt",
++	about = "Four colossal frost-giants of snow-crusted stone kneel in a ring round a frozen pool, a slow snowfall falling only inside their court.",
++	palette = "Rimeholt",
++	scale = "centrepiece",
++	role = "centrepiece",
++	mood = { "colossal", "kneeling", "still", "falling snow", "cold" },
++	cells = {
++		-- The frozen pool the court kneels round: pale old ice, its light
++		-- breathing under the surface (set piece rimeholt_underice).
++		pool = {
++			ground = { material = "Marble", color = { 84, 96, 102 } },
++			lift = 0.35,
++			clear = true,
++			glow = { color = { 110, 190, 190 }, range = 10, brightness = 0.7, every = 44, height = 0.5 },
++			props = { { sculpt = "rimeholt_ice_shards", every = 44, scale = { 0.7, 1.3 }, sink = 0.2 } },
++		},
++		-- The broken shelf of old snow and ice at the pool's edge.
++		rim = {
++			ground = { material = "Glacier", color = { 64, 72, 78 } },
++			lift = 0.2,
++			clear = true,
++			props = { { sculpt = "rimeholt_ice_shards", every = 14, scale = { 0.8, 1.6 }, sink = 0.2 } },
++		},
++		-- The low bank the court stands in, a step above the ice.
++		bank = {
++			ground = { material = "Glacier", color = { 64, 72, 78 } },
++			lift = 0.1,
++			clear = true,
++			props = { { sculpt = "rimeholt_fell_grass", every = 16, scale = { 0.9, 1.3 }, sink = 0.2 } },
++		},
++		-- Each giant's mound: a squat dais of grey granite, the giant kneeling
++		-- at its inner lip, a few rune slabs cut at its foot.
++		mound = {
++			ground = { material = "Basalt", color = { 50, 54, 62 } },
++			lift = 0.4,
++			clear = true,
++			props = { { sculpt = "rimeholt_rune_slab", every = 24, scale = { 0.85, 1.15 }, sink = 0.15 } },
++		},
++		-- The one warm light: a hill-fire's banked coals on the way in (B2).
++		fire = {
++			ground = { material = "Basalt", color = { 50, 54, 62 } },
++			lift = 0.2,
++			clear = true,
++			glow = { color = { 255, 168, 88 }, range = 16, brightness = 1.3, every = 1, height = 1.2 },
++		},
++	} :: { [string]: DraftedMap.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		local w, d = 36, 36
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++
++		-- The pool: a tarn with one bay, its outline seeded so no two courts
++		-- hold the same sheet of ice. The bay leans out along a way between
++		-- two giants, never at one.
++		local radius = between(rng, 6.4, 9)
++		local phase1 = between(rng, 0, math.pi * 2)
++		local phase2 = between(rng, 0, math.pi * 2)
++		local bayAngle = math.floor(rng:NextNumber() * 4) * (math.pi / 2) + between(rng, -0.22, 0.22)
++		local bay = between(rng, 1.2, 2.8)
++		local function poolRadius(a: number): number
++			local r = radius * (1 + 0.06 * math.sin(2 * a + phase1) + 0.04 * math.sin(3 * a + phase2))
++			local off = (a - bayAngle + math.pi) % (math.pi * 2) - math.pi
++			return r + bay * math.exp(-(off * off) / 0.18)
++		end
++
++		-- The bank: the low ring they kneel in, its outer edge broken by the
++		-- snow that has drifted over it.
++		local bankBase = between(rng, 11.6, 13.4)
++		local bankPhase = between(rng, 0, math.pi * 2)
++		local function bankRadius(a: number): number
++			return bankBase + 0.9 * math.sin(3 * a + bankPhase) + 0.4 * math.sin(2 * a + phase1)
++		end
++
++		-- The four giants, at the diagonals so the road passes between them.
++		-- One seed's court is square and wide, another's an oval drawn in
++		-- tight; each giant is its own size and has settled its own depth into
++		-- its mound. Each mound is set a little outward of its giant, so the
++		-- figure kneels at the inner lip, leaning over the pool.
++		local ringX = between(rng, 11.4, 14.2)
++		local ringZ = between(rng, 11.4, 14.2)
++		local giants: { { x: number, z: number, mx: number, mz: number, r: number, h: number, scale: number, sink: number } } =
++			{}
++		for k = 1, 4 do
++			local a = math.rad(45) + (k - 1) * (math.pi / 2) + between(rng, -0.12, 0.12)
++			local dirX, dirZ = math.cos(a), math.sin(a)
++			local scale = between(rng, 0.86, 1.18)
++			table.insert(giants, {
++				x = cx + dirX * ringX,
++				z = cz + dirZ * ringZ,
++				mx = cx + dirX * (ringX + 0.7),
++				mz = cz + dirZ * (ringZ + 0.7),
++				r = between(rng, 2.5, 3),
++				h = if rng:NextNumber() < 0.5 then 2 else 3,
++				scale = scale,
++				sink = KNEELER_HEIGHT * between(rng, KNEELER_SINK[1], KNEELER_SINK[2]) * scale,
++			})
++		end
++
++		-- The ice, its shelf, the bank, then each giant's mound over them.
++		local mound = table.create(w * d, false)
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local dx, dz = x - cx, z - cz
++				local r = math.sqrt(dx * dx + dz * dz)
++				local a = math.atan2(dz, dx)
++				if r <= poolRadius(a) then
++					kinds[i] = "pool"
++				elseif r <= poolRadius(a) + 1.6 then
++					kinds[i] = "rim"
++				elseif r <= bankRadius(a) then
++					kinds[i] = "bank"
++					heights[i] = 1
++				end
++				for _, g in giants do
++					local gx, gz = x - g.mx, z - g.mz
++					local wobble = 1 + 0.08 * math.sin(3 * math.atan2(gz, gx) + bankPhase)
++					if math.sqrt(gx * gx + gz * gz) <= g.r * wobble then
++						kinds[i] = "mound"
++						heights[i] = g.h
++						mound[i] = true
++						break
++					end
++				end
++			end
++		end
++		-- A step of bank round every mound, so no walkable cell drops straight
++		-- from the mound's top to the snow (two studs at most between cells).
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if mound[i] then
++					continue
++				end
++				local near = false
++				for oz = -2, 2 do
++					for ox = -2, 2 do
++						local nx, nz = x + ox, z + oz
++						if nx >= 1 and nz >= 1 and nx <= w and nz <= d and mound[at(nx, nz)] then
++							near = true
++						end
++					end
++				end
++				if near and heights[i] < 1 then
++					heights[i] = 1
++				end
++			end
++		end
++
++		-- The road in, across the ice between the giants, and out the far side.
++		local zIn = cz + between(rng, -2.2, 2.2)
++		local zOut = cz + between(rng, -2.2, 2.2)
++		local road = {
++			{ x = 1, z = zIn },
++			{ x = cx + between(rng, -1.6, 1.6), z = cz + between(rng, -1.4, 1.4) },
++			{ x = w, z = zOut },
++		}
++
++		-- The hill-fire at the way in, its coals the one warmth at the court.
++		local fireX = between(rng, 4.2, 5.6)
++		local fireZ = clamp(zIn + (if rng:NextNumber() < 0.5 then -1 else 1) * between(rng, 3, 4.2), 4, d - 4)
++		kinds[at(math.floor(fireX + 0.5), math.floor(fireZ + 0.5))] = "fire"
++
++		local marks: { DraftedMap.Landmark } = {}
++		for _, g in giants do
++			table.insert(marks, {
++				sculpt = "rimeholt_kneeler",
++				x = g.x,
++				z = g.z,
++				-- Faces the heart of the court.
++				yaw = math.deg(math.atan2(cx - g.x, cz - g.z)),
++				scale = g.scale,
++				sink = g.sink,
++			})
++		end
++		-- A marker stone at each mouth, its rag in the accent's ice-blue.
++		table.insert(marks, { sculpt = "rimeholt_marker", x = 2.3, z = zIn + 2.6, yaw = 90 })
++		table.insert(marks, { sculpt = "rimeholt_marker", x = w - 1.3, z = zOut - 2.6, yaw = -90 })
++		table.insert(marks, { sculpt = "rimeholt_hillfire", x = fireX, z = fireZ, yaw = between(rng, 0, 360) })
++
++		-- The court's weather over the heart of the ice, and the light under it,
++		-- both on the same slow beat (set pieces rimeholt_ring_snow, rimeholt_underice).
++		local effects: { DraftedMap.Effect } = {
++			{ recipe = "rimeholt_ring_snow", x = cx, z = cz, lift = 0, seed = math.floor(rng:NextNumber() * 1000) },
++			{ recipe = "rimeholt_underice", x = cx, z = cz, lift = 0.4, seed = math.floor(rng:NextNumber() * 1000) },
++		}
++
++		-- One giant is the subject, seen from across the pool with the ice for
++		-- a foreground; the second shot looks over another giant's back at the
++		-- whole court.
++		local face = giants[1]
++		local fx, fz = face.x - cx, face.z - cz
++		local flen = math.max(math.sqrt(fx * fx + fz * fz), 1e-6)
++		local near = giants[2]
++		local ox, oz = near.x - cx, near.z - cz
++		local len = math.max(math.sqrt(ox * ox + oz * oz), 1e-6)
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "the giant across the pool",
++					from = { x = cx - fx / flen * 6, z = cz - fz / flen * 6, lift = 5 },
++					to = { x = face.x, z = face.z, lift = 7 },
++					fov = 64,
++				},
++				{
++					-- Behind a giant and stepped off its shoulder, high, so its
++					-- hood frames the left of the court and not the middle of it.
++					name = "the court over a giant's shoulder",
++					from = {
++						x = near.x + ox / len * 4.5 - oz / len * 5,
++						z = near.z + oz / len * 4.5 + ox / len * 5,
++						lift = 38,
++					},
++					to = { x = cx, z = cz, lift = 2 },
++					fov = 58,
++				},
++			},
++		}
++	end,
++}
++
++return feature

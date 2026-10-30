@@ -14,4 +14,4 @@ rimelake-open,Rimelake,deepseek,deepseek-flash[1m],6,2,4,0,1,194866547,7.8422,29
 palettes-1,Palette,deepseek,deepseek-flash[1m],12,12,8,0,6,21396576,1.3594,301.5,"src/shared/data/Palettes.luau: added a line that isn't a Palette entry: DrownedTerraces = DrownedTerraces,",
 relics-1,Relics,deepseek,deepseek-flash[1m],4,4,4,0,0,6425251,0.3479,313.9,,
 relics-1,Relics,deepseek-pro,deepseek-v4-pro[1m],4,4,4,0,0,2852803,0.8562,352.1,,
-rimeholt-features,Rimeholt,deepseek,deepseek-flash[1m],12,12,10,0,0,196495546,3.7935,970.3,src/shared/data/Sculpts.luau: changed text outside its rows,
+rimeholt-features,Rimeholt,deepseek,deepseek-flash[1m],12,11,10,0,6,295720537,4.6964,1382.6,src/shared/data/Sculpts.luau: changed text outside its rows,

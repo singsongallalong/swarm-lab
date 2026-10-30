@@ -1,0 +1,41 @@
+{
+  "name": "RimeholtCrevasseBridge",
+  "intent": "A slanted crevasse split across Rimeholt's lake ice, its walls falling in four steps from a pale ice shelf down to a near-black floor lit by cold light, with ice teeth and fallen slabs, crossed by a bridge of ice ribs and lashed timber sized to the gap, and snow pouring off one lip into the dark; every seed slants the crack, widens it, skews its two walls and moves the crossing.",
+  "sculpts": [
+    "rimeholt_ice_bridge",
+    "rimeholt_ice_buttress",
+    "rimeholt_ice_slab",
+    "rimeholt_ice_shard",
+    "rimeholt_bridge_timbers"
+  ],
+  "setpiece": "rimeholt_crevasse_spill",
+  "requests": [
+    "The bridge's deck cells must be walkable to carry the road, so a solid plug of terrain crosses under the span and the crack cannot stay open beneath the bridge.",
+    "A painted cell's ground is drawn only four studs below its top, so each descending step face shows a thin seam against the tileset's own fill behind it; a deeper painted face would give clean stepped walls.",
+    "The map's light budget (a third of 40) leaves room for about ten cell glows, so the cold light in the crack is carried mostly by the set piece's lights, which the dresspreview never draws.",
+    "Landmarks carry no light, so the hill-fire brazier at the bridge head has no ember glow offline; only cell glows and set-piece lights can carry the cold light."
+  ],
+  "critic_pass1": {
+    "idea": 7,
+    "photo": 6,
+    "camera": 6,
+    "seeds": 4,
+    "usable": 6,
+    "total": 6.15,
+    "best_shot": "shots seed 1, the span from the near bank",
+    "why": "The rope-and-timber bridge over a stepped dark cut is real geometry with height. The crack is shallow and the seeds are near-identical."
+  },
+  "critic_pass2": {
+    "idea": 7,
+    "photo": 6,
+    "camera": 6,
+    "seeds": 5,
+    "usable": 6,
+    "total": 6.25,
+    "better_than_before": "yes",
+    "best_shot": "shots seed 1 the crossing from above",
+    "why": "The crack now runs at a slant, with deeper stepped dark walls, cold glints and a lit brazier at the bridge head, and the snow-spill set piece is denser, but the bridge's timber plug still fills the gap and the span shots are dark clutter."
+  },
+  "run": "rimeholt-features",
+  "generator": "g05"
+}

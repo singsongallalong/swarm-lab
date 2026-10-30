@@ -1,0 +1,509 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 5aad1106..7ea09651 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -4,10 +4,12 @@
+ -- feature=<Name>` and assembled into maps later.
+ local MapFeature = require("../systems/MapFeature")
+ local RimeholtFrozenFall = require("../systems/features/RimeholtFrozenFall")
++local RimeholtHangingGlacier = require("../systems/features/RimeholtHangingGlacier")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	RimeholtFrozenFall = RimeholtFrozenFall,
++	RimeholtHangingGlacier = RimeholtHangingGlacier,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index f409fe03..26567aba 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -540,6 +540,29 @@ local Sculpts: { [string]: Recipe } = {
+ 		accent = { 62, 88, 90 },
+ 		maxPrims = 9,
+ 	},
++	-- A blade of serac ice standing out of the glacier's stepped face: three
++	-- tall columns with broken tops, so the flow breaks the cell grid.
++	rimeholt_ice_serac = {
++		kind = "columns",
++		size = { 6.5, 12, 3 },
++		material = "Ice",
++		colors = { { 82, 96, 100 }, { 74, 88, 96 }, { 66, 80, 90 } },
++		maxPrims = 24,
++		columns = 3,
++		jag = 0.2,
++	},
++	-- Meltwater that froze where it fell: a low cluster of ice spikes at the
++	-- glacier's foot, scattered as props and stood about the cave mouth.
++	rimeholt_ice_fangs = {
++		kind = "columns",
++		size = { 4, 5.5, 2 },
++		material = "Ice",
++		colors = { { 82, 96, 100 }, { 76, 90, 96 }, { 68, 82, 90 } },
++		maxPrims = 14,
++		columns = 3,
++		jag = 0.25,
++		merge = 8,
++	},
+ }
+ 
+ -- The field's heather: the moor's tuft in living gorse.
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 88a1b18b..4bb3e9c2 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1590,4 +1590,65 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- Rimeholt (the hanging glacier): the meltwater coming off the ice in one
++-- dense fall from the cave mouth. A tight cluster of emitters under the lip
++-- drops a heavy curtain nine studs to the pool, spray bursts up where it
++-- lands, and a bright cold light breathes on the fall itself, so the foot of
++-- the glacier has a lit subject at any distance.
++recipes.rimeholt_meltdrip = {
++	about = "A dense fall of meltwater pouring off Rimeholt's hanging glacier from the cave mouth into spray, lit cold from within.",
++	theme = "rimeholt",
++	path = { kind = "worm", length = 8, step = 2, bend = 8, climb = 1, round = 1 },
++	layers = {
++		{
++			name = "fall",
++			look = {
++				kind = "stream",
++				every = 2,
++				thick = 2,
++				lift = 9,
++				toward = "down",
++				rise = 6,
++				life = { 1.2, 1.7 },
++				rate = 6,
++				size = 0.3,
++				tall = 3,
++				transparency = 0.12,
++				color = "ice",
++				texture = "wisp",
++				lean = 2,
++				vary = 0.4,
++			},
++			priority = 1,
++		},
++		{
++			name = "spray",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 3,
++				lift = 0.2,
++				toward = "up",
++				rise = 0.9,
++				life = { 1.4, 2.2 },
++				rate = 3,
++				size = 2.6,
++				tall = 0.7,
++				transparency = 0.7,
++				color = "pale",
++				texture = "veil",
++				lean = 14,
++				vary = 0.5,
++			},
++			priority = 2,
++		},
++		{
++			name = "glow",
++			look = { kind = "light", every = 4, max = 4, range = 18, brightness = 1.8, color = "glow" },
++			motion = { kind = "pulse", period = 4.5, depth = 0.5 },
++			priority = 3,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0e4c0dc5..16fc7d67 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -362,6 +362,14 @@ local rows: { [string]: Row } = {
+ 		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
+ 		MOOR
+ 	),
++	["sculpt:rimeholt_ice_serac"] = row(
++		"A tall blade of serac ice standing out of Rimeholt's hanging glacier's stepped face.",
++		MOOR
++	),
++	["sculpt:rimeholt_ice_fangs"] = row(
++		"A low cluster of refrozen meltwater spikes at the foot of Rimeholt's hanging glacier.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/RimeholtHangingGlacier.luau b/src/shared/systems/features/RimeholtHangingGlacier.luau
+new file mode 100644
+index 00000000..ba00b401
+--- /dev/null
++++ b/src/shared/systems/features/RimeholtHangingGlacier.luau
+@@ -0,0 +1,363 @@
++--!strict
++-- Rimeholt's hanging glacier: a tongue of old ice pours through a notch in a
++-- tall dark granite massif and hangs frozen mid-flow, a wall of stepped seracs
++-- fluted by blue crevasses. At its foot the meltwater has cut a cave mouth and
++-- gathered in a pool that never thaws; refrozen spikes ring both, meltwater
++-- still pours off the ice in one lit fall, and a cold light breathes strongly
++-- under the pool and in the cave. The road crosses the snow apron below it;
++-- the photograph is taken from the apron, looking up the pale ice.
++local DraftedMap = require("../DraftedMap")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local feature: MapFeature.Feature = {
++	name = "RimeholtHangingGlacier",
++	about = "A tongue of glacier ice pouring through a notch in a tall dark granite massif, frozen in stepped seracs over a brightly lit meltwater cave and pool.",
++	palette = "Rimeholt",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "frozen", "hanging", "stepped", "glowing" },
++	cells = {
++		-- The granite massif: near-black against the pale ice.
++		ledge = {
++			ground = { material = "Rock", color = { 36, 42, 52 } },
++			clear = true,
++		},
++		-- The pale blue old ice of the tongue's seracs, a cold light in it.
++		serac = {
++			ground = { material = "Marble", color = { 70, 96, 102 } },
++			clear = true,
++			glow = { color = { 130, 210, 220 }, range = 10, brightness = 0.7, every = 128, height = 1.5 },
++			props = { { sculpt = "rimeholt_ice_fangs", every = 22, scale = { 0.35, 0.7 }, sink = 0.15 } },
++		},
++		-- The blue grooves between the seracs, cut deeper than the ice about them.
++		crevasse = {
++			ground = { material = "Ice", color = { 60, 72, 74 } },
++			clear = true,
++		},
++		-- The meltwater pool at its foot, bright under the cold light.
++		pool = {
++			ground = { material = "Salt", color = { 86, 100, 102 } },
++			lift = 0.3,
++			clear = true,
++			glow = { color = { 140, 220, 225 }, range = 20, brightness = 2.2, every = 8, height = 0.3 },
++		},
++		-- The dark floor of the cave the meltwater has cut under the ice, lit
++		-- by the cold light inside it.
++		cavefloor = {
++			ground = { material = "Slate", color = { 18, 20, 22 } },
++			clear = true,
++			glow = { color = { 130, 215, 225 }, range = 20, brightness = 2.4, every = 8, height = 0.5 },
++		},
++		-- The snow apron: wind-packed snow with the highland's grass and stones.
++		snowfield = {
++			ground = { material = "Snow", color = { 78, 83, 89 } },
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_fell_grass", every = 14, scale = { 0.8, 1.2 }, sink = 0.3 },
++				{ sculpt = "rimeholt_boulder", every = 45, scale = { 0.5, 0.9 }, sink = 0.5 },
++			},
++		},
++	} :: { [string]: DraftedMap.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- Each seed its own glacier: a broad or a narrow tongue, a short or a
++		-- long one, the notch and the meltwater cave at different places.
++		local w = 26 + math.floor(rng:NextNumber() * 7)
++		local d = 24 + math.floor(rng:NextNumber() * 3)
++		local n = w * d
++		local walk = table.create(n, true)
++		local heights = table.create(n, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++
++		-- The notch in the massif the ice pours through. The massif is tallest
++		-- at the back and shoulders a little way forward round the notch.
++		local notchL = 4 + math.floor(rng:NextNumber() * 6)
++		local notchR = math.min(w - 3, notchL + 10 + math.floor(rng:NextNumber() * 8))
++		local massifDepth: { [number]: number } = {}
++		for x = 1, w do
++			massifDepth[x] = if x < notchL or x > notchR then 5 + math.floor(rng:NextNumber() * 3) else 3
++		end
++		for x = 1, w do
++			local crest = 30 + math.floor(rng:NextNumber() * 7)
++			if rng:NextNumber() < 0.15 then
++				crest += between(rng, 4, 9)
++			end
++			for z = 1, massifDepth[x] do
++				local i = at(x, z)
++				walk[i] = false
++				kinds[i] = "ledge"
++				lifts[i] = crest - (if z == massifDepth[x] and massifDepth[x] > 3 then 2 else 0)
++			end
++		end
++
++		-- The tongue: a high lip at the notch's mouth falling in a few big
++		-- terraces to its toe, fluted by serac columns and cut by blue grooves
++		-- that run down the flow.
++		local lipH = between(rng, 22, 29)
++		local toeH = between(rng, 6, 11)
++		local terraces = 4 + math.floor(rng:NextNumber() * 4)
++		local lobeShift = between(rng, -0.25, 0.25)
++		local lobeAmp = between(rng, 1, 2.6)
++		local growRate = between(rng, 0.22, 0.5)
++		local grooveEvery = 3 + math.floor(rng:NextNumber() * 2)
++		local toeBase = math.min(12 + math.floor(rng:NextNumber() * 5), d - 7)
++		local toeZ: { [number]: number } = {}
++		for x = 1, w do
++			local u = math.clamp((x - notchL) / math.max(notchR - notchL, 1), 0, 1)
++			toeZ[x] = toeBase + math.floor(math.sin((u + lobeShift) * math.pi) * lobeAmp + rng:NextNumber() * 1.5)
++		end
++		local caveX = math.clamp(math.floor((notchL + notchR) / 2 + between(rng, -2, 2)), notchL + 3, notchR - 3)
++		local caveToe = toeZ[caveX]
++		local caveBack = caveToe - 3 - math.floor(rng:NextNumber() * 2)
++		local groupCount = math.ceil((notchR - notchL + 1) / 2) + 3
++		local groupOffset: { [number]: number } = {}
++		local groupSpike: { [number]: boolean } = {}
++		for g = 1, groupCount do
++			groupOffset[g] = between(rng, -3, 3)
++			groupSpike[g] = rng:NextNumber() < 0.22
++		end
++		for z = 4, 20 do
++			local grow = math.floor((z - 4) * growRate + 0.5)
++			local x0 = math.max(1, notchL - grow)
++			local x1 = math.min(w, notchR + grow)
++			for x = x0, x1 do
++				local i = at(x, z)
++				if z > toeZ[x] or kinds[i] == "ledge" then
++					continue
++				end
++				local g = math.clamp(math.floor((x - notchL) / 2) + 1, 1, groupCount)
++				local t = math.clamp((z - 4) / math.max(toeZ[x] - 4, 1), 0, 1)
++				-- Big terraces down the flow, each its own shelf of ice.
++				local step = math.min(math.floor(t * terraces), terraces - 1)
++				local h = lipH - (lipH - toeH) * (step / terraces) ^ 0.85
++				h += groupOffset[g] + (rng:NextNumber() - 0.5) * 1.6
++				if groupSpike[g] and (x - notchL) % 2 == 1 then
++					h += between(rng, 3, 7)
++				end
++				-- The ice stands a nose taller over the cave mouth.
++				local nose = math.max(0, 1 - ((x - caveX) / 2.5) ^ 2) * 10
++				if z <= caveBack + 2 then
++					h += nose
++				end
++				-- The tongue thins at its sides.
++				if x < x0 + 1 or x > x1 - 1 then
++					h -= 3
++				end
++				local kind = if (x - notchL) % grooveEvery == 0 and t > 0.05 then "crevasse" else "serac"
++				if kind == "crevasse" then
++					h -= 7
++				end
++				walk[i] = false
++				kinds[i] = kind
++				lifts[i] = math.clamp(math.floor(h + 0.5), 1, 44)
++			end
++		end
++
++		-- The cave mouth: a narrow cleft cut back under the ice, its floor the
++		-- dark stone the meltwater runs over, its walls still thick ice.
++		for z = caveBack, caveToe + 1 do
++			for x = caveX - 1, caveX + 1 do
++				if x >= 1 and x <= w and z >= 1 and z <= d then
++					local i = at(x, z)
++					walk[i] = true
++					kinds[i] = "cavefloor"
++					lifts[i] = nil
++				end
++			end
++		end
++
++		-- Small pockets of snow can be pinched off between the massif's
++		-- shoulders and the spreading ice; fill them with serac ice so all the
++		-- walkable ground still joins up.
++		local pocketGrid = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			pocketGrid.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		local regions = Grid.regions(pocketGrid)
++		table.sort(regions, function(a: { number }, b: { number }): boolean
++			return #a > #b
++		end)
++		for r = 2, #regions do
++			for _, i in regions[r] do
++				walk[i] = false
++				kinds[i] = "serac"
++				lifts[i] = 6 + math.floor(rng:NextNumber() * 4)
++			end
++		end
++
++		-- The meltwater pool, held off the road.
++		local poolX = caveX + between(rng, -2, 2)
++		local poolZ = math.min(caveToe + 2.8, d - 6.5) + between(rng, -0.4, 0.4)
++		local poolRX = between(rng, 5, 8)
++		local poolRZ = between(rng, 2, 3)
++		for z = math.max(1, math.floor(poolZ - poolRZ - 1)), math.min(d - 6, math.ceil(poolZ + poolRZ + 1)) do
++			for x = math.max(1, math.floor(poolX - poolRX - 1)), math.min(w, math.ceil(poolX + poolRX + 1)) do
++				local i = at(x, z)
++				if walk[i] and kinds[i] == nil then
++					local dx, dz = (x - poolX) / poolRX, (z - poolZ) / poolRZ
++					if dx * dx + dz * dz <= 1 then
++						kinds[i] = "pool"
++					end
++				end
++			end
++		end
++
++		-- The snow apron north of the road, dressed with the highland's own.
++		for z = 1, d - 5 do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] and kinds[i] == nil then
++					kinds[i] = "snowfield"
++				end
++			end
++		end
++
++		local function seracAt(z: number, from: number, to: number): (number, number)
++			local span = math.max(to - from, 1)
++			local start = from + math.floor(rng:NextNumber() * (span + 1))
++			for step = 0, span do
++				local x = from + (start - from + step) % (span + 1)
++				local i = at(x, z)
++				if kinds[i] == "serac" then
++					return x, lifts[i]
++				end
++			end
++			return from, lifts[at(from, z)] or 0
++		end
++
++		local marks: { DraftedMap.Landmark } = {}
++		for _ = 1, 2 + math.floor(rng:NextNumber() * 3) do
++			local z = 5 + math.floor(rng:NextNumber() * math.max(toeBase - 7, 1))
++			local x, h = seracAt(z, notchL + 1, notchR - 1)
++			table.insert(marks, {
++				sculpt = "rimeholt_ice_serac",
++				x = x + between(rng, -0.3, 0.3),
++				z = z + between(rng, -0.3, 0.3),
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1.1, 1.45),
++				sink = 0.5 - h,
++			})
++		end
++		-- Refrozen meltwater: spikes at the cave's mouth and along the ice foot.
++		for _, spot in { { x = caveX - 1.7, z = caveToe + 0.7 }, { x = caveX + 1.7, z = caveToe + 0.7 } } do
++			table.insert(marks, {
++				sculpt = "rimeholt_ice_fangs",
++				x = spot.x,
++				z = spot.z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1, 1.4),
++				sink = 0.4,
++			})
++		end
++		for _, spot in
++			{
++				{ x = caveX - 6, z = toeZ[math.clamp(caveX - 6, 1, w)] + 0.7 },
++				{
++					x = caveX + 6,
++					z = toeZ[math.clamp(caveX + 6, 1, w)] + 0.7,
++				},
++			}
++		do
++			table.insert(marks, {
++				sculpt = "rimeholt_ice_fangs",
++				x = spot.x,
++				z = spot.z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.9, 1.2),
++				sink = 0.4,
++			})
++		end
++		for _ = 1, 2 do
++			table.insert(marks, {
++				sculpt = "rimeholt_ice_fangs",
++				x = poolX + between(rng, -2, 2),
++				z = poolZ + between(rng, -1, 1),
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.55, 0.85),
++				sink = 0,
++			})
++		end
++		table.insert(marks, {
++			sculpt = "rimeholt_boulder",
++			x = caveX - 5.5,
++			z = caveToe + 1.6,
++			yaw = between(rng, 0, 360),
++			scale = between(rng, 0.8, 1.1),
++			sink = 0.5,
++		})
++		-- Pines on one or both flanks, framing the ice.
++		local westPine = rng:NextNumber() < 0.7
++		local eastPine = rng:NextNumber() < 0.7
++		if westPine then
++			table.insert(marks, {
++				sculpt = "rimeholt_pine",
++				x = math.max(3, notchL - 4.5),
++				z = d - 8 + between(rng, -1, 1),
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1, 1.25),
++				sink = 0.4,
++			})
++		end
++		if eastPine then
++			table.insert(marks, {
++				sculpt = "rimeholt_pine",
++				x = math.min(w - 3, notchR + 3.5),
++				z = d - 7 + between(rng, -1, 1),
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1, 1.25),
++				sink = 0.4,
++			})
++		end
++
++		local function roadPoint(f: number): { x: number, z: number }
++			return { x = 1 + f * (w - 1), z = d - 4 + between(rng, -0.3, 0.3) }
++		end
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = {
++				-- One lit fall of meltwater off the cave mouth, and the cold
++				-- light breathing under the pool.
++				{ recipe = "rimeholt_meltdrip", x = caveX, z = caveToe + 1, lift = 0.2 },
++				{ recipe = "rimeholt_underice", x = poolX, z = poolZ, lift = 0.35 },
++			},
++			-- The road crosses the apron below the ice, clear of the pool.
++			road = {
++				roadPoint(0),
++				roadPoint(0.3),
++				roadPoint(0.6),
++				roadPoint(1),
++			},
++			cameras = {
++				{
++					name = "the lit foot of the glacier",
++					from = { x = math.min(w - 1.5, caveX + between(rng, 5, 8)), z = d - 1.5, lift = 18 },
++					to = { x = caveX - 1, z = caveToe, lift = 3 },
++					fov = 60,
++				},
++				{
++					name = "the tongue from the east",
++					from = { x = math.min(w - 1.5, notchR + 3), z = d - 2, lift = 11 },
++					to = { x = caveX - 2, z = caveToe - 4, lift = 9 },
++					fov = 60,
++				},
++			},
++		}
++	end,
++}
++
++return feature

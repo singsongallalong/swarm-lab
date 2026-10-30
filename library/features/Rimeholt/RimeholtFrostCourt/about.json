@@ -1,0 +1,37 @@
+{
+  "name": "RimeholtFrostCourt",
+  "intent": "Four colossal, lean hooded frost-giants of snow-crusted stone kneel at the inner lip of their low granite mounds round a frozen pool, bowed toward the ice, with a slow column of big sparse snowflakes falling only inside their court over the cold light under the ice.",
+  "sculpts": [
+    "rimeholt_kneeler",
+    "rimeholt_ice_shards",
+    "rimeholt_rune_slab"
+  ],
+  "setpiece": "rimeholt_ring_snow",
+  "requests": [
+    "There is no kneeling sculpt kind: colossus is the only humanoid, so each giant is sunk to the waist in its mound to read as kneeling.",
+    "Landmarks cannot pitch, so the giants' lean toward the pool comes from their bowed hooded heads and their place at the mounds' inner lip."
+  ],
+  "critic_pass1": {
+    "idea": 7,
+    "photo": 5,
+    "camera": 6,
+    "seeds": 4,
+    "usable": 6,
+    "total": 5.85,
+    "best_shot": "shots seed 1, the giant's court from above",
+    "why": "A strong ring layout round a lit pool, but the giants read as shrines, not kneeling bodies, and the snowfall is lost at distance."
+  },
+  "critic_pass2": {
+    "idea": 8,
+    "photo": 6,
+    "camera": 6,
+    "seeds": 3,
+    "usable": 6,
+    "total": 6.4,
+    "better_than_before": "yes",
+    "best_shot": "shots seed 1 in along the road",
+    "why": "The hooded giants now read as lean silhouettes on the skyline from the road, and the ring snow has bigger flakes, but from the game camera they are small next to the court, the pool is a flat dark patch, and the three seeds are one layout."
+  },
+  "run": "rimeholt-features",
+  "generator": "g03"
+}

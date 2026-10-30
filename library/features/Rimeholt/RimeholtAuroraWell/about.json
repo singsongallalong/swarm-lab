@@ -1,0 +1,35 @@
+{
+  "name": "RimeholtAuroraWell",
+  "intent": "A round shaft of stepped dark ice ringed with few tall rune stones, each seed its own well (two to four terraces, its own width and place, one broken rim) with a braided column of pale aurora rising from a floor that is brighter than everything round it.",
+  "sculpts": [
+    "rimeholt_wellstone",
+    "rimeholt_ice_shards"
+  ],
+  "setpiece": "rimeholt_aurora_well",
+  "requests": [
+    "Dresspreview draws no set-piece particles, so the aurora column cannot appear in the feature's own photographs; it shows only in the setpiece preview."
+  ],
+  "critic_pass1": {
+    "idea": 8,
+    "photo": 6,
+    "camera": 8,
+    "seeds": 4,
+    "usable": 6,
+    "total": 6.8,
+    "best_shot": "shots seed 1, over the lip",
+    "why": "Stepped shaft plus a strong aurora column is something the game lacks and it reads from the game camera, but all three seeds are the same bowl."
+  },
+  "critic_pass2": {
+    "idea": 7,
+    "photo": 6,
+    "camera": 7,
+    "seeds": 3,
+    "usable": 7,
+    "total": 6.3,
+    "better_than_before": "yes",
+    "best_shot": "shots seed 1 the well in the snow",
+    "why": "The floor is now the brightest thing in the well, so the stepped rings draw the eye down from the game camera as the idea asked, but every seed has the same cross-shaped floor and diamond terraces, the rune stones are small, and the down-the-shaft shot is a flat pattern."
+  },
+  "run": "rimeholt-features",
+  "generator": "g04"
+}

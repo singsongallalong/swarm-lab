@@ -1,0 +1,39 @@
+{
+  "name": "RimeholtBurialShip",
+  "intent": "A hill-folk burial longship frozen at a tilt in the lake ice, one of two hulls each seed, its mast and ribs breaking out of a crown of great pale shards while one long narrow strip of cold light traces the drowned hull's gunwale under the surface.",
+  "sculpts": [
+    "rimeholt_burial_ship",
+    "rimeholt_burial_ship_steep",
+    "rimeholt_ship_mast",
+    "rimeholt_ship_ribs",
+    "rimeholt_ice_shards"
+  ],
+  "setpiece": "rimeholt_ship_breath",
+  "requests": [
+    "The shore's hill-fire cannot be lit: landmark sculpts carry no light, and only tileset props do.",
+    "A set piece cannot be drawn under the ice, so the drowned hull's glow sits on the surface over its dark shape rather than beneath it."
+  ],
+  "critic_pass1": {
+    "idea": 8,
+    "photo": 7,
+    "camera": 6,
+    "seeds": 4,
+    "usable": 6,
+    "total": 6.8,
+    "best_shot": "shots seed 1, the ship in the ice",
+    "why": "A tilted longship with mast and ribs out of the ice has the best silhouette and photograph of the run. The hull glow is a vague smear and the seeds repeat."
+  },
+  "critic_pass2": {
+    "idea": 8,
+    "photo": 7,
+    "camera": 6,
+    "seeds": 5,
+    "usable": 5,
+    "total": 6.8,
+    "better_than_before": "yes",
+    "best_shot": "shots seed 2 the lit hull under the ice",
+    "why": "The tilted longship breaking out of a crown of pale shards, with the steep second hull, is the strongest subject on the sheet and the seeds now differ in pitch, but the gunwale light barely shows and the wreck crowds the road."
+  },
+  "run": "rimeholt-features",
+  "generator": "g01"
+}

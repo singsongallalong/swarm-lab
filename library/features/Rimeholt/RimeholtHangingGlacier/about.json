@@ -1,0 +1,35 @@
+{
+  "name": "RimeholtHangingGlacier",
+  "intent": "A pale blue tongue of glacier ice pouring through a notch in a near-black granite massif, fluted in stepped seracs and crevasses, with a bright meltwater pool and cold-lit cave mouth at its foot, refrozen spikes, and one dense lit fall of meltwater; each seed changes the footprint, notch, tongue length and cave place.",
+  "sculpts": [
+    "rimeholt_ice_serac",
+    "rimeholt_ice_fangs"
+  ],
+  "setpiece": "rimeholt_meltdrip",
+  "requests": [
+    "Sculpt kinds cannot hang below their origin, so the meltwater icicles read as refrozen spikes at the ice foot rather than teeth hanging from the lip."
+  ],
+  "critic_pass1": {
+    "idea": 6,
+    "photo": 4,
+    "camera": 5,
+    "seeds": 4,
+    "usable": 5,
+    "total": 4.95,
+    "best_shot": "whole seed 1, three-quarter",
+    "why": "The fluted tongue reads only from the top. Every close shot is a dark mass with no lit subject, and the drip is barely visible."
+  },
+  "critic_pass2": {
+    "idea": 6,
+    "photo": 6,
+    "camera": 6,
+    "seeds": 4,
+    "usable": 6,
+    "total": 5.8,
+    "better_than_before": "yes",
+    "best_shot": "shots seed 1 in along the road",
+    "why": "The tongue now reads as one teal mass of fluted seracs against the dark granite, where before it was a grey-on-grey wall, and the road shots exist, but from above it is a rectangular slab of columns, the meltwater fall is invisible in the set piece, and the seeds barely change."
+  },
+  "run": "rimeholt-features",
+  "generator": "g02"
+}
