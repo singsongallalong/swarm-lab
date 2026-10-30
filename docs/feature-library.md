@@ -17,6 +17,27 @@ same pattern if it works.
 
 ## The pieces
 
+### 0. Palettes, ahead of the areas (built 2026-10-30)
+
+fafwa (2026-10-30): "I love palettes ahead of time. That way we can decouple things." A
+palette (`systems/Palette`, `data/Palettes`, platform patch `0004-palettes`) is a future
+area's colours:
+
+- seven grounds, each a material and colour: walk, road, earth, rock, far, bed and abyss;
+- the paint for rock meshes;
+- trim colours: wood, metal and foliage;
+- the one accent, and what wears it;
+- the lamp colour and the mist colour;
+- a lighting preset.
+
+Each is checked against the bible's limits and against one colour per material.
+
+It is judged by `scripts/palettepreview` (swatches) and by
+`dresspreview ... tileset=palette:<Name>`, which repaints the moor's dressing in the palette.
+The palettes job (`targets/arpg-game/palettes`) makes a batch at a time. Features, props and
+monsters are then generated against a named palette, so an area's pieces can be made before
+the area is designed.
+
 ### 1. Shared cell kinds (arpg-game, data)
 
 `data/CellKinds.luau`: one row per kind of ground, tagged by area palette. A row holds:
@@ -121,6 +142,6 @@ The shelf stays in swarm-lab, so the game repo doesn't grow with unused candidat
 
 ## Open questions for fafwa
 
-- **Where the shelf lives:** swarm-lab (proposed) or a folder in arpg-game?
-- **Who browses and vetoes shelf entries:** fafwa only, or the second person too?
-- **Area palettes first:** should we define several palettes ahead of time (cheap) so features for future areas can be generated before those areas are designed?
+- **Where the shelf lives:** swarm-lab is assumed until fafwa says otherwise.
+- **Who browses and vetoes shelf entries:** fafwa is assumed until he says otherwise.
+- Palettes ahead of time: **yes** (fafwa, 2026-10-30). See piece 0.
