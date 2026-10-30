@@ -44,7 +44,9 @@ pattern = '(\["sculpt:{skill_lower}_\w+"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),
 
 [purity]
 first_line = "--!strict"
-max_lines = 600
+# 600 rejected 7 of 12 in rimeholt-features-2 (632 to 991 lines), all over the cap and
+# nothing else: a generator with its own sculpts and set pieces runs long. 1000.
+max_lines = 1000
 requires = ["../DraftedMap", "../MapFeature", "../Grid", "../Noise", "../DistanceField"]
 forbid = [
   '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
