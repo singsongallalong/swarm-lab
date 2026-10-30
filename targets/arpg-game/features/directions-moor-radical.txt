@@ -1,0 +1,13 @@
+# Radical new feature types for the moor (fafwa, 2026-10-30: the heath, hollows and walls "show up in basically every map over and over"). One per worker; each must be a kind of place the moor has never had.
+A sinkhole: the heath collapsed into a round pit, its sides broken turf ledges stepping down to a gleam of black water far below; mist pours over the lip; the road bends round it.
+A drowned causeway: a raised path of logs and flagstones across a field of black bog pools, wisps of marsh-light hanging over the water, sunken posts marking the old way.
+Gallows hill: a small steep mound with a gibbet and a hanging crow-cage at its crown, a worn path spiralling up, the road skirting its foot; crows circle it.
+The broken avenue: two rows of standing stones running for fifty studs and leading to nothing, half of them toppled, the turf between them sunk into a shallow trough.
+An opened barrow: a long burial mound split open, its stone chamber and capstones exposed, a stair down into the dark, grave goods scattered round the breach.
+A peat cutting: long straight trenches cut into the bog in rows, black water standing in them, stacked peat bricks and a broken sledge on the banks between.
+A hillfort's rings: concentric earth banks and ditches, three rings round a flat crown with a fallen timber gate, the road cutting through the rings at one gap.
+A strike crater: a fresh round crater with a scorched raised rim, glassy black ground at its heart still glowing red in its cracks, embers drifting up.
+A shepherd's fold: a round dry-stone sheepfold with one gap, bones inside, a rowan tree growing through its wall, its shadow-side thick with nettles.
+The giant's cleft: two colossal split boulders with a narrow cleft path between them, ledges and fallen chock-stones overhead, the only way through a wall of rock.
+A drowned chapel: the apse of a chapel on a knoll in a mere, water lapping its steps, a candle shrine still lit inside, stepping stones out to it.
+A mire of graves: a graveyard sinking into the bog, headstones tilting at every angle, half of them under black water, a corpse-light glow in the pools.
