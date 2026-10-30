@@ -21,4 +21,4 @@ smash-block-1,SmashBlock,deepseek,deepseek-flash[1m],6,6,6,0,0,56098578,1.3374,8
 smash-whole-1,Smash,deepseek,deepseek-flash[1m],6,6,6,0,0,73768795,1.8778,1215.2,,
 rimeholt-features-2,Rimeholt,deepseek,deepseek-flash[1m],12,9,8,0,0,523133374,6.9195,2063.1,no rendered image listed in the manifest exists,
 smash-polish-1,SmashBlock,deepseek,deepseek-flash[1m],6,1,2,0,0,35690973,1.2712,851.1,generator exit 1,
-domain-kit-1,Domain,deepseek,deepseek-flash[1m],12,9,7,0,0,96587547,1.9654,466.3,generator exit 1,
+domain-kit-1,Domain,deepseek,deepseek-flash[1m],12,12,11,0,0,101819830,2.0101,466.3,src/shared/data/Sculpts.luau: changed text outside its rows,
