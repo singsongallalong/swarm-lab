@@ -53,3 +53,28 @@ Ground Slam. The reference is Ground Slam's one-handed swing.
 - 2026-10-30: the `motion` family in `swarm/pack.py`, and the job in
   `targets/arpg-game/motions/`. Dry-ran with hand keys: the renders, specs and row check pass,
   and the lab flags the hand keys' faults. Launched A and B1.
+- 2026-10-30, round 1: arm A, 6 of 6 passed the checks ($1.12). Arm B's blocking pass: 5 of 6, plus 1 after a resume ($1.70).
+- Arm A's critic passes 1 and 2: the top three were A (g04), C (g02) and F (g05), at 7.0, 6.8 and 5.5.
+- Arm B's block critic: E (g03) at 7.2 was the best block, then B at 6.5.
+- **DeepSeek's balance ran out** during the polish pass. 4 of 6 polish builders stopped with "402 Insufficient Balance", and only g00 and g05 finished.
+
+## Result (blind final, one fresh critic, 2026-10-30)
+
+| Rank | Candidate | Total | Lab `!` faults |
+| --- | --- | --- | --- |
+| 1 | B, the best block, unpolished (smash-block-1 g03) | 7.2 | 5 |
+| 2 | B, polished from it (smash-polish-1 g05) | 6.9 | 8 |
+| 3 | A, the whole motion, reworked (smash-whole-1 g04) | 6.6 | 6 |
+| 4 | A (g02) | 6.3 | 6 |
+| 5 | B, polished (g00) | 5.9 | 7 |
+| 6 | A (g05) | 4.7 | 6 |
+
+For comparison, Ground Slam has 6 lab faults and the hand-keyed Chop draft has 7. The critic's verdict: the winner is worth a look in Studio. It flagged the mace passing level at chest height around 0.52 s, and a fold that reads weakly from the game camera.
+
+What it suggests (guessed, from one critic and small numbers):
+
+- **The narrow task won.** Five named poses on a fixed timeline, judged as poses, beat the free brief at the same cost.
+- **Polish didn't help.** The polished versions scored at or below the block they started from, and both added lab faults. This matches the features runs, where reworks rarely improved the result. Flash seems better at making one well-specified thing than at improving something already made.
+- **The arms were uneven at the end:** two polish finishers against six. A rerun with balance would settle the polish question.
+
+Files: `results/motion-pilot/` holds the winner's and the runner-up's patches and renders, the blind critique, and the key.

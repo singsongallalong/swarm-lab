@@ -1,0 +1,71 @@
+diff --git a/src/shared/data/CastDrafts.luau b/src/shared/data/CastDrafts.luau
+index fafd5df5..8f361860 100644
+--- a/src/shared/data/CastDrafts.luau
++++ b/src/shared/data/CastDrafts.luau
+@@ -2100,4 +2100,66 @@ CastDrafts.VeinLashLunge = {
+ 	}),
+ }
+ 
++-- A one-handed overhead mace smash (SmashBlock): the weight sinks back as the
++-- mace is drawn down and back past the right hip, its head trailing low
++-- behind; then up tall, the mace high above the head with its head pointing
++-- back and down behind the shoulders and the chest arched; then over the top
++-- and down in front, the head meeting the ground a stride ahead with the
++-- chest folded over it, the knees deep and the hips lunging forward. Held low
++-- a beat, then straightened back toward the carry.
++CastDrafts.SmashBlock = {
++	plays = "GroundSlam",
++	castTime = 0.6,
++	motion = define("SmashBlock", {
++		layer = "FullBody",
++		level = true,
++		poses = {
++			Gather = {
++				weapon = v(1.15, -1.25, 0.3),
++				point = v(0.6, -0.65, 0.5),
++				twist = -0.2,
++				lean = -0.1,
++				drop = 0.35,
++				shift = v(0, 0, 0.15),
++			},
++			Raise = {
++				weapon = v(0.75, 1.6, 0.0),
++				point = v(0.3, 0.55, 0.78),
++				twist = -0.35,
++				lean = -0.2,
++				tilt = -0.15,
++				drop = -0.2,
++			},
++			Smash = {
++				weapon = v(0.6, -1.05, -1.5),
++				point = v(0.15, 0.15, -0.98),
++				twist = 0.15,
++				lean = 0.95,
++				tilt = 0.2,
++				drop = 1.0,
++				shift = v(0, 0, -0.55),
++			},
++			Settle = {
++				weapon = v(0.6, -1.08, -1.48),
++				point = v(0.15, 0.15, -0.98),
++				twist = 0.12,
++				lean = 0.92,
++				tilt = 0.18,
++				drop = 1.02,
++				shift = v(0, 0, -0.53),
++			},
++			Recover = {
++				weapon = v(0.65, -0.8, -0.35),
++				point = v(0.35, 0.3, -0.89),
++				lean = 0.18,
++				drop = 0.28,
++				shift = v(0, 0, -0.2),
++			},
++		},
++		windUp = { { at = 0.25, pose = "Gather" }, { at = 0.65, pose = "Raise" } },
++		release = { pose = "Smash", cue = "Impact" },
++		afterSwing = after({ { after = 0.1, pose = "Settle" }, { after = 0.5, pose = "Recover" }, { after = 0.9 } }),
++	}),
++}
++
+ return table.freeze(CastDrafts)

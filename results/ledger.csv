@@ -20,3 +20,4 @@ relickeys-1,RelicKeys,deepseek,deepseek-flash[1m],4,4,4,0,0,2520949,0.2263,214.7
 smash-block-1,SmashBlock,deepseek,deepseek-flash[1m],6,6,6,0,0,56098578,1.3374,871.0,,
 smash-whole-1,Smash,deepseek,deepseek-flash[1m],6,6,6,0,0,73768795,1.8778,1215.2,,
 rimeholt-features-2,Rimeholt,deepseek,deepseek-flash[1m],12,9,8,0,0,523133374,6.9195,2063.1,no rendered image listed in the manifest exists,
+smash-polish-1,SmashBlock,deepseek,deepseek-flash[1m],6,1,2,0,0,35690973,1.2712,851.1,generator exit 1,
