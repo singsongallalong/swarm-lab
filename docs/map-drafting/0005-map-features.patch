@@ -1,0 +1,893 @@
+diff --git a/scripts/catalog/Families.luau b/scripts/catalog/Families.luau
+index 524e8e18..73070c18 100644
+--- a/scripts/catalog/Families.luau
++++ b/scripts/catalog/Families.luau
+@@ -203,6 +203,7 @@ Families.notRecipes = {
+ 		"Terrain",
+ 		"DraftedMaps", -- drafted map layouts (systems/DraftedMap); their looks are tilesets
+ 		"Palettes", -- area palettes made ahead of the areas (systems/Palette); stand-in looks only
++		"MapFeatures", -- map features made alone and assembled into maps (systems/MapFeature)
+ 		"TilesetContract",
+ 	},
+ 	["sound cues and the soundboard's candidates (docs/guides/sound.md)"] = {
+diff --git a/scripts/dresspreview.luau b/scripts/dresspreview.luau
+index b006907a..913f0302 100644
+--- a/scripts/dresspreview.luau
++++ b/scripts/dresspreview.luau
+@@ -53,6 +53,8 @@ local KitDraw = require("./render/KitDraw")
+ local Label = require("./render/Label")
+ local LightingPresets = require("../src/shared/data/LightingPresets")
+ local MapDress = require("../src/shared/systems/MapDress")
++local MapFeature = require("../src/shared/systems/MapFeature")
++local MapFeatures = require("../src/shared/data/MapFeatures")
+ local MapPlan = require("../src/shared/systems/MapPlan")
+ local OutdoorTilesets = require("../src/shared/data/OutdoorTilesets")
+ local OutdoorTypes = require("../src/shared/OutdoorTypes")
+@@ -197,13 +199,19 @@ end
+ local args: { string } = {}
+ local lookName: string? = nil
+ local draftName: string? = nil
++-- `feature=<Name>`: a map feature (data/MapFeatures) alone on a pad of plain ground
++-- (MapFeature.asDraft), drawn like a drafted map in its palette's look.
++local featureName: string? = nil
+ for _, a in process.args do
+ 	local name = string.match(a, "^tileset=(.+)$")
+ 	local drafted = string.match(a, "^layout=(.+)$")
++	local feat = string.match(a, "^feature=(.+)$")
+ 	if name then
+ 		lookName = name
+ 	elseif drafted then
+ 		draftName = drafted
++	elseif feat then
++		featureName = feat
+ 	else
+ 		table.insert(args, a)
+ 	end
+@@ -230,7 +238,26 @@ elseif lookName then
+ 	end
+ end
+ local draft: DraftedMap.Draft? = nil
+-if draftName then
++if featureName then
++	local feature = MapFeatures[featureName]
++	if not feature then
++		local names = {}
++		for n in MapFeatures do
++			table.insert(names, n)
++		end
++		table.sort(names)
++		error(`no map feature {featureName}; registered: {table.concat(names, ", ")}`)
++	end
++	draft = MapFeature.asDraft(feature)
++	draftName = featureName
++	if not look then
++		local p = Palettes[feature.palette]
++		look = OutdoorTilesets[string.lower(feature.palette)] or (if p then Palette.tileset(p) else nil)
++		if not look then
++			error(`map feature {featureName} names palette {feature.palette}, which isn't registered`)
++		end
++	end
++elseif draftName then
+ 	draft = DraftedMaps[draftName]
+ 	if not draft then
+ 		local names = {}
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+new file mode 100644
+index 00000000..5aad1106
+--- /dev/null
++++ b/src/shared/data/MapFeatures.luau
+@@ -0,0 +1,13 @@
++--!strict
++-- Every map feature by name (systems/MapFeature; swarm-lab's features job): one
++-- structure each, judged alone with `lune run scripts/dresspreview shots out.png 3 1
++-- feature=<Name>` and assembled into maps later.
++local MapFeature = require("../systems/MapFeature")
++local RimeholtFrozenFall = require("../systems/features/RimeholtFrozenFall")
++
++local MapFeatures: { [string]: MapFeature.Feature } = {
++	-- One line per feature, `Name = Name,`, with its require above.
++	RimeholtFrozenFall = RimeholtFrozenFall,
++}
++
++return table.freeze(MapFeatures)
+diff --git a/src/shared/systems/DraftedMap.luau b/src/shared/systems/DraftedMap.luau
+index a66bc460..25b079d1 100644
+--- a/src/shared/systems/DraftedMap.luau
++++ b/src/shared/systems/DraftedMap.luau
+@@ -43,6 +43,9 @@ export type CellLook = {
+ 	lift: number?,
+ 	clear: boolean?,
+ 	props: { CellProp }?,
++	-- A glow of its own: one small light per `every` painted cells on average,
++	-- `height` studs over the surface (a breathing crack, a lit fall, a fungus bed).
++	glow: { color: { number }, range: number, brightness: number, every: number, height: number? }?,
+ }
+ 
+ -- A camera the draft chooses for its own photographs (dresspreview `shots`):
+@@ -67,6 +70,9 @@ export type Draft = {
+ 	-- Its own kinds of ground, and which cells get each (cell index -> kind).
+ 	cells: { [string]: CellLook }?,
+ 	paint: ((map: Heath.Map, rng: Random) -> { [number]: string })?,
++	-- Per painted cell, a lift that replaces its kind's (studs): a ridge's crest, a
++	-- fall's steps, a spire's height, without one kind per height.
++	lifts: ((map: Heath.Map, rng: Random) -> { [number]: number })?,
+ 	effects: ((map: Heath.Map, rng: Random) -> { Effect })?,
+ 	shots: ((map: Heath.Map) -> { Shot })?,
+ }
+@@ -80,6 +86,8 @@ DraftedMap.MAX_LIFT = 60
+ DraftedMap.MAX_SHOTS = 3
+ -- Set pieces are emitters and lights; a map's own stay within this many.
+ DraftedMap.MAX_EFFECTS = 8
++-- Lights a draft's own glow may add; the phone budget's light count still applies.
++DraftedMap.MAX_GLOWS = 24
+ -- The art bible's limit for a zone accent, the brightest surface it allows (section 2).
+ local BIBLE_SATURATION = 0.5
+ local BIBLE_VALUE = 0.4
+@@ -324,6 +332,19 @@ function DraftedMap.draftProblems(draft: Draft, map: Heath.Map, rng: Random, til
+ 				)
+ 			end
+ 		end
++		if look.glow then
++			local gl = look.glow
++			if
++				#gl.color ~= 3
++				or gl.range <= 0
++				or gl.range > 30
++				or gl.brightness <= 0
++				or gl.brightness > 3
++				or gl.every < 1
++			then
++				table.insert(out, `cell kind {kind}: glow needs a colour, range 0-30, brightness 0-3 and every >= 1`)
++			end
++		end
+ 		local props: { CellProp } = look.props or {}
+ 		for _, prop in props do
+ 			if not Sculpts[prop.sculpt] then
+@@ -335,6 +356,23 @@ function DraftedMap.draftProblems(draft: Draft, map: Heath.Map, rng: Random, til
+ 	end
+ 	if draft.paint then
+ 		local painted = draft.paint(map, rng)
++		local lifts: { [number]: number } = if draft.lifts then draft.lifts(map, rng) else {}
++		for i, l in lifts do
++			if painted[i] == nil then
++				table.insert(out, `lifts names cell {i}, which paint leaves unpainted`)
++				break
++			elseif l < 0 or l > DraftedMap.MAX_LIFT then
++				table.insert(out, `lifts gives cell {i} {l} studs, outside 0..{DraftedMap.MAX_LIFT}`)
++				break
++			elseif g.cells[i] == Grid.FLOOR and l > DraftedMap.WALK_LIFT then
++				local x, z = Grid.coords(g, i)
++				table.insert(
++					out,
++					`cell {x},{z} is walkable but lifts gives it {l} studs (at most {DraftedMap.WALK_LIFT})`
++				)
++				break
++			end
++		end
+ 		for i, kind in painted do
+ 			local look = cells[kind]
+ 			if not look then
+@@ -343,7 +381,7 @@ function DraftedMap.draftProblems(draft: Draft, map: Heath.Map, rng: Random, til
+ 			elseif i < 1 or i > #g.cells then
+ 				table.insert(out, `paint names cell {i}, off the grid`)
+ 				break
+-			elseif g.cells[i] == Grid.FLOOR and (look.lift or 0) > DraftedMap.WALK_LIFT then
++			elseif g.cells[i] == Grid.FLOOR and lifts[i] == nil and (look.lift or 0) > DraftedMap.WALK_LIFT then
+ 				local x, z = Grid.coords(g, i)
+ 				table.insert(
+ 					out,
+@@ -385,8 +423,9 @@ end
+ -- Rows of same-kind, same-height painted cells, as rectangles one cell deep.
+ local function paintedRuns(
+ 	map: Heath.Map,
+-	painted: { [number]: string }
+-): { { kind: string, rect: Grid.Rect, h: number } }
++	painted: { [number]: string },
++	liftAt: (i: number) -> number
++): { { kind: string, rect: Grid.Rect, h: number, lift: number } }
+ 	local g = map.grid
+ 	local out = {}
+ 	for z = 1, g.depth do
+@@ -395,16 +434,16 @@ local function paintedRuns(
+ 			local i = Grid.index(g, x, z)
+ 			local kind = painted[i]
+ 			if kind then
+-				local h = map.heights[i]
++				local h, lift = map.heights[i], liftAt(i)
+ 				local x1 = x
+ 				while x1 < g.width do
+ 					local j = Grid.index(g, x1 + 1, z)
+-					if painted[j] ~= kind or map.heights[j] ~= h then
++					if painted[j] ~= kind or map.heights[j] ~= h or liftAt(j) ~= lift then
+ 						break
+ 					end
+ 					x1 += 1
+ 				end
+-				table.insert(out, { kind = kind, rect = { x0 = x, z0 = z, x1 = x1, z1 = z }, h = h })
++				table.insert(out, { kind = kind, rect = { x0 = x, z0 = z, x1 = x1, z1 = z }, h = h, lift = lift })
+ 				x = x1 + 1
+ 			else
+ 				x += 1
+@@ -437,13 +476,19 @@ function DraftedMap.dress(
+ 	-- props cleared off them if asked, and their own scatter.
+ 	local cells: { [string]: CellLook } = draft.cells or {}
+ 	local painted: { [number]: string } = if draft.paint then draft.paint(map, rng) else {}
+-	for _, run in paintedRuns(map, painted) do
++	local lifts: { [number]: number } = if draft.lifts then draft.lifts(map, rng) else {}
++	local function liftAt(i: number): number
++		local kind = painted[i]
++		local look = if kind then cells[kind] else nil
++		return lifts[i] or (if look then look.lift else nil) or 0
++	end
++	for _, run in paintedRuns(map, painted, liftAt) do
+ 		local look = cells[run.kind]
+ 		if look and look.ground then
+ 			table.insert(dressing.ground, {
+ 				look = look.ground,
+ 				rect = run.rect,
+-				top = run.h + (look.lift or 0),
++				top = run.h + run.lift,
+ 				bottom = run.h - 4,
+ 			})
+ 		end
+@@ -459,8 +504,37 @@ function DraftedMap.dress(
+ 		end
+ 	end
+ 	dressing.pieces = kept
+-	for i, kind in painted do
++	-- In cell order, so the scatter is the same in Lune and Studio for a seed.
++	local glows = 0
++	for i = 1, #map.grid.cells do
++		local kind = painted[i]
++		if kind == nil then
++			continue
++		end
+ 		local look = cells[kind]
++		local glow = if look then look.glow else nil
++		if glow and glows < DraftedMap.MAX_GLOWS and rng:NextNumber() < 1 / math.max(glow.every, 1) then
++			glows += 1
++			local x, z = Grid.coords(map.grid, i)
++			local wx, wz = Grid.toWorld(x, z, cellSize)
++			local light: OutdoorTypes.LightLook = {
++				color = glow.color,
++				range = glow.range,
++				brightness = glow.brightness,
++				height = 0.3,
++				ember = 0.4,
++				pulse = { style = "breathe", depth = 0.3, period = 3 + rng:NextNumber() * 2 },
++			}
++			table.insert(dressing.pieces, {
++				look = { name = "Glow", size = { 0.6, 0.6, 0.6 }, material = "Neon", color = glow.color, light = light },
++				x = wx,
++				z = wz,
++				yaw = 0,
++				scale = 1,
++				sink = -(liftAt(i) + (glow.height or 0.2)),
++				group = `glow:{kind}`,
++			})
++		end
+ 		local props: { CellProp } = (if look then look.props else nil) or {}
+ 		for _, prop in props do
+ 			local recipe = Sculpts[prop.sculpt]
+@@ -474,7 +548,7 @@ function DraftedMap.dress(
+ 					z = wz,
+ 					yaw = rng:NextNumber() * 360,
+ 					scale = range[1] + (range[2] - range[1]) * rng:NextNumber(),
+-					sink = (prop.sink or 0) - ((look :: CellLook).lift or 0),
++					sink = (prop.sink or 0) - liftAt(i),
+ 					group = `cell:{kind}`,
+ 				})
+ 			end
+diff --git a/src/shared/systems/MapFeature.luau b/src/shared/systems/MapFeature.luau
+new file mode 100644
+index 00000000..008a73e1
+--- /dev/null
++++ b/src/shared/systems/MapFeature.luau
+@@ -0,0 +1,368 @@
++--!strict
++-- Map features (swarm-lab's features job, docs/feature-library.md): one structure of a
++-- map, made and judged on its own and assembled into maps later. A frozen fall, a
++-- pressure ridge, a spire grove, a crater rim. A feature is a seeded footprint of
++-- walkable and wall cells, with:
++--   - its own cell kinds and per-cell lifts (DraftedMap.CellLook);
++--   - heights;
++--   - landmarks and effects;
++--   - anchors: where a road runs through it, and where its photographs are taken from.
++-- `asDraft` stands a feature alone on a pad of plain ground, so the drafted-map tools
++-- (dresspreview layout=, MapTrial.drafted) draw it. `stamp` puts it into a map that
++-- is being assembled.
++local DraftedMap = require("./DraftedMap")
++local Grid = require("./Grid")
++local Heath = require("./Heath")
++local Terrain = require("../data/Terrain")
++
++local MapFeature = {}
++
++type Landmark = DraftedMap.Landmark
++type Effect = DraftedMap.Effect
++type Shot = DraftedMap.Shot
++
++export type Scale = "small" | "medium" | "centrepiece"
++export type Role = "centrepiece" | "crossing" | "filler" | "boundary" | "hazard"
++
++-- What `generate` returns. Everything is in the footprint's own cells, 1..width by
++-- 1..depth, fractional where a point is (a landmark, an anchor): cell (x, z) spans
++-- x - 0.5 .. x + 0.5.
++export type Footprint = {
++	width: number,
++	depth: number,
++	walk: { boolean }, -- per cell: walkable ground or a wall
++	heights: { number }, -- per cell, studs; walkable neighbours at most a step apart
++	kinds: { [number]: string }, -- painted cells: the feature's own cell kinds
++	lifts: { [number]: number }?, -- per painted cell, a lift that replaces its kind's
++	marks: { Landmark }?, -- sculpts it stands itself
++	effects: { Effect }?, -- set pieces it places
++	-- The road through it: points on walkable ground, the first and last on its border
++	-- (where a map's road joins it), the rest the way it runs inside.
++	road: { { x: number, z: number } },
++	-- One or two cameras for its photograph, chosen like a photographer's.
++	cameras: { Shot },
++}
++
++export type Feature = {
++	name: string,
++	about: string, -- one sentence: what it is
++	palette: string, -- data/Palettes: the colours it is made for
++	scale: Scale,
++	role: Role,
++	mood: { string }, -- a few words, for a map builder searching the shelf
++	cells: { [string]: DraftedMap.CellLook }?,
++	generate: (rng: Random) -> Footprint,
++}
++
++-- Cells a side, at most, by scale.
++MapFeature.SIZES = table.freeze({ small = 16, medium = 32, centrepiece = 56 })
++MapFeature.MAX_EFFECTS = 6
++MapFeature.MAX_CAMERAS = 2
++-- Plain ground the pad leaves round a feature, cells each side.
++MapFeature.PAD = 10
++-- The pad's own cell kind: no look of its own, only the tileset's props kept off.
++local PAD_KIND = "feature_pad"
++
++-- Every way `fp` breaks the contract, in plain words; empty when it is sound.
++function MapFeature.problems(feature: Feature, fp: Footprint): { string }
++	local out: { string } = {}
++	local function add(msg: string)
++		if #out < 12 then
++			table.insert(out, msg)
++		end
++	end
++	local w, d = fp.width, fp.depth
++	local most = MapFeature.SIZES[feature.scale]
++	if not most then
++		add(`scale {feature.scale} is not small, medium or centrepiece`)
++		return out
++	end
++	if w < 4 or d < 4 or w > most or d > most then
++		add(`footprint is {w} x {d}; a {feature.scale} feature is 4 to {most} cells a side`)
++	end
++	local n = w * d
++	if #fp.walk ~= n or #fp.heights ~= n then
++		add(`walk and heights must each have width*depth = {n} entries (have {#fp.walk}, {#fp.heights})`)
++		return out
++	end
++	local g = Grid.new(w, d, Grid.WALL)
++	for i, ok in fp.walk do
++		g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++	end
++	local regions = Grid.regions(g)
++	if #regions ~= 1 then
++		add(`{#regions} separate walkable regions; a feature's walkable ground must join up`)
++	end
++	local step = Terrain.terraces.maxStep
++	for i, ok in fp.walk do
++		local x, z = Grid.coords(g, i)
++		if ok then
++			if (x == 1 or z == 1 or x == w or z == d) and math.abs(fp.heights[i]) > step then
++				add(
++					`walkable border cell {x},{z} is {fp.heights[i]} studs high; the ground round a feature is 0, so its border's walkable cells are within {step}`
++				)
++			end
++			for _, nb in Grid.NEIGHBOURS do
++				local nx, nz = x + nb[1], z + nb[2]
++				if Grid.get(g, nx, nz) == Grid.FLOOR then
++					local diff = math.abs(fp.heights[i] - fp.heights[Grid.index(g, nx, nz)])
++					if diff > step then
++						add(
++							`cells {x},{z} and {nx},{nz} are walkable but {diff} studs apart; at most {step}, or a wall between`
++						)
++						break
++					end
++				end
++			end
++		end
++	end
++	local cells = feature.cells or {}
++	for i, kind in fp.kinds do
++		if i < 1 or i > n then
++			add(`kinds names cell {i}, off the footprint`)
++			break
++		elseif not cells[kind] then
++			add(`kinds names cell kind {kind}, which feature.cells lacks`)
++			break
++		end
++	end
++	if #fp.road < 2 then
++		add("road needs at least two points, in at the border and out at the border")
++	else
++		for k, p in fp.road do
++			local cx, cz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			if not Grid.inBounds(g, cx, cz) or not fp.walk[Grid.index(g, cx, cz)] then
++				add(`road point {k} at {p.x},{p.z} is not on walkable ground`)
++			end
++		end
++		for _, k in { 1, #fp.road } do
++			local p = fp.road[k]
++			local cx, cz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			if not (cx == 1 or cz == 1 or cx == w or cz == d) then
++				add(`road point {k} at {p.x},{p.z} must be on the footprint's border, where a map's road joins it`)
++			end
++		end
++	end
++	if #fp.cameras < 1 or #fp.cameras > MapFeature.MAX_CAMERAS then
++		add(`{#fp.cameras} cameras; one or two`)
++	end
++	if fp.effects and #fp.effects > MapFeature.MAX_EFFECTS then
++		add(`{#fp.effects} effects; at most {MapFeature.MAX_EFFECTS}`)
++	end
++	return out
++end
++
++-- Puts `fp` into `map` (a map being assembled) with its west-north corner at map cell
++-- (ox, oz), unrotated. Returns its painted cells, lifts, landmarks, effects and
++-- cameras in the map's cells, for the map's draft to hand on; its road points come
++-- back too, for the map's road to run through.
++export type Stamped = {
++	painted: { [number]: string },
++	lifts: { [number]: number },
++	marks: { Landmark },
++	effects: { Effect },
++	cameras: { Shot },
++	road: { { x: number, z: number } },
++}
++
++function MapFeature.stamp(map: Heath.Map, fp: Footprint, ox: number, oz: number): Stamped
++	local g = map.grid
++	local out: Stamped = { painted = {}, lifts = {}, marks = {}, effects = {}, cameras = {}, road = {} }
++	local dx, dz = ox - 1, oz - 1
++	for z = 1, fp.depth do
++		for x = 1, fp.width do
++			local fi = (z - 1) * fp.width + x
++			local mx, mz = x + dx, z + dz
++			if Grid.inBounds(g, mx, mz) then
++				local mi = Grid.index(g, mx, mz)
++				local walk = fp.walk[fi]
++				g.cells[mi] = if walk then Grid.FLOOR else Grid.WALL
++				map.kinds[mi] = if walk then "heath" else "outcrop"
++				map.edges[mi] = nil
++				map.heights[mi] = fp.heights[fi]
++				local kind = fp.kinds[fi]
++				if kind then
++					out.painted[mi] = kind
++					local lift = if fp.lifts then fp.lifts[fi] else nil
++					if lift then
++						out.lifts[mi] = lift
++					end
++				end
++			end
++		end
++	end
++	for _, m in fp.marks or {} do
++		local c = table.clone(m)
++		c.x += dx
++		c.z += dz
++		table.insert(out.marks, c)
++	end
++	for _, e in fp.effects or {} do
++		local c = table.clone(e)
++		c.x += dx
++		c.z += dz
++		table.insert(out.effects, c)
++	end
++	for _, s in fp.cameras do
++		table.insert(out.cameras, {
++			name = s.name,
++			from = { x = s.from.x + dx, z = s.from.z + dz, lift = s.from.lift },
++			to = { x = s.to.x + dx, z = s.to.z + dz, lift = s.to.lift },
++			fov = s.fov,
++		})
++	end
++	for _, p in fp.road do
++		table.insert(out.road, { x = p.x + dx, z = p.z + dz })
++	end
++	return out
++end
++
++-- Marks road cells along a polyline (fractional cells), on walkable ground only.
++local function layRoad(map: Heath.Map, points: { { x: number, z: number } })
++	local g = map.grid
++	for k = 2, #points do
++		local a, b = points[k - 1], points[k]
++		local len = math.max(math.abs(b.x - a.x), math.abs(b.z - a.z), 1)
++		for s = 0, math.ceil(len * 2) do
++			local t = s / math.ceil(len * 2)
++			local px, pz = a.x + (b.x - a.x) * t, a.z + (b.z - a.z) * t
++			for oz = -1, 1 do
++				for ox = -1, 1 do
++					local cx, cz = math.floor(px + 0.5) + ox, math.floor(pz + 0.5) + oz
++					if Grid.get(g, cx, cz) == Grid.FLOOR and math.abs(ox) + math.abs(oz) <= 1 then
++						map.kinds[Grid.index(g, cx, cz)] = "road"
++					end
++				end
++			end
++		end
++	end
++end
++
++-- The point on the pad's edge, inside its wall ring, straight out from border point p.
++local function outward(
++	p: { x: number, z: number },
++	w: number,
++	d: number,
++	W: number,
++	D: number
++): { x: number, z: number }
++	local pad = MapFeature.PAD
++	local x, z = p.x + pad + 1, p.z + pad + 1
++	local toW, toE, toN, toS = p.x - 1, w - p.x, p.z - 1, d - p.z
++	local least = math.min(toW, toE, toN, toS)
++	if least == toW then
++		return { x = 2, z = z }
++	elseif least == toE then
++		return { x = W - 1, z = z }
++	elseif least == toN then
++		return { x = x, z = 2 }
++	end
++	return { x = x, z = D - 1 }
++end
++
++-- The feature alone on a pad of plain walkable ground, a cliff rim round it: a
++-- DraftedMap.Draft, so dresspreview (`layout=` through `feature=`) and
++-- MapTrial.drafted draw it like any map. Its shots are the feature's own cameras
++-- and an eye-level view in along its road.
++function MapFeature.asDraft(feature: Feature): DraftedMap.Draft
++	local pad = MapFeature.PAD
++	local stamped: { [any]: Stamped } = setmetatable({}, { __mode = "k" }) :: any
++	local function generate(rng: Random): Heath.Map
++		local fp = feature.generate(rng)
++		local W, D = fp.width + 2 * pad + 2, fp.depth + 2 * pad + 2
++		local g = Grid.new(W, D, Grid.FLOOR)
++		local map: Heath.Map = {
++			grid = g,
++			kinds = table.create(W * D, "heath" :: Heath.CellKind),
++			edges = {},
++			road = {},
++			start = { x = 2, z = 2 },
++			exit = { x = 2, z = 2 },
++			sites = {},
++			heights = table.create(W * D, 0),
++			terraces = {},
++		}
++		for i = 1, W * D do
++			local x, z = Grid.coords(g, i)
++			if x == 1 or z == 1 or x == W or z == D then
++				g.cells[i] = Grid.WALL
++				map.kinds[i] = "rim"
++				map.edges[i] = "cliff"
++			end
++		end
++		local s = MapFeature.stamp(map, fp, pad + 2, pad + 2)
++		-- The pad is plain ground: the tileset's props and pools keep off it, so the
++		-- feature is judged on its own.
++		for i, cell in g.cells do
++			local x, z = Grid.coords(g, i)
++			local inside = x >= pad + 2 and x < pad + 2 + fp.width and z >= pad + 2 and z < pad + 2 + fp.depth
++			if cell == Grid.FLOOR and not inside then
++				s.painted[i] = PAD_KIND
++			end
++		end
++		local first, last = fp.road[1], fp.road[#fp.road]
++		local road = { outward(first, fp.width, fp.depth, W, D) }
++		for _, p in s.road do
++			table.insert(road, p)
++		end
++		table.insert(road, outward(last, fp.width, fp.depth, W, D))
++		map.road = road
++		layRoad(map, road)
++		map.start = { x = math.floor(road[1].x + 0.5), z = math.floor(road[1].z + 0.5) }
++		map.exit = { x = math.floor(road[#road].x + 0.5), z = math.floor(road[#road].z + 0.5) }
++		-- A rim cell must touch walkable ground; the pad's corners touch only rim.
++		for i, kind in map.kinds do
++			if kind == "rim" then
++				local x, z = Grid.coords(g, i)
++				local touches = false
++				for _, nb in Grid.NEIGHBOURS do
++					touches = touches or Grid.get(g, x + nb[1], z + nb[2]) == Grid.FLOOR
++				end
++				if not touches then
++					map.kinds[i] = "void"
++					map.edges[i] = nil
++				end
++			end
++		end
++		local eyeFrom = road[1]
++		local centre = { x = fp.width / 2 + pad + 1.5, z = fp.depth / 2 + pad + 1.5 }
++		table.insert(s.cameras, {
++			name = "in along the road",
++			from = { x = eyeFrom.x, z = eyeFrom.z, lift = 6 },
++			to = { x = centre.x, z = centre.z, lift = 4 },
++		})
++		stamped[map] = s
++		return map
++	end
++	local function of(map: Heath.Map): Stamped
++		return stamped[map] or { painted = {}, lifts = {}, marks = {}, effects = {}, cameras = {}, road = {} }
++	end
++	return {
++		name = feature.name,
++		about = feature.about,
++		tileset = string.lower(feature.palette),
++		generate = generate,
++		landmarks = function(map: Heath.Map, _rng: Random): { Landmark }
++			return of(map).marks
++		end,
++		cells = (function(): { [string]: DraftedMap.CellLook }
++			local cells = table.clone(feature.cells or {})
++			cells[PAD_KIND] = { clear = true }
++			return cells
++		end)(),
++		paint = function(map: Heath.Map, _rng: Random): { [number]: string }
++			return of(map).painted
++		end,
++		lifts = function(map: Heath.Map, _rng: Random): { [number]: number }
++			return of(map).lifts
++		end,
++		effects = function(map: Heath.Map, _rng: Random): { Effect }
++			return of(map).effects
++		end,
++		shots = function(map: Heath.Map): { Shot }
++			return of(map).cameras
++		end,
++	}
++end
++
++return MapFeature
+diff --git a/src/shared/systems/features/RimeholtFrozenFall.luau b/src/shared/systems/features/RimeholtFrozenFall.luau
+new file mode 100644
+index 00000000..db748c37
+--- /dev/null
++++ b/src/shared/systems/features/RimeholtFrozenFall.luau
+@@ -0,0 +1,116 @@
++--!strict
++-- The worked example for the features job: a frozen waterfall in Rimeholt's colours.
++-- A wall of dark granite crosses the footprint; through a notch in it a fall hangs
++-- frozen mid-drop, its columns of ice highest at the lip and stepping down to a
++-- sheet of pale ice at its foot, where a cold glow breathes under the surface. The
++-- road skirts the pool and climbs through the gap beside the fall. Its photograph is
++-- taken from the far shore of the pool, low, looking up the fall.
++local DraftedMap = require("../DraftedMap")
++local MapFeature = require("../MapFeature")
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local feature: MapFeature.Feature = {
++	name = "RimeholtFrozenFall",
++	about = "A waterfall frozen mid-drop through a notch in a granite wall, over a sheet of glowing ice.",
++	palette = "Rimeholt",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "frozen", "tall", "glowing", "still" },
++	cells = {
++		-- Columns of fall ice, lifted per cell (a draft's own lifts).
++		fall = {
++			-- Marble, which the tileset leaves free, so the fall can be paler than its
++			-- far glacier: up to the bible's accent value.
++			ground = { material = "Marble", color = { 82, 98, 100 } },
++			clear = true,
++			glow = { color = { 120, 200, 200 }, range = 10, brightness = 0.8, every = 6, height = 2 },
++		},
++		-- The granite wall the fall breaks through.
++		wall = { ground = { material = "Basalt", color = { 50, 54, 62 } }, clear = true, lift = 14 },
++		-- The frozen pool at its foot: walkable, a hair over the snow.
++		pool = {
++			ground = { material = "Ice", color = { 60, 72, 74 } },
++			lift = 0.3,
++			clear = true,
++			glow = { color = { 110, 190, 190 }, range = 8, brightness = 0.6, every = 18 },
++		},
++	} :: { [string]: DraftedMap.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		local w, d = 26, 22
++		local walk, heights, kinds, lifts = table.create(w * d, true), table.create(w * d, 0), {}, {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local wallZ = math.floor(between(rng, 7, 9))
++		local notch = math.floor(between(rng, 9, 15))
++		local fallW = math.floor(between(rng, 4, 6))
++		local gap = notch + fallW + 2 -- the road's way through, beside the fall
++		local lip = between(rng, 16, 22)
++		for x = 1, w do
++			for z = wallZ, wallZ + 1 do
++				local i = at(x, z)
++				if x >= gap and x <= gap + 2 then
++					continue -- the gap
++				end
++				walk[i] = false
++				if x >= notch and x < notch + fallW then
++					kinds[i] = "fall"
++					lifts[i] = lip
++				else
++					kinds[i] = "wall"
++					lifts[i] = 12 + math.floor(between(rng, 0, 5))
++				end
++			end
++		end
++		-- The fall steps down toward the pool: a run of ice columns lower each row.
++		for k = 1, 3 do
++			for x = notch, notch + fallW - 1 do
++				local i = at(x, wallZ + 1 + k)
++				walk[i] = false
++				kinds[i] = "fall"
++				lifts[i] = math.max(lip - k * between(rng, 4, 6), 3)
++			end
++		end
++		local cx, cz = notch + fallW / 2, wallZ + 7
++		local rx, rz = fallW / 2 + between(rng, 3, 5), between(rng, 3, 4)
++		for z = wallZ + 5, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] and ((x - cx) / rx) ^ 2 + ((z - cz) / rz) ^ 2 <= 1 then
++					kinds[i] = "pool"
++				end
++			end
++		end
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = {
++				{ sculpt = "rimeholt_runestones", x = cx + rx + 2, z = cz + 1, scale = 0.7 },
++				{ sculpt = "rimeholt_hillfire", x = gap + 1, z = wallZ + 3 },
++			},
++			effects = { { recipe = "rimeholt_underice", x = cx, z = cz, lift = 0.4 } },
++			road = {
++				{ x = gap + 1, z = d },
++				{ x = gap + 1, z = wallZ + 3 },
++				{ x = gap + 1, z = 1 },
++			},
++			cameras = {
++				{
++					name = "up the fall",
++					from = { x = cx - 1, z = d - 1, lift = 3 },
++					to = { x = cx, z = wallZ, lift = lip * 0.7 },
++					fov = 60,
++				},
++			},
++		}
++	end,
++}
++
++return feature
+diff --git a/tests/systems/MapFeatures.spec.luau b/tests/systems/MapFeatures.spec.luau
+new file mode 100644
+index 00000000..5e78c429
+--- /dev/null
++++ b/tests/systems/MapFeatures.spec.luau
+@@ -0,0 +1,111 @@
++--!strict
++-- Map features (systems/MapFeature, swarm-lab's features job): every one keeps its
++-- contract on many seeds, is the same for a seed and varies with it, stands sound on
++-- its pad as a drafted map, and stays inside the phone budget once dressed.
++-- `lune run .swarm/tools/explain MapFeatures` (in a swarm worktree) prints which rule
++-- a feature breaks.
++local DraftedMap = require("../../src/shared/systems/DraftedMap")
++local MapCost = require("../../src/shared/systems/MapCost")
++local MapFeature = require("../../src/shared/systems/MapFeature")
++local MapFeatures = require("../../src/shared/data/MapFeatures")
++local OutdoorTilesets = require("../../src/shared/data/OutdoorTilesets")
++local Palette = require("../../src/shared/systems/Palette")
++local Palettes = require("../../src/shared/data/Palettes")
++local PerfBudget = require("../../src/shared/data/PerfBudget")
++local Terrain = require("../../src/shared/data/Terrain")
++local TestApi = require("../TestApi")
++local TestRng = require("./TestRng")
++
++local SEEDS = 6
++
++local function rngFor(seed: number): Random
++	return TestRng.seeded(seed) :: any
++end
++
++local function lookOf(feature: MapFeature.Feature): any
++	local p = Palettes[feature.palette]
++	return OutdoorTilesets[string.lower(feature.palette)] or (if p then Palette.tileset(p) else nil)
++end
++
++return function(api: TestApi.Api)
++	local describe, it, expect = api.describe, api.it, api.expect
++
++	describe("MapFeatures", function()
++		it("names itself by its key, a registered palette, and says what it is", function()
++			for key, f in MapFeatures do
++				expect({ key, f.name }).toEqual({ key, key })
++				expect({ key, "palette", Palettes[f.palette] ~= nil }).toEqual({ key, "palette", true })
++				expect({ key, #f.about > 0, #f.mood > 0 }).toEqual({ key, true, true })
++			end
++		end)
++
++		it("keeps the contract on every seed, and stands sound on its pad", function()
++			for key, f in MapFeatures do
++				local draft = MapFeature.asDraft(f)
++				for seed = 1, SEEDS do
++					local fp = f.generate(rngFor(seed))
++					expect({ key, seed, MapFeature.problems(f, fp) }).toEqual({ key, seed, {} })
++					local map = draft.generate(rngFor(seed))
++					expect({ key, seed, "pad", DraftedMap.problems(map) }).toEqual({ key, seed, "pad", {} })
++					expect({ key, seed, "own", DraftedMap.draftProblems(draft, map, rngFor(seed), lookOf(f)) }).toEqual({
++						key,
++						seed,
++						"own",
++						{},
++					})
++					local marks = draft.landmarks and draft.landmarks(map, rngFor(seed)) or {}
++					expect({ key, seed, DraftedMap.landmarkProblems(map, marks) }).toEqual({ key, seed, {} })
++				end
++			end
++		end)
++
++		it("is the same for a seed and varies with it", function()
++			for key, f in MapFeatures do
++				local a, b, c = f.generate(rngFor(3)), f.generate(rngFor(3)), f.generate(rngFor(4))
++				expect({ key, a.walk, a.heights }).toEqual({ key, b.walk, b.heights })
++				local same = #a.walk == #c.walk
++				if same then
++					for i, v in a.walk do
++						same = same and v == c.walk[i] and a.heights[i] == c.heights[i]
++					end
++					local la, lc = a.lifts or {}, c.lifts or {}
++					for i, v in la do
++						same = same and lc[i] == v
++					end
++				end
++				expect({ key, "two seeds give the same feature", same }).toEqual({
++					key,
++					"two seeds give the same feature",
++					false,
++				})
++			end
++		end)
++
++		-- A feature is one part of a map, so it gets a third of a map's budget.
++		it("keeps every seed within a third of the phone budget", function()
++			local budget = PerfBudget.map
++			for key, f in MapFeatures do
++				local draft = MapFeature.asDraft(f)
++				local look = lookOf(f)
++				for seed = 1, SEEDS do
++					local rng = rngFor(seed)
++					local map = draft.generate(rng)
++					local cost = MapCost.count(DraftedMap.dress(draft, map, look, Terrain.cellSize, rng), look, rngFor)
++					local where = `{key} seed {seed}`
++					expect({ where, "parts", cost.parts, cost.parts <= budget.parts / 3 }).toEqual({
++						where,
++						"parts",
++						cost.parts,
++						true,
++					})
++					expect({ where, "lights", cost.lights, cost.lights <= budget.lights / 3 }).toEqual({
++						where,
++						"lights",
++						cost.lights,
++						true,
++					})
++				end
++			end
++		end)
++	end)
++end

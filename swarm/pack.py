@@ -76,6 +76,21 @@ def render_commands(brief: dict) -> tuple[str, str]:
             "lune run scripts/setpiecepreview <SetPiece> .swarm/out/map-setpiece-r1.png",
         ]
         return "\n".join(ref), "\n".join(mine)
+    if brief["family"] == "feature":
+        # One map feature alone on a pad of plain ground (MapFeature.asDraft): its own
+        # photographs first, the pad from above, its new sculpts and its set piece. The
+        # reference is the worked example, RimeholtFrozenFall.
+        ref = [
+            "lune run scripts/dresspreview shots .swarm/out/ref-shots-RimeholtFrozenFall.png 2 1 feature=RimeholtFrozenFall",
+            "lune run scripts/dresspreview whole .swarm/out/ref-whole-RimeholtFrozenFall.png 1 1 feature=RimeholtFrozenFall",
+        ]
+        mine = [
+            "lune run scripts/dresspreview shots .swarm/out/feature-shots-r1.png 3 1 feature=<YourLook>",
+            "lune run scripts/dresspreview whole .swarm/out/feature-whole-r1.png 2 1 feature=<YourLook>",
+            "lune run scripts/sculptpreview <Sculpts> .swarm/out/feature-sculpts-r1.png 2",
+            "lune run scripts/setpiecepreview <SetPiece> .swarm/out/feature-setpiece-r1.png",
+        ]
+        return "\n".join(ref), "\n".join(mine)
     if brief["family"] == "palette":
         # An area palette made ahead of its area: its swatches against the bible's limits,
         # and the moor's own dressing repainted in it (a stand-in look). The reference is

@@ -1,0 +1,19 @@
+# The features pilot (2026-10-30): features for Rimeholt, the frozen highland, made alone
+# and judged on renders, for maps to be assembled from later (docs/feature-library.md).
+skill = "Rimeholt"
+family = "feature"
+brief = """
+Make one feature for Rimeholt: a frozen night highland of old snow, where a hill-folk's
+barrows and runestones lie beside a lake that never thaws. Its palette is `Rimeholt`
+(blue-grey snow, dark frozen earth, grey granite, a pale ice-blue accent, amber hill-fires)
+and its look already exists, with sculpts you may use: `rimeholt_ice` (a sheet of pale ice
+24 x 24 studs), `rimeholt_runestones` (a ring, 18 across), `rimeholt_barrow` (16 x 12),
+`rimeholt_pine`, `rimeholt_pine_snapped`, `rimeholt_boulder`, `rimeholt_hillfire`,
+`rimeholt_marker`; and set pieces `rimeholt_underice` (a glow under ice) and `rimeholt_drift`
+(snow streaming low on the wind).
+
+Your direction names the idea. Push it into something this game hasn't got: an effect of
+its own, geometry with height and shape, detail worth a close look, and a photograph from
+inside it. A feature is one structure, not a whole map: medium (up to 32 cells a side) or a
+centrepiece (up to 56); the road passes through it.
+"""

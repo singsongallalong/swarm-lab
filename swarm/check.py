@@ -189,6 +189,10 @@ def render_final(wt: Path, t: config.Target, meta: dict, manifest: dict) -> tupl
     for cmd in cmds.splitlines():
         if not cmd.strip() or cmd.lstrip().startswith("#"):
             continue
+        # A render of something optional the candidate didn't make (no new sculpt, no
+        # set piece of its own) is skipped, not a failure.
+        if any(ph in cmd and not manifest.get(key) for ph, key in pack.PLACEHOLDERS.items() if ph != "<YourLook>"):
+            continue
         cmd = pack.fill_placeholders(cmd, manifest).replace("-r1.png", "-final.png")
         r = subprocess.run(cmd, cwd=wt, env=t.env(), shell=True, text=True, capture_output=True, timeout=300)
         if r.returncode != 0:

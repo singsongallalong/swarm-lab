@@ -1,0 +1,105 @@
+# The features job (docs/feature-library.md): one map feature each, a structure judged
+# alone on a pad and assembled into maps later. fafwa (2026-10-30): "reward novel features
+# that create their own ideas e.g. environmental effects, particles, interesting geometry,
+# or details in general". So a feature may bring its own sculpts (geometry, detail) and
+# set pieces (effects, particles) with it.
+
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+max_turns = 90
+tools = ["../zones/tools/explain.luau"]
+rules = ["docs/art/bible.md", "docs/guides/set-pieces.md"]
+
+[platform]
+needs = "src/shared/systems/MapFeature.luau"
+# The drafted-map platform (0003), palettes (0004), Rimeholt's look (the example feature
+# uses its sculpts and set piece), then features (0005), each made on the one before.
+patches = [
+  "docs/map-drafting/0003-drafted-maps-open.patch",
+  "docs/map-drafting/0004-palettes.patch",
+  "results/rimeholt-zones/candidate-C-on-b1d0ed0.patch",
+  "docs/map-drafting/0005-map-features.patch",
+]
+
+[files."src/shared/systems/features/{skill}*.luau"]
+mode = "new_file"
+
+[files."src/shared/data/MapFeatures.luau"]
+mode = "add_lines"
+pattern = '(local \w+ = require\("\.\./systems/features/{skill}\w*"\)|{skill}\w* = \w+,)'
+
+[files."src/shared/data/Sculpts.luau"]
+mode = "add_rows"
+prefix = "{skill_lower}_"
+
+[files."src/shared/data/SetPieces.luau"]
+mode = "add_rows"
+prefix = "{skill_lower}_"
+
+[files."src/shared/data/catalog/World.luau"]
+mode = "add_lines"
+pattern = '(\["sculpt:{skill_lower}_\w+"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),)?|"[^"]{1,160}",|(MOOR|TOWN)|\),|--[^\n]{0,200})'
+
+[purity]
+first_line = "--!strict"
+max_lines = 600
+requires = ["../DraftedMap", "../MapFeature", "../Grid", "../Noise", "../DistanceField"]
+forbid = [
+  '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
+  '\btask\.', '\bwait\s*\(', '\bspawn\s*\(', '\bdelay\s*\(', '\bcoroutine\.',
+  '\bos\.', '\bdebug\.', '\bgetfenv\b', '\bsetfenv\b', '\bloadstring\b', '\b_G\b', '\bshared\b',
+  '\bRandom\.new\b', '\bmath\.random\b',
+]
+
+[quotes.contract]
+file = "src/shared/systems/MapFeature.luau"
+note = "the contract: what a feature is, the problems it is checked by, how it stands on its pad and is stamped into maps"
+
+[quotes.drafted]
+file = "src/shared/systems/DraftedMap.luau"
+note = "what a feature's own cell kinds can do (CellLook: ground, lift, clear, props, glow), and the checks on them (draftProblems)"
+
+[quotes.example]
+file = "src/shared/systems/features/RimeholtFrozenFall.luau"
+note = "the worked example. Yours must be a different idea, not this one varied"
+
+[quotes.sculpt_types]
+file = "src/shared/SculptTypes.luau"
+note = "what a sculpt recipe is: the kinds are fixed code, a recipe picks one and its size, colours and options"
+
+[quotes.setpiece_types]
+file = "src/shared/SetPieceTypes.luau"
+note = "what a set piece and a theme are"
+
+[quotes.setpieces]
+file = "src/shared/data/SetPieces.luau"
+note = "the set piece recipes: a new one goes at the end of the `recipes` table, its theme an existing one"
+
+[[specs]]
+name = "MapFeatures"
+cmd = "lune run tests MapFeatures"
+
+[[specs]]
+name = "Sculpt"
+cmd = "lune run tests Sculpt"
+
+[[specs]]
+name = "SetPiece"
+cmd = "lune run tests SetPiece"
+
+[[specs]]
+name = "Catalog"
+cmd = "lune run tests Catalog"
+
+[[specs]]
+name = "ContentCompleteness"
+cmd = "lune run tests ContentCompleteness"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/systems/features src/shared/data/MapFeatures.luau src/shared/data/Sculpts.luau src/shared/data/SetPieces.luau src/shared/data/catalog/World.luau"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/systems/features src/shared/data/MapFeatures.luau src/shared/data/Sculpts.luau src/shared/data/SetPieces.luau src/shared/data/catalog/World.luau"
