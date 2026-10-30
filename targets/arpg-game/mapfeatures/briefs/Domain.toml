@@ -1,0 +1,31 @@
+# The Eternal Domain's features (2026-10-30): fafwa, "I'd prefer a feature run based on
+# the valhala god-like area". Made for the `domain` tileset (arpg-game branch
+# claude/domain-tileset), in the art bible's one exception (B12).
+ref = "origin/claude/domain-tileset"
+skill = "Domain"
+family = "feature"
+example = "MoorBarrowRing"
+directions = "directions-domain.txt"
+brief = """
+Make one feature for **the Eternal Domain**: the game's endgame area, the domain of the gods,
+a vast Valhalla-like realm of ivory stone and gold in holy light, standing on a sea of cloud.
+It is the opposite of the rest of the game (dark night gothic): here everything is pale stone,
+gilt and light. It must feel like a reward: monumental, awe-struck, cold-perfect, a little
+terrible. Colossal scale (a person is 5 studs; columns 30-60, colossi 40-90), broad paved
+spaces to fight on, sheer drops into cloud.
+
+Its look in numbers (the art bible's exception B12, checked): stone ivory and marble, value
+0.75-0.92, saturation up to 0.20, two or three tones; gold saturation up to 0.55 (0.75 as an
+accent); pale sky blue (190, 214, 255) sparingly; Marble, Limestone, Slate for stone. Its
+tileset is `domain` (`src/shared/data/outdoorTilesets/Domain.luau`: read its ground colours
+and props); its kit of sculpts is the `domain_` rows in `data/Sculpts.luau` (brazier, column,
+arch, waystone ring, gold tree, great gate, spire, pool); its set pieces use the `domain`
+theme. Sculpts you add must be named `domain_<something>`. The worked example is a moor henge:
+copy its shape, not its look.
+
+Your direction names a kind of heavenly place. Make it **unmistakably that place**, with height
+(lifts, terraces, stairs, pillars on wall cells), its own paved ground, landmarks from the
+kit or new sculpts of your own, and its own light (glow, set pieces). One structure: small (up
+to 16 cells a side) or medium (up to 32); a centrepiece up to 56 if the direction is vast. If
+the road runs through it, it is a `crossing`.
+"""
