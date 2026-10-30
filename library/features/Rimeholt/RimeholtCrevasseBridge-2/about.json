@@ -1,0 +1,60 @@
+{
+  "name": "RimeholtCrevasseBridge",
+  "intent": "A deep crevasse torn across Rimeholt's night snow, one long drop from the snow to a single dark floor where a pale seam of lit ice runs in a line of cold light, crossed by the hill-folk's lashed-timber plank bridge, short or long over the cut it finds, with snowdrifts banked at the rim beside it.",
+  "sculpts": [
+    "rimeholt_bridge",
+    "rimeholt_bridge_crib",
+    "rimeholt_bridge_timbers",
+    "rimeholt_snowdrift",
+    "rimeholt_ice_teeth"
+  ],
+  "setpiece": "rimeholt_crevasse_drift",
+  "variation": [
+    "crack shape: inner throat / S-rift / dogleg / fork with a separate splinter / twin crossings / zigzag / hook that dies out",
+    "cut width: a 2-cell split up to a 7-cell chasm, dropping 12-14 studs to one dark floor",
+    "crossings: one bridge on the road, or two on twin cracks, each at a seeded place",
+    "bridge span: sized from the cut it finds, so a narrow split gets a short hop and a wide chasm a long span",
+    "the lit seam: a continuous pale strip along a wide floor, or a run of lit cells at the crossing on a narrow one",
+    "the snow: a frozen tarn or not, and 0-2 ice crags"
+  ],
+  "requests": [
+    "dresspreview draws no set pieces, so the snow-pour placed at the rim beside the bridge can only be seen in the setpiece render, never in the bridge's own photographs",
+    "a painted cell's ground always sits on the base ground fill, so the cut's walls above the floor are the snow heath's side faces rather than a surface the feature can colour"
+  ],
+  "critic_pass1": {
+    "idea": 7,
+    "photograph": 7,
+    "topology": 7,
+    "look": 6,
+    "camera": 7,
+    "usable": 7,
+    "total": 6.9,
+    "best_shot": "shots seed 3, the crossing from the south",
+    "why": "Bridge over a stepped crevasse is a clear subject and the crossing angle varies well; crevasse floor is checkerboard paving with no glow."
+  },
+  "critic_pass2": {
+    "idea": 6,
+    "photo": 7,
+    "topology": 6,
+    "look": 5,
+    "camera": 6,
+    "usable": 7,
+    "total": 6.23,
+    "best_shot": "shots seed 1, the crossing from the south",
+    "why": "Clear, readable bridge subject and a clean crossing to fight on; floor still a checkerboard with little glow and seeds are similar slashes."
+  },
+  "critic_pass3": {
+    "idea": 5,
+    "photo": 6,
+    "topology": 6,
+    "look": 4,
+    "camera": 6,
+    "usable": 7,
+    "total": 5.58,
+    "best_shot": "feature-shots seed 2, the crossing from the south",
+    "why": "A readable bridge over a dark cut with a lit seam from above and real variety in cut shapes; the bridge itself never changes and the eye-level shots are cluttered."
+  },
+  "final_notes": "# B: crevasse with a lashed-timber bridge\n\nKeep: the plank bridge with rope rails over a dark cut, and \"the crossing from the south\" as the photo; the seeds sheet now has single, double, triple and zig-zag cuts, which is real variety.\n\n1. The bridge is the same short span in every shot; the cut under it is always about the bridge's length. Let the bridge seeds include a long span over a wide cut, and show it in the hero shot.\n2. The floor seam now reads as a pale strip with cubes from the game camera (seed 2), but in the eye-level shots it is a single cyan cube at the frame edge; make the seam run the full length of the cut so the drop is lit in every photo.\n3. \"The bridge from the bank\" is cluttered by props and crib blocks standing in front of the bridge; clear the near rim so the bridge and the drop are the subject.\n\nLast round: answered the floor (one dark floor with a pale seam, no checkerboard) and partly the glow (visible from the game camera only); not answered the bridge length, which still looks identical in every photograph.\n",
+  "run": "rimeholt-features-2",
+  "generator": "g05"
+}

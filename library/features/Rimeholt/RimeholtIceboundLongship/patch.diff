@@ -1,0 +1,1172 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 5aad1106..20b2754d 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -4,10 +4,12 @@
+ -- feature=<Name>` and assembled into maps later.
+ local MapFeature = require("../systems/MapFeature")
+ local RimeholtFrozenFall = require("../systems/features/RimeholtFrozenFall")
++local RimeholtIceboundLongship = require("../systems/features/RimeholtIceboundLongship")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	RimeholtFrozenFall = RimeholtFrozenFall,
++	RimeholtIceboundLongship = RimeholtIceboundLongship,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index f409fe03..e759eb7f 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1048,4 +1048,67 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- Rimeholt's ice-bound longship: the hill-folk's burial ship frozen into the
++-- lake at a tilt (the feature RimeholtIceboundLongship). Tarred black timber
++-- rimed pale, the stem keeping the zone's ice-blue paint (B8), and the
++-- shattered lake ice in the pale old-ice blues the tarn's sheet already uses.
++Sculpts.rimeholt_burial_hull = {
++	kind = "hull",
++	form = "beached",
++	-- A longship a dozen oars a side: the pitch is the tilt it froze at, bow
++	-- reared out of the ice, and worn enough that the ice shows through the
++	-- strakes along the waterline.
++	size = { 64, 22, 18 },
++	material = "WoodPlanks",
++	colors = { { 44, 48, 56 }, { 36, 40, 46 }, { 60, 66, 74 } },
++	accent = { 62, 88, 90 },
++	maxPrims = 44,
++	worn = 0.35,
++	tilt = 20,
++}
++Sculpts.rimeholt_ship_ribs = {
++	kind = "bones",
++	-- The ship's frame standing out of the broken ice: the keel's spine with
++	-- its ribs arched over it in the same tarred timber, frosted pale along
++	-- their backs.
++	size = { 26, 12, 12 },
++	material = "WoodPlanks",
++	colors = { { 44, 48, 56 }, { 36, 40, 46 }, { 72, 82, 90 } },
++	maxPrims = 36,
++	ribs = 5,
++}
++Sculpts.rimeholt_ship_mast = {
++	kind = "lamppost",
++	-- The mast with its yard crossed high and the rigging frozen down from
++	-- its tip: a tarred pole, no lantern, the yard as wide as the beam.
++	size = { 15, 22, 2 },
++	material = "Wood",
++	colors = { { 44, 48, 56 }, { 36, 40, 46 } },
++	maxPrims = 14,
++	reach = 14,
++	arm = 15,
++	drop = 4,
++}
++Sculpts.rimeholt_ice_slab = {
++	kind = "boulder",
++	-- A pressure ridge's broken slab: tilted blocks of old lake ice shoved up
++	-- out of the surface, pale with a deeper blue underface.
++	size = { 12, 9, 9 },
++	material = "Glacier",
++	colors = { { 74, 92, 100 }, { 66, 84, 92 }, { 82, 98, 102 } },
++	maxPrims = 8,
++	chunks = 3,
++	tilt = 30,
++}
++Sculpts.rimeholt_wreck_timber = {
++	kind = "blocks",
++	-- Splintered planks and a broken rib pushed up through the ice where the
++	-- hull broke open, rimed on top.
++	size = { 5, 2.2, 2 },
++	material = "WoodPlanks",
++	colors = { { 44, 48, 56 }, { 36, 40, 46 }, { 72, 82, 90 } },
++	maxPrims = 6,
++	merge = 6,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 88a1b18b..a0600d44 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1590,4 +1590,92 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- Rimeholt's ice-bound longship: the burial ship's keel lit under the lake
++-- ice. A tight soft line of cold light along the keel beneath the hull, just
++-- wider than the keel itself so it outlines the ship from above, breathing
++-- slowly on a nine-second beat, with a brighter core along the keel and a
++-- few frost motes lifting off the ice. The worm is short and near straight,
++-- so the line stays under the hull rather than wandering off across the
++-- lake. Read from the game camera, which looks straight down on it.
++recipes.rimeholt_hullglow = {
++	about = "A buried longship's keel glowing up through Rimeholt's ice: a soft cold line of light along the keel, breathing slowly, with a few frost motes over it.",
++	theme = "rimeholt",
++	path = { kind = "worm", length = 34, step = 2, bend = 2, climb = 0, round = 2 },
++	layers = {
++		{
++			-- The glow's body: a narrow band hugging the keel line, so from
++			-- above it traces the ship.
++			name = "pool",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 5,
++				lift = 0.2,
++				toward = "up",
++				rise = 0.05,
++				life = { 8, 11 },
++				rate = 3,
++				size = 11,
++				tall = 0.3,
++				transparency = 0.8,
++				color = "glow",
++				lean = 10,
++				vary = 0.4,
++			},
++			motion = { kind = "pulse", period = 9, depth = 0.35 },
++			priority = 1,
++		},
++		{
++			-- The brighter water right along the keel.
++			name = "core",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 2.5,
++				lift = 0.15,
++				toward = "up",
++				rise = 0.05,
++				life = { 6, 9 },
++				rate = 2,
++				size = 5,
++				tall = 0.4,
++				transparency = 0.55,
++				color = "pale",
++				lean = 8,
++				vary = 0.3,
++			},
++			motion = { kind = "pulse", period = 9, depth = 0.4 },
++			priority = 2,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 12,
++				thick = 3,
++				lift = 0.25,
++				toward = "up",
++				rise = 0.5,
++				life = { 4, 6 },
++				rate = 0.8,
++				size = 0.4,
++				tall = 1,
++				transparency = 0.4,
++				color = "rime",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.5, tilt = 3, span = 8, periods = { 6, 9 } },
++			priority = 3,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 10, max = 2, range = 18, brightness = 0.8, color = "glow" },
++			motion = { kind = "pulse", period = 9, depth = 0.4 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0e4c0dc5..405c6229 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -362,6 +362,26 @@ local rows: { [string]: Row } = {
+ 		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
+ 		MOOR
+ 	),
++	["sculpt:rimeholt_burial_hull"] = row(
++		"A hill-folk longship frozen into Rimeholt's lake at a tilt, its tarred strakes worn open and its stem in the zone's ice-blue paint.",
++		MOOR
++	),
++	["sculpt:rimeholt_ship_ribs"] = row(
++		"The burial ship's keel and ribs standing out of Rimeholt's broken lake ice, frosted along their backs.",
++		MOOR
++	),
++	["sculpt:rimeholt_ship_mast"] = row(
++		"The burial ship's mast snapped off above its yard, the rigging frozen to it, standing out of Rimeholt's ice.",
++		MOOR
++	),
++	["sculpt:rimeholt_ice_slab"] = row(
++		"A pressure ridge's slab of old lake ice shoved up out of Rimeholt's frozen surface.",
++		MOOR
++	),
++	["sculpt:rimeholt_wreck_timber"] = row(
++		"Splintered planks and a broken rib pushed up through the ice where Rimeholt's burial ship broke open.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/RimeholtIceboundLongship.luau b/src/shared/systems/features/RimeholtIceboundLongship.luau
+new file mode 100644
+index 00000000..f3900478
+--- /dev/null
++++ b/src/shared/systems/features/RimeholtIceboundLongship.luau
+@@ -0,0 +1,949 @@
++--!strict
++-- Rimeholt's ice-bound longship: a hill-folk burial ship frozen into the lake
++-- at a tilt, the ribs and mast standing over it, its keel still glowing cold
++-- under the sheet. Pressure ridges heave the ice up in slabs, a lead cracks
++-- round the wreck, a pale ice collar sets the dark hull off from the lake,
++-- snow lies on one shore, and the road crosses the ice past the bow.
++--
++-- Its seeds differ in kind, not only detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure, the rest only
++-- dress it:
++--   1. the road's crossing of the lake: south-north, west-east, south-east or
++--      north-west;
++--   2. the wreck: bow up and whole, broken in two, or sunk to the ribs;
++--   3. how the hull lies to the road: alongside, across or diagonal;
++--   4. the pressure ridges: 0 to 3, each its own angle, length and height, and
++--      a broken wall of heaved ice along part of the shore;
++--   5. the shore and leads: snow on one edge or two, a straight, bent or ring
++--      lead through the ice.
++local DraftedMap = require("../DraftedMap")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++type RoadPoint = { x: number, z: number, dirX: number, dirZ: number }
++type Band = { x: number, z: number, angle: number, halfLength: number, halfWidth: number }
++
++type Part = {
++	sculpt: string,
++	along: number,
++	across: number,
++	yawOffset: number,
++	scale: number,
++	sink: number,
++	halfLength: number,
++	halfWidth: number,
++	hidden: boolean?,
++}
++
++local CROSSINGS = { "south-north", "west-east", "south-east", "north-west" }
++local WRECKS = { "bow-up", "broken", "ribs" }
++local LIES = { "alongside", "across", "diagonal" }
++local EDGES = { "south", "north", "east", "west" }
++local LEADS = { "straight", "bent", "ring" }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function pick(rng: Random, options: { string }): string
++	return options[whole(rng, 1, #options)]
++end
++
++local function distanceToSegment(px: number, pz: number, ax: number, az: number, bx: number, bz: number): number
++	local dx, dz = bx - ax, bz - az
++	local length = dx * dx + dz * dz
++	local t = if length == 0 then 0 else math.clamp(((px - ax) * dx + (pz - az) * dz) / length, 0, 1)
++	local qx, qz = ax + dx * t, az + dz * t
++	return math.sqrt((px - qx) ^ 2 + (pz - qz) ^ 2)
++end
++
++local function distanceToRoad(road: { Point }, x: number, z: number): number
++	local best = math.huge
++	for k = 2, #road do
++		best = math.min(best, distanceToSegment(x, z, road[k - 1].x, road[k - 1].z, road[k].x, road[k].z))
++	end
++	return best
++end
++
++-- The road across the lake: in on one border, out on another, bent once
++-- about the middle so no two seeds walk the same line.
++local function makeRoad(rng: Random, w: number, d: number, crossing: string): { Point }
++	local margin = 4
++	local a: Point
++	local b: Point
++	if crossing == "south-north" then
++		a = { x = whole(rng, margin, w - margin), z = d }
++		b = { x = whole(rng, margin, w - margin), z = 1 }
++	elseif crossing == "west-east" then
++		a = { x = 1, z = whole(rng, margin, d - margin) }
++		b = { x = w, z = whole(rng, margin, d - margin) }
++	elseif crossing == "south-east" then
++		a = { x = whole(rng, margin, w - margin), z = d }
++		b = { x = w, z = whole(rng, margin, d - margin) }
++	else
++		a = { x = whole(rng, margin, w - margin), z = 1 }
++		b = { x = 1, z = whole(rng, margin, d - margin) }
++	end
++	local bulge = between(rng, -0.2, 0.2)
++	local mx = math.clamp((a.x + b.x) / 2 + (b.z - a.z) * bulge, 2.5, w - 1.5)
++	local mz = math.clamp((a.z + b.z) / 2 - (b.x - a.x) * bulge, 2.5, d - 1.5)
++	return { a, { x = mx, z = mz }, b }
++end
++
++local function roadAt(road: { Point }, t: number): RoadPoint
++	local total = 0
++	for k = 2, #road do
++		total += math.sqrt((road[k].x - road[k - 1].x) ^ 2 + (road[k].z - road[k - 1].z) ^ 2)
++	end
++	local target = math.clamp(t, 0, 1) * total
++	for k = 2, #road do
++		local dx, dz = road[k].x - road[k - 1].x, road[k].z - road[k - 1].z
++		local len = math.sqrt(dx * dx + dz * dz)
++		if target <= len or k == #road then
++			local s = if len == 0 then 0 else math.clamp(target / len, 0, 1)
++			return {
++				x = road[k - 1].x + dx * s,
++				z = road[k - 1].z + dz * s,
++				dirX = if len == 0 then 1 else dx / len,
++				dirZ = if len == 0 then 0 else dz / len,
++			}
++		end
++		target -= len
++	end
++	return { x = road[1].x, z = road[1].z, dirX = 1, dirZ = 0 }
++end
++
++local function closestOnRoad(road: { Point }, x: number, z: number): RoadPoint
++	local best = math.huge
++	local bestPoint: RoadPoint = { x = road[1].x, z = road[1].z, dirX = 1, dirZ = 0 }
++	for k = 2, #road do
++		local ax, az, bx, bz = road[k - 1].x, road[k - 1].z, road[k].x, road[k].z
++		local dx, dz = bx - ax, bz - az
++		local length = dx * dx + dz * dz
++		local t = if length == 0 then 0 else math.clamp(((x - ax) * dx + (z - az) * dz) / length, 0, 1)
++		local px, pz = ax + dx * t, az + dz * t
++		local dist = math.sqrt((x - px) ^ 2 + (z - pz) ^ 2)
++		if dist < best then
++			best = dist
++			local len = math.sqrt(length)
++			bestPoint = {
++				x = px,
++				z = pz,
++				dirX = if len == 0 then 1 else dx / len,
++				dirZ = if len == 0 then 0 else dz / len,
++			}
++		end
++	end
++	return bestPoint
++end
++
++-- One piece of the wreck: its sculpt, where it stands along and across the
++-- keel, its own turn, scale and sink, the cells its mass occupies, and whether
++-- it lies under the ice (`hidden`: walkable, only the dark water over it shows).
++local function piece(
++	sculpt: string,
++	along: number,
++	across: number,
++	yawOffset: number,
++	scale: number,
++	sink: number,
++	halfLength: number,
++	halfWidth: number,
++	hidden: boolean?
++): Part
++	return {
++		sculpt = sculpt,
++		along = along,
++		across = across,
++		yawOffset = yawOffset,
++		scale = scale,
++		sink = sink,
++		halfLength = halfLength,
++		halfWidth = halfWidth,
++		hidden = hidden,
++	}
++end
++
++local HULL = "rimeholt_burial_hull"
++local RIBS = "rimeholt_ship_ribs"
++local MAST = "rimeholt_ship_mast"
++
++-- The wreck's pieces: the hull (whole, in two halves, or sunk under the ice),
++-- the ribs standing out of it, and the mast.
++local function partsFor(wreck: string): { Part }
++	if wreck == "broken" then
++		return {
++			piece(HULL, -4.6, 0, -11, 0.6, 3.4, 3.3, 1.5),
++			piece(HULL, 4.6, 0, 13, 0.68, 3.8, 3.6, 1.6),
++			piece(RIBS, 0, 0, 3, 0.5, 1.2, 1.9, 1.3),
++			piece(MAST, 4.4, 0.3, 90, 0.9, 0, 0.6, 0.6),
++		}
++	elseif wreck == "ribs" then
++		-- Only the ribs stand out: the hull has gone under the ice, and the
++		-- dark water frozen over it is all that shows of the ship below.
++		return {
++			piece(HULL, 0, 0, 0, 1, 0, 5.3, 1.9, true),
++			piece(RIBS, 1.2, 0, 6, 1.05, 0.8, 3.2, 1.9),
++			piece(MAST, 3.4, 0.3, 90, 1.05, 0, 0.6, 0.6),
++		}
++	end
++	-- Bow up: the whole ship frozen where it heeled, all but her keel out of
++	-- the ice, the ribcage standing beyond her bow.
++	return {
++		piece(HULL, 0, 0, 0, 1, 1.4, 5.3, 1.9),
++		piece(RIBS, 8, 0, 9, 0.7, 1, 2.4, 1.5),
++		piece(MAST, 0.6, 0.2, 90, 1, 0, 0.6, 0.6),
++	}
++end
++
++local feature: MapFeature.Feature = {
++	name = "RimeholtIceboundLongship",
++	about = "A hill-folk burial longship frozen into a lake that never thaws, its broken hull, ribs and mast standing out of the ice while its keel still glows cold under the sheet.",
++	palette = "Rimeholt",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "frozen", "buried", "glowing", "still" },
++	cells = {
++		-- The lake sheet: pale old ice, its surface a hand's width over the
++		-- ground, the tileset's props kept off it. Marble, which the tileset
++		-- leaves free, so the lake can be paler than its glacier.
++		ice = {
++			ground = { material = "Marble", color = { 74, 92, 100 } },
++			lift = 0.35,
++			clear = true,
++		},
++		-- The shore's old snow, with a few dead grass tufts, granite and black
++		-- pines: sparse, so the lake and its wreck stay the subject.
++		snow = {
++			ground = { material = "Limestone", color = { 90, 94, 96 } },
++			lift = 0.15,
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_boulder", every = 60, scale = { 0.6, 1.1 }, sink = 0.5 },
++				{ sculpt = "rimeholt_pine_snapped", every = 80, scale = { 0.8, 1.15 } },
++			},
++		},
++		-- A lead: black water frozen over thin. No light of its own: the wreck's
++		-- glow is the only light on the ice, so the surface stays calm.
++		lead = {
++			ground = { material = "Rock", color = { 26, 40, 48 } },
++			lift = 0.1,
++			clear = true,
++		},
++		-- Clean pale ice heaved up round the hull, separating it from the lake.
++		collar = {
++			ground = { material = "Concrete", color = { 92, 100, 102 } },
++			lift = 0.35,
++			clear = true,
++		},
++		-- The churned ice beyond the collar, with the wreck's timber on it.
++		wreck = {
++			ground = { material = "Sand", color = { 78, 90, 96 } },
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_wreck_timber", every = 14, scale = { 0.7, 1.2 }, sink = 0.3 },
++				{ sculpt = "rimeholt_ice_slab", every = 60, scale = { 0.35, 0.6 }, sink = 0.3 },
++			},
++		},
++		-- Ice heaved up in a pressure ridge or along the shore: a wall of slabs.
++		icewall = {
++			ground = { material = "Salt", color = { 92, 100, 102 } },
++			lift = 5,
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_ice_slab", every = 1.8, scale = { 0.4, 0.6 }, sink = 0.8 },
++			},
++		},
++		-- Under the hull: the dark water the ship froze into.
++		hold = {
++			ground = { material = "Asphalt", color = { 36, 40, 48 } },
++			lift = 0.15,
++			clear = true,
++		},
++	} :: { [string]: DraftedMap.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-5: the structure, first.
++		local crossing = pick(rng, CROSSINGS)
++		local wreck = pick(rng, WRECKS)
++		local lie = pick(rng, LIES)
++		local ridgeCount = whole(rng, 0, 3)
++		local shoreEdge = pick(rng, EDGES)
++		local secondShore = rng:NextNumber() < 0.45
++		local leadKind = pick(rng, LEADS)
++
++		local w = whole(rng, 29, 32)
++		local d = whole(rng, 27, 31)
++		local n = w * d
++		local walk = table.create(n, true)
++		local heights = table.create(n, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inside(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= w and z <= d
++		end
++
++		local road = makeRoad(rng, w, d, crossing)
++
++		-- The shore: a band of old snow along one edge (and sometimes a second),
++		-- its far side wandering so no seed has a straight strand.
++		local function paintShore(edge: string, depth: number)
++			local phase = between(rng, 0, math.pi * 2)
++			local amp = between(rng, 0.7, 1.6)
++			for z = 1, d do
++				for x = 1, w do
++					local a = if edge == "south" or edge == "north" then x else z
++					local wave = math.sin(a * 0.44 + phase) * amp + math.sin(a * 0.19 + phase * 1.7) * amp * 0.5
++					local on = if edge == "south"
++						then z >= d - depth + wave
++						elseif edge == "north" then z <= 1 + depth + wave
++						elseif edge == "west" then x <= 1 + depth + wave
++						else x >= w - depth + wave
++					if on then
++						kinds[at(x, z)] = "snow"
++					elseif kinds[at(x, z)] == nil then
++						kinds[at(x, z)] = "ice"
++					end
++				end
++			end
++		end
++		paintShore(shoreEdge, whole(rng, 3, 6))
++		if secondShore then
++			local order = { "south", "east", "north", "west" }
++			local index = 1
++			for k, edge in order do
++				if edge == shoreEdge then
++					index = k
++				end
++			end
++			local other = order[index % 4 + 1]
++			paintShore(other, whole(rng, 2, 4))
++		end
++
++		-- The shore bluff: a broken wall of heaved ice along the shore's edge,
++		-- gapped where the road walks in and where the ice breaks.
++		local function paintBluff(edge: string)
++			local along = if edge == "south" or edge == "north" then w else d
++			local across = if edge == "south" or edge == "north" then d else w
++			local runStart = whole(rng, 2, math.max(3, along - 12))
++			local runEnd = math.min(along - 2, runStart + whole(rng, 5, 12))
++			for a = runStart, runEnd do
++				local boundary = nil
++				for b = 1, across - 1 do
++					local x, z
++					if edge == "south" then
++						x, z = a, b
++					elseif edge == "north" then
++						x, z = a, d - b + 1
++					elseif edge == "west" then
++						x, z = b, a
++					else
++						x, z = w - b + 1, a
++					end
++					if kinds[at(x, z)] == "snow" then
++						boundary = { x = x, z = z }
++						break
++					end
++				end
++				if boundary and rng:NextNumber() < 0.82 then
++					local bx, bz = boundary.x, boundary.z
++					if edge == "south" then
++						bz -= 1
++					elseif edge == "north" then
++						bz += 1
++					elseif edge == "west" then
++						bx += 1
++					else
++						bx -= 1
++					end
++					if bx >= 2 and bz >= 2 and bx <= w - 1 and bz <= d - 1 then
++						if distanceToRoad(road, bx, bz) > 2.6 then
++							local i = at(bx, bz)
++							walk[i] = false
++							kinds[i] = "icewall"
++							lifts[i] = between(rng, 3.5, 7.5)
++						end
++					end
++				end
++			end
++		end
++		paintBluff(shoreEdge)
++
++		-- The wreck: placed beside the road, its whole assembly straddling the
++		-- footprint's middle so the game camera finds it.
++		local parts = partsFor(wreck)
++		local lowAlong, highAlong = math.huge, -math.huge
++		for _, part in parts do
++			lowAlong = math.min(lowAlong, part.along - part.halfLength)
++			highAlong = math.max(highAlong, part.along + part.halfLength)
++		end
++		local middleAlong = (lowAlong + highAlong) / 2
++		local function partWorld(part: Part, cx: number, cz: number, yaw: number): (number, number, number)
++			local rad = math.rad(yaw)
++			local ax, az = math.cos(rad), math.sin(rad)
++			local wx = cx + ax * part.along - az * part.across
++			local wz = cz + az * part.along + ax * part.across
++			return wx, wz, yaw + part.yawOffset
++		end
++		local function partCells(part: Part, cx: number, cz: number, yaw: number): { Point }
++			local wx, wz, pyaw = partWorld(part, cx, cz, yaw)
++			local rad = math.rad(pyaw)
++			local ax, az = math.cos(rad), math.sin(rad)
++			local out: { Point } = {}
++			local reach = part.halfLength + 1
++			for z = math.floor(wz - reach), math.ceil(wz + reach) do
++				for x = math.floor(wx - reach), math.ceil(wx + reach) do
++					local dx, dz = x - wx, z - wz
++					local a = dx * ax + dz * az
++					local b = -dx * az + dz * ax
++					if (a / part.halfLength) ^ 2 + (b / part.halfWidth) ^ 2 <= 1 then
++						table.insert(out, { x = x, z = z })
++					end
++				end
++			end
++			return out
++		end
++		local function nearPart(
++			part: Part,
++			cx: number,
++			cz: number,
++			yaw: number,
++			x: number,
++			z: number,
++			grow: number
++		): boolean
++			local wx, wz, pyaw = partWorld(part, cx, cz, yaw)
++			local rad = math.rad(pyaw)
++			local ax, az = math.cos(rad), math.sin(rad)
++			local dx, dz = x - wx, z - wz
++			local a = dx * ax + dz * az
++			local b = -dx * az + dz * ax
++			return (a / (part.halfLength + grow)) ^ 2 + (b / (part.halfWidth + grow)) ^ 2 <= 1
++		end
++		local function shipFits(cx: number, cz: number, yaw: number): boolean
++			for _, part in parts do
++				local cells = partCells(part, cx, cz, yaw)
++				if #cells == 0 then
++					return false
++				end
++				for _, c in cells do
++					if c.x < 2 or c.z < 2 or c.x > w - 1 or c.z > d - 1 then
++						return false
++					end
++					if distanceToRoad(road, c.x, c.z) < 2.4 then
++						return false
++					end
++				end
++			end
++			return true
++		end
++		local bestScore, bestX, bestZ, bestYaw = math.huge, nil, nil, nil
++		local function scoreOf(x: number, z: number, yaw: number): number
++			-- How far the whole wreck (hull, ribs and all) sits from the pad's
++			-- middle, so the game camera over the feature finds it.
++			local midX = x + math.cos(math.rad(yaw)) * middleAlong
++			local midZ = z + math.sin(math.rad(yaw)) * middleAlong
++			return (midX - w / 2) ^ 2 + (midZ - d / 2) ^ 2
++		end
++		for _ = 1, 60 do
++			local p = roadAt(road, between(rng, 0.28, 0.72))
++			local side = if rng:NextNumber() < 0.5 then -1 else 1
++			local off = between(rng, 4.3, 6.5)
++			local cx = p.x - p.dirZ * off * side
++			local cz = p.z + p.dirX * off * side
++			local roadAngle = math.deg(math.atan2(p.dirZ, p.dirX))
++			local yaw
++			if lie == "alongside" then
++				yaw = roadAngle + between(rng, -8, 8)
++			elseif lie == "across" then
++				yaw = roadAngle + 90 + between(rng, -8, 8)
++			else
++				yaw = roadAngle + 45 * side + between(rng, -8, 8)
++			end
++			-- Either end may face the road, so the wreck is tried both ways.
++			for _, turn in { 0, 180 } do
++				local score = scoreOf(cx, cz, yaw + turn) + rng:NextNumber() * 3
++				if score < bestScore and shipFits(cx, cz, yaw + turn) then
++					bestScore, bestX, bestZ, bestYaw = score, cx, cz, yaw + turn
++				end
++			end
++		end
++		if bestX == nil then
++			-- A sweep for a wreck the draws could not fit beside the road: any
++			-- sound spot, closest to the middle.
++			for step = 0, 11 do
++				local yaw = step * 30
++				for z = 8, d - 7 do
++					for x = 8, w - 7 do
++						local score = scoreOf(x, z, yaw)
++						if score < bestScore and shipFits(x, z, yaw) then
++							bestScore, bestX, bestZ, bestYaw = score, x, z, yaw
++						end
++					end
++				end
++			end
++		end
++		if bestX == nil then
++			-- The last resort: the middle of the footprint, turned across the
++			-- road, its walls kept off the road's own cells below.
++			bestX, bestZ, bestYaw = w / 2, d / 2, 0
++		end
++		local cx, cz, shipYaw = bestX, bestZ, bestYaw
++		local rad = math.rad(shipYaw)
++		local keelX, keelZ = math.cos(rad), math.sin(rad)
++		for _, part in parts do
++			for _, c in partCells(part, cx, cz, shipYaw) do
++				-- The road always keeps its ground, even in the fallback spot.
++				if
++					c.x >= 2
++					and c.z >= 2
++					and c.x <= w - 1
++					and c.z <= d - 1
++					and distanceToRoad(road, c.x, c.z) >= 2.2
++				then
++					local i = at(c.x, c.z)
++					walk[i] = false
++					kinds[i] = "hold"
++					lifts[i] = 0.15
++				end
++			end
++		end
++
++		-- The pressure ridges: bands of ice shoved up, clear of the road and
++		-- the wreck, each its own line.
++		local bands: { Band } = {}
++		for _ = 1, ridgeCount do
++			for _ = 1, 50 do
++				local rx = between(rng, 4, w - 4)
++				local rz = between(rng, 4, d - 4)
++				local angle = between(rng, 0, math.pi)
++				local halfLength = between(rng, 3, 7)
++				local halfWidth = between(rng, 0.6, 1.15)
++				local ax, az = math.cos(angle), math.sin(angle)
++				local cells: { Point } = {}
++				local ok = true
++				for z = math.floor(rz - halfLength - 1), math.ceil(rz + halfLength + 1) do
++					for x = math.floor(rx - halfLength - 1), math.ceil(rx + halfLength + 1) do
++						local dseg = distanceToSegment(
++							x,
++							z,
++							rx - ax * halfLength,
++							rz - az * halfLength,
++							rx + ax * halfLength,
++							rz + az * halfLength
++						)
++						if dseg <= halfWidth then
++							if x < 2 or z < 2 or x > w - 1 or z > d - 1 or distanceToRoad(road, x, z) < 2.4 then
++								ok = false
++							else
++								for _, part in parts do
++									if nearPart(part, cx, cz, shipYaw, x, z, 1.0) then
++										ok = false
++									end
++								end
++							end
++							table.insert(cells, { x = x, z = z })
++						end
++					end
++				end
++				for _, band in bands do
++					if
++						distanceToSegment(
++							rx,
++							rz,
++							band.x - math.cos(band.angle) * band.halfLength,
++							band.z - math.sin(band.angle) * band.halfLength,
++							band.x + math.cos(band.angle) * band.halfLength,
++							band.z + math.sin(band.angle) * band.halfLength
++						) < halfWidth + band.halfWidth + 1.2
++					then
++						ok = false
++					end
++				end
++				if ok and #cells > 0 then
++					table.insert(
++						bands,
++						{ x = rx, z = rz, angle = angle, halfLength = halfLength, halfWidth = halfWidth }
++					)
++					for _, c in cells do
++						local dx, dz = c.x - rx, c.z - rz
++						local a = dx * ax + dz * az
++						local i = at(c.x, c.z)
++						walk[i] = false
++						kinds[i] = "icewall"
++						lifts[i] = between(rng, 3.5, 7.5) + math.max(0, 1 - math.abs(a) / halfLength) * 2
++					end
++					break
++				end
++			end
++		end
++
++		-- The pale ice collar: clean, bright ice heaved up round the wreck, so
++		-- the dark hull and its thin mast and spars come clear of the lake.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] and kinds[i] == "ice" then
++					for _, part in parts do
++						if nearPart(part, cx, cz, shipYaw, x, z, 1.7) then
++							kinds[i] = "collar"
++						end
++					end
++				end
++			end
++		end
++		-- Beyond it, the churned ice with the wreck's timber strewn on it.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] and kinds[i] == "ice" then
++					for _, part in parts do
++						if nearPart(part, cx, cz, shipYaw, x, z, 2.8) then
++							kinds[i] = "wreck"
++						end
++					end
++				end
++			end
++		end
++
++		-- The lead: the crack the ice opened round the wreck.
++		local function leadCell(x: number, z: number)
++			if not inside(x, z) then
++				return
++			end
++			local i = at(x, z)
++			if walk[i] and (kinds[i] == "ice" or kinds[i] == "wreck") then
++				kinds[i] = "lead"
++			end
++		end
++		local leadAngle = between(rng, 0, math.pi)
++		if leadKind == "ring" then
++			local rx, rz = between(rng, 5.5, 8), between(rng, 4.5, 7)
++			local phase = between(rng, 0, math.pi)
++			for z = 1, d do
++				for x = 1, w do
++					local dx, dz = (x - cx) / rx, (z - cz) / rz
++					local wobble = math.sin(math.atan2(dz, dx) * 3 + phase) * 0.16
++					local r = math.sqrt(dx * dx + dz * dz)
++					if math.abs(r - 1 - wobble) < 0.16 then
++						leadCell(x, z)
++					end
++				end
++			end
++		elseif leadKind == "bent" then
++			local a1 = leadAngle
++			local a2 = leadAngle + between(rng, 1.1, 2)
++			local reach = between(rng, 9, 14)
++			for z = 1, d do
++				for x = 1, w do
++					local d1 = distanceToSegment(x, z, cx - math.cos(a1) * reach, cz - math.sin(a1) * reach, cx, cz)
++					local d2 = distanceToSegment(x, z, cx, cz, cx + math.cos(a2) * reach, cz + math.sin(a2) * reach)
++					if math.min(d1, d2) < 0.7 then
++						leadCell(x, z)
++					end
++				end
++			end
++		else
++			for z = 1, d do
++				for x = 1, w do
++					local gap = distanceToSegment(
++						x,
++						z,
++						cx - math.cos(leadAngle) * 20,
++						cz - math.sin(leadAngle) * 20,
++						cx + math.cos(leadAngle) * 20,
++						cz + math.sin(leadAngle) * 20
++					)
++					if gap < 0.7 then
++						leadCell(x, z)
++					end
++				end
++			end
++		end
++
++		-- Any walkable cell shut in by the ice becomes part of a ridge, so the
++		-- walkable ground is always one piece.
++		local seen = table.create(n, false)
++		local queue = { at(1, 1) }
++		seen[at(1, 1)] = true
++		local head = 1
++		local neighbours = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }
++		while head <= #queue do
++			local i = queue[head]
++			head += 1
++			local x, z = (i - 1) % w + 1, math.floor((i - 1) / w) + 1
++			for _, nb in neighbours do
++				local nx, nz = x + nb[1], z + nb[2]
++				if inside(nx, nz) then
++					local j = at(nx, nz)
++					if walk[j] and not seen[j] then
++						seen[j] = true
++						table.insert(queue, j)
++					end
++				end
++			end
++		end
++		for i, ok in walk do
++			if ok and not seen[i] then
++				walk[i] = false
++				kinds[i] = "icewall"
++				lifts[i] = 4
++			end
++		end
++
++		-- The road keeps its own ground: clear the feature's paint off the
++		-- corridor so the map's road shows through.
++		for i in kinds do
++			local x, z = (i - 1) % w + 1, math.floor((i - 1) / w) + 1
++			if distanceToRoad(road, x, z) < 1.3 then
++				kinds[i] = nil
++				lifts[i] = nil
++			end
++		end
++
++		-- The wreck's own lights: its keel under the ice, a second one in the
++		-- broken half, and the wind off the lake over the road.
++		local effects: { DraftedMap.Effect } = {
++			{ recipe = "rimeholt_hullglow", x = cx, z = cz, lift = 1.2 },
++		}
++		if wreck == "broken" then
++			table.insert(effects, {
++				recipe = "rimeholt_hullglow",
++				x = cx + keelX * 4.6,
++				z = cz + keelZ * 4.6,
++				lift = 1.2,
++			})
++		end
++		local windT = if rng:NextNumber() < 0.5 then between(rng, 0.06, 0.16) else between(rng, 0.84, 0.94)
++		local wind = roadAt(road, windT)
++		table.insert(effects, { recipe = "rimeholt_drift", x = wind.x, z = wind.z, lift = 0.6 })
++
++		-- What the wreck stands in the ice with: its hull, ribs and mast.
++		local marks: { DraftedMap.Landmark } = {}
++		for _, part in parts do
++			local wx, wz, pyaw = partWorld(part, cx, cz, shipYaw)
++			table.insert(marks, {
++				sculpt = part.sculpt,
++				x = wx,
++				z = wz,
++				yaw = pyaw,
++				scale = part.scale,
++				sink = part.sink,
++			})
++		end
++
++		-- The shore's marks: a hillfire where the road crosses the ice, the
++		-- threshold stone, and the funeral ring if the snow is deep enough.
++		local function shoreSpot(minRoad: number, maxRoad: number, tries: number): Point?
++			local best: Point? = nil
++			local bestDist = math.huge
++			for _ = 1, tries do
++				local x, z = whole(rng, 3, w - 2), whole(rng, 3, d - 2)
++				local i = at(x, z)
++				if walk[i] and kinds[i] == "snow" then
++					local rd = distanceToRoad(road, x, z)
++					if rd >= minRoad and rd <= maxRoad then
++						local dist = (x - cx) ^ 2 + (z - cz) ^ 2
++						if dist < bestDist then
++							bestDist = dist
++							best = { x = x, z = z }
++						end
++					end
++				end
++			end
++			return best
++		end
++		local fire = shoreSpot(2.2, 5.5, 60)
++		if fire then
++			table.insert(marks, {
++				sculpt = "rimeholt_hillfire",
++				x = fire.x + 0.3,
++				z = fire.z + 0.2,
++				yaw = between(rng, 0, 360),
++				sink = 0.4,
++			})
++		end
++		local stone = shoreSpot(1.8, 3.5, 60)
++		if stone then
++			table.insert(marks, {
++				sculpt = "rimeholt_marker",
++				x = stone.x,
++				z = stone.z,
++				yaw = between(rng, 0, 360),
++				sink = 0.3,
++			})
++		end
++		if rng:NextNumber() < 0.7 then
++			local ring = shoreSpot(4, 9, 60)
++			if ring then
++				table.insert(marks, {
++					sculpt = "rimeholt_runestones",
++					x = ring.x,
++					z = ring.z,
++					yaw = between(rng, 0, 360),
++					scale = 0.55,
++				})
++			end
++		end
++
++		-- Two photographs: a three-quarter from the ice on the lake side, up
++		-- over the pressure ridges at the whole wreck, and one from the road at
++		-- eye level, the way a traveller meets it.
++		local near = closestOnRoad(road, cx, cz)
++		local hullStands = wreck ~= "ribs"
++		local targetX = cx + keelX * 1.5
++		local targetZ = cz + keelZ * 1.5
++		local function cellAt(x: number, z: number): number
++			local gx, gz = math.floor(x + 0.5), math.floor(z + 0.5)
++			if not inside(gx, gz) then
++				return 0
++			end
++			local i = at(gx, gz)
++			local kind = kinds[i]
++			if kind == "hold" then
++				return if hullStands then 12 else 0.5
++			elseif kind == "icewall" then
++				-- The lifted ice, and the slab standing on it.
++				return (lifts[i] or 5) + 4
++			end
++			return 0.5
++		end
++		local function sightClear(
++			fromX: number,
++			fromZ: number,
++			fromLift: number,
++			toX: number,
++			toZ: number,
++			toLift: number
++		): boolean
++			for k = 2, 26 do
++				local t = k / 28
++				local x, z = fromX + (toX - fromX) * t, fromZ + (toZ - fromZ) * t
++				local lift = fromLift + (toLift - fromLift) * t
++				-- Near the subject the line is over its own mass, not a ridge.
++				if (x - toX) ^ 2 + (z - toZ) ^ 2 > 9 and cellAt(x, z) > lift then
++					return false
++				end
++			end
++			return true
++		end
++		local function cameraClear(x: number, z: number, lift: number): boolean
++			local gx, gz = math.floor(x + 0.5), math.floor(z + 0.5)
++			if not inside(gx, gz) then
++				return gx >= -8 and gz >= -8 and gx <= w + 8 and gz <= d + 8
++			end
++			if not walk[at(gx, gz)] then
++				return false
++			end
++			for dz = -2, 2 do
++				for dx = -2, 2 do
++					local nx, nz = gx + dx, gz + dz
++					if inside(nx, nz) then
++						local kind = kinds[at(nx, nz)]
++						-- The hull's mass, and the timber and slabs strewn round it.
++						if (kind == "hold" and hullStands) or kind == "wreck" then
++							return false
++						end
++					end
++				end
++			end
++			for dz = -4, 4 do
++				for dx = -4, 4 do
++					local nx, nz = gx + dx, gz + dz
++					if inside(nx, nz) then
++						local i = at(nx, nz)
++						if kinds[i] == "icewall" and (lifts[i] or 5) + 5 > lift - 1 then
++							return false
++						end
++					end
++				end
++			end
++			return true
++		end
++		local outX, outZ = cx - near.x, cz - near.z
++		local outLen = math.max(math.sqrt(outX * outX + outZ * outZ), 1e-6)
++		outX, outZ = outX / outLen, outZ / outLen
++		local baseAngle = math.atan2(outZ, outX)
++		local heroX, heroZ, heroLift = cx + outX * 11, cz + outZ * 11, 14
++		local found = false
++		for _, lift in { 12, 16, 20 } do
++			for _, dist in { 11, 10, 12, 9 } do
++				for _, turn in { 0, 0.3, -0.3, 0.6, -0.6, 0.9, -0.9, 1.2, -1.2 } do
++					local px = cx + math.cos(baseAngle + turn) * dist
++					local pz = cz + math.sin(baseAngle + turn) * dist
++					if cameraClear(px, pz, lift) and sightClear(px, pz, lift, targetX, targetZ, 9) then
++						heroX, heroZ, heroLift = px, pz, lift
++						found = true
++						break
++					end
++				end
++				if found then
++					break
++				end
++			end
++			if found then
++				break
++			end
++		end
++		local cameras: { DraftedMap.Shot } = {
++			{
++				name = "the wreck from the ice",
++				from = { x = heroX, z = heroZ, lift = heroLift },
++				to = { x = targetX, z = targetZ, lift = 9 },
++				fov = 58,
++			},
++		}
++		-- The road shot: eye level on the road past the wreck, the way a
++		-- traveller meets it. The road keeps its own ground clear of the
++		-- feature's walls and props, so the foreground is always open.
++		local roadX, roadZ, roadLift = near.x + near.dirX * 10, near.z + near.dirZ * 10, 7
++		found = false
++		for _, lift in { 7, 9, 6 } do
++			for _, shift in { 10, 11, 9, 12 } do
++				for _, sign in { 1, -1 } do
++					local px = near.x + near.dirX * shift * sign
++					local pz = near.z + near.dirZ * shift * sign
++					if cameraClear(px, pz, lift) and sightClear(px, pz, lift, targetX, targetZ, 7) then
++						roadX, roadZ, roadLift = px, pz, lift
++						found = true
++						break
++					end
++				end
++				if found then
++					break
++				end
++			end
++			if found then
++				break
++			end
++		end
++		table.insert(cameras, {
++			name = "the road at the wreck",
++			from = { x = roadX, z = roadZ, lift = roadLift },
++			to = { x = targetX, z = targetZ, lift = 7 },
++			fov = 62,
++		})
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

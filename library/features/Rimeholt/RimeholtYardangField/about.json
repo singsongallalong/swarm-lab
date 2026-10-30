@@ -1,0 +1,55 @@
+{
+  "name": "RimeholtYardangField",
+  "intent": "A wind-carved yardang field of only one to three enormous near-black granite fins, each a high blunt prow falling down a long low tail, every crest carrying one bright unbroken line of packed snow and streaming long bright spindrift in one direction, with a wind-cut arch on the highest crest and the road weaving between their tails.",
+  "sculpts": [
+    "rimeholt_wind_arch"
+  ],
+  "setpiece": "rimeholt_crest_wind",
+  "variation": [
+    "layout: spine (one great fin) / pair (two fins flanking the road) / echelon (three staggered fins down one flank) / slalom (two fins with heads at opposite ends of the field)",
+    "fin size: 1-3 fins, each 14-28 cells long and 3.4-7.2 cells half-breadth, crests 18-42 studs high, a high blunt prow falling to a long low tail",
+    "road: 1-3 S-bends swinging 4-8 cells, entering and leaving anywhere on the south and north borders, a 6-cell-wide lane kept open through every fin",
+    "wind shear: every crest line leans 2.2-4 cells the same way, east or west, with a wandering crest and a wind gap cut across some fins",
+    "surface and crests: pale drift snow with 2-4 long wind streaks and one lee ice patch, sparse fell grass, and every fin carrying one unbroken bright snow line along its crest"
+  ],
+  "requests": [
+    "A yaw or route on effects, so every crest plume streams along the field's one wind; a worm's direction is seeded and can differ from crest to crest.",
+    "A sculpt kind with a smooth streamlined fin profile; per-cell lifts step the fins' flanks at cell resolution."
+  ],
+  "critic_pass1": {
+    "idea": 6,
+    "photograph": 5,
+    "topology": 7,
+    "look": 6,
+    "camera": 4,
+    "usable": 6,
+    "total": 5.8,
+    "best_shot": "shots seed 2, the arch on the crest",
+    "why": "Good seed variety, but fins read as bleachers, grey on grey, and the spindrift is muddy."
+  },
+  "critic_pass2": {
+    "idea": 4,
+    "photo": 3,
+    "topology": 6,
+    "look": 5,
+    "camera": 3,
+    "usable": 6,
+    "total": 4.33,
+    "best_shot": "shots seed 1, the arch on the crest",
+    "why": "Layouts differ, but the fins still read as stepped bleachers grey on grey and the spindrift is nearly invisible."
+  },
+  "critic_pass3": {
+    "idea": 6,
+    "photo": 5,
+    "topology": 7,
+    "look": 5,
+    "camera": 3,
+    "usable": 6,
+    "total": 5.63,
+    "best_shot": "feature-shots seed 3, the field from the south-east",
+    "why": "Fins are now near-black prows with tails and an arch, and the seeds vary most in count and threading; flanks still read as stacked cubes and the game camera sees a black wall."
+  },
+  "final_notes": "# D: wind-carved yardang field\n\nKeep: the fins are now near-black, fewer and shaped (seed 3 \"the field from the south-east\" is a single prow falling to a long tail with the arch on its crest), and the crest-wind set piece streams in one direction.\n\n1. The flanks are still a staircase of identical cubes; from \"the arch on the crest\" they read as stacked crates. Larger steps (fewer, taller) on the prow and a smooth taper to the tail would read as wind-cut rock.\n2. The bright snow line is broken into separate pale squares on most crests; make it one unbroken pale ridge so the fin has a lit edge from the game camera.\n3. From the game camera (seeds 1 and 3) a black wall fills half the frame with nothing on it; frame the camera on the tail and the road, with the prow behind, or lower the fins nearest the south edge.\n\nLast round: answered the grey-on-grey (granite now near-black) and fewer fins with prow and tail; partly answered the spindrift (a long streaming streak in the set piece); not answered the bleacher rhythm of the flanks.\n",
+  "run": "rimeholt-features-2",
+  "generator": "g10"
+}

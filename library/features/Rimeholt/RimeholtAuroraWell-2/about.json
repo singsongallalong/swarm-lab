@@ -1,0 +1,58 @@
+{
+  "name": "RimeholtAuroraWell",
+  "intent": "A deep, quiet ice shaft with a near-black broken collar, its lit floor the only light in the dark and a pale forked spire standing to one side so the game camera looks past it down the well; the road runs around, across, or down into the shaft and out the far side, and a column of aurora climbs from the floor.",
+  "sculpts": [
+    "rimeholt_icefin",
+    "rimeholt_rune_slab",
+    "rimeholt_well_spire"
+  ],
+  "setpiece": "rimeholt_aurora_well",
+  "variation": [
+    "road through: around the lip / across on a causeway / down the stair and out the far side, weighted so the drop-in and climb-out well is common",
+    "number of shafts: one great well / a great well with a larger lesser listening well beside it",
+    "rim shape and size: round / rotated oval 1.25-1.45 cells long / three-lobed at 0.20-0.30, radius 6-9 cells, half breached where the collar gives way; a down road cuts its own mouth through the collar",
+    "the terraces: 3-6 dark bands of 4-stud steps (2 studs a cell on the down stair), a near-black slate collar, one teal band inside it and dark frost bands through the stack, a dark glowing ring at the foot, depth 7-24 studs",
+    "composition: 8-11 runestones in an even ring with a taller gate pair flanking the view, the old rune ring on the far side, the forked ice spire set to one side of the shaft, 0-2 ice outcrops, 0-2 frozen pans and 2-5 frost cracks"
+  ],
+  "requests": [
+    "dresspreview draws no set pieces, so the aurora column cannot appear in the feature's own shots; it is shown only by setpiecepreview.",
+    "A worm path runs flat, so the column's height is its particles' rise rather than a ribbon climbing the shaft; a vertical path kind would let the neon core read up the well.",
+    "The hero camera has to stand outside the rune ring: a shot from inside it would need the renderer to hide the foreground stones."
+  ],
+  "critic_pass1": {
+    "idea": 8,
+    "photograph": 7,
+    "topology": 6,
+    "look": 5,
+    "camera": 7,
+    "usable": 6,
+    "total": 6.83,
+    "best_shot": "shots seed 2, the lip and the spire",
+    "why": "Best set piece of the run and a real vertical shaft; every seed is the same round well with a heavy teal rim."
+  },
+  "critic_pass2": {
+    "idea": 8,
+    "photo": 6,
+    "topology": 7,
+    "look": 6,
+    "camera": 5,
+    "usable": 6,
+    "total": 6.73,
+    "best_shot": "shots seed 2, the well from the snow",
+    "why": "Strongest effect and real vertical shape; seeds now vary (double, elongated wells) and the rune ring frames the shot, but the shots are cluttered."
+  },
+  "critic_pass3": {
+    "idea": 8,
+    "photo": 6,
+    "topology": 6,
+    "look": 6,
+    "camera": 4,
+    "usable": 6,
+    "total": 6.45,
+    "best_shot": "feature-shots seed 2, the well from the snow",
+    "why": "The aurora column is the best effect in the run and the dark collar now reads as a shaft; clutter on the rim and the spire blocking the game camera hold it back."
+  },
+  "final_notes": "# C: aurora shaft ringed by runestones\n\nKeep: the aurora column remains the best effect in the run, and the near-black broken collar around teal steps now makes \"the well from the snow\" (seeds 2 and 3) read as a deep shaft.\n\n1. The spire still stands in the middle of the floor and from the game camera (seed 1) it is the whole frame; place it on the rim side away from the south so the camera looks past it into the well.\n2. Still busy: thin standing slabs and rubble sit all around the rim at one value. Halve the slabs on the south side so the shaft has a clean lip in the foreground.\n3. The floor's light is a scatter of four or five cubes; gather them into one lit pool at the bottom so the \"lit floor\" is a single bright shape.\n\nLast round: answered the darker collar (now near-black blocks) and partly the road (seeds 5 and 10 run straight through the shaft); not answered the spire placement, and the clutter is only slightly less.\n",
+  "run": "rimeholt-features-2",
+  "generator": "g04"
+}

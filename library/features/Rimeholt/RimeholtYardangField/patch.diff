@@ -1,0 +1,570 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 5aad1106..40c7bed9 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -4,10 +4,12 @@
+ -- feature=<Name>` and assembled into maps later.
+ local MapFeature = require("../systems/MapFeature")
+ local RimeholtFrozenFall = require("../systems/features/RimeholtFrozenFall")
++local RimeholtYardangField = require("../systems/features/RimeholtYardangField")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	RimeholtFrozenFall = RimeholtFrozenFall,
++	RimeholtYardangField = RimeholtYardangField,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index f409fe03..63c5b3fd 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1048,4 +1048,19 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- The yardang field's landmark (feature `RimeholtYardangField`): a natural arch
++-- the night wind has cut through a fin's crest, two piers of cold granite and a
++-- lintel worn thin over a hole a player sees the sky through. It stands on the
++-- highest crest of the field, the landmark the road steers by.
++Sculpts.rimeholt_wind_arch = {
++	kind = "arch",
++	size = { 12, 9, 4 },
++	material = "Basalt",
++	-- Cold granite, a shade paler than the fin's own rock so the hole reads
++	-- against the sky.
++	colors = { { 72, 78, 88 }, { 62, 68, 78 }, { 54, 58, 66 } },
++	maxPrims = 16,
++	span = 7,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 88a1b18b..10b241e6 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1590,4 +1590,84 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- Rimeholt's yardang field (feature `RimeholtYardangField`): spindrift torn off
++-- a fin's crest on the night wind and streaming away in one direction. The path is
++-- long and straight and every layer runs along it, so the snow peels off the crest
++-- as long bright streaks rather than a soft cloud: a fast near-white core, a blue
++-- spray beneath it and a low veil trailing behind. The marker stands on the crest
++-- itself. Few emitters, so a phone keeps it beside the rest of the map (EF3).
++recipes.rimeholt_crest_wind = {
++	about = "Snow torn off a yardang's crest and streaming away downwind in long bright streaks.",
++	theme = "rimeholt",
++	path = { kind = "worm", length = 30, step = 3, bend = 0, climb = 4, round = 1 },
++	layers = {
++		{
++			name = "streaks",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 1.6,
++				lift = 0.6,
++				toward = "along",
++				rise = 20,
++				life = { 2.4, 3.4 },
++				rate = 16,
++				size = 0.7,
++				tall = 7,
++				transparency = 0.1,
++				color = "pale",
++				texture = "wisp",
++				lean = 1,
++				vary = 0.3,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 4, span = 30, periods = { 3.5, 5.1 } },
++			priority = 1,
++		},
++		{
++			name = "spray",
++			look = {
++				kind = "stream",
++				every = 12,
++				thick = 2.6,
++				lift = 1.1,
++				toward = "along",
++				rise = 14,
++				life = { 2.2, 3.2 },
++				rate = 9,
++				size = 1.1,
++				tall = 4.5,
++				transparency = 0.35,
++				color = "ice",
++				texture = "wisp",
++				lean = 2,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 6, span = 34, periods = { 4.3, 6.1 } },
++			priority = 2,
++		},
++		{
++			name = "low veil",
++			look = {
++				kind = "stream",
++				every = 16,
++				thick = 4,
++				lift = 0.5,
++				toward = "along",
++				rise = 10,
++				life = { 2.6, 3.8 },
++				rate = 4,
++				size = 1.8,
++				tall = 3,
++				transparency = 0.65,
++				color = "rime",
++				texture = "veil",
++				lean = 2,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 1.4, tilt = 5, span = 40, periods = { 5.7, 7.9 } },
++			priority = 3,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0e4c0dc5..db42c14b 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -358,6 +358,10 @@ local rows: { [string]: Row } = {
+ 		"A tall marker stone with an ice-blue rag at Rimeholt's thresholds between reaches.",
+ 		MOOR
+ 	),
++	["sculpt:rimeholt_wind_arch"] = row(
++		"A natural arch the wind has cut through a yardang's crest, standing on the highest fin of Rimeholt's wind-carved field.",
++		MOOR
++	),
+ 	["outdoor:rimeholt"] = row(
+ 		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
+ 		MOOR
+diff --git a/src/shared/systems/features/RimeholtYardangField.luau b/src/shared/systems/features/RimeholtYardangField.luau
+new file mode 100644
+index 00000000..3be8ec3d
+--- /dev/null
++++ b/src/shared/systems/features/RimeholtYardangField.luau
+@@ -0,0 +1,419 @@
++--!strict
++-- A wind-carved yardang field for Rimeholt: a few enormous streamlined fins of
++-- near-black granite rising out of pale drift snow, each a high blunt prow falling
++-- away down a long low tail, every crest carrying one bright unbroken line of
++-- wind-packed snow, and all of them leaning the same way across the highland.
++-- Spindrift is torn off the crests in long bright streaks (set piece
++-- `rimeholt_crest_wind`), and the road weaves between the fins' tails.
++--
++-- Seeds differ in structure before detail (fafwa 2026-10-30: topology first, then
++-- look). The first draws choose the structure; the rest only dress it:
++--   1. the field's layout: one great spine; a pair flanking the road; an echelon of
++--      three staggered fins down one side; or a slalom of two, heads at opposite ends;
++--   2. the footprint's size, the crests' height, and how far the whole field shears;
++--   3. the road: how many S-bends, how wide they swing, and where it enters and leaves;
++--   4. per fin: its head, length, breadth, its broken crest and its snow line;
++--   5. the dressing: a few wind streaks and a lee ice patch, the arch, the hill-fire.
++local DraftedMap = require("../DraftedMap")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function clamp(v: number, lo: number, hi: number): number
++	return math.max(lo, math.min(hi, v))
++end
++
++-- A yardang's plan, 0 at its blunt prow to 1 at the tip of its tail: a wide nose
++-- at most of its breadth, then the long streamlined taper that one wind gave the
++-- whole field.
++local function widthAt(t: number): number
++	if t < 0.15 then
++		return 0.8 + 0.2 * math.sin((t / 0.15) * math.pi / 2)
++	end
++	return ((1 - t) / 0.85) ^ 0.55
++end
++
++-- Its crest: highest at the prow, falling away down the long low tail, so each fin
++-- is one wedge the wind has planed rather than a row of bleacher steps.
++local function heightAt(t: number): number
++	return (1 - t) ^ 0.95
++end
++
++-- The layouts, most of the topology: one fin, two, or three, and how they sit
++-- around the road.
++local LAYOUTS = { "spine", "pair", "echelon", "slalom" }
++
++local feature: MapFeature.Feature = {
++	name = "RimeholtYardangField",
++	about = "A wind-carved field of a few enormous streamlined granite fins, near-black under bright unbroken snow crests and all leaning one way, their spindrift streaming off in long bright streaks and the road weaving between their tails.",
++	palette = "Rimeholt",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "wind-carved", "streamlined", "exposed", "howling" },
++	cells = {
++		-- Drift snow: pale, the field's whole ground; only a sparse clump of frost-bitten
++		-- grass stands in it, so the fins and their crests carry the eye.
++		snow = {
++			ground = { material = "Salt", color = { 94, 99, 102 } },
++			clear = true,
++			props = { { sculpt = "rimeholt_fell_grass", every = 90, scale = { 0.6, 1.0 }, sink = 0.3 } },
++		},
++		-- The older snow the wind has combed into long streaks between the fins.
++		scour = {
++			ground = { material = "Snow", color = { 78, 83, 89 } },
++			clear = true,
++		},
++		-- Glare ice lying in a fin's lee, where meltwater refroze out of the wind.
++		crust = {
++			ground = { material = "Ice", color = { 60, 72, 74 } },
++			lift = 0.25,
++			clear = true,
++		},
++		-- The fins: near-black granite standing off the snow at the game camera,
++		-- lifted per cell into the streamlined shape.
++		ridge = { ground = { material = "Rock", color = { 18, 20, 24 } }, clear = true },
++		-- Wind-packed snow lying along a crest in one bright unbroken line.
++		cap = { ground = { material = "Marble", color = { 100, 102, 102 } }, clear = true },
++	} :: { [string]: DraftedMap.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, first.
++		local layout = LAYOUTS[whole(rng, 1, #LAYOUTS)]
++		local w, d = whole(rng, 28, 32), whole(rng, 28, 32)
++		local crestMax = whole(rng, 26, 36)
++		local lean = between(rng, -4, 4)
++		if math.abs(lean) < 1.8 then
++			-- Every seed leans; no squared-up field.
++			lean = if rng:NextNumber() < 0.5 then -2.2 else 2.2
++		end
++		local bends = whole(rng, 1, 3)
++		local entryX, exitX = whole(rng, 7, w - 7), whole(rng, 7, w - 7)
++		local amp = between(rng, 4, math.min(8, (w - 14) / 2))
++		local phase = between(rng, 0, math.pi * 2)
++		local capShare = if rng:NextNumber() < 0.8 then 1 else 0.8
++
++		-- The road's centreline: an S-weave between the fins, straight at both borders.
++		local function roadX(z: number): number
++			local t = (d - z) / (d - 1)
++			local x = entryX
++				+ (exitX - entryX) * t
++				+ amp * math.sin(math.pi * t) * math.sin(2 * math.pi * bends * t + phase)
++			return clamp(x, 2.3, w - 2.3)
++		end
++
++		-- One plan per fin: one to three only, so each fin is a shape and the field is
++		-- never a pattern of them.
++		local plans: { { side: number, great: boolean? } } = {}
++		if layout == "spine" then
++			table.insert(plans, { side = if rng:NextNumber() < 0.5 then -1 else 1, great = true })
++		elseif layout == "echelon" then
++			local side = if rng:NextNumber() < 0.5 then -1 else 1
++			for _ = 1, 3 do
++				table.insert(plans, { side = side })
++			end
++		else
++			-- A pair, and a slalom: one fin on each side of the road.
++			table.insert(plans, { side = -1 })
++			table.insert(plans, { side = 1 })
++		end
++
++		-- 4: each fin's own size and head, then where it stands. The fins keep to their
++		-- side of the road's swing where they can, and the road's lane is cut through
++		-- whatever a fin crosses, so the road runs between rock walls like a wind gap.
++		local ridges: {
++			{
++				cx: number,
++				headZ: number,
++				len: number,
++				halfW: number,
++				hMax: number,
++				jitter: number,
++				cap: boolean,
++				power: number,
++				phaseX: number,
++				phaseZ: number,
++				serrate: number,
++				wiggle: number,
++				wigglePhase: number,
++				notchAt: number?,
++				notchHalf: number,
++			}
++		} =
++			{}
++		local echelonHead = 1
++		for k, plan in plans do
++			local halfW: number
++			local len: number
++			local hMax: number
++			if plan.great then
++				halfW = between(rng, 5.8, 7.2)
++				len = d - whole(rng, 3, 8)
++				hMax = crestMax + between(rng, 2, 6)
++			elseif layout == "echelon" then
++				halfW = between(rng, 3.4, 4.8)
++				len = whole(rng, 14, 22)
++				hMax = crestMax * between(rng, 0.7, 0.9)
++			else
++				halfW = between(rng, 4, 5.8)
++				len = whole(rng, 20, d - 3)
++				hMax = crestMax * between(rng, 0.85, 1.05)
++			end
++			len = math.min(len, d - 4)
++			halfW = math.min(halfW, (w - 4) / 2)
++			local headZ: number
++			if layout == "echelon" then
++				-- A staircase of noses: each fin starts before the last has run out.
++				local step = whole(rng, 2, math.max(3, math.floor(len * 0.5)))
++				headZ = if k == 1 then whole(rng, 1, 3) else math.min(d - len - 1, echelonHead + step)
++			elseif layout == "slalom" then
++				-- Heads at opposite ends, so the road slaloms between their flanks.
++				headZ = if k == 1 then whole(rng, 2, 4) else math.max(2, d - len - whole(rng, 2, 4))
++			else
++				headZ = whole(rng, 2, math.max(2, d - len - 1))
++			end
++			echelonHead = headZ
++			-- Where it stands: its side's share of the field, clear of the road's swing
++			-- where it can be. A fin that crosses the lane has the lane cut through it.
++			local meanX = roadX(clamp(headZ + len * 0.45, 1, d))
++			local lo, hi
++			if plan.side < 0 then
++				lo, hi = 2 + halfW, meanX - halfW - 1.5
++			else
++				lo, hi = meanX + halfW + 1.5, w - 1 - halfW
++			end
++			if hi < lo then
++				lo, hi = 2 + halfW, w - 1 - halfW
++			elseif layout == "echelon" then
++				-- Each fin its own slice of the flank, so the chain spreads along it.
++				local count = #plans
++				local slotLo = lo + (hi - lo) * (k - 1) / count
++				local slotHi = lo + (hi - lo) * k / count
++				lo, hi = slotLo, slotHi
++			end
++			table.insert(ridges, {
++				cx = clamp(between(rng, lo, hi), 2 + halfW, w - 1 - halfW),
++				headZ = headZ,
++				len = len,
++				halfW = halfW,
++				hMax = hMax,
++				-- Each fin's rock: its own cross-section, a broken crest and a wandering
++				-- line, so no two read as the same stamped shape.
++				jitter = between(rng, -0.5, 0.5),
++				cap = rng:NextNumber() < capShare,
++				power = between(rng, 1.15, 1.6),
++				phaseX = between(rng, 0, math.pi * 2),
++				phaseZ = between(rng, 0, math.pi * 2),
++				serrate = between(rng, 0, math.pi * 2),
++				wiggle = between(rng, 0.4, 1.8),
++				wigglePhase = between(rng, 0, math.pi * 2),
++				-- A wind gap cut clean across some fins.
++				notchAt = if rng:NextNumber() < 0.35 then between(rng, 0.35, 0.7) else nil,
++				notchHalf = between(rng, 0.03, 0.08),
++			})
++		end
++
++		-- The fins, lifted per cell into a rounded cross-section. Their cells are walls,
++		-- so the high ground keeps a bluff between it and the walkable snow, and the
++		-- road's lane is kept clear and open all the way through.
++		local n = w * d
++		local walk = table.create(n, true)
++		local heights = table.create(n, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local crests: { { x: number, z: number, lift: number } } = {}
++		for _, r in ridges do
++			local top: { x: number, z: number, lift: number }? = nil
++			local notch = r.notchAt
++			for z = r.headZ, math.min(d - 1, r.headZ + r.len) do
++				local t = (z - r.headZ) / r.len
++				local inNotch = notch ~= nil and math.abs(t - notch) < r.notchHalf
++				local halfw = r.halfW * widthAt(t)
++				if halfw >= 0.7 and not inNotch then
++					-- The crest line wanders and its height breaks into a serrated rock,
++					-- so no fin reads as a stamped row of bleacher steps.
++					local cxz = r.cx + (lean + r.jitter) * t + r.wiggle * math.sin(t * math.pi * 2 + r.wigglePhase)
++					local serrate = 1
++						+ 0.12 * math.sin(z * 1.1 + r.serrate)
++						+ 0.06 * math.sin(z * 2.3 + r.serrate * 1.7)
++					local hz = r.hMax * heightAt(t) * serrate
++					for x = math.max(2, math.floor(cxz - halfw)), math.min(w - 1, math.ceil(cxz + halfw)) do
++						local dx = math.abs(x - cxz) / halfw
++						local shoulder = 0.9 + 0.12 * math.sin(x * 0.5 + r.phaseX) * math.cos(z * 0.37 + r.phaseZ)
++						local lift = hz * (1 - dx ^ r.power) * shoulder
++						if dx <= 1 and lift >= 1.2 and math.abs(x - roadX(z)) > 3 then
++							local i = at(x, z)
++							walk[i] = false
++							-- One unbroken line of bright snow along the crest.
++							kinds[i] = if r.cap and math.abs(x - cxz) <= 0.9 then "cap" else "ridge"
++							lifts[i] = lift
++							if top == nil or lift > top.lift then
++								top = { x = x, z = z, lift = lift }
++							end
++						end
++					end
++				end
++			end
++			if top then
++				table.insert(crests, top)
++			end
++		end
++		table.sort(crests, function(a, b)
++			return a.lift > b.lift
++		end)
++		-- Where two fins have rung a hollow off from the rest, fill it as rock: the
++		-- feature stands with one walkable ground on every seed.
++		local grid = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			grid.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		Grid.keepLargestRegion(grid)
++		for i, cell in grid.cells do
++			if cell == Grid.WALL and walk[i] then
++				walk[i] = false
++				kinds[i] = "ridge"
++				lifts[i] = 1.8
++			end
++		end
++
++		-- 5: the dressing, drawn after the structure. Pale drift snow first, then a few
++		-- long wind streaks and one patch of glare ice in the tallest fin's lee.
++		for i, ok in walk do
++			if ok then
++				kinds[i] = "snow"
++			end
++		end
++		for _ = 1, whole(rng, 2, 4) do
++			local cx = between(rng, 3, w - 3)
++			local z0 = whole(rng, 2, math.max(2, d - 9))
++			local span = whole(rng, 8, d - z0)
++			local wiggle = between(rng, 0.5, 1.4)
++			for z = z0, math.min(d - 1, z0 + span) do
++				local t = (z - z0) / math.max(span, 1)
++				local x = cx + lean * t + wiggle * math.sin(t * math.pi * 2 + phase)
++				for xx = math.max(2, math.floor(x - 1.1)), math.min(w - 1, math.ceil(x + 1.1)) do
++					local i = at(xx, z)
++					if walk[i] and math.abs(xx - x) <= 1.1 then
++						kinds[i] = "scour"
++					end
++				end
++			end
++		end
++		if crests[1] then
++			local c = crests[1]
++			local cx = c.x + between(rng, -1.2, 1.2)
++			local cz = c.z + between(rng, 2, 5)
++			local rx, rz = between(rng, 2.2, 4), between(rng, 1.2, 2.4)
++			for z = math.max(2, math.floor(cz - rz)), math.min(d - 1, math.ceil(cz + rz)) do
++				for x = math.max(2, math.floor(cx - rx)), math.min(w - 1, math.ceil(cx + rx)) do
++					local i = at(x, z)
++					if walk[i] and ((x - cx) / rx) ^ 2 + ((z - cz) / rz) ^ 2 <= 1 then
++						kinds[i] = "crust"
++					end
++				end
++			end
++		end
++
++		-- Old snow rolls a little; keep every step inside Terrain's two-stud climb.
++		local phaseA, phaseB = between(rng, 0, math.pi * 2), between(rng, 0, math.pi * 2)
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] then
++					local h = 1 + 0.8 * math.sin(x * 0.42 + phaseA) * math.cos(z * 0.37 + phaseB)
++					heights[i] = clamp(math.floor(h * 2 + 0.5) / 2, 0, 2)
++				end
++			end
++		end
++
++		-- The details: a wind-cut arch on the highest crest, a hill-fire below it where
++		-- the road bends, and spindrift off every crest.
++		local marks: { DraftedMap.Landmark } = {}
++		local tallest = crests[1]
++		if tallest then
++			table.insert(marks, {
++				sculpt = "rimeholt_wind_arch",
++				x = tallest.x,
++				z = tallest.z,
++				yaw = between(rng, -16, 16),
++				scale = between(rng, 1.1, 1.4),
++				sink = -(tallest.lift + 0.4),
++			})
++		end
++		local fireZ = whole(rng, math.floor(d * 0.35), math.floor(d * 0.65))
++		local roadHere = math.floor(roadX(fireZ) + 0.5)
++		local fireX = clamp(roadHere + 2, 2, w - 1)
++		if not walk[at(fireX, fireZ)] then
++			fireX = clamp(roadHere - 2, 2, w - 1)
++		end
++		if walk[at(fireX, fireZ)] then
++			table.insert(marks, {
++				sculpt = "rimeholt_hillfire",
++				x = fireX,
++				z = fireZ,
++				yaw = between(rng, 0, 360),
++				sink = -heights[at(fireX, fireZ)],
++			})
++		end
++		local effects: { DraftedMap.Effect } = {}
++		for k = 1, math.min(3, #crests) do
++			local c = crests[k]
++			table.insert(effects, {
++				recipe = "rimeholt_crest_wind",
++				x = c.x,
++				z = c.z,
++				lift = c.lift - 0.4,
++				seed = whole(rng, 1, 9999) * 7 + k,
++			})
++		end
++
++		local road: { { x: number, z: number } } = {}
++		for k = 0, 6 do
++			local z = d - (d - 1) * k / 6
++			table.insert(road, { x = roadX(z), z = z })
++		end
++
++		local cameras: { DraftedMap.Shot } = {
++			{
++				name = "the field from the south-east",
++				from = { x = w + 4, z = d + 4, lift = 48 },
++				to = { x = w * 0.45, z = d * 0.45, lift = 8 },
++				fov = 68,
++			},
++		}
++		if tallest then
++			-- A photographer's three-quarter over the highest crest, close in at the game
++			-- camera's own pitch, so the arch and the fin's streamlined crown carry the shot.
++			local back = 6.5
++			table.insert(cameras, {
++				name = "the arch on the crest",
++				from = { x = tallest.x + back, z = tallest.z + back, lift = tallest.lift + 30 },
++				to = { x = tallest.x, z = tallest.z, lift = tallest.lift - 2 },
++				fov = 66,
++			})
++		end
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

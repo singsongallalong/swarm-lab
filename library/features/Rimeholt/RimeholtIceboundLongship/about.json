@@ -1,0 +1,59 @@
+{
+  "name": "RimeholtIceboundLongship",
+  "intent": "A hill-folk burial longship frozen at a tilt into a lake that never thaws, bow up and whole, broken in two, or sunk to its ribs with the hull left under the ice, the ship standing in a wide pale ice collar on a clean painted lake with a tight cold line of light along its keel beneath.",
+  "sculpts": [
+    "rimeholt_burial_hull",
+    "rimeholt_ship_ribs",
+    "rimeholt_ship_mast",
+    "rimeholt_ice_slab",
+    "rimeholt_wreck_timber"
+  ],
+  "setpiece": "rimeholt_hullglow",
+  "variation": [
+    "crossing: the road enters and leaves on any two of four borders (south-north, west-east, south-east, north-west), bent by a seeded bulge",
+    "wreck: bow up and whole / broken in two / sunk to the ribs with the hull left under the ice",
+    "lie: the hull alongside the road / across it / diagonal, on either side and with either end facing the road",
+    "pressure ridges: 0 to 3, each its own angle, length and height, plus a broken wall of heaved ice along part of the shore",
+    "shore and leads: snow on one edge or two, and a straight, bent or ring lead through the ice"
+  ],
+  "requests": [
+    "A translucent ice sheet: opaque terrain hides the hull below it, so the buried part of the ship is drawn as a cold glow on the surface rather than seen through the ice.",
+    "A list (roll) on a landmark: landmarks take yaw and sink only, so the ship's tilt is the beached hull's bow pitch, not a heel to port."
+  ],
+  "critic_pass1": {
+    "idea": 8,
+    "photograph": 7,
+    "topology": 6,
+    "look": 6,
+    "camera": 6,
+    "usable": 7,
+    "total": 6.93,
+    "best_shot": "shots seed 1, the wreck from the ice",
+    "why": "The ship is the strongest single subject; hull glow reads as a pipe and the game camera turns the mast into scribbles."
+  },
+  "critic_pass2": {
+    "idea": 8,
+    "photo": 7,
+    "topology": 7,
+    "look": 7,
+    "camera": 5,
+    "usable": 6,
+    "total": 7.08,
+    "best_shot": "shots seed 1, the wreck from the ice",
+    "why": "Best single subject; ship states now vary by seed and the glow is soft and broad, though it spreads too wide and the game camera tangles."
+  },
+  "critic_pass3": {
+    "idea": 8,
+    "photo": 7,
+    "topology": 6,
+    "look": 6,
+    "camera": 5,
+    "usable": 6,
+    "total": 6.78,
+    "best_shot": "feature-shots seed 1, the wreck from the ice",
+    "why": "The tilted longship is the strongest subject in the run, its glow is now a tight keel line, and the ship states vary; the lake surface is still noisy."
+  },
+  "final_notes": "# F: frozen burial longship\n\nKeep: the tilted hull with ribs and mast is the strongest subject in the run; \"the wreck from the ice\" seed 1 (bow up, ribs bared) is the best photograph here, and the keel glow is now a tight line.\n\n1. The lake around the ship is still a patchwork of pale and grey slabs; make it one calm sheet with the pale collar as the only change in value, so the black hull separates.\n2. From the game camera (seed 2) the dark hull and mast fill the frame; pull the camera back or set the hull off-centre so the collar and the road show around it.\n3. Show the keel glow in the feature's photographs as a lit line on the ice under the hull; at present the ship reads unlit in every shot.\n\nLast round: answered the glow (now a tight line under the keel in the set piece) and the framing (the ship fills the eye-level shots); partly answered the collar (pale rings in the seeds sheet); not answered the stippled lake.\n",
+  "run": "rimeholt-features-2",
+  "generator": "g01"
+}

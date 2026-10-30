@@ -1,0 +1,31 @@
+{
+  "weights": {"idea": 3, "photograph": 2.5, "topology": 2, "look": 1, "camera": 0.75, "usable": 0.75},
+  "candidates": {
+    "A": {"idea": 5, "photograph": 4, "topology": 3, "look": 3, "camera": 4, "usable": 5, "total": 4.08,
+      "best_shot": "shots seed 3, up the road to the ice (dark cave mouth under the ledge)",
+      "why": "Glacier pour is a box clutter with no silhouette; tongue always on the north edge; meltwater effect barely visible."},
+    "B": {"idea": 7, "photograph": 7, "topology": 7, "look": 6, "camera": 7, "usable": 7, "total": 6.90,
+      "best_shot": "shots seed 3, the crossing from the south",
+      "why": "Bridge over a stepped crevasse is a clear subject and the crossing angle varies well; crevasse floor is checkerboard paving with no glow."},
+    "C": {"idea": 8, "photograph": 7, "topology": 6, "look": 5, "camera": 7, "usable": 6, "total": 6.83,
+      "best_shot": "shots seed 2, the lip and the spire",
+      "why": "Best set piece of the run and a real vertical shaft; every seed is the same round well with a heavy teal rim."},
+    "D": {"idea": 6, "photograph": 5, "topology": 7, "look": 6, "camera": 4, "usable": 6, "total": 5.80,
+      "best_shot": "shots seed 2, the arch on the crest",
+      "why": "Good seed variety, but fins read as bleachers, grey on grey, and the spindrift is muddy."},
+    "E": {"idea": 8, "photograph": 7, "topology": 7, "look": 6, "camera": 7, "usable": 6, "total": 7.13,
+      "best_shot": "shots seed 3, the road in (vent with ice teeth in the foreground)",
+      "why": "Vents, ice crowns, terraces and a strong frost-steam column; clusters vary per seed; ground over-cluttered with spikes."},
+    "F": {"idea": 8, "photograph": 7, "topology": 6, "look": 6, "camera": 6, "usable": 7, "total": 6.93,
+      "best_shot": "shots seed 1, the wreck from the ice",
+      "why": "The ship is the strongest single subject; hull glow reads as a pipe and the game camera turns the mast into scribbles."},
+    "G": {"idea": 4, "photograph": 3, "topology": 3, "look": 3, "camera": 3, "usable": 6, "total": 3.53,
+      "best_shot": "shots seed 3, the lit door",
+      "why": "Barrows don't read as mounds, shots are nearly black, one oval layout jittered across seeds."},
+    "H": {"idea": 6, "photograph": 6, "topology": 2, "look": 2, "camera": 6, "usable": 6, "total": 4.80,
+      "best_shot": "shots seed 2, down the nave",
+      "why": "Column rows to an altar compose well, but all twelve seeds are the same plan and the frost shafts are faint."}
+  },
+  "ranking": ["E", "F", "B", "C", "D", "H", "A", "G"],
+  "notes": "E, F, B and C are close (6.8-7.1) and all worth carrying forward: E for completeness, F for the strongest subject, B for the clearest readable crossing, C for the best effect. C's aurora column could also be borrowed for E's vents. G and A lack a readable subject; H needs layout variety before anything else."
+}

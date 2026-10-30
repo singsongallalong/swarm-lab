@@ -1,0 +1,764 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 5aad1106..8cb79592 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -3,10 +3,12 @@
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 3 1
+ -- feature=<Name>` and assembled into maps later.
+ local MapFeature = require("../systems/MapFeature")
++local RimeholtCrevasseBridge = require("../systems/features/RimeholtCrevasseBridge")
+ local RimeholtFrozenFall = require("../systems/features/RimeholtFrozenFall")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	RimeholtCrevasseBridge = RimeholtCrevasseBridge,
+ 	RimeholtFrozenFall = RimeholtFrozenFall,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index f409fe03..c23d4339 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1047,5 +1047,62 @@ Sculpts.parish_bell_tower = {
+ 	accent = PARISH_MOSS,
+ 	maxPrims = 34,
+ }
++-- Rimeholt (the frozen highland): the hill-folk's crossing over the crevasse.
++-- A plank bridge on the gorge's span form, borrowed: a timber deck whose
++-- walking level is y = 0, posts at the bridgeheads and hand chains sagging
++-- between them, a plank gone here and there. The chains are iron and the
++-- snapped chain under the deck catches the zone's ice-blue accent as frost.
++Sculpts.rimeholt_bridge = {
++	kind = "gorge",
++	form = "span",
++	size = { 26, 5.5, 11 },
++	material = "Wood",
++	colors = { { 66, 70, 78 }, { 58, 62, 70 }, { 52, 54, 58 }, { 64, 58, 50 }, { 62, 88, 90 } },
++	materials = { [3] = "Metal", [4] = "WoodPlanks", [5] = "Metal" },
++	maxPrims = 18,
++}
++-- The bridgeheads' crib: a short row of lashed logs, frost-capped, holding
++-- the bridge's ends in the snow.
++Sculpts.rimeholt_bridge_crib = {
++	kind = "columns",
++	size = { 4.8, 3.6, 3.2 },
++	material = "Wood",
++	colors = { { 58, 52, 44 }, { 48, 44, 38 }, { 78, 88, 90 } },
++	maxPrims = 7,
++	columns = 3,
++	jag = 0.3,
++}
++-- Spare beams stacked by the crossing for a repair nobody came back to make.
++Sculpts.rimeholt_bridge_timbers = {
++	kind = "blocks",
++	size = { 5, 1.6, 2.8 },
++	material = "Wood",
++	colors = { { 60, 54, 46 }, { 50, 46, 40 }, { 68, 60, 50 } },
++	maxPrims = 6,
++}
++-- Wind-packed snow heaped over the crevasse's lip and banked on its bank:
++-- low round humps, one union a drift, so a rim's worth costs a part a drift.
++Sculpts.rimeholt_snowdrift = {
++	kind = "tuft",
++	size = { 4.6, 1.7, 3.8 },
++	material = "Snow",
++	colors = { { 88, 94, 100 }, { 80, 86, 92 }, { 94, 98, 102 } },
++	maxPrims = 4,
++	blades = 0,
++	body = 0.95,
++	rounded = true,
++	merge = 6,
++}
++-- Broken ice teeth where the frost split the crevasse's lip: pale blue
++-- columns, jagged and leaning out over the drop.
++Sculpts.rimeholt_ice_teeth = {
++	kind = "columns",
++	size = { 5.6, 6, 3.6 },
++	material = "Ice",
++	colors = { { 80, 92, 96 }, { 72, 84, 90 }, { 88, 96, 100 } },
++	maxPrims = 6,
++	columns = 3,
++	jag = 0.3,
++}
+ 
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 88a1b18b..b812cdb5 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1590,4 +1590,85 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- Rimeholt (the frozen highland): the wind pouring snow over a crevasse's
++-- lip. A pale sheet streams along the rim and tips over it, a denser fall
++-- drops away into the blue dark, and a faint haze hangs where it lands. All
++-- three ride one wandering worm laid along the lip, each its own width and
++-- pace, so the spill reads as a body with depth, not a stripe (EF8). Placed
++-- by the crevasse feature at the top edge of the drop, read from the game
++-- camera above.
++recipes.rimeholt_crevasse_drift = {
++	about = "Snow pouring off Rimeholt's crevasse lip: a pale sheet streaming along the rim, a denser fall dropping into the blue dark and a faint haze in the crack below.",
++	theme = "rimeholt",
++	path = { kind = "worm", length = 30, step = 3, bend = 14, climb = 1, round = 2 },
++	layers = {
++		{
++			name = "sheet",
++			look = {
++				kind = "stream",
++				every = 14,
++				thick = 8,
++				lift = 0.8,
++				toward = "along",
++				rise = 8,
++				life = { 2, 3.2 },
++				rate = 9,
++				size = 2.6,
++				tall = 1.8,
++				transparency = 0.78,
++				color = "rime",
++				texture = "veil",
++				lean = 6,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 2.5, tilt = 8, span = 22, periods = { 7, 10 } },
++			priority = 1,
++		},
++		{
++			name = "pour",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 6,
++				lift = 2.4,
++				toward = "down",
++				rise = 5,
++				life = { 3, 4.6 },
++				rate = 8,
++				size = 3.4,
++				tall = 3,
++				transparency = 0.8,
++				color = "pale",
++				texture = "veil",
++				lean = 3,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.5, tilt = 4, span = 16, periods = { 5, 8 } },
++			priority = 2,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 26,
++				thick = 10,
++				lift = 1,
++				toward = "up",
++				rise = 0.5,
++				life = { 6, 9 },
++				rate = 1.2,
++				size = 12,
++				tall = 0.8,
++				transparency = 0.9,
++				color = "ice",
++				texture = "veil",
++				lean = 12,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 3, tilt = 4, span = 30, periods = { 11, 8 } },
++			priority = 3,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0e4c0dc5..b4cb3419 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -362,6 +362,23 @@ local rows: { [string]: Row } = {
+ 		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
+ 		MOOR
+ 	),
++	["sculpt:rimeholt_bridge"] = row(
++		"A plank bridge of dark timber and iron chains, frost caught on its snapped links: the hill-folk's crossing of Rimeholt's crevasse.",
++		MOOR
++	),
++	["sculpt:rimeholt_bridge_crib"] = row(
++		"A short crib of frost-capped lashed logs holding the end of Rimeholt's crevasse bridge.",
++		MOOR
++	),
++	["sculpt:rimeholt_bridge_timbers"] = row(
++		"A stack of spare bridge beams left at Rimeholt's crevasse crossing.",
++		MOOR
++	),
++	["sculpt:rimeholt_snowdrift"] = row("A low heap of wind-packed snow banked over Rimeholt's crevasse lip.", MOOR),
++	["sculpt:rimeholt_ice_teeth"] = row(
++		"Broken ice teeth, pale blue and leaning, standing out of Rimeholt's crevasse lip where the frost split it.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/RimeholtCrevasseBridge.luau b/src/shared/systems/features/RimeholtCrevasseBridge.luau
+new file mode 100644
+index 00000000..e01e9be5
+--- /dev/null
++++ b/src/shared/systems/features/RimeholtCrevasseBridge.luau
+@@ -0,0 +1,556 @@
++--!strict
++-- Rimeholt's crevasse bridge: a deep crack torn across the old snow, one long
++-- drop from the snow to a wide dark floor, with a continuous pale seam of lit
++-- ice running along the bottom, crossed by a plank bridge of lashed timber on
++-- a deck of ice. Snow banks over the rim beside the bridge, and the wind pours
++-- more over it (`rimeholt_crevasse_drift`).
++--
++-- Its seeds choose the structure first and the dress second (fafwa,
++-- 2026-10-30):
++--   1. the gash's shape: an inner throat, an S-rift, a dogleg, a fork with a
++--      separate splinter, twin crossings, a zigzag, or a hook that dies out;
++--   2. where the crack runs, how wide it is (a one-cell split to a seven-cell
++--      chasm), how deep it cuts, and where the crossing stands on the road;
++--   3. the floor: black water-ice, and the pale lit seam's course along it;
++--   4. what the snow carries: a frozen tarn or not, and 0-2 ice crags;
++--   5. the bridgeheads' dress: cribs, a beam pile and the threshold markers.
++local DraftedMap = require("../DraftedMap")
++local MapFeature = require("../MapFeature")
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local SHAPES = { "gash", "rift", "bend", "fork", "twin", "zigzag", "hook" }
++
++local feature: MapFeature.Feature = {
++	name = "RimeholtCrevasseBridge",
++	about = "A deep crevasse through the night snow, one dark floor with a pale lit seam, crossed by a lashed-timber bridge.",
++	palette = "Rimeholt",
++	scale = "medium",
++	role = "crossing",
++	mood = { "deep", "frozen", "crossing", "glowing" },
++	cells = {
++		-- The floor, one long drop below the snow: black water-ice.
++		deep = {
++			ground = { material = "Asphalt", color = { 20, 28, 38 } },
++			lift = 0.4,
++			clear = true,
++		},
++		-- The seam: a continuous strip of pale ice along the bottom of the
++		-- cut, so the floor reads as a lit river in the dark.
++		seam = {
++			ground = { material = "Marble", color = { 88, 96, 100 } },
++			lift = 0.5,
++			clear = true,
++		},
++		-- A cell of the seam with the cold breathing out of it.
++		lit = {
++			ground = { material = "Marble", color = { 88, 96, 100 } },
++			lift = 0.5,
++			clear = true,
++			glow = { color = { 150, 225, 220 }, range = 18, brightness = 1.4, every = 1, height = 1.2 },
++		},
++		-- The bridge's ice deck, under the timber planks the span lays on it.
++		deck = {
++			ground = { material = "Limestone", color = { 82, 92, 96 } },
++			lift = 0.05,
++			clear = true,
++		},
++		-- Ice crags standing out of the snow, their tops jagged per cell.
++		crag = {
++			ground = { material = "Rock", color = { 58, 68, 76 } },
++			lift = 3,
++			clear = true,
++		},
++		-- A frozen tarn lying in a hollow of the bank: walkable, a hair over
++		-- the snow.
++		tarn = {
++			ground = { material = "Glacier", color = { 64, 72, 78 } },
++			lift = 0.3,
++			clear = true,
++		},
++	} :: { [string]: DraftedMap.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-2: the structure, first.
++		local shape = SHAPES[whole(rng, 1, #SHAPES)]
++		local w = whole(rng, 26, 32)
++		local d = whole(rng, 26, 32)
++		if shape == "twin" then
++			w = 32
++		end
++		-- The crossing stands near the middle of the footprint, so the game
++		-- camera over the feature always frames the bridge.
++		local roadZ = math.floor(d / 2) + whole(rng, -2, 2)
++		local cx = math.floor(w / 2) + whole(rng, -3, 3)
++		-- The cut's half-width in cells: a two-cell split up to a seven-cell
++		-- chasm (the bridge is sized from the width it finds).
++		local deepR = 0.5 + whole(rng, 0, if shape == "twin" then 3 else 5) * 0.5
++		local deepH = -12 - whole(rng, 0, 1) * 2
++		local bottom = "deep"
++		local walk: { boolean } = table.create(w * d, true)
++		local heights: { number } = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local dist: { number } = table.create(w * d, math.huge)
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inside(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= w and z <= d
++		end
++
++		-- The crack's course. Every shape runs a straight stretch through the
++		-- road's crossing, so the bridge always spans a clean cut, and every
++		-- shape crosses the road exactly once.
++		local cracks: { { { x: number, z: number } } } = {}
++		local crossings: { number } = {}
++		if shape == "gash" then
++			-- A throat torn open inside the snow, both ends dying out in it.
++			local len = math.min(whole(rng, 6, 9), roadZ - 3, d - roadZ - 3)
++			local skew = whole(rng, -3, 3)
++			table.insert(cracks, {
++				{ x = cx + skew, z = roadZ - len },
++				{ x = cx, z = roadZ - 3 },
++				{ x = cx, z = roadZ + 3 },
++				{ x = cx - skew, z = roadZ + len },
++			})
++			table.insert(crossings, cx)
++		elseif shape == "rift" then
++			-- An S ripped from the north border to the south.
++			local x0 = math.clamp(cx + whole(rng, -8, 8), 4, w - 4)
++			local x1 = math.clamp(cx + whole(rng, -8, 8), 4, w - 4)
++			local k = whole(rng, 3, 6)
++			table.insert(cracks, {
++				{ x = x0, z = 1 },
++				{ x = math.clamp(x0 + k, 4, w - 4), z = math.max(2, roadZ - 8) },
++				{ x = cx, z = roadZ - 3 },
++				{ x = cx, z = roadZ + 3 },
++				{ x = math.clamp(x1 - k, 4, w - 4), z = math.min(d - 1, roadZ + 8) },
++				{ x = x1, z = d },
++			})
++			table.insert(crossings, cx)
++		elseif shape == "bend" then
++			-- In off the west border north of the road, out the east south of it.
++			local z0 = whole(rng, 2, math.max(2, roadZ - 6))
++			local z1 = whole(rng, math.min(d - 2, roadZ + 6), d - 2)
++			table.insert(cracks, {
++				{ x = 1, z = z0 },
++				{ x = cx, z = roadZ - 3 },
++				{ x = cx, z = roadZ + 3 },
++				{ x = w, z = z1 },
++			})
++			table.insert(crossings, cx)
++		elseif shape == "twin" then
++			-- Two crossings, two bridges: the road runs from one bank to the
++			-- middle strip to the far bank.
++			local gap = whole(rng, 8, 9)
++			cx = whole(rng, gap + 7, w - gap - 7)
++			for _, x in { cx - gap, cx + gap } do
++				table.insert(cracks, {
++					{ x = x, z = 1 },
++					{ x = x, z = roadZ - 3 },
++					{ x = x, z = roadZ + 3 },
++					{ x = math.clamp(x + whole(rng, -3, 3), 4, w - 4), z = d },
++				})
++				table.insert(crossings, x)
++			end
++		elseif shape == "fork" then
++			-- The road's crack, and a separate splinter torn beside it that
++			-- never joined: a wall island in the snow.
++			local x0 = whole(rng, 4, w - 4)
++			local x1 = whole(rng, 4, w - 4)
++			local kink = whole(rng, -4, 4)
++			table.insert(cracks, {
++				{ x = x0, z = 1 },
++				{ x = math.clamp(cx + kink, 4, w - 4), z = math.max(2, roadZ - 8) },
++				{ x = cx, z = roadZ - 3 },
++				{ x = cx, z = roadZ + 3 },
++				{ x = x1, z = d },
++			})
++			table.insert(crossings, cx)
++			local side = if rng:NextNumber() < 0.5 then -1 else 1
++			local sx = math.clamp(cx + side * whole(rng, 5, 8), 5, w - 5)
++			local sz = if side < 0 then roadZ - whole(rng, 9, 12) else roadZ + whole(rng, 9, 12)
++			sz = math.clamp(sz, 5, d - 5)
++			local sz2 = math.clamp(sz + whole(rng, 4, 6), 4, d - 4)
++			table.insert(cracks, {
++				{ x = sx, z = sz },
++				{ x = math.clamp(sx + side * 2, 4, w - 4), z = sz2 },
++			})
++		elseif shape == "zigzag" then
++			-- North to south with two sharp kinks, one each side of the road.
++			local x0 = math.clamp(cx + whole(rng, -7, 7), 4, w - 4)
++			local x1 = math.clamp(cx + whole(rng, -7, 7), 4, w - 4)
++			local k = whole(rng, 4, 7)
++			table.insert(cracks, {
++				{ x = x0, z = 1 },
++				{ x = math.clamp(cx + k, 4, w - 4), z = math.max(2, roadZ - 8) },
++				{ x = cx, z = roadZ - 3 },
++				{ x = cx, z = roadZ + 3 },
++				{ x = math.clamp(cx - k, 4, w - 4), z = math.min(d - 1, roadZ + 8) },
++				{ x = x1, z = d },
++			})
++			table.insert(crossings, cx)
++		else
++			-- A hook: in off the west border north of the road, across it, and
++			-- dying out in the snow beyond.
++			local z0 = whole(rng, 2, math.max(2, roadZ - 6))
++			local tailX = math.clamp(cx + whole(rng, -8, 8), 4, w - 4)
++			local tailZ = math.min(d - 3, roadZ + whole(rng, 8, 12))
++			table.insert(cracks, {
++				{ x = 1, z = z0 },
++				{ x = cx, z = roadZ - 3 },
++				{ x = cx, z = roadZ + 3 },
++				{ x = tailX, z = tailZ },
++			})
++			table.insert(crossings, cx)
++		end
++
++		-- Distance from a cell to a crack's course, in cells.
++		local function crackDistance(points: { { x: number, z: number } }, x: number, z: number): number
++			local best = math.huge
++			for k = 2, #points do
++				local a, b = points[k - 1], points[k]
++				local dx, dz = b.x - a.x, b.z - a.z
++				local len2 = dx * dx + dz * dz
++				local t = if len2 > 0 then math.clamp(((x - a.x) * dx + (z - a.z) * dz) / len2, 0, 1) else 0
++				local px, pz = a.x + dx * t, a.z + dz * t
++				best = math.min(best, math.sqrt((x - px) ^ 2 + (z - pz) ^ 2))
++			end
++			return best
++		end
++
++		-- The gash itself: one drop from the snow to the floor, with no
++		-- terrace between. Wall cells stand at negative heights, so it cuts
++		-- down below the snow rather than rising over it.
++		local function tear(points: { { x: number, z: number } })
++			for z = 1, d do
++				for x = 1, w do
++					local best = crackDistance(points, x, z)
++					local i = at(x, z)
++					dist[i] = math.min(dist[i], best)
++					if best <= deepR then
++						walk[i] = false
++						kinds[i] = bottom
++						heights[i] = deepH
++						lifts[i] = 0.4
++					end
++				end
++			end
++		end
++		for _, points in cracks do
++			tear(points)
++		end
++
++		-- The crossings: lay a walkable deck of ice over each cut, three cells
++		-- of road wide, so the road runs across on it.
++		local spans: { { xl: number, cx: number, xr: number } } = {}
++		for _, crossX in crossings do
++			local xl, xr = crossX, crossX
++			while xl > 4 and not walk[at(xl - 1, roadZ)] do
++				xl -= 1
++			end
++			while xr < w - 3 and not walk[at(xr + 1, roadZ)] do
++				xr += 1
++			end
++			for x = xl, xr do
++				for z = roadZ - 1, roadZ + 1 do
++					local i = at(x, z)
++					walk[i] = true
++					kinds[i] = "deck"
++					heights[i] = 0
++					lifts[i] = nil
++				end
++			end
++			table.insert(spans, { xl = xl, cx = (xl + xr) / 2, xr = xr })
++		end
++
++		-- The lit seam: pale ice along the whole floor, with the cold breathing
++		-- out of it every few cells. A cut wide enough to keep dark floor
++		-- either side of it gets the continuous strip; a narrower split gets
++		-- the line of lit cells alone.
++		-- A cut wide enough for dark floor either side of a full strip gets
++		-- the two-cell seam a diagonal run needs to stay unbroken; a narrow
++		-- split keeps its dark floor and gets the line of lit cells alone.
++		local wide = deepR >= 1.5
++		local seamCells: { number } = {}
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if kinds[i] == bottom and dist[i] <= (if wide then 0.72 else 0.35) then
++					table.insert(seamCells, i)
++					if wide then
++						kinds[i] = "seam"
++						lifts[i] = 0.5
++					end
++				end
++			end
++		end
++		-- The lights form one unbroken run along the floor at the crossing, so
++		-- the bridge's photographs frame a lit strip, not a scatter of dots.
++		local litPool: { number } = {}
++		for _, i in seamCells do
++			local z = (i - 1) // w + 1
++			if math.abs(z - roadZ) <= 8 then
++				table.insert(litPool, i)
++			end
++		end
++		if #litPool == 0 then
++			litPool = seamCells
++		end
++		table.sort(litPool, function(a: number, b: number): boolean
++			local za, zb = (a - 1) // w + 1, (b - 1) // w + 1
++			return math.abs(za - roadZ) < math.abs(zb - roadZ)
++		end)
++		for k = 1, math.min(8, #litPool) do
++			local i = litPool[k]
++			kinds[i] = "lit"
++			lifts[i] = 0.5
++		end
++
++		-- The road runs straight across on the decks; its border cells are snow.
++		local road: { { x: number, z: number } } = { { x = 1, z = roadZ } }
++		for _, crossX in crossings do
++			table.insert(road, { x = crossX, z = roadZ })
++		end
++		table.insert(road, { x = w, z = roadZ })
++
++		local marks: { DraftedMap.Landmark } = {}
++		for k, span in spans do
++			-- The span's own frame is 26 studs across; some seeds lay just
++			-- enough over a narrow split, a short hop, and some stretch long
++			-- over a wide chasm.
++			local across = (span.xr - span.xl + 1) * 4
++			local scale = math.clamp((across + 2) / 26 * between(rng, 1, 1.3), 0.5, 1.16)
++			table.insert(marks, {
++				sculpt = "rimeholt_bridge",
++				x = span.cx,
++				z = roadZ,
++				yaw = 0,
++				scale = scale,
++				sink = -0.25,
++			})
++			-- Cribs of lashed logs at the bridgeheads, holding its ends.
++			table.insert(marks, {
++				sculpt = "rimeholt_bridge_crib",
++				x = span.xl - 1.4,
++				z = roadZ + 2.3,
++				yaw = between(rng, -20, 20),
++				scale = between(rng, 0.85, 1.05),
++			})
++			table.insert(marks, {
++				sculpt = "rimeholt_bridge_crib",
++				x = span.xr + 1.4,
++				z = roadZ - 2.3,
++				yaw = between(rng, -20, 20),
++				scale = between(rng, 0.85, 1.05),
++			})
++			if k == 1 then
++				-- The first crossing carries the kept road's furniture: a pile
++				-- of spare beams and the threshold markers either side.
++				table.insert(marks, {
++					sculpt = "rimeholt_bridge_timbers",
++					x = span.xl - 1.6,
++					z = roadZ - 2.4,
++					yaw = between(rng, 0, 360),
++					scale = 1,
++				})
++				table.insert(marks, {
++					sculpt = "rimeholt_marker",
++					x = span.xl - 2.6,
++					z = roadZ + 3.2,
++					yaw = between(rng, -10, 10),
++					scale = 0.9,
++				})
++				table.insert(marks, {
++					sculpt = "rimeholt_marker",
++					x = span.xr + 2.6,
++					z = roadZ - 3.2,
++					yaw = between(rng, 170, 190),
++					scale = 0.9,
++				})
++			end
++		end
++
++		-- Snow banked over the rim beside the bridge, ready to pour: a big
++		-- drift on each side, its edge overhanging the drop.
++		local function rimX(z: number, side: number): number?
++			local edge: number? = nil
++			for x = 1, w do
++				local i = at(x, z)
++				local crack = kinds[i] == bottom or kinds[i] == "seam" or kinds[i] == "lit"
++				if crack and ((side < 0 and x < cx) or (side > 0 and x > cx)) then
++					if edge == nil or (side < 0 and x < edge) or (side > 0 and x > edge) then
++						edge = x
++					end
++				end
++			end
++			return edge
++		end
++		for _, side in { -1, 1 } do
++			local z = roadZ - side * 3
++			local edge = if z > 2 and z < d - 1 then rimX(z, side) else nil
++			if edge then
++				table.insert(marks, {
++					sculpt = "rimeholt_snowdrift",
++					x = edge + side * 0.6,
++					z = z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 1.3, 1.7),
++					sink = 0.3,
++				})
++			end
++		end
++
++		-- Broken ice teeth standing at the rim, away from the crossing, where
++		-- the frost split the edge.
++		for _ = 1, whole(rng, 2, 3) do
++			local z = whole(rng, 3, d - 3)
++			local side = if rng:NextNumber() < 0.5 then -1 else 1
++			local edge = if math.abs(z - roadZ) > 4 then rimX(z, side) else nil
++			if edge then
++				table.insert(marks, {
++					sculpt = "rimeholt_ice_teeth",
++					x = edge + side * 0.6,
++					z = z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.8, 1.15),
++				})
++			end
++		end
++
++		-- 4: what the snow carries. Crags stand out of it, away from the road
++		-- and the cut; a tarn lies in a hollow.
++		local crags = whole(rng, 0, 2)
++		local cragCentres: { { x: number, z: number } } = {}
++		for _ = 1, 30 do
++			if #cragCentres >= crags then
++				break
++			end
++			local ox, oz = whole(rng, 5, w - 4), whole(rng, 5, d - 4)
++			local r = between(rng, 1.2, 2.0)
++			local ok = true
++			for z = math.floor(oz - r), math.ceil(oz + r) do
++				for x = math.floor(ox - r), math.ceil(ox + r) do
++					if inside(x, z) and (x - ox) ^ 2 + (z - oz) ^ 2 <= r * r then
++						if dist[at(x, z)] <= deepR + 2 or math.abs(z - roadZ) <= 3 then
++							ok = false
++						end
++					end
++				end
++			end
++			for _, c in cragCentres do
++				if (c.x - ox) ^ 2 + (c.z - oz) ^ 2 < (r + 4) ^ 2 then
++					ok = false
++				end
++			end
++			if ok then
++				table.insert(cragCentres, { x = ox, z = oz })
++				for z = math.floor(oz - r), math.ceil(oz + r) do
++					for x = math.floor(ox - r), math.ceil(ox + r) do
++						if inside(x, z) and (x - ox) ^ 2 + (z - oz) ^ 2 <= r * r then
++							local i = at(x, z)
++							walk[i] = false
++							kinds[i] = "crag"
++							heights[i] = 0
++							lifts[i] = between(rng, 2.2, 4.2)
++						end
++					end
++				end
++			end
++		end
++
++		if rng:NextNumber() < 0.55 then
++			for _ = 1, 30 do
++				local ox, oz = whole(rng, 5, w - 4), whole(rng, 5, d - 4)
++				local rx, rz = between(rng, 2.4, 3.8), between(rng, 1.8, 3)
++				local ok = true
++				local cells: { number } = {}
++				for z = math.floor(oz - rz), math.ceil(oz + rz) do
++					for x = math.floor(ox - rx), math.ceil(ox + rx) do
++						if inside(x, z) and ((x - ox) / rx) ^ 2 + ((z - oz) / rz) ^ 2 <= 1 then
++							local i = at(x, z)
++							if
++								not walk[i]
++								or kinds[i] ~= nil
++								or dist[i] <= deepR + 2.5
++								or math.abs(z - roadZ) <= 2
++								or math.abs(x - crossings[1]) <= 6
++							then
++								ok = false
++							end
++							table.insert(cells, i)
++						end
++					end
++				end
++				if ok and #cells >= 12 then
++					for _, i in cells do
++						kinds[i] = "tarn"
++						heights[i] = 0
++					end
++					break
++				end
++			end
++		end
++
++		-- The wind pours snow over the rim on both sides of the crossing.
++		local effects: { DraftedMap.Effect } = {}
++		local function driftAt(z: number, side: number)
++			local edge = if z >= 2 and z <= d - 1 then rimX(z, side) else nil
++			if edge then
++				table.insert(effects, { recipe = "rimeholt_crevasse_drift", x = edge, z = z, lift = 0.7 })
++			end
++		end
++		driftAt(roadZ - 3, -1)
++		driftAt(roadZ + 3, 1)
++
++		local first = spans[1]
++		local fromZ = math.min(roadZ + 5, d - 1)
++		local function shot(
++			name: string,
++			fx: number,
++			fz: number,
++			fl: number,
++			tx: number,
++			tz: number,
++			tl: number
++		): DraftedMap.Shot
++			return {
++				name = name,
++				from = { x = fx, z = fz, lift = fl },
++				to = { x = tx, z = tz, lift = tl },
++				fov = 60,
++			}
++		end
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				shot("the crossing from the south", first.cx + 1.5, fromZ, 12, first.cx, roadZ, -1),
++				shot(
++					"the bridge from the bank",
++					math.max(2.5, first.cx - 7),
++					math.min(roadZ + 8, d - 1),
++					10,
++					first.cx,
++					roadZ,
++					0
++				),
++			},
++		}
++	end,
++}
++
++return feature

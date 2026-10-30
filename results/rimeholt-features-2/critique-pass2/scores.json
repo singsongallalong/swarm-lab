@@ -1,0 +1,31 @@
+{
+  "weights": {"idea": 3, "photo": 2.5, "topology": 2, "look": 1, "camera": 0.75, "usable": 0.75},
+  "candidates": {
+    "A": {"idea": 5, "photo": 5, "topology": 5, "look": 4, "camera": 4, "usable": 6, "total": 4.90,
+          "best_shot": "shots seed 2, the pour over the cave mouth",
+          "why": "Cave mouth now shows and pours come from different edges, but the ice is still a flat box of small blocks with no silhouette and the meltwater is faint."},
+    "B": {"idea": 6, "photo": 7, "topology": 6, "look": 5, "camera": 6, "usable": 7, "total": 6.23,
+          "best_shot": "shots seed 1, the crossing from the south",
+          "why": "Clear, readable bridge subject and a clean crossing to fight on; floor still a checkerboard with little glow and seeds are similar slashes."},
+    "C": {"idea": 8, "photo": 6, "topology": 7, "look": 6, "camera": 5, "usable": 6, "total": 6.73,
+          "best_shot": "shots seed 2, the well from the snow",
+          "why": "Strongest effect and real vertical shape; seeds now vary (double, elongated wells) and the rune ring frames the shot, but the shots are cluttered."},
+    "D": {"idea": 4, "photo": 3, "topology": 6, "look": 5, "camera": 3, "usable": 6, "total": 4.33,
+          "best_shot": "shots seed 1, the arch on the crest",
+          "why": "Layouts differ, but the fins still read as stepped bleachers grey on grey and the spindrift is nearly invisible."},
+    "E": {"idea": 7, "photo": 6, "topology": 7, "look": 6, "camera": 6, "usable": 5, "total": 6.43,
+          "best_shot": "shots seed 3, the road in",
+          "why": "Complete new place with a good steam effect and varied vent clusters; eye-level shots are still a forest of spikes and cracks don't glow."},
+    "F": {"idea": 8, "photo": 7, "topology": 7, "look": 7, "camera": 5, "usable": 6, "total": 7.08,
+          "best_shot": "shots seed 1, the wreck from the ice",
+          "why": "Best single subject; ship states now vary by seed and the glow is soft and broad, though it spreads too wide and the game camera tangles."},
+    "G": {"idea": 5, "photo": 4, "topology": 6, "look": 4, "camera": 4, "usable": 6, "total": 4.85,
+          "best_shot": "shots seed 2, down the winding way",
+          "why": "Separate mounds and a winding road now, but no light fan from the doors, so the core idea is missing from every photo."},
+    "H": {"idea": 7, "photo": 6, "topology": 6, "look": 5, "camera": 3, "usable": 6, "total": 5.98,
+          "best_shot": "shots seed 2, down the nave",
+          "why": "Strong axial nave and a fine frost shaft; seeds now turn, but ruin is uniform and two game-camera shots are blocked by a column."}
+  },
+  "ranking": ["F", "C", "E", "B", "H", "A", "G", "D"],
+  "notes": "Round 2 improved most builders on their topology notes. F, C, E and B form the top group: each has a real subject plus either an effect or a strong silhouette. H made the biggest jump on its set piece but has a broken game-camera frame. A, G and D still lack the one visual their idea depends on (a serac silhouette, a light fan, tapered fins)."
+}

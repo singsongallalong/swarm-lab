@@ -1,0 +1,958 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 5aad1106..06e56b44 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -3,10 +3,12 @@
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 3 1
+ -- feature=<Name>` and assembled into maps later.
+ local MapFeature = require("../systems/MapFeature")
++local RimeholtAuroraWell = require("../systems/features/RimeholtAuroraWell")
+ local RimeholtFrozenFall = require("../systems/features/RimeholtFrozenFall")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	RimeholtAuroraWell = RimeholtAuroraWell,
+ 	RimeholtFrozenFall = RimeholtFrozenFall,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index f409fe03..fea4e29f 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1048,4 +1048,49 @@ Sculpts.parish_bell_tower = {
+ 	maxPrims = 34,
+ }
+ 
++-- The aurora well (features job): the ice the shaft's terraces are cut from,
++-- standing in shards where the cold split it, and the small rune slabs set
++-- between the marker stones round the lip. Pale blue-grey ice and grey
++-- granite, every colour inline and inside the art bible's surface limits.
++Sculpts.rimeholt_icefin = {
++	kind = "columns",
++	-- A cluster of leaning ice shards, jagged along the top, so a terrace's
++	-- shards read as one broken fin rather than a row of teeth.
++	size = { 7, 10, 6 },
++	material = "Ice",
++	colors = { { 72, 90, 100 }, { 64, 82, 92 }, { 82, 98, 102 } },
++	maxPrims = 16,
++	columns = 3,
++	jag = 0.6,
++	lean = 11,
++	step = 0.35,
++}
++Sculpts.rimeholt_rune_slab = {
++	kind = "headstone",
++	-- A slab of grey stone broken at the top, its foot in a plinth: the
++	-- lesser stones between the tall markers round a well's lip.
++	size = { 2.8, 5.2, 1.1 },
++	material = "Slate",
++	colors = { { 74, 78, 86 }, { 66, 70, 78 } },
++	maxPrims = 4,
++	top = "broken",
++	lean = 12,
++	plinth = true,
++}
++Sculpts.rimeholt_well_spire = {
++	kind = "columns",
++	-- The frozen spire at the heart of the aurora well: a forked needle of
++	-- pale ice the light climbs, standing from the floor of the shaft and
++	-- over its lip. Two masses split down the middle, so it reads as split
++	-- by the cold rather than carved.
++	size = { 11, 24, 6 },
++	material = "Ice",
++	colors = { { 74, 94, 102 }, { 66, 86, 96 }, { 84, 100, 102 } },
++	maxPrims = 14,
++	columns = 3,
++	jag = 0.55,
++	lean = 6,
++	split = true,
++}
++
+ return table.freeze(Sculpts)
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 88a1b18b..5b9325cb 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -1590,4 +1590,150 @@ recipes.drowned_lights = {
+ 	},
+ }
+ 
++-- Rimeholt's aurora well (features job): the light the frozen highland keeps
++-- under its ice, climbing out of a deep shaft. A short wandering line of
++-- emitters on the well floor sends up a pale column: a bright frost core with
++-- a wide green-blue body and a haze around it, motes racing past, and a lit
++-- crack in the floor it rises from. A worm path runs flat, so the column's
++-- height is its particles' own rise (9-11 studs a second for four to six
++-- seconds), not the path's: the first cut ran a 36-stud path and drew a
++-- fence, not a column (this job, r1). Ten emitters and two lights, inside a
++-- phone's share.
++recipes.rimeholt_aurora_well = {
++	about = "A column of pale aurora light climbing out of Rimeholt's stepped ice shaft into the night, ribboned, frosted and slowly breathing.",
++	theme = "rimeholt",
++	radius = 500,
++	path = { kind = "worm", length = 9, step = 3, bend = 35, climb = 8, round = 2 },
++	layers = {
++		{
++			name = "column",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 2,
++				lift = 0.4,
++				toward = "up",
++				rise = 9,
++				life = { 4, 6 },
++				rate = 7,
++				size = 1.6,
++				tall = 4,
++				transparency = 0.4,
++				color = "pale",
++				texture = "wisp",
++				lean = 5,
++				vary = 0.35,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 5, span = 9, periods = { 5, 3.6 } },
++			priority = 1,
++		},
++		{
++			name = "ribbon",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 3.5,
++				lift = 0.5,
++				toward = "up",
++				rise = 8.5,
++				life = { 4.5, 6 },
++				rate = 4.5,
++				size = 2.8,
++				tall = 4,
++				transparency = 0.6,
++				color = "ice",
++				texture = "veil",
++				lean = 7,
++				vary = 0.5,
++			},
++			motion = { kind = "worm", amplitude = 1.6, across = 1, periods = { 7, 4.5 }, twist = 8 },
++			priority = 2,
++		},
++		{
++			name = "body",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 6,
++				lift = 0.8,
++				toward = "up",
++				rise = 6,
++				life = { 6, 8 },
++				rate = 2.2,
++				size = 6,
++				tall = 2.4,
++				transparency = 0.85,
++				color = "glow",
++				texture = "veil",
++				lean = 8,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2.2, tilt = 6, span = 12, periods = { 11, 7 } },
++			priority = 3,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 2.5,
++				lift = 0.2,
++				toward = "up",
++				rise = 11,
++				life = { 3, 5 },
++				rate = 3.5,
++				size = 0.5,
++				tall = 1.2,
++				transparency = 0.25,
++				color = "pale",
++				texture = "wisp",
++				lean = 7,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 4, span = 8, periods = { 5, 8 } },
++			priority = 4,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 11,
++				lift = 1.2,
++				toward = "up",
++				rise = 2.4,
++				life = { 9, 12 },
++				rate = 0.9,
++				size = 16,
++				tall = 1.4,
++				transparency = 0.93,
++				color = "deep",
++				texture = "veil",
++				lean = 6,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 3.2, tilt = 4, span = 16, periods = { 15, 10 } },
++			priority = 5,
++		},
++		{
++			name = "fissure",
++			look = { kind = "neon", width = 0.5, segment = 3, transparency = 0.4, color = "ice" },
++			motion = {
++				kind = "flow",
++				wavelength = 12,
++				speed = 3,
++				depth = 0.5,
++				wiggle = { amplitude = 0.25, span = 8, periods = { 4.2, 2.8 } },
++			},
++			priority = 6,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 8, max = 2, range = 24, brightness = 1.1, color = "glow" },
++			motion = { kind = "pulse", period = 6.5, depth = 0.45 },
++			priority = 7,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 0e4c0dc5..39e42820 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -358,6 +358,18 @@ local rows: { [string]: Row } = {
+ 		"A tall marker stone with an ice-blue rag at Rimeholt's thresholds between reaches.",
+ 		MOOR
+ 	),
++	["sculpt:rimeholt_icefin"] = row(
++		"A cluster of leaning pale ice shards standing out of Rimeholt's terraces where the cold split them.",
++		MOOR
++	),
++	["sculpt:rimeholt_rune_slab"] = row(
++		"A broken-topped slab of grey stone on a plinth, set between the tall rune stones round Rimeholt's well.",
++		MOOR
++	),
++	["sculpt:rimeholt_well_spire"] = row(
++		"A forked needle of pale ice standing from the floor of Rimeholt's well and over its lip, the light climbing it.",
++		MOOR
++	),
+ 	["outdoor:rimeholt"] = row(
+ 		"Rimeholt: a frozen highland of blue-grey snow, black rimed pines, granite barrows and runestone rings beside ice that glows cold.",
+ 		MOOR
+diff --git a/src/shared/systems/features/RimeholtAuroraWell.luau b/src/shared/systems/features/RimeholtAuroraWell.luau
+new file mode 100644
+index 00000000..db7df61e
+--- /dev/null
++++ b/src/shared/systems/features/RimeholtAuroraWell.luau
+@@ -0,0 +1,703 @@
++--!strict
++-- The aurora well: a round shaft melted through Rimeholt's ice, its sides
++-- stepped in terraces of black ice and pale frost. At the bottom a column of
++-- pale aurora climbs out of the dark and keeps going past the lip into the
++-- night, and runestones stand round the rim. The road either bends round the
++-- lip, crosses it on a causeway, or drops by a stair of two-stud treads to
++-- the well's floor and climbs out the far side.
++--
++-- Seeds are structures, not one shape jittered (fafwa 2026-10-30: topology
++-- first, then look). The first draws choose them, the rest only dress:
++--   1. how the road passes: around the lip, across on a causeway, or down
++--      the stair and out the other side;
++--   2. one great shaft, or a great one with a lesser listening well beside it;
++--   3. the rim's shape (round, oval, three-lobed), its size, and the depth
++--      of the terraces;
++--   4. which terraces are pale frost and which black ice (and how often);
++--   5. how the runestones stand round the lip: a ring, a broken arc, or two
++--      facing clusters; and how many ice outcrops break the snow outside.
++local DraftedMap = require("../DraftedMap")
++local MapFeature = require("../MapFeature")
++
++local TWO_PI = math.pi * 2
++local ROADS = { "around", "across", "down", "down" }
++local RIMS = { "round", "oval", "lobed" }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- The shorter way round the circle from a to b, in radians.
++local function angleGap(a: number, b: number): number
++	local d = math.abs((a - b) % TWO_PI)
++	return math.min(d, TWO_PI - d)
++end
++
++-- Distance from (px, pz) to the segment a-b, in cells.
++local function segmentDistance(px: number, pz: number, a: { x: number, z: number }, b: { x: number, z: number }): number
++	local vx, vz = b.x - a.x, b.z - a.z
++	local wx, wz = px - a.x, pz - a.z
++	local len = vx * vx + vz * vz
++	local t = if len > 1e-9 then math.clamp((wx * vx + wz * vz) / len, 0, 1) else 0
++	local dx, dz = px - (a.x + vx * t), pz - (a.z + vz * t)
++	return math.sqrt(dx * dx + dz * dz)
++end
++
++local function nearRoad(road: { { x: number, z: number } }, x: number, z: number, gap: number): boolean
++	for k = 2, #road do
++		if segmentDistance(x, z, road[k - 1], road[k]) < gap then
++			return true
++		end
++	end
++	return false
++end
++
++local feature: MapFeature.Feature = {
++	name = "RimeholtAuroraWell",
++	about = "A deep stepped ice shaft whose floor breathes a column of pale aurora up into the night, runestones standing round its lip.",
++	palette = "Rimeholt",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "deep", "luminous", "still", "old" },
++	cells = {
++		-- The pale collar of ice round the shaft's lip, and the frozen pans
++		-- out on the snow: walkable, a hand's height over the ground.
++		ice_lip = {
++			ground = { material = "Marble", color = { 50, 72, 76 } },
++			lift = 0.3,
++			clear = true,
++		},
++		-- The rim's dark blocks: granite and black ice between the pale
++		-- patches, stepping the collar so it is not one flat ring (C2).
++		rim_dark = {
++			ground = { material = "Slate", color = { 18, 20, 22 } },
++			lift = 0.15,
++			clear = true,
++		},
++		-- The way down and across: black-ice treads on the stair, the slab of
++		-- the causeway. A faint cold light under each few cells, so the way is
++		-- readable in the dark of the shaft.
++		ice_way = {
++			ground = { material = "Rock", color = { 80, 90, 92 } },
++			lift = 0.35,
++			clear = true,
++		},
++		-- The shaft's walls: terraces of black ice, shards of old ice
++		-- standing out of them where the cold split them.
++		well_step = {
++			ground = { material = "Basalt", color = { 50, 54, 62 } },
++			clear = true,
++		},
++		-- The pale bands a cold snap left in the terraces.
++		well_frost = {
++			ground = { material = "Marble", color = { 50, 72, 76 } },
++			clear = true,
++		},
++		-- The lowest terrace ring, at the foot of the shaft: the aurora's
++		-- light gathers here and climbs, so the shaft is lit from the floor
++		-- up rather than from its lip down (C2).
++		well_deep = {
++			ground = { material = "Basalt", color = { 50, 54, 62 } },
++			clear = true,
++			glow = { color = { 120, 200, 200 }, range = 12, brightness = 0.85, every = 8, height = 0.5 },
++		},
++		-- The floor at the bottom, ice gone black over whatever the shaft
++		-- opened onto, lit from beneath by the aurora.
++		well_floor = {
++			ground = { material = "Ice", color = { 60, 72, 74 } },
++			lift = 0.2,
++			clear = true,
++			glow = { color = { 120, 200, 200 }, range = 20, brightness = 1.15, every = 6, height = 0.6 },
++		},
++		-- Frost cracks running out from the lip across the snow.
++		crack = {
++			ground = { material = "Marble", color = { 50, 72, 76 } },
++			lift = 0.12,
++			clear = true,
++		},
++		-- Granite and old ice breaking the snow outside the well.
++		outcrop = {
++			ground = { material = "Basalt", color = { 50, 54, 62 } },
++			clear = true,
++			props = {
++				{ sculpt = "rimeholt_icefin", every = 8, scale = { 0.4, 0.7 }, sink = 1.0 },
++				{ sculpt = "rimeholt_boulder", every = 8, scale = { 0.6, 1.0 }, sink = 0.4 },
++			},
++		},
++	} :: { [string]: DraftedMap.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-2: the structure, first: how the road passes, one shaft or two,
++		-- and the footprint's size.
++		local passing = ROADS[whole(rng, 1, #ROADS)]
++		local twin = rng:NextNumber() < 0.5
++		local w, d = whole(rng, 30, 32), whole(rng, 30, 32)
++		local rimShape = RIMS[whole(rng, 1, #RIMS)]
++		local r1 = if twin then whole(rng, 6, 7) else whole(rng, 7, 9)
++		local r2 = if twin then whole(rng, 4, 5) else 0
++		local lipWidth = between(rng, 0.7, 1.3)
++
++		-- 3: the rim's shape. An oval is a true ellipse, long and turned off
++		-- the grid; a lobed rim breathes in and out three times round, so the
++		-- shaft reads as melted, not cut.
++		local rx, rz = r1, r1
++		local lobeAmp, lobePhase = 0, 0
++		local ovalRot = 0
++		if rimShape == "oval" then
++			rx = r1 * between(rng, 1.25, 1.45)
++			rz = r1 * between(rng, 0.70, 0.84)
++			ovalRot = rng:NextNumber() * math.pi
++		elseif rimShape == "lobed" then
++			lobeAmp = between(rng, 0.20, 0.30)
++			lobePhase = rng:NextNumber() * TWO_PI
++		end
++		local reach = math.ceil(math.max(rx, rz))
++		local cx = whole(rng, reach + 4, w - reach - 3)
++		local cz = whole(rng, reach + 4, d - reach - 3)
++
++		local function rimRadius(theta: number): number
++			if rimShape == "oval" then
++				local c, s = math.cos(theta - ovalRot), math.sin(theta - ovalRot)
++				return 1 / math.sqrt((c / rx) ^ 2 + (s / rz) ^ 2)
++			elseif rimShape == "lobed" then
++				return r1 * (1 + lobeAmp * math.cos(3 * theta + lobePhase))
++			end
++			return r1
++		end
++		-- The narrowest the rim gets: the terraces' depth is measured off it,
++		-- so the stair reaches the floor all the way round an oval or a lobe.
++		local minRim = r1
++		if rimShape == "oval" then
++			minRim = rz
++		elseif rimShape == "lobed" then
++			minRim = r1 * (1 - lobeAmp)
++		end
++		local floorR = between(rng, 1.6, math.min(2.6, minRim - 3.0))
++		-- One terrace a cell wide, each dropping exactly a slab's depth (four
++		-- studs), so the rings meet with no gap and the shaft reads as cut
++		-- steps rather than a bowl. A stair can only fall two studs a cell,
++		-- so the seeds whose road goes down keep a shallower shaft.
++		local bands = math.clamp(math.floor(minRim - floorR), 3, 6)
++		local depth = bands * 4
++		if passing == "down" then
++			depth = math.min(depth, math.max(4, math.floor(2 * (minRim - floorR) + 0.5)))
++		end
++		local frostEvery = whole(rng, 2, 3)
++		local frostFrom = whole(rng, 1, frostEvery)
++
++		-- 1: where the road runs, drawn before anything is painted, so the
++		-- second well and the outcrops can keep out of its way.
++		local stairA = rng:NextNumber() * TWO_PI
++		local stairB = stairA + math.pi + between(rng, -0.6, 0.6)
++		local causewayX = rng:NextNumber() < 0.5
++		local causewaySign = if rng:NextNumber() < 0.5 then -1 else 1
++		-- Off the centre, so the bridge never crosses the well's heart (and
++		-- the aurora's way out).
++		local causewayOff = causewaySign * between(rng, 2.6, math.max(2.8, r1 * 0.55))
++		local function borderPoint(theta: number): { x: number, z: number }
++			local dx, dz = math.cos(theta), math.sin(theta)
++			local t = math.huge
++			if dx > 1e-6 then
++				t = math.min(t, (w - cx) / dx)
++			elseif dx < -1e-6 then
++				t = math.min(t, (1 - cx) / dx)
++			end
++			if dz > 1e-6 then
++				t = math.min(t, (d - cz) / dz)
++			elseif dz < -1e-6 then
++				t = math.min(t, (1 - cz) / dz)
++			end
++			return { x = cx + dx * t, z = cz + dz * t }
++		end
++		local road: { { x: number, z: number } } = {}
++		if passing == "around" then
++			local side = if rng:NextNumber() < 0.5 then -1 else 1
++			local ring = r1 + 3.4
++			table.insert(road, borderPoint(stairA))
++			for k = 0, 6 do
++				local a = stairA + side * (k / 6) * math.pi
++				table.insert(road, { x = cx + math.cos(a) * ring, z = cz + math.sin(a) * ring })
++			end
++			table.insert(road, borderPoint(stairA + math.pi))
++		elseif passing == "across" then
++			local off = causewayOff
++			if causewayX then
++				table.insert(road, { x = 1, z = cz + off })
++				table.insert(road, { x = cx, z = cz + off })
++				table.insert(road, { x = w, z = cz + off })
++			else
++				table.insert(road, { x = cx + off, z = 1 })
++				table.insert(road, { x = cx + off, z = cz })
++				table.insert(road, { x = cx + off, z = d })
++			end
++		else
++			-- Down the entry stair, round the column on the floor, up the
++			-- far stair and out.
++			local function radial(a: number, fromR: number, toR: number, steps: number)
++				for k = 0, steps do
++					local r = fromR + (toR - fromR) * (k / steps)
++					table.insert(road, { x = cx + math.cos(a) * r, z = cz + math.sin(a) * r })
++				end
++			end
++			table.insert(road, borderPoint(stairA))
++			table.insert(road, {
++				x = cx + math.cos(stairA) * (rimRadius(stairA) + 2.4),
++				z = cz + math.sin(stairA) * (rimRadius(stairA) + 2.4),
++			})
++			radial(stairA, rimRadius(stairA) - 0.5, floorR + 0.6, 6)
++			local turn = if (stairB - stairA) % TWO_PI <= math.pi then 1 else -1
++			for k = 1, 3 do
++				local a = stairA + turn * (k / 4) * math.abs(stairB - stairA)
++				table.insert(road, {
++					x = cx + math.cos(a) * math.max(floorR * 0.55, 1.2),
++					z = cz + math.sin(a) * math.max(floorR * 0.55, 1.2),
++				})
++			end
++			radial(stairB, floorR + 0.6, rimRadius(stairB) - 0.5, 6)
++			table.insert(road, {
++				x = cx + math.cos(stairB) * (rimRadius(stairB) + 2.4),
++				z = cz + math.sin(stairB) * (rimRadius(stairB) + 2.4),
++			})
++			table.insert(road, borderPoint(stairB))
++		end
++
++		-- The view the pictures are taken from, drawn before the rim is
++		-- painted so the breach, the broken lip and the stone ring can be
++		-- composed round it (C3).
++		local view = rng:NextNumber() * TWO_PI
++		if passing == "across" then
++			view = (if causewayX then math.pi / 2 else 0) + between(rng, -0.6, 0.6)
++		elseif passing == "down" then
++			view = stairA + between(rng, -0.7, 0.7)
++		end
++		-- Half the rims split: a gap cut through the collar, the shaft's wall
++		-- coming straight to the snow there, so the rim is broken rather than
++		-- a drawn circle (C1, C2).
++		local breach = rng:NextNumber() < 0.5
++		local breachA = view + math.pi * between(rng, 0.4, 0.75)
++		local breachSpan = between(rng, 0.5, 0.95)
++		-- The collar's pale patches and dark blocks: three or four wide
++		-- sectors, so the lip reads broken, never as confetti (C2).
++		local lipSegments = whole(rng, 3, 4)
++		local lipPhase = rng:NextNumber() * TWO_PI
++		-- 2: a lesser listening well beside the great one, if one fits clear
++		-- of the road and the great shaft's lip. Its own cold glow answers
++		-- the column; the road keeps well away from it.
++		local x2, z2, depth2, floorR2 = 0, 0, 0, 0
++		if twin then
++			floorR2 = between(rng, 1.4, 2.4)
++			depth2 = math.max(6, math.min(12, math.floor(2 * (r2 - floorR2) + 0.5)))
++			for _ = 1, 220 do
++				local x = whole(rng, r2 + 4, w - r2 - 3)
++				local z = whole(rng, r2 + 4, d - r2 - 3)
++				local ang = math.atan2(z - cz, x - cx)
++				local far = math.sqrt((x - cx) ^ 2 + (z - cz) ^ 2) >= rimRadius(ang) + r2 + 3.5
++				if far and not nearRoad(road, x, z, r2 + 3.5) then
++					x2, z2 = x, z
++					break
++				end
++			end
++			if x2 == 0 then
++				-- Sweep the snow for the corner the road and the great well
++				-- leave farthest free, so the pair still shows.
++				local best, bx, bz = 0, 0, 0
++				for z = r2 + 4, d - r2 - 3 do
++					for x = r2 + 4, w - r2 - 3 do
++						local ang = math.atan2(z - cz, x - cx)
++						local gap = math.sqrt((x - cx) ^ 2 + (z - cz) ^ 2) - rimRadius(ang)
++						if gap > best and not nearRoad(road, x, z, r2 + 3.5) then
++							best, bx, bz = gap, x, z
++						end
++					end
++				end
++				if best >= r2 + 3.0 then
++					x2, z2 = bx, bz
++				end
++			end
++			if x2 == 0 then
++				twin = false
++			end
++		end
++
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inside(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= w and z <= d
++		end
++		-- Whether a stone can stand there: on walkable ground, off the outcrops.
++		local function standable(x: number, z: number): boolean
++			if x < 2 or z < 2 or x > w - 1 or z > d - 1 then
++				return false
++			end
++			local i = at(math.floor(x + 0.5), math.floor(z + 0.5))
++			return walk[i] and kinds[i] ~= "outcrop"
++		end
++
++		-- The great shaft: terraces stepping down by at most a slab's depth,
++		-- the floor, the stair that cuts through the terraces when the road
++		-- takes it, and the causeway slab when the road crosses instead.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local dx, dz = x - cx, z - cz
++				local r = math.sqrt(dx * dx + dz * dz)
++				local theta = math.atan2(dz, dx)
++				local rr = rimRadius(theta)
++				local edge = rr - r
++				-- A down road cuts its own mouth through the collar at each
++				-- stair (C3): the rim is broken where the way drops in.
++				local mouth = passing == "down"
++					and (angleGap(theta, stairA) * rr <= 2.0 or angleGap(theta, stairB) * rr <= 2.0)
++				if edge > 0 then
++					local perp = if causewayX then math.abs(dz - causewayOff) else math.abs(dx - causewayOff)
++					local onCauseway = passing == "across" and perp <= 1.6
++					local onStair = passing == "down"
++						and (
++							angleGap(theta, stairA) * math.max(r, 0.2) <= 1.7
++							or angleGap(theta, stairB) * math.max(r, 0.2) <= 1.7
++						)
++					local floorEdge = rr - floorR
++					if onCauseway then
++						kinds[i] = "ice_way"
++					elseif floorEdge > 0 and edge >= floorEdge then
++						walk[i] = passing == "down"
++						kinds[i] = "well_floor"
++						heights[i] = -depth
++					elseif onStair then
++						-- A ramp off the narrowest rim, not this angle's: a
++						-- rim that breathes in and out would otherwise jump
++						-- two treads between neighbouring cells.
++						kinds[i] = "ice_way"
++						heights[i] = -math.min(depth, 2 * math.max(minRim - r, 0))
++					else
++						walk[i] = false
++						local band = math.min(bands, math.floor((edge / math.max(floorEdge, 0.5)) * bands) + 1)
++						kinds[i] = if band == bands
++							then "well_deep"
++							elseif band == 1 or (band - 2) % frostEvery == frostFrom - 1 then "well_frost"
++							else "well_step"
++						heights[i] = -math.min(depth, band * depth / bands)
++					end
++				elseif edge > -lipWidth then
++					-- The collar, broken into wide pale and dark sectors; a
++					-- split rim leaves a gap here where the wall comes to the
++					-- snow (C1, C2).
++					if not (breach and angleGap(theta, breachA) <= breachSpan * 0.5) and not mouth then
++						if math.floor(((theta - lipPhase) / TWO_PI) * lipSegments) % 2 == 0 then
++							kinds[i] = "ice_lip"
++						else
++							kinds[i] = "rim_dark"
++						end
++					end
++				elseif edge > -lipWidth - 1.0 then
++					-- A dark step under the collar, so the rim stands a little
++					-- above the snow rather than lying flat on it.
++					if not mouth then
++						kinds[i] = "rim_dark"
++					end
++				end
++			end
++		end
++
++		-- The lesser shaft: the same terraces, no stair, its floor always a
++		-- dark disc with the cold glow under it.
++		if twin then
++			local bands2 = math.clamp(math.floor(r2 - floorR2), 2, 4)
++			for z = z2 - r2 - 2, z2 + r2 + 2 do
++				for x = x2 - r2 - 2, x2 + r2 + 2 do
++					if inside(x, z) then
++						local i = at(x, z)
++						local r = math.sqrt((x - x2) ^ 2 + (z - z2) ^ 2)
++						if r <= r2 then
++							if kinds[i] == nil then
++								walk[i] = false
++								if r <= floorR2 then
++									kinds[i] = "well_floor"
++									heights[i] = -depth2
++								else
++									local band = math.min(
++										bands2,
++										math.floor(((r2 - r) / math.max(r2 - floorR2, 0.5)) * bands2) + 1
++									)
++									kinds[i] = if band == bands2
++										then "well_deep"
++										elseif band == 1 or (band - 2) % frostEvery == frostFrom - 1 then "well_frost"
++										else "well_step"
++									heights[i] = -math.min(depth2, band * depth2 / bands2)
++								end
++							end
++						elseif r <= r2 + lipWidth + 0.9 and kinds[i] == nil then
++							kinds[i] = "rim_dark"
++						end
++					end
++				end
++			end
++		end
++
++		-- 5: outcrops breaking the snow beyond both wells, clear of the road.
++		local outcrops = whole(rng, 0, 2)
++		local placed = 0
++		for _ = 1, 90 do
++			if placed >= outcrops then
++				break
++			end
++			local ox, oz = between(rng, 4, w - 3), between(rng, 4, d - 3)
++			local rad = between(rng, 1.2, 2.4)
++			local ang = math.atan2(oz - cz, ox - cx)
++			local clear = math.sqrt((ox - cx) ^ 2 + (oz - cz) ^ 2) > rimRadius(ang) + lipWidth + rad + 2
++			if twin then
++				clear = clear and math.sqrt((ox - x2) ^ 2 + (oz - z2) ^ 2) > r2 + lipWidth + rad + 1.5
++			end
++			clear = clear and not nearRoad(road, ox, oz, rad + 2.5)
++			if clear then
++				placed += 1
++				local top = whole(rng, 2, 5)
++				for z = math.floor(oz - rad), math.ceil(oz + rad) do
++					for x = math.floor(ox - rad), math.ceil(ox + rad) do
++						if inside(x, z) and kinds[at(x, z)] == nil and (x - ox) ^ 2 + (z - oz) ^ 2 <= rad * rad then
++							walk[at(x, z)] = false
++							kinds[at(x, z)] = "outcrop"
++							heights[at(x, z)] = top
++						end
++					end
++				end
++			end
++		end
++
++		-- Frozen pans lying on the snow, clear of the road so it still reads.
++		local pans = whole(rng, 0, 2)
++		for _ = 1, pans do
++			local px, pz = between(rng, 3, w - 2), between(rng, 3, d - 2)
++			local prx, prz = between(rng, 1.0, 2.4), between(rng, 0.8, 2.0)
++			local ok = true
++			for z = math.floor(pz - prz) - 1, math.ceil(pz + prz) + 1 do
++				for x = math.floor(px - prx) - 1, math.ceil(px + prx) + 1 do
++					if inside(x, z) and nearRoad(road, x, z, 2.2) then
++						ok = false
++					end
++				end
++			end
++			if ok then
++				for z = math.floor(pz - prz), math.ceil(pz + prz) do
++					for x = math.floor(px - prx), math.ceil(px + prx) do
++						if inside(x, z) and kinds[at(x, z)] == nil and walk[at(x, z)] then
++							if ((x - px) / prx) ^ 2 + ((z - pz) / prz) ^ 2 <= 1 then
++								kinds[at(x, z)] = "ice_lip"
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- Cracks running out from the lip: a short walk outward, wandering,
++		-- so no two look stamped.
++		local cracks = whole(rng, 2, 5)
++		for _ = 1, cracks do
++			local a = rng:NextNumber() * TWO_PI
++			local len = whole(rng, 3, 8)
++			local start = rimRadius(a) + lipWidth + 1.2
++			for step = 1, len do
++				a += between(rng, -0.13, 0.13)
++				local rad = start + step
++				local x = math.floor(cx + math.cos(a) * rad + 0.5)
++				local z = math.floor(cz + math.sin(a) * rad + 0.5)
++				if inside(x, z) and kinds[at(x, z)] == nil and walk[at(x, z)] and not nearRoad(road, x, z, 2.0) then
++					kinds[at(x, z)] = "crack"
++				end
++			end
++		end
++
++		-- 3: the runestones composed round the lip: an even-ish ring at a
++		-- steady radius, two taller gate stones flanking the view so the shot
++		-- from the snow has a foreground frame, and the arrangement's extra
++		-- stones outside it (C3).
++		local marks: { DraftedMap.Landmark } = {}
++		local function stoneAt(theta: number, radOffset: number, scaleLo: number, scaleHi: number)
++			local base = rimRadius(theta)
++			for _, extra in { 0, 1.1, 2.2 } do
++				local rad = base + radOffset + extra
++				local x = cx + math.cos(theta) * rad
++				local z = cz + math.sin(theta) * rad
++				if standable(x, z) and not (twin and math.sqrt((x - x2) ^ 2 + (z - z2) ^ 2) < r2 + 1.6) then
++					local rune = rng:NextNumber() < 0.4
++					table.insert(marks, {
++						sculpt = if rune then "rimeholt_rune_slab" else "rimeholt_marker",
++						x = x,
++						z = z,
++						yaw = math.deg(theta) + between(rng, -14, 14),
++						scale = between(rng, scaleLo, scaleHi),
++						sink = between(rng, 0.1, 0.4),
++					})
++					return
++				end
++			end
++		end
++		-- The gate pair either side of the camera's line.
++		stoneAt(view - 0.42, 2.0, 1.2, 1.4)
++		stoneAt(view + 0.42, 2.0, 1.2, 1.4)
++		-- The ring: even steps round the shaft, a breath of jitter.
++		local ringCount = whole(rng, 8, 11)
++		for k = 1, ringCount do
++			stoneAt(view + (k / ringCount) * TWO_PI + between(rng, -0.05, 0.05), between(rng, 2.0, 2.4), 1.0, 1.3)
++		end
++		-- The lesser well's own small ring of slabs.
++		if twin then
++			local count = whole(rng, 4, 6)
++			for k = 1, count do
++				local theta = (k / count) * TWO_PI + between(rng, -0.08, 0.08)
++				local rad = r2 + between(rng, 1.4, 1.9)
++				local x, z = x2 + math.cos(theta) * rad, z2 + math.sin(theta) * rad
++				if standable(x, z) then
++					table.insert(marks, {
++						sculpt = "rimeholt_rune_slab",
++						x = x,
++						z = z,
++						yaw = math.deg(theta) + between(rng, -14, 14),
++						scale = between(rng, 0.9, 1.2),
++						sink = between(rng, 0.1, 0.4),
++					})
++				end
++			end
++			-- A smaller fork of the same ice answers from its floor.
++			table.insert(marks, {
++				sculpt = "rimeholt_well_spire",
++				x = x2,
++				z = z2,
++				yaw = between(rng, 0, 360),
++				scale = 0.45,
++				sink = 0.2,
++			})
++		end
++		-- The old rune ring on the far side, a landmark behind the well in
++		-- the shot from the snow.
++		do
++			local a = view + math.pi + between(rng, -0.3, 0.3)
++			for _, extra in { 0, 1.4 } do
++				local rad = rimRadius(a) + 4.0 + extra
++				local x, z = cx + math.cos(a) * rad, cz + math.sin(a) * rad
++				if standable(x, z) then
++					table.insert(marks, {
++						sculpt = "rimeholt_runestones",
++						x = x,
++						z = z,
++						yaw = math.deg(a) + between(rng, -10, 10),
++						scale = between(rng, 1.0, 1.15),
++						sink = 0.3,
++					})
++					break
++				end
++			end
++		end
++		-- The frozen spire the aurora climbs, standing to one side of the
++		-- shaft rather than in its middle, so the game camera looks past it
++		-- into the well (C2). It keeps off the causeway and the stairs.
++		local spireSide
++		if passing == "down" then
++			local east = math.min(angleGap(0, stairA), angleGap(0, stairB))
++			local west = math.min(angleGap(math.pi, stairA), angleGap(math.pi, stairB))
++			spireSide = if east >= west then 1 else -1
++		else
++			spireSide = if rng:NextNumber() < 0.5 then 1 else -1
++		end
++		if passing == "across" and not causewayX then
++			spireSide = if causewayOff > 0 then -1 else 1
++		end
++		local spireX = cx + spireSide * between(rng, 1.1, 1.9)
++		local spireZ = cz + between(rng, -0.6, 0.6)
++		table.insert(marks, {
++			sculpt = "rimeholt_well_spire",
++			x = spireX,
++			z = spireZ,
++			yaw = between(rng, 0, 360),
++			scale = math.clamp((depth + 10) / 24, 0.75, 1.25),
++			sink = 0.3,
++		})
++		for _ = 1, whole(rng, 1, 2) do
++			local a = rng:NextNumber() * TWO_PI
++			local rad = rimRadius(a) + between(rng, 3.0, 5.0)
++			local x = cx + math.cos(a) * rad
++			local z = cz + math.sin(a) * rad
++			if standable(x, z) and not nearRoad(road, x, z, 2.0) then
++				table.insert(marks, {
++					sculpt = "rimeholt_hillfire",
++					x = x,
++					z = z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.85, 1.1),
++					sink = 0.2,
++				})
++			end
++		end
++
++		-- The aurora itself climbs out of the great well's floor; the lesser
++		-- well answers with the old glow under its ice. A drift or two runs
++		-- across the lip on the wind.
++		local effects: { DraftedMap.Effect } = {
++			{ recipe = "rimeholt_aurora_well", x = cx, z = cz, lift = -depth + 0.4, seed = whole(rng, 1, 99999) },
++		}
++		if twin then
++			table.insert(
++				effects,
++				{ recipe = "rimeholt_underice", x = x2, z = z2, lift = -depth2 + 0.3, seed = whole(rng, 1, 99999) }
++			)
++		end
++		for _ = 1, whole(rng, 1, 2) do
++			local a = rng:NextNumber() * TWO_PI
++			local rad = rimRadius(a) + between(rng, 2.5, 4.0)
++			local x = cx + math.cos(a) * rad
++			local z = cz + math.sin(a) * rad
++			if inside(math.floor(x + 0.5), math.floor(z + 0.5)) and not nearRoad(road, x, z, 1.5) then
++				table.insert(
++					effects,
++					{ recipe = "rimeholt_drift", x = x, z = z, lift = 0.2, seed = whole(rng, 1, 99999) }
++				)
++			end
++		end
++
++		-- The photograph, from the side the breach and the way through were
++		-- composed for: low over the gate stones so they frame the shaft, and
++		-- a wide view from the far lip over the old rune ring.
++		local fromR = rimRadius(view) + 7
++		local farR = rimRadius(view + math.pi) + 11
++		local cameras: { DraftedMap.Shot } = {
++			{
++				name = "the well from the snow",
++				from = { x = cx + math.cos(view) * fromR, z = cz + math.sin(view) * fromR, lift = 28 },
++				to = { x = cx, z = cz, lift = depth * 0.35 + 2 },
++				fov = 60,
++			},
++			{
++				name = "the far lip, and the spire",
++				from = {
++					x = cx + math.cos(view + math.pi) * farR,
++					z = cz + math.sin(view + math.pi) * farR,
++					lift = 32,
++				},
++				to = { x = cx, z = cz, lift = depth * 0.3 + 2 },
++				fov = 58,
++			},
++		}
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature
