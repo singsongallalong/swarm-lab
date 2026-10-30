@@ -1,0 +1,24 @@
+{
+  "picked": [
+    "E",
+    "C",
+    "A",
+    "H",
+    "B",
+    "D"
+  ],
+  "reasons": {
+    "E": "PaletteBlackfen: The biggest gain of the rework: the ground went from olive grass that read as the field to true near-black peat, so the pale causeway and grey stones stand out and the cold wisp-blue reads as the one colour.",
+    "C": "PaletteCopperMine: Far land went from a brown that matched the spoil to cool slate, so walkable and far land now separate; rust spoil against a grey-green road plus verdigris is a clear mine identity.",
+    "A": "PaletteFrostvine: The road moved from a purple-grey that sank into the plum ground to a neutral pale grey that now reads clearly from both cameras, though the plum-slate whole still sits near Rimeholt's cool cast.",
+    "H": "PaletteBonePlain: The ground moved from sand-yellow toward grey bone, which helps the bleached-plain idea, and the inverted dark road on a pale floor is unlike any other candidate, but the pale ground lifts the whole frame toward washed-out, and the far limestone sits close to the walkable.",
+    "B": "PaletteCrowwood: Darker moss ground and a cooler snow road give more contrast than pass 1, but dark green-grey ground with pale grey patches still reads close to the moor, and the oxblood barely shows on the map.",
+    "D": "PaletteDrownedNave: Mud darkened toward black-green so the pale limestone road and rock pop more, but the accent drifted to an amber-brown that sits too close to the lamp to be its own idea, and the green-black ground overlaps E and G."
+  },
+  "fixes": {
+    "F": "PaletteRedclay: push the clay to real rust-orange; it reads as a second copper mine.",
+    "G": "PaletteFungalDeepwood: more value spread between walk, rock and earth; the rework barely changed it.",
+    "H": "PaletteBonePlain: wants a bone material and a slightly darker ground so it doesn't wash out."
+  },
+  "notes": "12 builders, 8 survived (4 naming slips and a stray image); a render-only critic, one rework, a second critic: 7 of 8 improved. The rework fixed separation (roads, far land) more than identity. Two asked for a water-surface role (marsh, bog), the bone plain for a bone material. The kept six are on the palettes shelf (library/palettes)."
+}

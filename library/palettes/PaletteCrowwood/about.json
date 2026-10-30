@@ -1,0 +1,26 @@
+{
+  "name": "PaletteCrowwood",
+  "status": "kept",
+  "intent": "A crow-haunted birch wood in first snow: a cold blue-white snow path cutting through near-black mossy leaf mould under pale birch bark, with a faded oxblood of rowan berries and tied ribbons as the only colour.",
+  "requests": [],
+  "critic_pass1": {
+    "own_place": 4,
+    "reads": 7,
+    "accent": 7,
+    "mood": 7,
+    "total": 6.1,
+    "why": "The pale path reads well from above, but olive moss ground with a grey road is nearly the same picture as D and E and the moor, and the 'snow' path is warm grey, not snow.",
+    "fix": "road snow 15 values lighter and cooler (blue-white grey) so the first snow, not the moss, defines the place"
+  },
+  "critic_pass2": {
+    "own_place": 6,
+    "reads": 7,
+    "accent": 7,
+    "mood": 8,
+    "total": 6.9,
+    "better_than_before": "yes",
+    "why": "Darker moss ground and a cooler snow road give more contrast than pass 1, but dark green-grey ground with pale grey patches still reads close to the moor, and the oxblood barely shows on the map."
+  },
+  "run": "palettes-1",
+  "generator": "g04"
+}

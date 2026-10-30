@@ -1,0 +1,28 @@
+{
+  "name": "PaletteDrownedNave",
+  "status": "kept",
+  "intent": "A sunken cathedral marsh of black-green standing water and reed beds, pale grey limestone tracery breaking the surface, green-grey mist and a dim stained-glass amber as its one accent.",
+  "requests": [
+    "A matte green-black standing-water surface for the marsh pools; the palette only has the dark bed beneath them."
+  ],
+  "critic_pass1": {
+    "own_place": 5,
+    "reads": 7,
+    "accent": 6,
+    "mood": 7,
+    "total": 6.2,
+    "why": "Green-black ground with pale limestone and a clear grey road reads, but without water it is a dark green field near B and E, and the ochre accent reads more mustard than stained glass.",
+    "fix": "walk mud 6 values darker and greener-black so the marsh separates from B and E, and accent nudged toward warmer amber-gold"
+  },
+  "critic_pass2": {
+    "own_place": 6,
+    "reads": 7,
+    "accent": 6,
+    "mood": 8,
+    "total": 6.7,
+    "better_than_before": "yes",
+    "why": "Mud darkened toward black-green so the pale limestone road and rock pop more, but the accent drifted to an amber-brown that sits too close to the lamp to be its own idea, and the green-black ground overlaps E and G."
+  },
+  "run": "palettes-1",
+  "generator": "g09"
+}

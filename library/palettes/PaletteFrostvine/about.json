@@ -1,0 +1,26 @@
+{
+  "name": "PaletteFrostvine",
+  "status": "kept",
+  "intent": "A frost-killed vineyard of dark plum-brown terraces and near-black dead vines below a broken violet-slate manor, marked by a pale cool road, one deep muted wine-purple accent, frost-grey mist and a single amber lamp.",
+  "requests": [],
+  "critic_pass1": {
+    "own_place": 7,
+    "reads": 6,
+    "accent": 7,
+    "mood": 8,
+    "total": 6.9,
+    "why": "Plum-brown ground under a violet-slate far land is unlike anything else in the run, but the grey-violet road sits close in value to the plum ground at eye level.",
+    "fix": "road cobblestone about 12 values lighter and a touch cooler so it parts from the plum walk ground at eye level"
+  },
+  "critic_pass2": {
+    "own_place": 6,
+    "reads": 7,
+    "accent": 7,
+    "mood": 8,
+    "total": 6.9,
+    "better_than_before": "yes",
+    "why": "The road moved from a purple-grey that sank into the plum ground to a neutral pale grey that now reads clearly from both cameras, though the plum-slate whole still sits near Rimeholt's cool cast."
+  },
+  "run": "palettes-1",
+  "generator": "g11"
+}

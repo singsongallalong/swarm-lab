@@ -1,0 +1,21 @@
+{
+  "A": {"own_place": 6, "reads": 7, "accent": 7, "mood": 8, "total": 6.9, "better_than_before": "yes",
+        "why": "The road moved from a purple-grey that sank into the plum ground to a neutral pale grey that now reads clearly from both cameras, though the plum-slate whole still sits near Rimeholt's cool cast."},
+  "B": {"own_place": 6, "reads": 7, "accent": 7, "mood": 8, "total": 6.9, "better_than_before": "yes",
+        "why": "Darker moss ground and a cooler snow road give more contrast than pass 1, but dark green-grey ground with pale grey patches still reads close to the moor, and the oxblood barely shows on the map."},
+  "C": {"own_place": 7, "reads": 7, "accent": 8, "mood": 7, "total": 7.2, "better_than_before": "yes",
+        "why": "Far land went from a brown that matched the spoil to cool slate, so walkable and far land now separate; rust spoil against a grey-green road plus verdigris is a clear mine identity."},
+  "D": {"own_place": 6, "reads": 7, "accent": 6, "mood": 8, "total": 6.7, "better_than_before": "yes",
+        "why": "Mud darkened toward black-green so the pale limestone road and rock pop more, but the accent drifted to an amber-brown that sits too close to the lamp to be its own idea, and the green-black ground overlaps E and G."},
+  "E": {"own_place": 7, "reads": 7, "accent": 8, "mood": 9, "total": 7.6, "better_than_before": "yes",
+        "why": "The biggest gain of the rework: the ground went from olive grass that read as the field to true near-black peat, so the pale causeway and grey stones stand out and the cold wisp-blue reads as the one colour."},
+  "F": {"own_place": 5, "reads": 7, "accent": 8, "mood": 7, "total": 6.6, "better_than_before": "yes",
+        "why": "A neutral grey road now stands out from the ground where the old tan one blended in, but the clay still renders as mauve-brown rather than rust-orange, so it reads as a second C, and far rock nearly matches the walkable sand."},
+  "G": {"own_place": 6, "reads": 6, "accent": 7, "mood": 8, "total": 6.6, "better_than_before": "same",
+        "why": "A small umber shift in the loam changed little: the violet far land, mist and pale cap-light are distinctive, but walkable ground, rock and earth stay within a few values of each other, and from above the floor looks like E's."},
+  "H": {"own_place": 7, "reads": 7, "accent": 7, "mood": 6, "total": 6.8, "better_than_before": "yes",
+        "why": "The ground moved from sand-yellow toward grey bone, which helps the bleached-plain idea, and the inverted dark road on a pale floor is unlike any other candidate, but the pale ground lifts the whole frame toward washed-out, and the far limestone sits close to the walkable."},
+  "ranking": ["E", "C", "A", "B", "H", "D", "F", "G"],
+  "keep": ["E", "C", "A", "H", "B", "D"],
+  "notes": "Strongest two: E and C. The rework fixed separation problems (A road, C far land, E ground, F road) more than identity problems. F still reads as a duller C and should push its clay toward real rust-orange before it earns an area. G needs more value spread between walkable ground, rock and earth. B and D both lean on dark green ground and risk reading as the moor or the field. H's pale ground is its identity, but it needs the bone material it asked for and a slightly darker value so it does not wash out. With props held as a stand-in, the accents are judged from swatches; only E and C carry theirs into the map frames."
+}

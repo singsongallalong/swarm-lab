@@ -1,0 +1,28 @@
+{
+  "name": "PaletteBlackfen",
+  "status": "kept",
+  "intent": "A peat bog of standing stones: true near-black brown peat underfoot, a pale flagstone causeway and grey moonlit stones standing out of it, still black pools and one cold will-o'-wisp blue accent under a drowned-parish night.",
+  "requests": [
+    "A water-surface colour role for pools, so still black bog water reads from the high camera; the palette sets only the pool bed."
+  ],
+  "critic_pass1": {
+    "own_place": 4,
+    "reads": 6,
+    "accent": 7,
+    "mood": 7,
+    "total": 5.8,
+    "why": "The will-o'-wisp blue is a good accent, but the 'near-black peat' renders as mid olive almost identical to B, so it never reads as bog.",
+    "fix": "walk ground 15 values darker and browner (true peat) so the pale causeway and grey stones stand out of it"
+  },
+  "critic_pass2": {
+    "own_place": 7,
+    "reads": 7,
+    "accent": 8,
+    "mood": 9,
+    "total": 7.6,
+    "better_than_before": "yes",
+    "why": "The biggest gain of the rework: the ground went from olive grass that read as the field to true near-black peat, so the pale causeway and grey stones stand out and the cold wisp-blue reads as the one colour."
+  },
+  "run": "palettes-1",
+  "generator": "g08"
+}

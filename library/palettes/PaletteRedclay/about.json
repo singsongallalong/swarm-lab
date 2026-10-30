@@ -1,0 +1,26 @@
+{
+  "name": "PaletteRedclay",
+  "status": "held",
+  "intent": "A red-clay badlands at night: rust-orange clay flats and sandstone mesas, a pale wash-sand road above them, amber lamps, and the faded turquoise of old shrine tiles as the one accent.",
+  "requests": [],
+  "critic_pass1": {
+    "own_place": 6,
+    "reads": 6,
+    "accent": 7,
+    "mood": 7,
+    "total": 6.4,
+    "why": "The turquoise tile accent is clear and lovely against warm ground, but the 'red clay' renders mauve-brown close to A and C and the sand road is only a step above it.",
+    "fix": "walk sand and rock pushed redder (more rust, less mauve) and the road 10 values lighter toward pale wash sand"
+  },
+  "critic_pass2": {
+    "own_place": 5,
+    "reads": 7,
+    "accent": 8,
+    "mood": 7,
+    "total": 6.6,
+    "better_than_before": "yes",
+    "why": "A neutral grey road now stands out from the ground where the old tan one blended in, but the clay still renders as mauve-brown rather than rust-orange, so it reads as a second C, and far rock nearly matches the walkable sand."
+  },
+  "run": "palettes-1",
+  "generator": "g10"
+}

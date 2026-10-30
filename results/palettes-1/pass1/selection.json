@@ -1,0 +1,21 @@
+{
+  "picked": ["G", "H", "A", "C", "F", "D"],
+  "strongest": ["G", "H"],
+  "reasons": {
+    "G": "The clearest road read of the run with a dark, matte loam and a violet far rim and light that belong to no other area.",
+    "H": "Its inverted value plan, pale bone ground under a dark trodden road, is instantly its own place and reads from every camera.",
+    "A": "Plum-brown terraces under violet slate with a wine accent are distinct and moody, needing only a lighter road.",
+    "C": "Warm rust spoil against a cool track with verdigris is a clear copper-mine identity with a good hue split.",
+    "F": "The turquoise shrine-tile accent on warm ground is a strong idea worth an area once the clay is made redder.",
+    "D": "The best of the green cluster: pale limestone and a clear road, and it becomes the marsh once its water role exists."
+  },
+  "fixes": {
+    "G": "walk ground 5 values darker and slightly more umber",
+    "H": "walk sand cooled and desaturated toward grey-white bone, same value",
+    "A": "road cobblestone about 12 values lighter and cooler",
+    "C": "far slate shifted to cool slag grey; walk ground 6 values darker",
+    "F": "walk sand and rocks redder, road 10 values lighter",
+    "D": "walk mud darker and greener-black, accent warmer amber; add the green-black water surface role"
+  },
+  "notes": "B and E were dropped: both render as the same mid-olive field as D and the moor, and lose their named idea (snow, near-black peat). Palettes that differ by value plan, not just hue, survive night best; descriptions promising 'near-black' or 'snow' should be checked against swatch value, and a water-surface role is the most requested missing piece."
+}

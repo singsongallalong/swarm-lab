@@ -1,0 +1,26 @@
+{
+  "name": "PaletteFungalDeepwood",
+  "status": "held",
+  "intent": "A closed-in fungal deepwood of near-black rotting trunks and dark umber loam beneath pale old flagstones, lit only by a faint pale-violet cap-glow and wearing a muted spore violet accent on gills and shelf fungus.",
+  "requests": [],
+  "critic_pass1": {
+    "own_place": 7,
+    "reads": 8,
+    "accent": 7,
+    "mood": 8,
+    "total": 7.5,
+    "why": "Dark loam with a pale flagstone road reads best of the run from every camera, the violet far rim and pale-violet light give it a place of its own, and it is properly dark and matte.",
+    "fix": "walk leafygrass 5 values darker and slightly more umber so the deepwood floor feels closed-in and the violet glow carries more"
+  },
+  "critic_pass2": {
+    "own_place": 6,
+    "reads": 6,
+    "accent": 7,
+    "mood": 8,
+    "total": 6.6,
+    "better_than_before": "same",
+    "why": "A small umber shift in the loam changed little: the violet far land, mist and pale cap-light are distinctive, but walkable ground, rock and earth stay within a few values of each other, and from above the floor looks like E's."
+  },
+  "run": "palettes-1",
+  "generator": "g02"
+}

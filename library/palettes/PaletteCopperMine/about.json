@@ -1,0 +1,26 @@
+{
+  "name": "PaletteCopperMine",
+  "status": "kept",
+  "intent": "A stepped copper-mine terrace of deep iron-stained rust-brown spoil parting from cool slag-grey stone and slate-grey far land, with one verdigris green on every pipe, bell and dome under amber lanterns.",
+  "requests": [],
+  "critic_pass1": {
+    "own_place": 7,
+    "reads": 7,
+    "accent": 7,
+    "mood": 6,
+    "total": 6.8,
+    "why": "Warm rust spoil against a cool grey-green track gives a clear hue split and the verdigris says copper, though the warm ground is a little light and the far land is the same brown as the walk.",
+    "fix": "far slate shifted cool grey (toward the slag) so walkable rust and far land part, and walk ground 6 values darker"
+  },
+  "critic_pass2": {
+    "own_place": 7,
+    "reads": 7,
+    "accent": 8,
+    "mood": 7,
+    "total": 7.2,
+    "better_than_before": "yes",
+    "why": "Far land went from a brown that matched the spoil to cool slate, so walkable and far land now separate; rust spoil against a grey-green road plus verdigris is a clear mine identity."
+  },
+  "run": "palettes-1",
+  "generator": "g03"
+}

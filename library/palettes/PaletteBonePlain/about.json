@@ -1,0 +1,29 @@
+{
+  "name": "PaletteBonePlain",
+  "status": "kept",
+  "intent": "The dead giant's bleached bone plain under a cold moon: grey-white bone-dust ground, dark trodden road, neutral wind-cut grey rock and a paler far land, with a dry dusk-rose on the grave cloth as the one accent.",
+  "requests": [
+    "A bleached-bone terrain material or Sand MaterialVariant: the plain is fine chalky bone dust, but Sand's grain reads as dune sand up close.",
+    "A rib-bone prop role (great curved ribs and a vertebra line) so the pale rock and dusk-rose grave cloth have a giant to hang on as the area's landmark."
+  ],
+  "critic_pass1": {
+    "own_place": 8,
+    "reads": 8,
+    "accent": 6,
+    "mood": 6,
+    "total": 7.2,
+    "why": "The inverted value plan (pale ground, dark trodden road) is unmistakable and reads clearly, but the plain is khaki-olive rather than bleached bone and edges toward washed out, and the dusk-rose is a bit soft.",
+    "fix": "walk sand desaturated and cooled toward grey-white bone (less olive) while keeping its value, so it reads as bone dust not dry grass"
+  },
+  "critic_pass2": {
+    "own_place": 7,
+    "reads": 7,
+    "accent": 7,
+    "mood": 6,
+    "total": 6.8,
+    "better_than_before": "yes",
+    "why": "The ground moved from sand-yellow toward grey bone, which helps the bleached-plain idea, and the inverted dark road on a pale floor is unlike any other candidate, but the pale ground lifts the whole frame toward washed-out, and the far limestone sits close to the walkable."
+  },
+  "run": "palettes-1",
+  "generator": "g05"
+}
