@@ -24,6 +24,13 @@ max_turns = 40
 timeout_s = 2400
 budget_tokens = 30_000_000        # whole-run cap across this provider's generators
 
+# Time-of-day pricing (swarm/offpeak.py): full price only in these Beijing-time windows on
+# weekdays, half price otherwise and all weekend. `python3 -m swarm when` says where now
+# falls; `run --offpeak` waits for a window the run fits in.
+[deepseek.peak]
+beijing = ["09:00-12:00", "14:00-18:00"]
+weekends_off = true
+
 # From DeepSeek's Claude Code guide (api-docs.deepseek.com/quick_start/agent_integrations/claude_code).
 # Every model slot points at Flash: DeepSeek maps any claude-opus name to V4 Pro, which
 # can't see images, so a generator falling back to an Opus default would go blind.

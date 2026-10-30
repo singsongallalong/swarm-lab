@@ -29,6 +29,8 @@ def main(argv=None) -> None:
     p.add_argument("--dry-run", action="store_true", help="build worktrees and packs, call no model")
     p.add_argument("--no-specs", action="store_true", help="skip the specs in the check")
     p.add_argument("--figure", help="who wears it: overrides the brief's and job's figure (comma list; none for none)")
+    p.add_argument("--offpeak", action="store_true",
+                   help="wait, if need be, until the run can start and finish inside the providers' half-price hours")
 
     for name, help_ in [("check", "filter a run's generators"), ("sheet", "tile the survivors blind"),
                         ("report", "summarise a run and update the ledger")]:
@@ -49,6 +51,10 @@ def main(argv=None) -> None:
     p.add_argument("run_dir", type=Path)
     p.add_argument("--turns", type=int, default=40, help="turns each (default 40)")
     p.add_argument("--concurrency", type=int, default=6)
+
+    p = sub.add_parser("when", help="is it off-peak (half price) now, and when can a run of this length start and stay off-peak")
+    p.add_argument("--provider", default="deepseek")
+    p.add_argument("--minutes", type=int, default=0, help="the run's length (default: the provider's wall-time cap)")
 
     p = sub.add_parser("probe", help="check a provider works and can see images, with the settings generators get")
     p.add_argument("provider")
@@ -72,6 +78,8 @@ def main(argv=None) -> None:
         else:
             print(text)
     elif a.cmd == "run":
+        if a.offpeak and not a.dry_run:
+            wait_offpeak(a.gens)
         run_dir = run_mod.run(a.target, a.job, a.brief, a.gens, a.run_id, a.concurrency, a.dry_run, figure=a.figure)
         if not a.dry_run:
             print("check:")
@@ -102,8 +110,30 @@ def main(argv=None) -> None:
         if res["survivors"]:
             sheet_mod.sheet(a.run_dir)
         report_mod.report(a.run_dir)
+    elif a.cmd == "when":
+        from datetime import datetime, timezone
+        from . import offpeak
+        prov = config.providers()[a.provider]
+        print(offpeak.describe(prov, datetime.now(timezone.utc), a.minutes or prov.timeout_s // 60))
     elif a.cmd == "probe":
         probe(a.provider, a.image.resolve())
+
+
+def wait_offpeak(gens: str) -> None:
+    """Sleep until every provider in `gens` is off-peak for its whole wall-time cap."""
+    import time
+    from datetime import datetime, timezone
+    from . import offpeak
+    provs = config.providers()
+    names = {part.split(":")[0] for part in gens.split(",") if part}
+    while True:
+        now = datetime.now(timezone.utc)
+        starts = [offpeak.next_clear(provs[n], now, provs[n].timeout_s // 60) for n in names if n in provs]
+        start = max(starts) if starts else now
+        if start <= now:
+            return
+        print(f"waiting for half-price hours: starting at {start.astimezone().strftime('%a %H:%M %Z')}", flush=True)
+        time.sleep(min((start - now).total_seconds(), 3600))
 
 
 def probe(name: str, image: Path) -> None:

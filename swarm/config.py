@@ -58,6 +58,7 @@ class Provider:
     budget_tokens: int = 0
     command: list[str] = field(default_factory=list)  # runtime "exec": argv, for tests
     env: dict[str, str] = field(default_factory=dict)  # extra variables for the runtime
+    peak: dict = field(default_factory=dict)  # time-of-day pricing windows (swarm/offpeak.py)
 
     def key(self) -> str:
         return os.environ.get(self.key_env, "") if self.key_env else ""
