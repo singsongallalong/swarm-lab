@@ -73,7 +73,7 @@ stylua src/shared/systems/Relics.luau src/shared/data/Relics.luau
 Run the specs. `explain` prints each failing check's values:
 
 ```
-lune run .swarm/tools/explain Relics.spec
+lune run .swarm/tools/explain Relics
 lune run .swarm/tools/explain RelicRows
 ```
 
