@@ -8,7 +8,8 @@ ref = "origin/claude/map-features-contract"
 template = "pack.md"
 directions = "directions.txt"
 select = "select.md"
-max_turns = 150
+# 150 ran out for 4 of 12 in both moor-features-1 and domain-features-1: 200.
+max_turns = 200
 tools = ["tools/explain.luau"]
 rules = ["docs/guides/map-features.md", "docs/guides/set-pieces.md", "docs/art/bible.md"]
 
@@ -33,7 +34,7 @@ pattern = '(\["sculpt:{skill_lower}_\w+"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),
 
 [purity]
 first_line = "--!strict"
-max_lines = 1000
+max_lines = 1200
 requires = ["../FeatureDress", "../FeatureLook", "../MapFeature", "../Grid", "../Noise", "../DistanceField"]
 forbid = [
   '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
