@@ -1,0 +1,287 @@
+diff --git a/src/shared/data/RelicKeys.luau b/src/shared/data/RelicKeys.luau
+new file mode 100644
+index 00000000..cf0113e0
+--- /dev/null
++++ b/src/shared/data/RelicKeys.luau
+@@ -0,0 +1,138 @@
++--!strict
++-- The live rows for Eternal Domain keys (docs/design/endgame-power.md 3.4): the five
++-- key tiers and the run modifiers they can roll. Every number in this file is a
++-- PLACEHOLDER for the numbers designer; only the shape is settled.
++local RelicKeyTypes = require("../RelicKeyTypes")
++
++type Data = RelicKeyTypes.Data
++type ModifierDef = RelicKeyTypes.ModifierDef
++type TierDef = RelicKeyTypes.TierDef
++
++local tiers: { TierDef } = {
++	{
++		tier = 1,
++		gradeWeights = { Lesser = 80, Greater = 18, Exalted = 2 },
++		rolls = 2,
++		levelBonus = 0,
++		twoChance = 0.1,
++	},
++	{
++		tier = 2,
++		gradeWeights = { Lesser = 68, Greater = 25, Exalted = 7 },
++		rolls = 3,
++		levelBonus = 3,
++		twoChance = 0.25,
++	},
++	{
++		tier = 3,
++		gradeWeights = { Lesser = 55, Greater = 30, Exalted = 15 },
++		rolls = 4,
++		levelBonus = 6,
++		twoChance = 0.4,
++	},
++	{
++		tier = 4,
++		gradeWeights = { Lesser = 42, Greater = 33, Exalted = 25 },
++		rolls = 5,
++		levelBonus = 9,
++		twoChance = 0.55,
++	},
++	{
++		tier = 5,
++		gradeWeights = { Lesser = 30, Greater = 35, Exalted = 35 },
++		rolls = 7,
++		levelBonus = 12,
++		twoChance = 0.7,
++	},
++}
++
++local modifiers: { [string]: ModifierDef } = {
++	BurningFloors = {
++		name = "BurningFloors",
++		title = "Burning Floors",
++		about = "Patches of the floor catch and spread as the run goes on.",
++		minTier = 1,
++	},
++	CrumblingStair = {
++		name = "CrumblingStair",
++		title = "Crumbling Stair",
++		about = "The stairs crumble behind you, so there is only forward.",
++		minTier = 3,
++	},
++	EmptyHalls = {
++		name = "EmptyHalls",
++		title = "Empty Halls",
++		about = "Nothing stirs here but you, and the silence follows.",
++		minTier = 1,
++		excludes = { "PackedHalls" },
++	},
++	FloodedHalls = {
++		name = "FloodedHalls",
++		title = "Flooded Halls",
++		about = "Cold water covers the floor and every step lands heavy.",
++		minTier = 2,
++		excludes = { "BurningFloors" },
++	},
++	FoggedHallways = {
++		name = "FoggedHallways",
++		title = "Fogged Hallways",
++		about = "A pale fog hides the way ahead past the next turn.",
++		minTier = 1,
++	},
++	GraveEcho = {
++		name = "GraveEcho",
++		title = "Grave Echo",
++		about = "Whatever falls here gets back up once before it stays down.",
++		minTier = 1,
++	},
++	MirrorHall = {
++		name = "MirrorHall",
++		title = "Mirror Hall",
++		about = "Every chamber shows a reflection that moves a moment late.",
++		minTier = 3,
++	},
++	NarrowLedges = {
++		name = "NarrowLedges",
++		title = "Narrow Ledges",
++		about = "The floor gives way to a narrow path over a long drop.",
++		minTier = 2,
++	},
++	PackedHalls = {
++		name = "PackedHalls",
++		title = "Packed Halls",
++		about = "The halls are never quiet; something always waits close by.",
++		minTier = 1,
++	},
++	QuietGraves = {
++		name = "QuietGraves",
++		title = "Quiet Graves",
++		about = "Nothing that falls here ever gets up again.",
++		minTier = 2,
++		excludes = { "GraveEcho" },
++	},
++	ShiftingWalls = {
++		name = "ShiftingWalls",
++		title = "Shifting Walls",
++		about = "The walls rearrange whenever no one is looking.",
++		minTier = 4,
++	},
++	ThirstingDark = {
++		name = "ThirstingDark",
++		title = "Thirsting Dark",
++		about = "The dark leans in and drinks the warmth from every room.",
++		minTier = 5,
++	},
++	WaningLight = {
++		name = "WaningLight",
++		title = "Waning Light",
++		about = "The light thins the deeper the run goes.",
++		minTier = 1,
++	},
++}
++
++local RelicKeys: Data = {
++	tiers = tiers,
++	modifiers = modifiers,
++}
++
++return RelicKeys
+diff --git a/src/shared/systems/RelicKeys.luau b/src/shared/systems/RelicKeys.luau
+new file mode 100644
+index 00000000..66b5d889
+--- /dev/null
++++ b/src/shared/systems/RelicKeys.luau
+@@ -0,0 +1,137 @@
++--!strict
++-- The pure rules for Eternal Domain keys (docs/design/endgame-power.md 3.4): which
++-- tier a key is, which run modifiers it may roll, and what a run pays the party.
++-- The data comes in as an argument so the rules can be tested against a fixed
++-- fixture, and randomness comes only from the caller's rng, so a seed replays a run.
++local RelicKeyTypes = require("../RelicKeyTypes")
++
++type Data = RelicKeyTypes.Data
++type ModifierDef = RelicKeyTypes.ModifierDef
++type TierDef = RelicKeyTypes.TierDef
++
++local RelicKeys = {}
++
++-- Whether `def` names `other` among the modifiers it may never share a run with.
++-- One side of the pair is enough; the caller checks both.
++local function lists(def: ModifierDef?, other: string): boolean
++	if def == nil then
++		return false
++	end
++	local names = def.excludes
++	if names == nil then
++		return false
++	end
++	for _, name in names do
++		if name == other then
++			return true
++		end
++	end
++	return false
++end
++
++function RelicKeys.tierDef(data: Data, tier: number): TierDef?
++	-- NaN fails the self-equality test; the range test rejects both infinities and
++	-- every fraction, so together they mean "a whole number from 1 to #data.tiers".
++	if tier ~= tier or tier < 1 or tier > #data.tiers or tier ~= math.floor(tier) then
++		return nil
++	end
++	return data.tiers[tier]
++end
++
++function RelicKeys.allowed(data: Data, tier: number): { string }
++	if RelicKeys.tierDef(data, tier) == nil then
++		return {}
++	end
++	local names: { string } = {}
++	for name, def in data.modifiers do
++		if def.minTier <= tier then
++			table.insert(names, name)
++		end
++	end
++	table.sort(names)
++	return names
++end
++
++function RelicKeys.excludes(data: Data, a: string, b: string): boolean
++	if a == b then
++		return true
++	end
++	return lists(data.modifiers[a], b) or lists(data.modifiers[b], a)
++end
++
++function RelicKeys.rollModifiers(data: Data, tier: number, rng: Random): { string }
++	local def = RelicKeys.tierDef(data, tier)
++	if def == nil then
++		return {}
++	end
++	local names = RelicKeys.allowed(data, tier)
++	if #names == 0 then
++		return {}
++	end
++	local count = 1
++	if rng:NextNumber() < def.twoChance then
++		count = 2
++	end
++	-- Both picks index allowed()'s sorted list, so a seed gives the same run
++	-- whatever order the data table happened to be built in.
++	local first = names[math.min(#names, math.floor(rng:NextNumber() * #names) + 1)]
++	if count == 1 then
++		return { first }
++	end
++	local candidates: { string } = {}
++	for _, name in names do
++		if name ~= first and not RelicKeys.excludes(data, first, name) then
++			table.insert(candidates, name)
++		end
++	end
++	if #candidates == 0 then
++		return { first }
++	end
++	local second = candidates[math.min(#candidates, math.floor(rng:NextNumber() * #candidates) + 1)]
++	return { first, second }
++end
++
++function RelicKeys.runPay(data: Data, tier: number, progress: number, cleared: boolean): number
++	local def = RelicKeys.tierDef(data, tier)
++	if def == nil then
++		return 0
++	end
++	if cleared then
++		return def.rolls
++	end
++	local p = progress
++	if p ~= p then
++		p = 0 -- NaN counts as no progress
++	end
++	p = math.clamp(p, 0, 1)
++	local pay = math.floor(def.rolls * p * RelicKeyTypes.FAIL_SHARE)
++	if p >= RelicKeyTypes.MIN_PROGRESS and pay < 1 then
++		pay = 1
++	end
++	return pay
++end
++
++function RelicKeys.partyShare(data: Data, tier: number, memberCount: number, rng: Random): { number }
++	local def = RelicKeys.tierDef(data, tier)
++	if def == nil then
++		return {}
++	end
++	if memberCount ~= memberCount or memberCount == math.huge or memberCount == -math.huge then
++		return {}
++	end
++	local count = math.floor(memberCount)
++	if count < 1 then
++		return {}
++	end
++	local share: { number } = { def.rolls }
++	for _ = 2, count do
++		local rolls = 0
++		if rng:NextNumber() < RelicKeyTypes.MEMBER_CHANCE then
++			rolls = 1
++		end
++		table.insert(share, rolls)
++	end
++	return share
++end
++
++return RelicKeys

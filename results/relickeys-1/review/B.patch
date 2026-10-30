@@ -1,0 +1,299 @@
+diff --git a/src/shared/data/RelicKeys.luau b/src/shared/data/RelicKeys.luau
+new file mode 100644
+index 00000000..0963e603
+--- /dev/null
++++ b/src/shared/data/RelicKeys.luau
+@@ -0,0 +1,135 @@
++--!strict
++-- PLACEHOLDER DATA: every number in this file is a placeholder for the numbers designer
++-- to tune, not a balance pass. The rows exist so systems/RelicKeys has something shaped
++-- like the contract while the design's real numbers are still being settled.
++--
++-- Grade weights are relative chances, not percentages (they happen to sum to 100 here).
++-- Each tier trades Lesser for Exalted, pays more rolls and carries a stronger level bonus.
++-- Modifiers are text only for now: a name, a title and one line. Exclusions are listed on
++-- both sides so a run sees the same ban whichever name it draws first.
++
++local RelicKeyTypes = require("../RelicKeyTypes")
++
++local RelicKeys: RelicKeyTypes.Data = {
++	tiers = {
++		{
++			tier = 1,
++			gradeWeights = { Lesser = 80, Greater = 18, Exalted = 2 },
++			rolls = 2,
++			levelBonus = 0,
++			twoChance = 0.1,
++		},
++		{
++			tier = 2,
++			gradeWeights = { Lesser = 68, Greater = 26, Exalted = 6 },
++			rolls = 3,
++			levelBonus = 3,
++			twoChance = 0.25,
++		},
++		{
++			tier = 3,
++			gradeWeights = { Lesser = 54, Greater = 34, Exalted = 12 },
++			rolls = 4,
++			levelBonus = 7,
++			twoChance = 0.4,
++		},
++		{
++			tier = 4,
++			gradeWeights = { Lesser = 38, Greater = 42, Exalted = 20 },
++			rolls = 5,
++			levelBonus = 12,
++			twoChance = 0.6,
++		},
++		{
++			tier = 5,
++			gradeWeights = { Lesser = 24, Greater = 46, Exalted = 30 },
++			rolls = 7,
++			levelBonus = 18,
++			twoChance = 0.8,
++		},
++	},
++	modifiers = {
++		BurningFloors = {
++			name = "BurningFloors",
++			title = "Burning Floors",
++			about = "The floor runs with fire, so the only safe stone is the stone you leave behind.",
++			minTier = 1,
++			excludes = { "LingeringFrost" },
++		},
++		CrackingVaults = {
++			name = "CrackingVaults",
++			title = "Cracking Vaults",
++			about = "The ceiling lets go in sudden, careless bursts, always where you are not looking.",
++			minTier = 2,
++		},
++		FallingStars = {
++			name = "FallingStars",
++			title = "Falling Stars",
++			about = "Bright motes sift down from above and burst where they strike the floor.",
++			minTier = 4,
++			excludes = { "ThickDark" },
++		},
++		GhostChoir = {
++			name = "GhostChoir",
++			title = "Ghost Choir",
++			about = "Every sound returns as a chorus, and none of the voices are quite yours.",
++			minTier = 3,
++		},
++		HungryShadows = {
++			name = "HungryShadows",
++			title = "Hungry Shadows",
++			about = "Shadows crowd close while you stand still and fall back, sullen, when you move.",
++			minTier = 2,
++		},
++		LingeringFrost = {
++			name = "LingeringFrost",
++			title = "Lingering Frost",
++			about = "A cold gathers the longer a fight runs and does not leave when the fight does.",
++			minTier = 3,
++			excludes = { "BurningFloors" },
++		},
++		SlainRise = {
++			name = "SlainRise",
++			title = "Slain Rise Once",
++			about = "Whatever you put down gets up one last time before it stays down.",
++			minTier = 2,
++			excludes = { "UnmakingHour" },
++		},
++		SlipperyStone = {
++			name = "SlipperyStone",
++			title = "Slippery Stone",
++			about = "The ground turns to wet glass, and every step lands farther than you meant.",
++			minTier = 1,
++			excludes = { "SquallingWind" },
++		},
++		SquallingWind = {
++			name = "SquallingWind",
++			title = "Squalling Wind",
++			about = "Gusts shoulder you off your line and carry every sound away before it reaches you.",
++			minTier = 1,
++			excludes = { "SlipperyStone" },
++		},
++		ThickDark = {
++			name = "ThickDark",
++			title = "Thick Dark",
++			about = "Light gives out a few paces from your hand, and the dark keeps whatever it finds.",
++			minTier = 1,
++			excludes = { "FallingStars" },
++		},
++		ThinningVeil = {
++			name = "ThinningVeil",
++			title = "Thinning Veil",
++			about = "The walls wear thin, and something on the far side has begun to watch.",
++			minTier = 4,
++		},
++		UnmakingHour = {
++			name = "UnmakingHour",
++			title = "Unmaking Hour",
++			about = "The last stretch of the run quietly takes itself apart behind you.",
++			minTier = 5,
++			excludes = { "SlainRise" },
++		},
++	},
++}
++
++return RelicKeys
+diff --git a/src/shared/systems/RelicKeys.luau b/src/shared/systems/RelicKeys.luau
+new file mode 100644
+index 00000000..3203ead7
+--- /dev/null
++++ b/src/shared/systems/RelicKeys.luau
+@@ -0,0 +1,152 @@
++--!strict
++-- Eternal Domain keys (docs/design/endgame-power.md section 3.4): the pure rules behind a
++-- key's tier, the modifiers its run may roll, the relic rolls a run pays and how a cleared
++-- party splits them. The rows arrive as an argument rather than from data/RelicKeys so a
++-- spec can test these rules against a small fixed table. Every function is pure: no
++-- Roblox API, no yielding, and randomness comes only from the rng passed in.
++
++local RelicKeyTypes = require("../RelicKeyTypes")
++
++type Data = RelicKeyTypes.Data
++type ModifierDef = RelicKeyTypes.ModifierDef
++type TierDef = RelicKeyTypes.TierDef
++
++local RelicKeys = {}
++
++-- Whether `modifier` lists `other` among the names it may not share a run with.
++local function lists(modifier: ModifierDef?, other: string): boolean
++	if modifier == nil then
++		return false
++	end
++	local listed = modifier.excludes
++	if listed == nil then
++		return false
++	end
++	for _, name in listed do
++		if name == other then
++			return true
++		end
++	end
++	return false
++end
++
++-- The row for `tier`, or nil unless `tier` is a whole number in 1..#data.tiers. NaN is
++-- unequal to its own floor and the infinities fail the bounds, so all of those are nil.
++function RelicKeys.tierDef(data: Data, tier: number): TierDef?
++	if tier < 1 or tier > #data.tiers or tier ~= math.floor(tier) then
++		return nil
++	end
++	return data.tiers[tier]
++end
++
++-- Every modifier a key of `tier` may roll, A to Z. Sorted so the same seed picks the same
++-- names however the modifier dictionary was built. An invalid tier allows nothing.
++function RelicKeys.allowed(data: Data, tier: number): { string }
++	if RelicKeys.tierDef(data, tier) == nil then
++		return {}
++	end
++	local names: { string } = {}
++	for name, modifier in data.modifiers do
++		if modifier.minTier <= tier then
++			table.insert(names, name)
++		end
++	end
++	table.sort(names)
++	return names
++end
++
++-- Whether `a` and `b` may not share a run, read from either side's list. A name not in the
++-- pool excludes nothing but itself, unlike a real modifier, which always excludes itself.
++function RelicKeys.excludes(data: Data, a: string, b: string): boolean
++	if a == b then
++		return true
++	end
++	return lists(data.modifiers[a], b) or lists(data.modifiers[b], a)
++end
++
++-- The run's modifiers: one or two names from allowed(data, tier). The first draw sets the
++-- count, the next picks the first name, and only when a second name is possible does a
++-- final draw pick it. Picks index allowed()'s sorted list, so the same seed gives the same
++-- result however `data` was built.
++function RelicKeys.rollModifiers(data: Data, tier: number, rng: Random): { string }
++	local def = RelicKeys.tierDef(data, tier)
++	if def == nil then
++		return {}
++	end
++	local pool = RelicKeys.allowed(data, tier)
++	if #pool == 0 then
++		return {}
++	end
++
++	local wantsTwo = rng:NextNumber() < def.twoChance
++	local firstIndex = math.clamp(math.floor(rng:NextNumber() * #pool) + 1, 1, #pool)
++	local first = pool[firstIndex]
++	if not wantsTwo then
++		return { first }
++	end
++
++	-- Keep the sorted pool's order so this is still indexing allowed()'s list, minus the
++	-- first name and everything it bans.
++	local candidates: { string } = {}
++	for _, name in pool do
++		if name ~= first and not RelicKeys.excludes(data, first, name) then
++			table.insert(candidates, name)
++		end
++	end
++	if #candidates == 0 then
++		return { first }
++	end
++	local secondIndex = math.clamp(math.floor(rng:NextNumber() * #candidates) + 1, 1, #candidates)
++	return { first, candidates[secondIndex] }
++end
++
++-- The relic rolls a run pays its holder. A clear pays the tier's full rolls whatever
++-- progress says; a failure pays a floored share of them, with at least one once the run
++-- got MIN_PROGRESS of the way. An invalid tier pays nothing.
++function RelicKeys.runPay(data: Data, tier: number, progress: number, cleared: boolean): number
++	local def = RelicKeys.tierDef(data, tier)
++	if def == nil then
++		return 0
++	end
++	if cleared then
++		return def.rolls
++	end
++	local p = progress
++	if p ~= p then
++		p = 0 -- NaN means no measurable progress
++	end
++	p = math.clamp(p, 0, 1)
++	local pay = math.floor(def.rolls * p * RelicKeyTypes.FAIL_SHARE)
++	if p >= RelicKeyTypes.MIN_PROGRESS then
++		pay = math.max(pay, 1)
++	end
++	return pay
++end
++
++-- Relic rolls for each member of a cleared party, holder first. The holder takes the
++-- tier's full rolls; every other member gets one draw for a single roll. memberCount is
++-- floored, so 2.9 is a party of two.
++function RelicKeys.partyShare(data: Data, tier: number, memberCount: number, rng: Random): { number }
++	local def = RelicKeys.tierDef(data, tier)
++	if def == nil then
++		return {}
++	end
++	if memberCount ~= memberCount or memberCount == math.huge or memberCount == -math.huge then
++		return {}
++	end
++	local count = math.floor(memberCount)
++	if count < 1 then
++		return {}
++	end
++	local share: { number } = { def.rolls }
++	for _ = 2, count do
++		if rng:NextNumber() < RelicKeyTypes.MEMBER_CHANCE then
++			table.insert(share, 1)
++		else
++			table.insert(share, 0)
++		end
++	end
++	return share
++end
++
++return RelicKeys

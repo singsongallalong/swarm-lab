@@ -1,0 +1,283 @@
+diff --git a/src/shared/data/RelicKeys.luau b/src/shared/data/RelicKeys.luau
+new file mode 100644
+index 00000000..66198445
+--- /dev/null
++++ b/src/shared/data/RelicKeys.luau
+@@ -0,0 +1,131 @@
++--!strict
++-- PLACEHOLDER DATA: every number in this file is a placeholder for the numbers designer.
++-- Eternal Domain relic keys (docs/design/endgame-power.md 3.4): the five key tiers and the
++-- pool of run modifiers a key can roll. Modifiers are text only for now; nothing reads them
++-- to change a run yet.
++local RelicKeyTypes = require("../RelicKeyTypes")
++
++local RelicKeys: RelicKeyTypes.Data = {
++	tiers = {
++		{
++			tier = 1,
++			gradeWeights = { Lesser = 80, Greater = 18, Exalted = 2 },
++			rolls = 2,
++			levelBonus = 0,
++			twoChance = 0.1,
++		},
++		{
++			tier = 2,
++			gradeWeights = { Lesser = 72, Greater = 23, Exalted = 5 },
++			rolls = 3,
++			levelBonus = 2,
++			twoChance = 0.25,
++		},
++		{
++			tier = 3,
++			gradeWeights = { Lesser = 62, Greater = 28, Exalted = 10 },
++			rolls = 4,
++			levelBonus = 4,
++			twoChance = 0.4,
++		},
++		{
++			tier = 4,
++			gradeWeights = { Lesser = 50, Greater = 34, Exalted = 16 },
++			rolls = 5,
++			levelBonus = 7,
++			twoChance = 0.55,
++		},
++		{
++			tier = 5,
++			gradeWeights = { Lesser = 35, Greater = 40, Exalted = 25 },
++			rolls = 7,
++			levelBonus = 10,
++			twoChance = 0.7,
++		},
++	},
++	modifiers = {
++		BurningFloors = {
++			name = "BurningFloors",
++			title = "Burning Floors",
++			about = "The floor smoulders underfoot, so the run never lets you stand still.",
++			minTier = 1,
++			excludes = { "GlassedGround" },
++		},
++		GlassedGround = {
++			name = "GlassedGround",
++			title = "Glassed Ground",
++			about = "The floor is brittle glass; every heavy step cracks it wider.",
++			minTier = 1,
++		},
++		TightCorridors = {
++			name = "TightCorridors",
++			title = "Tight Corridors",
++			about = "The halls narrow as you go, leaving less room to slip past a fight.",
++			minTier = 1,
++			excludes = { "SwarmingHorde" },
++		},
++		LongNight = {
++			name = "LongNight",
++			title = "Long Night",
++			about = "The dark comes early and stays late; the whole run is spent in it.",
++			minTier = 1,
++		},
++		HuntedRest = {
++			name = "HuntedRest",
++			title = "Hunted Rest",
++			about = "Something follows at the edge of sight, so a pause is never quiet.",
++			minTier = 1,
++		},
++		SwarmingHorde = {
++			name = "SwarmingHorde",
++			title = "Swarming Horde",
++			about = "Every fight draws more of them the longer it runs.",
++			minTier = 2,
++		},
++		RisingDead = {
++			name = "RisingDead",
++			title = "Rising Dead",
++			about = "Every foe put down rises once more before it finally stays down.",
++			minTier = 2,
++		},
++		CrumblingPath = {
++			name = "CrumblingPath",
++			title = "Crumbling Path",
++			about = "The way behind you gives way, so the only road is forward.",
++			minTier = 2,
++		},
++		SilentKeepers = {
++			name = "SilentKeepers",
++			title = "Silent Keepers",
++			about = "The wardens give no warning before they close in, and the dark keeps their secrets.",
++			minTier = 3,
++		},
++		MirrorEcho = {
++			name = "MirrorEcho",
++			title = "Mirror Echo",
++			about = "Your opening blow comes back at you a moment later, thrown by something unseen.",
++			minTier = 3,
++		},
++		GildedCurse = {
++			name = "GildedCurse",
++			title = "Gilded Curse",
++			about = "Every coin you carry weighs on your steps; the richer the run, the slower it goes.",
++			minTier = 3,
++			excludes = { "BitterHarvest" },
++		},
++		BitterHarvest = {
++			name = "BitterHarvest",
++			title = "Bitter Harvest",
++			about = "Whatever the run yields, a share of it is taken back before you leave.",
++			minTier = 4,
++		},
++		DoubleOrNothing = {
++			name = "DoubleOrNothing",
++			title = "Double or Nothing",
++			about = "Every bargain in the run is paid twice over: twice the danger, twice the gain.",
++			minTier = 5,
++		},
++	},
++}
++
++return RelicKeys
+diff --git a/src/shared/systems/RelicKeys.luau b/src/shared/systems/RelicKeys.luau
+new file mode 100644
+index 00000000..5e90a575
+--- /dev/null
++++ b/src/shared/systems/RelicKeys.luau
+@@ -0,0 +1,140 @@
++--!strict
++-- Relic keys of the Eternal Domain (docs/design/endgame-power.md 3.4): which modifiers a
++-- key offers at its tier, the pair its run rolls, and what the run pays the party. Pure:
++-- the rows arrive as data and every random draw comes from the rng passed in, so a seed
++-- replays a run exactly.
++local RelicKeyTypes = require("../RelicKeyTypes")
++
++local RelicKeys = {}
++
++-- A whole tier number in 1..#data.tiers gets its row; anything else gets nil. math.floor
++-- leaves NaN as NaN (so `index ~= tier` rejects it) and sends the infinities out of range,
++-- so no bad number can index the array.
++function RelicKeys.tierDef(data: RelicKeyTypes.Data, tier: number): RelicKeyTypes.TierDef?
++	local index = math.floor(tier)
++	if index ~= tier or index < 1 or index > #data.tiers then
++		return nil
++	end
++	return data.tiers[index]
++end
++
++-- Sorted, so picks index the same list however the rows table was built.
++function RelicKeys.allowed(data: RelicKeyTypes.Data, tier: number): { string }
++	if RelicKeys.tierDef(data, tier) == nil then
++		return {}
++	end
++	local names: { string } = {}
++	for name, modifier in data.modifiers do
++		if modifier.minTier <= tier then
++			table.insert(names, name)
++		end
++	end
++	table.sort(names)
++	return names
++end
++
++-- Either side may carry the exclusion, and a name always excludes itself so a pick can
++-- never come up twice.
++function RelicKeys.excludes(data: RelicKeyTypes.Data, a: string, b: string): boolean
++	if a == b then
++		return true
++	end
++	local first = data.modifiers[a]
++	if first ~= nil and first.excludes ~= nil then
++		for _, other in first.excludes do
++			if other == b then
++				return true
++			end
++		end
++	end
++	local second = data.modifiers[b]
++	if second ~= nil and second.excludes ~= nil then
++		for _, other in second.excludes do
++			if other == a then
++				return true
++			end
++		end
++	end
++	return false
++end
++
++-- One uniform draw as an index into a sorted list. Clamped so a degenerate rng returning
++-- exactly 1 still lands inside the list.
++local function pickIndex(rng: Random, count: number): number
++	local index = math.floor(rng:NextNumber() * count) + 1
++	return math.clamp(index, 1, count)
++end
++
++function RelicKeys.rollModifiers(data: RelicKeyTypes.Data, tier: number, rng: Random): { string }
++	local def = RelicKeys.tierDef(data, tier)
++	local pool = RelicKeys.allowed(data, tier)
++	if def == nil or #pool == 0 then
++		return {}
++	end
++
++	-- The count draw comes first, then the first pick, then (only when a second name is
++	-- possible) the second, a fixed order so the same seed replays the same pair.
++	local wantTwo = rng:NextNumber() < def.twoChance
++	local first = pool[pickIndex(rng, #pool)]
++	local out: { string } = { first }
++	if not wantTwo then
++		return out
++	end
++
++	local rest: { string } = {}
++	for _, name in pool do
++		if name ~= first and not RelicKeys.excludes(data, first, name) then
++			table.insert(rest, name)
++		end
++	end
++	if #rest == 0 then
++		return out
++	end
++	table.insert(out, rest[pickIndex(rng, #rest)])
++	return out
++end
++
++function RelicKeys.runPay(data: RelicKeyTypes.Data, tier: number, progress: number, cleared: boolean): number
++	local def = RelicKeys.tierDef(data, tier)
++	if def == nil then
++		return 0
++	end
++	if cleared then
++		return def.rolls
++	end
++
++	local p = progress
++	if p ~= p then
++		p = 0 -- NaN is "no progress made"
++	else
++		p = math.clamp(p, 0, 1)
++	end
++	local pay = math.floor(def.rolls * p * RelicKeyTypes.FAIL_SHARE)
++	if p >= RelicKeyTypes.MIN_PROGRESS then
++		pay = math.max(pay, 1)
++	end
++	return pay
++end
++
++function RelicKeys.partyShare(data: RelicKeyTypes.Data, tier: number, memberCount: number, rng: Random): { number }
++	local def = RelicKeys.tierDef(data, tier)
++	if def == nil then
++		return {}
++	end
++
++	local count = math.floor(memberCount)
++	if count ~= count or count == math.huge or count < 1 then
++		return {}
++	end
++	local share: { number } = { def.rolls }
++	for _ = 2, count do
++		if rng:NextNumber() < RelicKeyTypes.MEMBER_CHANCE then
++			table.insert(share, 1)
++		else
++			table.insert(share, 0)
++		end
++	end
++	return share
++end
++
++return RelicKeys
