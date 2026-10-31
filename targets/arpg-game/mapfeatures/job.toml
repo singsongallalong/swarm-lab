@@ -17,7 +17,7 @@ mode = "new_file"
 
 [files."src/shared/data/MapFeatures.luau"]
 mode = "add_lines"
-pattern = '(local {skill}\w* = require\("\.\./systems/features/{skill}\w*"\)|{skill}\w* = {skill}\w*,)'
+pattern = '(local {skill}\w* = require\("\.\./systems/features/{skill}\w*"\)|{skill}\w* = {skill}\w*,|--[^\n]{0,200})'
 
 [files."src/shared/data/Sculpts.luau"]
 mode = "add_rows"

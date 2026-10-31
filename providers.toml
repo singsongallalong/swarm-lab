@@ -25,7 +25,7 @@ timeout_s = 2400
 # Whole-run cap across this provider's generators. Counts cached reads, which are nearly
 # all of it and nearly free ($0.006 per million): rimeholt-features (12 builders, 2026-10-30)
 # spent 30M on its first six. 300M is about $3 at the estimate's rates.
-budget_tokens = 300_000_000
+budget_tokens = 900_000_000
 
 # Time-of-day pricing (swarm/offpeak.py): full price only in these Beijing-time windows on
 # weekdays, half price otherwise and all weekend. `python3 -m swarm when` says where now
@@ -64,7 +64,7 @@ price_cached = 0.05
 price_out = 3.96
 max_turns = 40
 timeout_s = 2400
-budget_tokens = 300_000_000
+budget_tokens = 900_000_000
 
 [deepseek-pro.peak]
 beijing = ["09:00-12:00", "14:00-18:00"]

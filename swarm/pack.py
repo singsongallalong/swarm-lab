@@ -45,9 +45,14 @@ def fill_placeholders(cmd: str, manifest: dict) -> str:
     for ph, key in PLACEHOLDERS.items():
         if ph in cmd:
             val = manifest.get(key)
-            if isinstance(val, list):
-                val = ",".join(val)
-            cmd = cmd.replace(ph, str(val or ""))
+            # Workers write lists, or one string with commas and spaces ("a, b"). A preview
+            # takes a comma list without spaces, and setpiecepreview only one name: the
+            # first (two of 24 in domain-features-2 named two set pieces in one string).
+            items = val if isinstance(val, list) else [val or ""]
+            names = [n for item in items for n in re.split(r"[,\s]+", str(item)) if n]
+            if key == "setpiece":
+                names = names[:1]
+            cmd = cmd.replace(ph, ",".join(names))
     return cmd
 
 
