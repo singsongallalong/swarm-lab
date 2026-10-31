@@ -1,0 +1,7 @@
+# C: glass strike (critique, pass 2)
+
+Keep: the frozen splash. "The frozen splash" seed 1 is the best photograph in this round: a sunk violet floor, a burst of tilted needles thrown outward, a tall core, and the terraced lip in the foreground giving depth. The splash sculpt itself and the crawling charge effect both belong to this feature and nothing else in the game.
+
+1. **Too much flat violet.** The crater floor is one bright violet sheet that fills the game camera shot and pushes the Wasteland's "muted accent" into a purple floor. Darken most of the floor to smoked, near-black glass and keep the brighter violet in the cracks, the rays and around the core, so the glow has a place to come from.
+2. **The core blocks the game camera.** In "the game camera over it" the tall needle fills the left of every frame and the shot is mostly a pillar. Lower the core, or put it off-centre toward the bolt side, so from above you read the crater, the clusters and the road crossing instead of one post.
+3. **The clusters and scorch blobs land in much the same places.** Across the twelve seeds it is one round crater with black scorch on two sides and the road through the middle. Vary it: an oval crater the road skirts around, a seed with the pit and no spire, a seed where one cluster walls the road and forces a detour. Keep the bones prop out of the pad; it lands on the crater in seeds 1, 6, 7 and 12.

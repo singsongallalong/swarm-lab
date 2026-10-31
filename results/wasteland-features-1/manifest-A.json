@@ -1,0 +1,46 @@
+{
+  "skill": "Waste",
+  "look": "WasteBuriedCaravan",
+  "rows_added": [
+    "waste_wagon",
+    "waste_wagon_ribs",
+    "waste_wagon_tipped",
+    "waste_wheel",
+    "waste_wheel_flat",
+    "waste_crate",
+    "waste_lantern_hook",
+    "waste_caravan_fire",
+    "waste_ashfall"
+  ],
+  "sculpts": [
+    "waste_wagon",
+    "waste_wagon_ribs",
+    "waste_wagon_tipped",
+    "waste_wheel",
+    "waste_wheel_flat",
+    "waste_crate",
+    "waste_lantern_hook",
+    "waste_caravan_fire"
+  ],
+  "setpiece": "waste_ashfall",
+  "variation": [
+    "dune massing: one unbroken bank filling to the far border / a free ridge with walkable windward ground behind it, cut by one wind gap / cut by two; the crest set 2-4 cells behind the lee foot",
+    "road: along the lee foot west to east or east to west / turning up through a wind gap and out at the far border",
+    "caravan: a long train / jackknifed at the head / a scattered wreck / two rows, one buried high on the face and one spilled low",
+    "burial: deep (rib frames and a wheel rim only break the ash) / half / shallow (a rare whole or tipped wagon stands proud), the ribs the main piece",
+    "the lee: 0-3 residual dune knobs for cover, the spill fan's reach, and 1-2 glass crust patches; 26-32 cells across, the ridge's bow and crest height"
+  ],
+  "intent": "A caravan the dune rolled over, read from the fire up: the wreck line is mostly canopy ribs and a wheel rim breaking the ash, a rare wagon lying tipped where the dune took it; one crest with a steep slip face stands over it, and the caravan's banked fire at its foot, ringed by spilled crates with the lantern-hook above and the ashfall pouring off the crest directly over it, is the one spot the fight is about.",
+  "renders": [
+    ".swarm/out/feature-shots-final.png",
+    ".swarm/out/feature-seeds-final.png",
+    ".swarm/out/feature-whole-final.png",
+    ".swarm/out/feature-sculpts-final.png",
+    ".swarm/out/feature-setpiece-final.png"
+  ],
+  "revisions": 4,
+  "requests": [
+    "Dresspreview draws no set pieces, so the ashfall and the fire's smoke cannot appear in the feature's own photographs; they are seen only in setpiecepreview.",
+    "A smooth slip face: the height grid only steps, so the dune reads as a few tall blocky terraces rather than a wind-smoothed dune."
+  ]
+}

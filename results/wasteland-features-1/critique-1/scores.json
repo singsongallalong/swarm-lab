@@ -1,0 +1,22 @@
+{
+  "A": {
+    "idea": 5, "photograph": 5, "topology": 6, "look": 5, "camera": 4, "usable": 5,
+    "total": 5.13,
+    "best_shot": "feature-shots-final.png, seed 1 along the wreck line",
+    "why": "Plan shapes vary well, but the wagons sit whole on top of fine terraces instead of breaking out of a dune; the ember and ashfall barely register."
+  },
+  "B": {
+    "idea": 6, "photograph": 4.5, "topology": 6, "look": 5, "camera": 4, "usable": 5,
+    "total": 5.3,
+    "best_shot": "feature-shots-final.png, seed 2 over the wrist dune at the whole hand",
+    "why": "A strong idea that reads as a hand only from the top; from the side the fingers are square pillars and the close shots show only walls."
+  },
+  "C": {
+    "idea": 7.5, "photograph": 7, "topology": 6, "look": 6, "camera": 6.5, "usable": 6,
+    "total": 6.74,
+    "best_shot": "feature-shots-final.png, seed 2 the frozen splash",
+    "why": "Its own geometry, accent colour and effect: the violet bowl, splash spires and crawling sparks read from every camera; layouts are always one central bowl and the rim crowds the floor."
+  },
+  "ranking": ["C", "B", "A"],
+  "notes": "Weights: idea 3, photograph 2.5, topology 2, look 1, camera 0.75, usable 0.75; totals are weighted means. Judged on renders only. C is clearly ahead; B and A are close, B for the stronger idea, A for the steadier read and better layout variety. None has a smooth dune, which the terrain steps prevent in all three."
+}

@@ -1,0 +1,14 @@
+{
+  "A": {
+    "gid": "g01",
+    "provider": "deepseek"
+  },
+  "B": {
+    "gid": "g02",
+    "provider": "deepseek"
+  },
+  "C": {
+    "gid": "g00",
+    "provider": "deepseek"
+  }
+}

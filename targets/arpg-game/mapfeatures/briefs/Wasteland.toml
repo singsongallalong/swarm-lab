@@ -1,0 +1,27 @@
+# The Wasteland's features (2026-10-31, overnight draft run, arpg-game stream dunes-grammar):
+# set pieces for the glass-ash desert under the Labyrinth gate, a field laid out as dunes
+# between mesas (docs/roadmap/spine.md, "Layouts"). Three generators, one place each.
+skill = "Waste"
+family = "feature"
+example = "MoorBarrowRing"
+directions = "directions-wasteland.txt"
+brief = """
+Make one feature for **the Wasteland**: a level 33-37 field late in the game, a vast desert of
+pale cold glass-ash dunes between wind-scoured dark rock mesas, under a storm vortex over the
+Labyrinth's gate (a colossal gate standing on the skyline to the east). The ash was fused into
+muted violet glass under the storm: flat glass patches, glass spires, glass thickets. Empty
+ruined shells of a hamlet, the bones of a dead giant half sunk in ash, one dead caravan's fire.
+No lamps, no lit windows: nobody lives here. Night, cold grey and violet, one muted accent (the
+violet glass). Its tileset is `wasteland` (`src/shared/data/outdoorTilesets/Wasteland.luau`:
+read its ground colours ASH, CAUSEWAY, PACKED, SCOURED and its props; sculpts named `waste_`
+in `data/Sculpts.luau`; set pieces `waste_crest_ash` and `waste_caravan_smoke` in
+`data/SetPieces.luau`).
+
+fafwa, who owns the game, wants the late zones "epic and exotic ... stuff that's kinda out
+there and visually striking". Your direction names one place. Make it **unmistakably that
+place**, with height and shape (lifts, pits, banks, walls), its own ground where it needs it,
+landmarks from the wasteland's sculpts or new ones of your own, and an effect if it has one
+(ash pouring, glass glinting, embers, violet motes). A feature is one structure, not a map:
+small (up to 16 cells a side) or medium (up to 32); if the road runs through it, it is a
+`crossing`. Scale: a person is 5 studs; this is a place of big things.
+"""

@@ -1,0 +1,28 @@
+{
+  "skill": "Waste",
+  "look": "WasteColossusHand",
+  "rows_added": ["waste_hand_knuckle", "waste_hand_finger", "waste_hand_motes"],
+  "sculpts": ["waste_hand_knuckle", "waste_hand_finger"],
+  "setpiece": "waste_hand_motes",
+  "variation": [
+    "gesture: shelter (long fingers curled in round a deep palm) / splayed (fingers open and low) / broken (one finger a stump and one gone, its segment in the ash) / claw (fingers short and driven down)",
+    "palm heart: a lens of brighter glass / bare fused glass / an ash drift / a cracked rise",
+    "wrist: a high dune banked below it / a low dune split round a way through / a dune banked to one side",
+    "pose: footprint 30-32, the palm's size and set, the hand's turn, the fingers' spread, length and taper, the thumb's side",
+    "gates: which gaps between the fingers are open to the ash, and the road's way in over the wrist and out through a gate"
+  ],
+  "intent": "The open hand of a fallen colossus rising palm-up out of the Wasteland's ash: a raised palm of fused violet glass, the one bright place, ringed by tapering two-jointed stone fingers with glass grown from their knuckles out, a person-high glass spire standing in it for scale, one tall column of violet motes rising from the palm, and a dune banked below the wrist's broad ramp.",
+  "renders": [
+    ".swarm/out/feature-shots-final.png",
+    ".swarm/out/feature-seeds-final.png",
+    ".swarm/out/feature-whole-final.png",
+    ".swarm/out/feature-sculpts-final.png",
+    ".swarm/out/feature-setpiece-motes.png"
+  ],
+  "revisions": 4,
+  "requests": [
+    "Terrain cannot overhang, so the curled fingertips cannot close over the palm: the shelter reads in the plan of the finger ridges and their heights, not in a roof.",
+    "No character can be stood in a feature preview, so a spire of the Wasteland's own glass at about a person's height stands in the palm as the scale cue.",
+    "The offline preview draws no lighting or mist, so the violet glow and the motes' read under the storm are shown by the set piece preview rather than the feature shots."
+  ]
+}

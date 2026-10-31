@@ -1,0 +1,1259 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 0e499725..d01c4d6f 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -34,6 +34,7 @@ local MoorSheepfold = require("../systems/features/MoorSheepfold")
+ local MoorSinkhole = require("../systems/features/MoorSinkhole")
+ local MoorSplitBarrow = require("../systems/features/MoorSplitBarrow")
+ local MoorStrikeCrater = require("../systems/features/MoorStrikeCrater")
++local WasteBuriedCaravan = require("../systems/features/WasteBuriedCaravan")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+@@ -68,6 +69,7 @@ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	MoorPeatCutting = MoorPeatCutting,
+ 	MoorHillfort = MoorHillfort,
+ 	MoorDrownedCauseway = MoorDrownedCauseway,
++	WasteBuriedCaravan = WasteBuriedCaravan,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1d3e1b2..9a13da14 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -6014,6 +6014,478 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Wasteland's buried caravan (WasteBuriedCaravan, A132): a cargo wagon the
++-- dune rolled over, its bed and canopy frame of bent timber, four iron-tyred
++-- wheels, a torn canvas flap. Timbers at the top of the trim value range so they
++-- read against the pale ash; the canvas a shade paler still.
++Sculpts.waste_wagon = {
++	kind = "assembly",
++	size = { 10.5, 4.8, 4.8 },
++	material = "WoodPlanks",
++	colors = { { 62, 52, 44 }, { 50, 42, 37 }, { 40, 39, 43 }, { 92, 86, 74 }, { 74, 64, 55 } },
++	materials = { [1] = "WoodPlanks", [2] = "Wood", [3] = "Metal", [4] = "Fabric", [5] = "Wood" },
++	maxPrims = 48,
++	parts = {
++		-- The bed, its side rails and its end boards.
++		{ name = "bed", shape = "Block", size = { 7.6, 0.5, 3.8 }, at = { 0, 2.0, 0 }, color = 1 },
++		{ name = "rail", shape = "Block", size = { 7.4, 0.9, 0.26 }, at = { 0, 2.55, 1.86 }, color = 2, mirror = "z" },
++		{ name = "end_w", shape = "Block", size = { 0.26, 0.9, 3.7 }, at = { -3.7, 2.55, 0 }, color = 2 },
++		{ name = "end_e", shape = "Block", size = { 0.26, 0.9, 3.7 }, at = { 3.7, 2.55, 0 }, color = 2 },
++		-- Two axles under it, a wheel at each end (a disc across the bed).
++		{
++			name = "axles",
++			row = { count = 2, step = { 4.8, 0, 0 }, center = true },
++			children = {
++				{ shape = "Cylinder", axis = "z", size = { 0.4, 0.4, 4.3 }, at = { 0, 1.35, 0 }, color = 3 },
++			} :: { Node },
++		},
++		{
++			name = "wheels",
++			row = { count = 2, step = { 4.8, 0, 0 }, center = true },
++			children = {
++				{
++					name = "wheelPair",
++					mirror = "z",
++					children = {
++						{
++							shape = "Cylinder",
++							axis = "z",
++							size = { 2.9, 2.9, 0.42 },
++							at = { 0, 1.45, 2.05 },
++							color = 2,
++						},
++						{
++							shape = "Cylinder",
++							axis = "z",
++							size = { 0.55, 0.55, 0.55 },
++							at = { 0, 1.45, 2.28 },
++							color = 3,
++						},
++						{
++							shape = "Block",
++							size = { 2.5, 0.2, 0.24 },
++							at = { 0, 1.45, 2.3 },
++							rot = { 0, 0, 45 },
++							color = 3,
++						},
++						{
++							shape = "Block",
++							size = { 2.5, 0.2, 0.24 },
++							at = { 0, 1.45, 2.3 },
++							rot = { 0, 0, -45 },
++							color = 3,
++						},
++					} :: { Node },
++				},
++			} :: { Node },
++		},
++		-- Three bent-wood canopy hoops over the bed, the frame a torn canvas hung on.
++		{
++			name = "hoops",
++			row = { count = 3, step = { 2.5, 0, 0 }, center = true },
++			children = {
++				{
++					name = "hoop",
++					children = {
++						{ shape = "Block", size = { 0.24, 1.7, 0.32 }, at = { 0, 2.35, -2.0 }, rot = { 0, 0, 0 } },
++						{ shape = "Block", size = { 0.24, 1.7, 0.32 }, at = { 0, 3.76, -1.41 }, rot = { 45, 0, 0 } },
++						{ shape = "Block", size = { 0.24, 1.7, 0.32 }, at = { 0, 4.35, 0 }, rot = { 90, 0, 0 } },
++						{ shape = "Block", size = { 0.24, 1.7, 0.32 }, at = { 0, 3.76, 1.41 }, rot = { 135, 0, 0 } },
++						{ shape = "Block", size = { 0.24, 1.7, 0.32 }, at = { 0, 2.35, 2.0 }, rot = { 180, 0, 0 } },
++					} :: { Node },
++				},
++			} :: { Node },
++		},
++		-- A torn canvas flap off the middle hoop, and a board shaken loose.
++		{
++			name = "canvas",
++			shape = "Block",
++			size = { 2.2, 1.4, 0.1 },
++			at = { 0.8, 3.7, 1.9 },
++			rot = { 14, 0, -6 },
++			color = 4,
++			chance = 0.75,
++		},
++		{
++			name = "board",
++			shape = "Block",
++			size = { 2.6, 0.22, 0.8 },
++			at = { -1.4, 2.45, 2.0 },
++			rot = { 10, 0, 8 },
++			color = 5,
++			chance = 0.6,
++		},
++		-- The shafts, dipping to the ash in front.
++		{
++			name = "shaft",
++			shape = "Block",
++			size = { 2.6, 0.35, 0.5 },
++			at = { 4.7, 1.7, 0 },
++			rot = { 0, 0, -16 },
++			color = 2,
++		},
++		{ name = "crossbar", shape = "Block", size = { 0.4, 0.35, 1.8 }, at = { 5.8, 1.35, 0 }, color = 2 },
++	} :: { Node },
++}
++
++-- The wagon's canopy frame with the body gone and the canvas rotted away: a
++-- broken spine, side beams, four ribs, one rib's crown snapped out, a wheel
++-- still on the axle and one hooped rib fallen. What shows when the dune has
++-- swallowed the rest.
++Sculpts.waste_wagon_ribs = {
++	kind = "assembly",
++	size = { 8.8, 3.5, 5.2 },
++	material = "Wood",
++	colors = { { 64, 54, 45 }, { 50, 42, 37 }, { 40, 39, 43 }, { 86, 80, 68 } },
++	materials = { [1] = "WoodPlanks", [2] = "Wood", [3] = "Metal", [4] = "Fabric" },
++	maxPrims = 30,
++	parts = {
++		{ name = "spine", shape = "Block", size = { 8.6, 0.3, 0.5 }, at = { 0, 0.7, 0 }, color = 1 },
++		{ name = "beam", shape = "Block", size = { 8.6, 0.3, 0.35 }, at = { 0, 0.9, 2.4 }, color = 1, mirror = "z" },
++		{
++			name = "ribs",
++			row = { count = 4, step = { 2.2, 0, 0 }, center = true },
++			children = {
++				{
++					name = "rib",
++					children = {
++						{
++							shape = "Block",
++							size = { 0.22, 1.9, 0.3 },
++							at = { 0, 0.9, -2.3 },
++							rot = { 0, 0, 0 },
++							chance = 0.85,
++						},
++						{ shape = "Block", size = { 0.22, 1.9, 0.3 }, at = { 0, 2.53, -1.63 }, rot = { 45, 0, 0 } },
++						{
++							shape = "Block",
++							size = { 0.22, 1.9, 0.3 },
++							at = { 0, 3.2, 0 },
++							rot = { 90, 0, 0 },
++							chance = 0.72,
++						},
++						{ shape = "Block", size = { 0.22, 1.9, 0.3 }, at = { 0, 2.53, 1.63 }, rot = { 135, 0, 0 } },
++						{
++							shape = "Block",
++							size = { 0.22, 1.9, 0.3 },
++							at = { 0, 0.9, 2.3 },
++							rot = { 180, 0, 0 },
++							chance = 0.85,
++						},
++					} :: { Node },
++				},
++			} :: { Node },
++		},
++		{
++			name = "axle",
++			shape = "Cylinder",
++			axis = "z",
++			size = { 0.35, 0.35, 4.0 },
++			at = { 2.6, 0.5, 0 },
++			rot = { 0, 0, 8 },
++			color = 3,
++		},
++		{
++			name = "wheel",
++			shape = "Cylinder",
++			axis = "z",
++			size = { 2.4, 2.4, 0.35 },
++			at = { 2.6, 1.2, 2.2 },
++			color = 2,
++			chance = 0.6,
++		},
++		{
++			name = "rag",
++			shape = "Block",
++			size = { 0.9, 1.1, 0.08 },
++			at = { -1.4, 2.5, 1.7 },
++			rot = { 18, 0, 12 },
++			color = 4,
++			chance = 0.5,
++		},
++	} :: { Node },
++}
++
++-- A wagon wheel standing in the ash, leaning where it fell against the wreck.
++Sculpts.waste_wheel = {
++	kind = "assembly",
++	size = { 3.2, 3.2, 1.2 },
++	material = "Wood",
++	colors = { { 60, 50, 42 }, { 40, 39, 43 }, { 74, 64, 55 } },
++	materials = { [1] = "Wood", [2] = "Metal", [3] = "Wood" },
++	maxPrims = 8,
++	parts = {
++		{
++			name = "wheel",
++			at = { 0, -0.2, 0 },
++			rot = { 10, 0, 12 },
++			children = {
++				{ shape = "Cylinder", axis = "z", size = { 2.9, 2.9, 0.42 }, at = { 0, 1.6, 0 } },
++				{ shape = "Cylinder", axis = "z", size = { 0.55, 0.55, 0.6 }, at = { 0, 1.6, 0.3 }, color = 2 },
++				{ shape = "Block", size = { 2.6, 0.2, 0.26 }, at = { 0, 1.6, 0.34 }, color = 2 },
++				{ shape = "Block", size = { 2.6, 0.2, 0.26 }, at = { 0, 1.6, 0.34 }, rot = { 0, 0, 45 }, color = 2 },
++				{ shape = "Block", size = { 2.6, 0.2, 0.26 }, at = { 0, 1.6, 0.34 }, rot = { 0, 0, 90 }, color = 2 },
++				{ shape = "Block", size = { 2.6, 0.2, 0.26 }, at = { 0, 1.6, 0.34 }, rot = { 0, 0, 135 }, color = 2 },
++			} :: { Node },
++		},
++	} :: { Node },
++}
++
++-- The same wheel fallen flat and half sunk: a broken rim and three spokes in
++-- the ash beside the wreck.
++Sculpts.waste_wheel_flat = {
++	kind = "assembly",
++	size = { 3.2, 0.8, 3.2 },
++	material = "Wood",
++	colors = { { 60, 50, 42 }, { 40, 39, 43 }, { 74, 64, 55 } },
++	materials = { [1] = "Wood", [2] = "Metal", [3] = "Wood" },
++	maxPrims = 6,
++	parts = {
++		{ shape = "Cylinder", axis = "y", size = { 3.0, 0.4, 3.0 }, at = { 0, 0.2, 0 } },
++		{ shape = "Cylinder", axis = "y", size = { 0.7, 0.55, 0.7 }, at = { 0, 0.45, 0 }, color = 2 },
++		{ shape = "Block", size = { 2.6, 0.18, 0.25 }, at = { 0, 0.47, 0 }, color = 2 },
++		{ shape = "Block", size = { 2.6, 0.18, 0.25 }, at = { 0, 0.47, 0 }, rot = { 0, 60, 0 }, color = 2 },
++		{ shape = "Block", size = { 2.6, 0.18, 0.25 }, at = { 0, 0.47, 0 }, rot = { 0, 120, 0 }, color = 2 },
++	} :: { Node },
++}
++
++-- A crate burst open where it fell: three sides gone or hanging, the dark
++-- inside showing, and a scatter of violet glass spilling out of it.
++Sculpts.waste_crate = {
++	kind = "assembly",
++	size = { 2.6, 1.6, 3.2 },
++	material = "WoodPlanks",
++	colors = { { 56, 48, 40 }, { 34, 32, 34 }, { 64, 50, 78 }, { 44, 37, 32 } },
++	materials = { [1] = "WoodPlanks", [2] = "Wood", [3] = "Glass", [4] = "Wood" },
++	maxPrims = 16,
++	parts = {
++		{ name = "base", shape = "Block", size = { 2.3, 0.18, 2.3 }, at = { 0, 0.09, 0 }, color = 1 },
++		{ name = "dark", shape = "Block", size = { 2.0, 1.1, 2.0 }, at = { 0, 0.7, 0 }, color = 2 },
++		{
++			name = "side",
++			shape = "Block",
++			size = { 2.4, 0.42, 0.16 },
++			at = { 0, 0.55, 1.12 },
++			color = 1,
++			mirror = "z",
++		},
++		{ name = "side2", shape = "Block", size = { 2.4, 0.42, 0.16 }, at = { 0, 1.18, 1.12 }, color = 1 },
++		{ name = "end_a", shape = "Block", size = { 0.16, 0.42, 2.4 }, at = { 1.12, 0.55, 0 }, color = 1 },
++		{ name = "end_b", shape = "Block", size = { 0.16, 0.42, 2.4 }, at = { 1.12, 1.18, 0 }, color = 1 },
++		{ name = "end_c", shape = "Block", size = { 0.16, 0.9, 2.4 }, at = { -1.12, 0.55, 0 }, color = 4 },
++		{ name = "lid", shape = "Block", size = { 2.35, 0.14, 1.15 }, at = { 0, 1.45, -0.6 }, color = 1 },
++		{
++			name = "lidFall",
++			shape = "Block",
++			size = { 2.1, 0.12, 1.0 },
++			at = { 0.8, 0.06, 1.8 },
++			rot = { 0, 14, 0 },
++			color = 4,
++		},
++		{ name = "glass1", shape = "Block", size = { 0.34, 0.28, 0.24 }, at = { 1.4, 0.14, 1.3 }, color = 3 },
++		{ name = "glass2", shape = "Block", size = { 0.28, 0.22, 0.2 }, at = { 1.75, 0.11, 0.9 }, color = 3 },
++		{ name = "glass3", shape = "Block", size = { 0.24, 0.18, 0.2 }, at = { 1.2, 0.09, 1.85 }, color = 3 },
++	} :: { Node },
++}
++
++-- The dead lantern-hook: a leaning iron post with a hooked arm, a short chain
++-- and a broken lantern cage still hanging, its flame long gone to a dim coal.
++-- The one warm thing in the wreck, low and small (B2: who lit this?).
++Sculpts.waste_lantern_hook = {
++	kind = "assembly",
++	size = { 2.8, 6.4, 3.0 },
++	material = "Metal",
++	colors = { { 44, 42, 46 }, { 56, 48, 40 }, { 100, 78, 62 }, { 70, 68, 72 } },
++	materials = { [1] = "Metal", [2] = "Wood", [3] = "Neon", [4] = "Metal" },
++	maxPrims = 18,
++	parts = {
++		{ name = "foot", shape = "Block", size = { 0.9, 0.3, 0.9 }, at = { 0, 0.15, 0 }, color = 2 },
++		{
++			name = "post",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 0.28, 6.2, 0.28 },
++			at = { 0, 3.25, 0 },
++			rot = { 0, 0, 4 },
++			color = 2,
++		},
++		{ name = "arm", shape = "Block", size = { 0.22, 0.22, 1.5 }, at = { 0, 6.15, 0.75 }, color = 1 },
++		{ name = "hook", shape = "Block", size = { 0.22, 0.55, 0.22 }, at = { 0, 5.95, 1.45 }, color = 1 },
++		{ name = "chain1", shape = "Block", size = { 0.1, 0.3, 0.1 }, at = { 0, 5.6, 1.45 }, color = 1 },
++		{ name = "chain2", shape = "Block", size = { 0.1, 0.3, 0.1 }, at = { 0.04, 5.32, 1.48 }, color = 1 },
++		{ name = "chain3", shape = "Block", size = { 0.1, 0.3, 0.1 }, at = { -0.02, 5.04, 1.45 }, color = 1 },
++		{
++			name = "lantern",
++			at = { 0, 0, 1.45 },
++			children = {
++				{ shape = "Block", size = { 0.07, 0.8, 0.07 }, at = { 0.31, 4.52, 0.31 }, color = 1, mirror = "xz" },
++				{ shape = "Block", size = { 0.8, 0.1, 0.8 }, at = { 0, 4.97, 0 }, color = 1 },
++				{ shape = "Block", size = { 0.7, 0.1, 0.7 }, at = { 0, 4.07, 0 }, color = 1 },
++				{ shape = "Ball", size = { 0.42, 0.62, 0.42 }, at = { 0, 4.52, 0 }, color = 3 },
++			} :: { Node },
++		},
++	} :: { Node },
++}
++
++-- The wagon rolled onto its side where the dune took it: the uphill wheels in
++-- the air, the downhill half under the ash, the bed sprung and a hoop arching
++-- over nothing. It reads as overrun even standing on open ground, so a whole
++-- wagon in the wreck line is not a cart parked on the slope.
++Sculpts.waste_wagon_tipped = {
++	kind = "assembly",
++	size = { 10.5, 5.6, 4.8 },
++	material = "WoodPlanks",
++	colors = { { 62, 52, 44 }, { 50, 42, 37 }, { 40, 39, 43 }, { 92, 86, 74 }, { 74, 64, 55 } },
++	materials = { [1] = "WoodPlanks", [2] = "Wood", [3] = "Metal", [4] = "Fabric", [5] = "Wood" },
++	maxPrims = 30,
++	parts = {
++		{
++			name = "rolled",
++			rot = { -90, 0, 0 },
++			children = {
++				{ shape = "Block", size = { 7.6, 0.5, 3.8 }, at = { 0, 2.0, 0 }, color = 1 },
++				{ shape = "Block", size = { 7.4, 0.9, 0.26 }, at = { 0, 2.55, 1.86 }, color = 2 },
++				{ shape = "Block", size = { 0.26, 0.9, 3.7 }, at = { -3.7, 2.55, 0 }, color = 2 },
++				{ shape = "Block", size = { 0.26, 0.9, 3.7 }, at = { 3.7, 2.55, 0 }, color = 2 },
++				{
++					name = "axles",
++					row = { count = 2, step = { 4.8, 0, 0 }, center = true },
++					children = {
++						{ shape = "Cylinder", axis = "z", size = { 0.4, 0.4, 4.3 }, at = { 0, 1.35, 0 }, color = 3 },
++					} :: { Node },
++				},
++				{
++					name = "wheels",
++					row = { count = 2, step = { 4.8, 0, 0 }, center = true },
++					children = {
++						{
++							shape = "Cylinder",
++							axis = "z",
++							size = { 2.9, 2.9, 0.42 },
++							at = { 0, 1.45, 2.05 },
++							color = 2,
++						},
++						{
++							shape = "Cylinder",
++							axis = "z",
++							size = { 0.55, 0.55, 0.55 },
++							at = { 0, 1.45, 2.28 },
++							color = 3,
++						},
++						{
++							shape = "Block",
++							size = { 2.5, 0.2, 0.24 },
++							at = { 0, 1.45, 2.3 },
++							rot = { 0, 0, 45 },
++							color = 3,
++						},
++					} :: { Node },
++				},
++				{
++					name = "hoops",
++					row = { count = 2, step = { 2.6, 0, 0 }, center = true },
++					children = {
++						{ shape = "Block", size = { 0.24, 1.7, 0.32 }, at = { 0, 2.35, 2.0 }, rot = { 180, 0, 0 } },
++						{ shape = "Block", size = { 0.24, 1.7, 0.32 }, at = { 0, 3.76, 1.41 }, rot = { 135, 0, 0 } },
++						{
++							shape = "Block",
++							size = { 0.24, 1.7, 0.32 },
++							at = { 0, 4.35, 0 },
++							rot = { 90, 0, 0 },
++							chance = 0.7,
++						},
++					} :: { Node },
++				},
++				{
++					name = "canvas",
++					shape = "Block",
++					size = { 2.2, 1.4, 0.1 },
++					at = { 0.8, 3.7, 1.9 },
++					rot = { 14, 0, -6 },
++					color = 4,
++					chance = 0.6,
++				},
++			} :: { Node },
++		},
++	} :: { Node },
++}
++
++-- The dead caravan's fire, banked in the ash: a ring of charred stones round a
++-- low mound of coals, one or two of them still warm enough to glow. Low and
++-- wide, so the ember light has a body under it and the lantern-hook has a fire
++-- to hang over. The zone's only warm light (B2), and it is nearly out.
++Sculpts.waste_caravan_fire = {
++	kind = "assembly",
++	size = { 3.3, 0.7, 3.3 },
++	material = "Slate",
++	colors = { { 40, 38, 40 }, { 62, 58, 64 }, { 100, 76, 62 }, { 84, 60, 52 } },
++	materials = { [1] = "Slate", [2] = "Rock", [3] = "Neon", [4] = "Neon" },
++	maxPrims = 16,
++	parts = {
++		{
++			name = "stones",
++			ring = { count = 7, radius = 1.2, start = 20, tilt = 8 },
++			children = {
++				{
++					shape = "Block",
++					size = { 0.85, 0.55, 0.7 },
++					at = { 0, 0.27, 0 },
++					color = 2,
++					jitter = { at = { 0.08, 0.04, 0.08 }, rot = { 0, 12, 0 } },
++				},
++			} :: { Node },
++		},
++		{
++			name = "ash",
++			shape = "Block",
++			size = { 1.7, 0.24, 1.2 },
++			at = { 0, 0.12, 0 },
++			rot = { 0, 18, 0 },
++			color = 1,
++		},
++		{
++			name = "coal1",
++			shape = "Block",
++			size = { 0.62, 0.34, 0.52 },
++			at = { 0.1, 0.26, 0.05 },
++			rot = { 0, 24, 0 },
++			color = 3,
++		},
++		{
++			name = "coal2",
++			shape = "Block",
++			size = { 0.5, 0.28, 0.44 },
++			at = { -0.4, 0.23, 0.28 },
++			rot = { 0, -16, 0 },
++			color = 4,
++		},
++		{
++			name = "coal3",
++			shape = "Block",
++			size = { 0.4, 0.24, 0.36 },
++			at = { 0.45, 0.21, -0.35 },
++			rot = { 0, 40, 0 },
++			color = 3,
++		},
++		{
++			name = "coal4",
++			shape = "Block",
++			size = { 0.34, 0.2, 0.3 },
++			at = { -0.1, 0.2, -0.3 },
++			rot = { 0, -32, 0 },
++			color = 4,
++		},
++		{
++			name = "stick",
++			shape = "Block",
++			size = { 0.7, 0.16, 0.12 },
++			at = { -0.1, 0.16, 0.55 },
++			rot = { 0, 70, 0 },
++			color = 1,
++		},
++	} :: { Node },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 822a6a8e..608eb20d 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -5027,4 +5027,59 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Wasteland's buried caravan (WasteBuriedCaravan): ash sliding off the
++-- dune crest and falling down its lee face past the wreck, a pale sheet of it
++-- with glass grit falling through. Two layers, four emitters each on a short
++-- path: a feature may place two, and a phone's set-piece share is small. The
++-- emitters fall, so the path is only a line along the crest to pour from.
++recipes.waste_ashfall = {
++	about = "Ash sliding off a dune crest down its lee face in a pale violet sheet, glass grit falling through it.",
++	theme = "ashwind",
++	path = { kind = "worm", length = 10, step = 2.5, bend = 4, climb = 2, round = 2 },
++	layers = {
++		{
++			name = "sheet",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 10,
++				lift = 2,
++				toward = "down",
++				rise = 6,
++				life = { 3.5, 5 },
++				rate = 5,
++				size = 4.5,
++				tall = 2.4,
++				transparency = 0.78,
++				color = "ash",
++				texture = "smoke",
++				lean = 6,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2.5, tilt = 5, span = 18, periods = { 7, 11 } },
++			priority = 1,
++		},
++		{
++			name = "grit",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 6,
++				lift = 1,
++				toward = "down",
++				rise = 7,
++				life = { 2, 3 },
++				rate = 9,
++				size = 0.65,
++				tall = 1,
++				transparency = 0.45,
++				color = "grit",
++				lean = 8,
++				vary = 0.3,
++			},
++			priority = 2,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 822077f0..7b7efed2 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -229,6 +229,36 @@ local rows: { [string]: Row } = {
+ 		"A fallen outer gate of the Labyrinth gate's brick, one side of its lintel down.",
+ 		MOOR
+ 	),
++	-- The Wasteland's buried caravan (WasteBuriedCaravan)
++	["sculpt:waste_wagon"] = row(
++		"A cargo wagon the Wasteland dune rolled over: a timber bed on four iron-tyred wheels under three bent canopy hoops and a torn canvas.",
++		MOOR
++	),
++	["sculpt:waste_wagon_ribs"] = row(
++		"A wagon's canopy frame left in the ash, its bed and canvas gone and one rib's crown snapped out.",
++		MOOR
++	),
++	["sculpt:waste_wheel"] = row(
++		"A wagon wheel standing and leaning where it came to rest in the Wasteland's ash.",
++		MOOR
++	),
++	["sculpt:waste_wheel_flat"] = row("A wagon wheel fallen flat and half sunk in the Wasteland's ash.", MOOR),
++	["sculpt:waste_crate"] = row(
++		"A cargo crate burst open where it fell, its dark inside showing and violet glass spilled out.",
++		MOOR
++	),
++	["sculpt:waste_lantern_hook"] = row(
++		"A leaning iron lantern-hook with a broken cage still hanging, the dead caravan's one warm coal.",
++		MOOR
++	),
++	["sculpt:waste_wagon_tipped"] = row(
++		"A wagon rolled onto its side where the Wasteland dune took it, its uphill wheels in the air and its downhill half under the ash.",
++		MOOR
++	),
++	["sculpt:waste_caravan_fire"] = row(
++		"The dead caravan's fire banked in a ring of charred stones, one or two coals still glowing under the ash.",
++		MOOR
++	),
+ 	-- data/RunRecipes
+ 	["run:moor_field_wall"] = row("A dry-stone field wall run along the moor's old field edges.", MOOR),
+ 	["run:moor_retaining_wall"] = row(
+diff --git a/src/shared/systems/features/WasteBuriedCaravan.luau b/src/shared/systems/features/WasteBuriedCaravan.luau
+new file mode 100644
+index 00000000..52f1c5c4
+--- /dev/null
++++ b/src/shared/systems/features/WasteBuriedCaravan.luau
+@@ -0,0 +1,645 @@
++--!strict
++-- WasteBuriedCaravan: a caravan the dune rolled over on the Wasteland's ash.
++-- A long pale dune ridge lies along the road; its lee face is cut open around a
++-- line of wagons half swallowed in the ash, their canopy ribs and wheels and a
++-- torn canopy breaking the slope, crates spilled down toward the road, one dead
++-- lantern-hook still hanging over a banked ember, and ash pouring off the crest.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure, the rest only dress it:
++--   1. the dune's massing: one unbroken bank filling to the far border, or a
++--      free ridge with walkable windward ground behind it, cut by one wind gap
++--      or two (a free ridge always has a gap, so its two sides join up);
++--   2. the road: along the lee foot from west to east (or east to west), or
++--      turning up through a wind gap and out at the far border;
++--   3. the caravan: a long train, jackknifed at the head, a scattered wreck, or
++--      two rows (one buried high on the face, one spilled low);
++--   4. the burial: deep (only rib frames and wheels break the ash), half, or
++--      shallow (wagon beds and torn canopies stand proud);
++--   5. the lee: 0-3 residual dune knobs for cover, the spill fan's reach, and
++--      the glass crust patches.
++-- Size, the ridge's bow, the crest's height and the road's own bend dress it.
++-- Everything stands on the game's own wasteland kit (waste_* sculpts and glass)
++-- and the lee's own new wreck: wagon, ribs, wheels, crate, lantern-hook.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++type Wreck = { x: number, zi: number, extra: number, scale: number, ribs: boolean, tipped: boolean, expo: string }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function roundHalf(h: number): number
++	return math.floor(h * 2 + 0.5) / 2
++end
++
++local SHAPES = { "straight", "bowed", "s-bend" }
++local CARAVANS = { "train", "jackknife", "scatter", "double" }
++local EXPOSURES = { "deep", "half", "shallow" }
++
++-- How much of a wreck shows over the ground it stands on, by burial: the rest is
++-- inside the dune. Every wreck is sunk axle-deep at least; a deep one is only
++-- ribs and a wheel rim above the slope.
++local SHOW: { [string]: { wagon: { number }, ribs: { number } } } = {
++	deep = { wagon = { 0.9, 1.5 }, ribs = { 1.0, 1.6 } },
++	half = { wagon = { 1.5, 2.2 }, ribs = { 1.6, 2.3 } },
++	shallow = { wagon = { 2.2, 3.0 }, ribs = { 2.3, 3.0 } },
++}
++-- The chance a wreck has lost its whole body and only the canopy frame shows: the
++-- ribs are the main piece, a whole (or tipped) wagon the rare one.
++local RIB_CHANCE: { [string]: number } = { deep = 0.85, half = 0.7, shallow = 0.5 }
++
++-- The dune is the tileset's own ash (Sand in ASH's colour, so it reads like the
++-- ground it rises from), and the lee below it a darker packed ash in the tileset's
++-- PACKED vein (Rock is a ground the wasteland leaves free). The dark wreck then
++-- reads against the pale slope, and the one ember against the lee.
++local DUNE_GROUND = { material = "Sand", color = { 82, 80, 88 } }
++local LEE_GROUND = { material = "Rock", color = { 56, 54, 62 } }
++-- The one warm light here: the ember the dead lantern dropped in the ash.
++local EMBER = { 255, 166, 96 }
++
++local feature: MapFeature.Feature = {
++	name = "WasteBuriedCaravan",
++	about = "A caravan the dune rolled over: wagon ribs and wheels breaking from the lee face, crates spilled down the ash, one dead lantern-hook over a banked ember.",
++	tileset = "wasteland",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "buried", "wind-scoured", "wreck", "one ember" },
++	cells = {
++		-- The dune's own ash, with a rare crust of fused glass on it.
++		dune = {
++			ground = DUNE_GROUND,
++			clear = true,
++			props = { { sculpt = "waste_glass_crust", every = 40, scale = { 0.35, 0.6 }, sink = 0.7 } },
++		},
++		-- The wind-packed floor the caravan lies on.
++		lee = { ground = LEE_GROUND, clear = true },
++		-- The strip of ground behind a free ridge, kept apart from the lee.
++		windward = {
++			ground = LEE_GROUND,
++			clear = true,
++			props = { { sculpt = "waste_glass_low", every = 30, scale = { 0.3, 0.5 }, sink = 0.6 } },
++		},
++		-- A wind gap cut through the ridge: bare packed sand.
++		pass = { ground = LEE_GROUND, clear = true },
++		-- Where a wagon broke: crates tumbled out over the ash.
++		spill = {
++			ground = LEE_GROUND,
++			clear = true,
++			props = { { sculpt = "waste_crate", every = 5, scale = { 0.55, 0.8 }, sink = 0.3 } },
++		},
++		-- A patch of glass fused out of the ash, the zone's accent.
++		glass = {
++			ground = LEE_GROUND,
++			clear = true,
++			props = {
++				{ sculpt = "waste_glass_crust", every = 3, scale = { 0.35, 0.6 }, sink = 0.5 },
++				{ sculpt = "waste_glass_low", every = 5, scale = { 0.35, 0.55 }, sink = 0.6 },
++			},
++		},
++		-- The banked ember under the dead lantern: the one warm light.
++		ember = {
++			ground = LEE_GROUND,
++			clear = true,
++			glow = { color = EMBER, range = 15, brightness = 1.7, every = 1, height = 1.6 },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-5: the structure, first.
++		local masses = whole(rng, 1, 3)
++		local shape = SHAPES[whole(rng, 1, #SHAPES)]
++		local caravan = CARAVANS[whole(rng, 1, #CARAVANS)]
++		local exposure = EXPOSURES[whole(rng, 1, #EXPOSURES)]
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++		local form = if masses > 1 and rng:NextNumber() < 0.55 then "free" else "bank"
++		local usePass = masses > 1 and rng:NextNumber() < 0.55
++		local enterWest = rng:NextNumber() < 0.5
++		local islandCount = whole(rng, 0, 3)
++		local w = whole(rng, 26, 32)
++		local d = whole(rng, 26, 32)
++
++		-- Size, the ridge's bow, the crest's height, the apron's depth.
++		local footBase = between(rng, 8, 16)
++		local footAmp = if shape == "straight" then between(rng, 0, 0.8) else between(rng, 2, 5)
++		local footWaves = if shape == "s-bend" then 2 else 1
++		local footPhase = between(rng, 0, 2 * math.pi)
++		local minFoot, maxFoot = 6, d - 9
++		local function footAt(x: number): number
++			local t = (x - 1) / (w - 1)
++			local v = footBase + footAmp * math.sin(footWaves * 2 * math.pi * t + footPhase)
++			return math.clamp(v, minFoot, maxFoot)
++		end
++		local crestBase = between(rng, 10, 17)
++		local crestAmp = between(rng, 0.5, 3)
++		local crestWaves = whole(rng, 1, 2)
++		local crestPhase = between(rng, 0, 2 * math.pi)
++		local function crestAt(x: number): number
++			local t = (x - 1) / (w - 1)
++			return crestBase + crestAmp * math.sin(crestWaves * 2 * math.pi * t + crestPhase)
++		end
++		local nearEdge = 1
++		if form == "free" then
++			nearEdge = math.min(whole(rng, 3, 6), math.max(2, math.floor(footBase) - 6))
++		end
++		-- The crest sits a few cells behind the lee foot: a short steep slip face
++		-- toward the road and a long shallow back behind it, so every seed has one
++		-- clear crest line instead of a slope of fine terraces.
++		local crestDist = whole(rng, 2, 4)
++		local farH = between(rng, 2.5, 4)
++		local footH = between(rng, 3, 4)
++
++		-- Wind gaps: cuts through the ridge that the road may take.
++		local gaps: { { number } } = {}
++		if masses == 2 then
++			local gw = whole(rng, 4, 6)
++			local centre = whole(rng, math.floor(w * 0.32), math.floor(w * 0.68))
++			table.insert(
++				gaps,
++				{ math.max(4, centre - math.floor(gw / 2)), math.min(w - 3, centre + math.ceil(gw / 2)) }
++			)
++		elseif masses == 3 then
++			local gw = whole(rng, 3, 5)
++			local c1 = whole(rng, math.floor(w * 0.20), math.floor(w * 0.34))
++			local c2 = whole(rng, math.floor(w * 0.66), math.floor(w * 0.80))
++			table.insert(gaps, { math.max(3, c1 - gw), math.min(w - 3, c1 + gw) })
++			table.insert(gaps, { math.max(3, c2 - gw), math.min(w - 3, c2 + gw) })
++		end
++		local function inGap(x: number): boolean
++			for _, g in gaps do
++				if x >= g[1] and x <= g[2] then
++					return true
++				end
++			end
++			return false
++		end
++
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		-- The dune frame's z (1 at the dune-side border) as the footprint's z.
++		local function zOf(zi: number): number
++			return if side == 1 then zi else d + 1 - zi
++		end
++		local function cellAt(x: number, zi: number): number
++			return at(x, math.clamp(math.floor(zOf(zi) + 0.5), 1, d))
++		end
++
++		-- The ridge's cross-section: a foot wall, a crest, and a far edge.
++		local function duneHeight(x: number, zi: number, f: number): number
++			local dist = f - zi
++			local maxDist = f - nearEdge
++			if maxDist <= 0 then
++				return roundHalf(footH)
++			end
++			local rise = math.min(crestDist, math.max(1, maxDist - 1))
++			local crest = crestAt(x)
++			if dist <= rise then
++				return roundHalf(footH + (crest - footH) * (dist / rise) ^ 0.8)
++			end
++			local t = math.min(1, (dist - rise) / math.max(0.001, maxDist - rise))
++			return roundHalf(crest - (crest - farH) * t ^ 1.1)
++		end
++
++		-- Lay the ridge and the ground either side of it.
++		for x = 1, w do
++			local f = math.floor(footAt(x) + 0.5)
++			local gap = inGap(x)
++			for zi = 1, d do
++				local i = cellAt(x, zi)
++				if zi < nearEdge then
++					walk[i] = true
++					heights[i] = if zi >= nearEdge - 2 then 1 else 0
++					kinds[i] = "windward"
++				elseif zi <= f then
++					if gap then
++						walk[i] = true
++						heights[i] = if zi >= f - 2 then 2 elseif zi >= f - 4 then 1 else 0
++						kinds[i] = "pass"
++					else
++						walk[i] = false
++						heights[i] = duneHeight(x, zi, f)
++						kinds[i] = "dune"
++					end
++				else
++					walk[i] = true
++					heights[i] = if zi - f >= 4 then 0 elseif zi - f >= 2 then 1 else 2
++					kinds[i] = "lee"
++				end
++			end
++		end
++
++		-- The road's way, sampled before the knobs so nothing is stood in its way.
++		local offset = between(rng, 4.5, 6.5)
++		local roadPhase = between(rng, 0, 2 * math.pi)
++		local function roadZ(x: number): number
++			local v = footAt(x) + offset + 0.9 * math.sin(x / w * math.pi * 1.5 + roadPhase)
++			return math.clamp(v, footAt(x) + 3.2, d - 1.5)
++		end
++		local skeleton: { { x: number, zi: number } } = {}
++		local passGapIndex = 0
++		if usePass and #gaps > 0 then
++			passGapIndex = whole(rng, 1, #gaps)
++		end
++		local fromX = if enterWest then 1 else w
++		local toX = if enterWest then w else 1
++		if passGapIndex > 0 then
++			local gap = gaps[passGapIndex]
++			local centre = math.floor((gap[1] + gap[2]) / 2)
++			local stepX = if enterWest then 3 else -3
++			local x = fromX
++			while (enterWest and x < centre) or (not enterWest and x > centre) do
++				table.insert(skeleton, { x = x, zi = roadZ(x) })
++				x += stepX
++			end
++			table.insert(skeleton, { x = centre, zi = roadZ(centre) })
++			local z = math.floor(roadZ(centre)) - 2
++			while z > 2 do
++				table.insert(skeleton, { x = centre, zi = z })
++				z -= 3
++			end
++			table.insert(skeleton, { x = centre, zi = 1 })
++		else
++			local stepX = if enterWest then 3 else -3
++			local x = fromX
++			while (enterWest and x < w) or (not enterWest and x > 1) do
++				table.insert(skeleton, { x = x, zi = roadZ(x) })
++				x += stepX
++			end
++			table.insert(skeleton, { x = toX, zi = roadZ(toX) })
++		end
++
++		-- Residual dune knobs in the lee: the fight's cover, 0-3 of them.
++		local islands: { { x: number, zi: number, rx: number, rz: number, h: number } } = {}
++		local tries = 0
++		while #islands < islandCount and tries < 40 do
++			tries += 1
++			local x = whole(rng, 5, w - 4)
++			local rx = whole(rng, 1, 2)
++			local rz = whole(rng, 1, 2)
++			local zi = math.floor(footAt(x) + between(rng, 3.5, 6.5) + 0.5)
++			local ok = zi > footAt(x) + 2.5 and zi < d - 2
++			if inGap(x) then
++				ok = false
++			end
++			for _, g in gaps do
++				if x + rx + 1 >= g[1] and x - rx - 1 <= g[2] then
++					ok = false
++				end
++			end
++			for _, o in islands do
++				if math.abs(o.x - x) <= o.rx + rx + 2 and math.abs(o.zi - zi) <= o.rz + rz + 2 then
++					ok = false
++				end
++			end
++			for _, p in skeleton do
++				if math.abs(p.x - x) <= rx + 2 and math.abs(p.zi - zi) <= rz + 2 then
++					ok = false
++				end
++			end
++			if ok then
++				table.insert(islands, { x = x, zi = zi, rx = rx, rz = rz, h = between(rng, 2.5, 5) })
++			end
++		end
++		for _, o in islands do
++			for dx = -o.rx, o.rx do
++				for dz = -o.rz, o.rz do
++					local x, zi = o.x + dx, o.zi + dz
++					if x >= 2 and x <= w - 1 and zi >= 2 and zi <= d - 1 and not (dx == o.rx and dz == o.rz) then
++						local i = cellAt(x, zi)
++						if zi > footAt(x) + 1.5 then
++							walk[i] = false
++							heights[i] = roundHalf(o.h * (1 - 0.25 * (math.abs(dx) / o.rx + math.abs(dz) / o.rz)))
++							kinds[i] = "dune"
++						end
++					end
++				end
++			end
++		end
++
++		local function walkableAt(x: number, zi: number): boolean
++			local cx = math.clamp(math.floor(x + 0.5), 1, w)
++			local cz = math.clamp(math.floor(zOf(zi) + 0.5), 1, d)
++			return walk[at(cx, cz)] == true
++		end
++
++		-- The caravan: where each wreck lies along the foot.
++		local yawAt = function(x: number, extra: number): number
++			local dzDune = (footAt(x + 1) - footAt(x - 1)) / 2
++			local dz = if side == 1 then dzDune else -dzDune
++			return math.deg(math.atan2(-dz, 1)) + extra
++		end
++		local wrecks: { Wreck } = {}
++		local count = if caravan == "double" then whole(rng, 5, 6) else whole(rng, 4, 6)
++		local firstX = between(rng, 6, 9)
++		local lastX = w - between(rng, 5, 7)
++		local function clearOfGaps(x: number): boolean
++			for _, g in gaps do
++				if x >= g[1] - 2.5 and x <= g[2] + 2.5 then
++					return false
++				end
++			end
++			return true
++		end
++		for k = 1, count do
++			local x = if count > 1 then firstX + (lastX - firstX) * (k - 1) / (count - 1) else (firstX + lastX) / 2
++			local attempt = 0
++			while (x < 3 or x > w - 2 or not clearOfGaps(x)) and attempt < 12 do
++				x += between(rng, -2, 2)
++				attempt += 1
++			end
++			if x >= 3 and x <= w - 2 and clearOfGaps(x) then
++				local extra = 0
++				local zOff
++				local expo = if caravan == "double" and k % 2 == 1 then "deep" else exposure
++				if caravan == "jackknife" and k == 1 then
++					extra = if rng:NextNumber() < 0.5 then between(rng, 35, 70) else -between(rng, 35, 70)
++					zOff = between(rng, 2.5, 4.5)
++				elseif caravan == "scatter" then
++					extra = between(rng, -40, 40)
++					zOff = between(rng, 0.0, 3.0)
++				elseif caravan == "double" then
++					zOff = if k % 2 == 1 then between(rng, -0.8, 0.2) else between(rng, 2.2, 4.0)
++				else
++					zOff = between(rng, -0.4, 0.8)
++				end
++				local ribs = rng:NextNumber() < RIB_CHANCE[expo]
++				local tipped = not ribs and rng:NextNumber() < 0.5
++				table.insert(wrecks, {
++					x = x,
++					zi = footAt(x) + zOff,
++					extra = extra,
++					scale = between(rng, 1.0, 1.24),
++					ribs = ribs,
++					tipped = tipped,
++					expo = expo,
++				})
++			end
++		end
++		if #wrecks == 0 then
++			table.insert(wrecks, {
++				x = w / 2,
++				zi = footAt(w / 2) + 0.5,
++				extra = 0,
++				scale = 1.1,
++				ribs = false,
++				tipped = false,
++				expo = exposure,
++			})
++		end
++
++		-- Place the wrecks, and with them wheels, crates and the lantern.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local function addMark(
++			sculpt: string,
++			x: number,
++			zi: number,
++			yaw: number,
++			scale: number,
++			sink: number,
++			solid: boolean
++		)
++			table.insert(marks, {
++				sculpt = sculpt,
++				x = x,
++				z = zOf(zi),
++				yaw = yaw,
++				scale = scale,
++				sink = sink,
++				solid = solid,
++			})
++		end
++		local spillSources: { { x: number, zi: number } } = {}
++		local mainWreck = wrecks[math.floor(#wrecks / 2) + 1]
++		for k, wreck in wrecks do
++			local yaw = yawAt(wreck.x, wreck.extra)
++			local height = if wreck.ribs then 3.9 elseif wreck.tipped then 5.6 else 4.8
++			local showRange = if wreck.ribs then SHOW[wreck.expo].ribs else SHOW[wreck.expo].wagon
++			local show = between(rng, showRange[1], showRange[2])
++			-- The tipped wagon is already half under the ground it was built on;
++			-- the upright ones are sunk until the wheels are buried.
++			local sink = if wreck.tipped then between(rng, 0.6, 1.2) else math.max(0, height * wreck.scale - show)
++			addMark(
++				if wreck.ribs then "waste_wagon_ribs" elseif wreck.tipped then "waste_wagon_tipped" else "waste_wagon",
++				wreck.x,
++				wreck.zi,
++				yaw,
++				wreck.scale,
++				sink,
++				true
++			)
++			if wreck.ribs then
++				-- Now and then a single wheel rim breaks the ash beside the ribs.
++				if rng:NextNumber() < 0.6 then
++					local wx = wreck.x + between(rng, -2.4, 2.4)
++					local wzi = footAt(wx) + between(rng, 1.0, 2.2)
++					if rng:NextNumber() < 0.25 then
++						addMark(
++							"waste_wheel_flat",
++							wx,
++							wzi,
++							between(rng, 0, 360),
++							between(rng, 0.6, 0.85),
++							between(rng, 0.3, 0.55),
++							false
++						)
++					else
++						addMark(
++							"waste_wheel",
++							wx,
++							wzi,
++							between(rng, 0, 360),
++							between(rng, 0.65, 0.9),
++							between(rng, 1.5, 2.2),
++							false
++						)
++					end
++				end
++			elseif rng:NextNumber() < 0.3 then
++				-- One loose wheel at a wagon's end, mostly sunk.
++				local wx = wreck.x + between(rng, -3.0, -1.8) * (if rng:NextNumber() < 0.5 then 1 else -1)
++				addMark(
++					if rng:NextNumber() < 0.4 then "waste_wheel_flat" else "waste_wheel",
++					wx,
++					footAt(wx) + between(rng, 1.0, 2.0),
++					between(rng, 0, 360),
++					between(rng, 0.7, 1.0),
++					if rng:NextNumber() < 0.5 then between(rng, 0.3, 0.6) else between(rng, 1.3, 2.0),
++					false
++				)
++			end
++			if k % 2 == 1 or #wrecks <= 2 then
++				table.insert(spillSources, { x = wreck.x + between(rng, -1.2, 1.2), zi = wreck.zi })
++			end
++		end
++
++		-- The spill fan: crates down the slope from the wrecks that broke open,
++		-- always one from the middle wagon where the fire is.
++		table.insert(spillSources, { x = mainWreck.x, zi = mainWreck.zi })
++		local spillCount = math.min(#spillSources, whole(rng, 1, 4))
++		for s = 1, spillCount do
++			local src = spillSources[s]
++			local depth = whole(rng, 3, 6)
++			for dx = -3, 3 do
++				for dz = 1, depth do
++					local reach = dz * 0.9
++					if math.abs(dx) <= reach and rng:NextNumber() < 0.72 then
++						local x = math.floor(src.x + dx + 0.5)
++						local zi = math.floor(src.zi + dz + 0.5)
++						if x >= 1 and x <= w and zi >= 1 and zi <= d and walkableAt(x, zi) then
++							local i = cellAt(x, zi)
++							if kinds[i] ~= "ember" then
++								kinds[i] = "spill"
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- Glass fused out of the ash: a few crusted patches on the lee.
++		for _ = 1, whole(rng, 1, 2) do
++			local cx = whole(rng, 4, w - 3)
++			local czi = footAt(cx) + between(rng, 1.2, 3.8)
++			local r = between(rng, 0.9, 1.7)
++			for dx = -3, 3 do
++				for dz = -2, 2 do
++					if (dx * dx + dz * dz) <= r * r and rng:NextNumber() < 0.62 then
++						local x, zi = cx + dx, math.floor(czi + dz + 0.5)
++						if x >= 1 and x <= w and zi >= 1 and zi <= d and walkableAt(x, zi) then
++							local i = cellAt(x, zi)
++							if kinds[i] == "lee" or kinds[i] == "spill" then
++								kinds[i] = "glass"
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- The one point the scene is about: the caravan's fire at the foot of the
++		-- slip face, ringed by spilled crates, its lantern-hook leaning over it and
++		-- the ash pouring off the crest directly above. Fire, hook and fall line up
++		-- on one spot to fight around.
++		local spotX = math.clamp(mainWreck.x + between(rng, 1.6, 2.8), 3, w - 3)
++		local spotZi = footAt(spotX) + between(rng, 1.2, 1.9)
++		for _ = 1, 8 do
++			if walkableAt(spotX, spotZi) then
++				break
++			end
++			spotZi += 0.6
++		end
++		addMark("waste_caravan_fire", spotX, spotZi, between(rng, 0, 360), between(rng, 1.2, 1.4), 0.15, false)
++		-- The lantern-hook leans over the fire.
++		local lanternX = math.clamp(spotX + between(rng, 1.1, 1.9), 2, w - 1)
++		local lanternZi = spotZi + between(rng, -0.3, 0.3)
++		for _ = 1, 8 do
++			if walkableAt(lanternX, lanternZi) then
++				break
++			end
++			lanternZi += 0.5
++		end
++		addMark("waste_lantern_hook", lanternX, lanternZi, between(rng, 0, 360), between(rng, 0.95, 1.1), 0, false)
++		-- The banked coals' light: one warm cell under the fire, not a row.
++		local tryZi = spotZi
++		for _ = 1, 6 do
++			local i = cellAt(spotX, tryZi)
++			if walk[i] then
++				kinds[i] = "ember"
++				break
++			end
++			tryZi += 0.6
++		end
++		-- Crates spilled in a ring around the fire.
++		local crateCount = whole(rng, 4, 5)
++		local firstA = between(rng, 0, 2 * math.pi)
++		for c = 1, crateCount do
++			local a = firstA + (c - 1) * 2 * math.pi / crateCount + between(rng, -0.2, 0.2)
++			local r = between(rng, 1.3, 2.2)
++			local cx = spotX + math.cos(a) * r
++			local czi = spotZi + math.sin(a) * r * 0.8
++			if walkableAt(cx, czi) then
++				addMark(
++					"waste_crate",
++					cx,
++					czi,
++					between(rng, 0, 360),
++					between(rng, 0.55, 0.8),
++					between(rng, 0.15, 0.4),
++					false
++				)
++			end
++		end
++		-- Ash pours off the crest above the fire.
++		local function crestRow(x: number): number
++			return math.max(nearEdge + 1, math.floor(footAt(x) - crestDist))
++		end
++		local crestX = math.clamp(spotX, 2, w - 1)
++		table.insert(effects, { recipe = "waste_ashfall", x = crestX, z = zOf(crestRow(crestX)), lift = 1 })
++		if rng:NextNumber() < 0.35 then
++			local x2 = math.clamp(spotX + between(rng, -8, 8), 2, w - 1)
++			table.insert(effects, { recipe = "waste_ashfall", x = x2, z = zOf(crestRow(x2)), lift = 1 })
++		end
++		-- The fire's own thin smoke, leaning away on the wind.
++		table.insert(effects, { recipe = "waste_caravan_smoke", x = spotX, z = zOf(spotZi), lift = 0.3 })
++
++		-- The road itself, on walkable cells; clear a cell rather than break one.
++		local road: { Point } = {}
++		for _, p in skeleton do
++			local cx = math.clamp(math.floor(p.x + 0.5), 1, w)
++			local cz = math.clamp(math.floor(zOf(p.zi) + 0.5), 1, d)
++			local i = at(cx, cz)
++			if not walk[i] then
++				walk[i] = true
++				heights[i] = 0
++				kinds[i] = "lee"
++			end
++			table.insert(road, { x = cx, z = cz })
++		end
++
++		-- The photograph: close on the fire from the lee, then down the wreck line
++		-- to the gate (the shot the first critic kept).
++		local camFromX = math.clamp(spotX - 2.6, 2.5, w - 2)
++		local camFromZ = math.min(d - 1.5, spotZi + 2.0)
++		local lineFromX = math.clamp(w * 0.10, 2, w - 6)
++		local lineFromZ = math.min(d - 1.5, footAt(lineFromX) + offset + 3.0)
++		local lineToX = math.clamp(w * 0.62, 4, w - 4)
++		local lineToZ = footAt(lineToX) + 1.0
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "the fire on the lee",
++					from = { x = camFromX, z = zOf(camFromZ), lift = 3.6 },
++					to = { x = spotX, z = zOf(spotZi - 0.2), lift = 1.1 },
++					fov = 62,
++				},
++				{
++					name = "down the wreck line to the gate",
++					from = { x = lineFromX, z = zOf(lineFromZ), lift = 8 },
++					to = { x = lineToX, z = zOf(lineToZ), lift = 3.8 },
++					fov = 60,
++				},
++			},
++		}
++	end,
++}
++
++return feature

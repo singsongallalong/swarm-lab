@@ -1,0 +1,7 @@
+# B: colossus hand (critique, pass 2)
+
+Keep: the plan. From the top every seed reads as a hand (palm, spread fingers, wrist ramp), and the knuckle sculpt with glass rods growing out of it is the best close-up detail you have. The rising motes column is a good effect for the one bright place.
+
+1. **Up close the fingers read as violet towers, not stone fingers.** In "off the fingertips at the palm" every finger is a tall straight violet box, so the shot is a forest of purple pillars. Make the fingers dark rock (the mesas' stone), lower, and visibly jointed with a bend at each knuckle, tapering toward the tip; keep violet only on the palm and the glass at the knuckles. The violet should be the accent, and right now it covers half the frame.
+2. **The palm is a flat violet slab from the game camera.** "The game camera over it" shows a large plain purple floor with a few chips. Cup the palm: a raised rim at the heel and the finger roots, a shallow dip in the middle where the spire and motes stand, a few glass growths on the rim, so there is something to look at from above and the fight ring has an edge.
+3. **Seeds are one hand turned.** Vary more than rotation and finger count: a hand half sunk with only two fingers and the palm edge showing, a hand on its side with the palm as a wall, a fist-closed seed whose curled fingers make a horseshoe. That changes the paths through it, which a rotated hand doesn't.

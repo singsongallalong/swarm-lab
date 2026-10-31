@@ -1,0 +1,14 @@
+{
+  "weights": {"idea": 3, "photo": 2.5, "topology": 2, "look": 1, "camera": 0.75, "usable": 0.75},
+  "A": {"idea": 6, "photo": 5.5, "topology": 6, "look": 5, "camera": 4, "usable": 6, "total": 5.63,
+        "best_shot": "feature-shots seed 3, the fire on the lee",
+        "why": "The best prop kit (wagon, ribs, wheel, hook, fire), but the dune is stacked rectangles and the fire is lost from the game camera."},
+  "B": {"idea": 7, "photo": 5.5, "topology": 5, "look": 5, "camera": 5, "usable": 6, "total": 5.8,
+        "best_shot": "feature-shots seed 1, over the wrist dune at the whole hand",
+        "why": "A strong idea and a hand that reads in plan, but up close the fingers are purple towers, the palm is a flat violet slab, and the seeds are one hand turned."},
+  "C": {"idea": 7, "photo": 7, "topology": 5.5, "look": 6, "camera": 5.5, "usable": 6.5, "total": 6.45,
+        "best_shot": "feature-shots seed 1, the frozen splash",
+        "why": "The best photograph in the round (a sunk glass floor, a splash of needles, a terraced lip) and its own effect, but too much bright violet floor, the core blocks the game camera, and the seeds vary little."},
+  "ranking": ["C", "B", "A"],
+  "notes": "Pass 2. C leads on the frozen-splash shot and the splash sculpt. B and A are close: B has the bigger idea but its violet is overdone and its fingers read as pillars; A has the best props on the weakest ground form. B and C both overuse violet against a brief that asks for a muted accent."
+}

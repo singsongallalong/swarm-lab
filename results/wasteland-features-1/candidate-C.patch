@@ -1,0 +1,1140 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 0e499725..6953d963 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -34,6 +34,7 @@ local MoorSheepfold = require("../systems/features/MoorSheepfold")
+ local MoorSinkhole = require("../systems/features/MoorSinkhole")
+ local MoorSplitBarrow = require("../systems/features/MoorSplitBarrow")
+ local MoorStrikeCrater = require("../systems/features/MoorStrikeCrater")
++local WasteGlassStrike = require("../systems/features/WasteGlassStrike")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+@@ -68,6 +69,7 @@ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	MoorPeatCutting = MoorPeatCutting,
+ 	MoorHillfort = MoorHillfort,
+ 	MoorDrownedCauseway = MoorDrownedCauseway,
++	WasteGlassStrike = WasteGlassStrike,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1d3e1b2..57a70797 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -6014,6 +6014,113 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The glass strike (map feature WasteGlassStrike): what a bolt of the Labyrinth
++-- gate's storm left when it came down on the dunes. A burst of shards frozen in
++-- the act of flying up and out of the fused glass: a tall core splinter, a ring of
++-- thrown arms leaning outward, a low ring of the splash's falling edge and a pair
++-- flung clear. Every seed throws its arms at its own heights and some of the edge
++-- lands on the ash. A person is 5 studs: the burst stands three people tall.
++Sculpts.waste_glass_splash = {
++	kind = "assembly",
++	size = { 13, 16, 13 },
++	material = "Glass",
++	colors = { { 86, 66, 100 }, { 76, 58, 90 }, { 68, 52, 82 } },
++	maxPrims = 22,
++	merge = 8,
++	parts = {
++		{
++			name = "heart shard",
++			shape = "Block",
++			size = { 1.2, 15, 1.2 },
++			at = { 0, 7.5, 0 },
++			rot = { 0, 22, 3 },
++			color = 1,
++			jitter = { rot = { 2, 0, 2 } },
++		},
++		{
++			name = "heart splinter",
++			shape = "Block",
++			size = { 0.8, 11, 0.8 },
++			at = { 0.9, 5.5, 0.2 },
++			rot = { 4, 64, -12 },
++			color = 2,
++			jitter = { rot = { 3, 0, 3 } },
++		},
++		{
++			name = "arm",
++			oneOf = {
++				{ shape = "Block", size = { 0.85, 12, 0.85 }, at = { 0, 6, 0 }, color = 2 },
++				{ shape = "Block", size = { 0.9, 9, 0.9 }, at = { 0, 4.5, 0 }, color = 3 },
++				{ shape = "Block", size = { 0.8, 6, 0.8 }, at = { 0, 3, 0 }, color = 1 },
++			} :: { SculptTypes.AssemblyNode },
++			ring = { count = 6, radius = 1.7, start = 18, tilt = 34 },
++			jitter = { rot = { 6, 0, 6 } },
++			chance = 0.92,
++		},
++		{
++			name = "edge",
++			oneOf = {
++				{ shape = "Block", size = { 1, 5, 1 }, at = { 0, 2.5, 0 }, color = 3 },
++				{ shape = "Wedge", size = { 1.2, 4, 1.2 }, at = { 0, 2, 0 }, color = 2 },
++			} :: { SculptTypes.AssemblyNode },
++			ring = { count = 5, radius = 3.1, start = 0, tilt = 58 },
++			jitter = { rot = { 8, 0, 8 }, size = 0.2 },
++			chance = 0.8,
++			fallen = 0.22,
++		},
++		{
++			name = "flung",
++			shape = "Block",
++			size = { 0.7, 6, 0.7 },
++			at = { 0, 3, 0 },
++			rot = { 0, 40, 0 },
++			color = 2,
++			ring = { count = 2, radius = 3.6, start = 70, arc = 120, tilt = 68 },
++			fallen = 0.4,
++			jitter = { rot = { 4, 0, 4 } },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- A single splinter of the same glass, for the scatter round a strike's bank: one
++-- long shard leaning out of the ash, of a height no two placements share.
++Sculpts.waste_glass_needle = {
++	kind = "columns",
++	size = { 3.0, 14, 2.6 },
++	material = "Glass",
++	colors = { { 86, 66, 100 }, { 78, 60, 92 }, { 70, 54, 84 } },
++	maxPrims = 4,
++	columns = 1,
++	jag = 0.2,
++	lean = 4,
++	merge = 8,
++}
++-- The beads of glass the bolt fused and spattered over the scorched ash: a low
++-- cluster of rounded chunks, for the close look at the crater's foot.
++Sculpts.waste_glass_bead = {
++	kind = "boulder",
++	size = { 4, 1.6, 3.4 },
++	material = "Glass",
++	colors = { { 80, 62, 98 }, { 70, 56, 86 }, { 60, 48, 74 } },
++	maxPrims = 6,
++	chunks = 4,
++	tilt = 30,
++	merge = 8,
++}
++-- The point of impact of the glass strike (map feature WasteGlassStrike): one tall
++-- fused spire standing out of the crater's floor, five people high, its crown snapped
++-- crooked. It is the thing the game camera finds at the middle of the strike.
++Sculpts.waste_glass_core = {
++	kind = "columns",
++	size = { 4.5, 26, 4 },
++	material = "Glass",
++	colors = { { 86, 66, 100 }, { 76, 58, 90 }, { 68, 52, 82 } },
++	maxPrims = 6,
++	columns = 1,
++	jag = 0.25,
++	lean = 1.5,
++	merge = 8,
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 822a6a8e..7abab3e2 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -5027,4 +5027,77 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The glass strike (map feature WasteGlassStrike): the bolt's charge still
++-- crawling over the fused glass long after it landed. Small violet arcs leap and
++-- go out in wandering patches, pale motes lift off the surface, a violet sheen
++-- breathes low over it and two cold lights carry it into the glass. The path is a
++-- short tight worm, so the crawl stays on the crater floor rather than trailing
++-- off it, and the swell fades the arcs in and out in patches instead of lighting
++-- the whole surface at once. Few emitters (about seven in the bowl) so a phone
++-- keeps it beside the map's own pieces.
++recipes.waste_glass_crawl = {
++	about = "Violet storm-sparks still crawling over a glass strike's fused surface, in wandering patches, with pale motes lifting off it.",
++	theme = "aurora",
++	path = { kind = "worm", length = 18, step = 3, bend = 26, climb = 1, round = 2 },
++	layers = {
++		{
++			name = "crawl",
++			look = { kind = "arcs", every = 3, pieces = 4, reach = 1.8, span = 2.6, width = 0.09, color = "violet" },
++			motion = { kind = "crackle", every = 0.14, swell = { wavelength = 22, speed = 3.2, depth = 0.75 } },
++			priority = 1,
++		},
++		{
++			name = "sheen",
++			look = {
++				kind = "stream",
++				every = 6,
++				thick = 6,
++				lift = 0.15,
++				toward = "up",
++				rise = 0.2,
++				life = { 4, 6 },
++				rate = 1,
++				size = 4.5,
++				-- Squashed flat: the charge lies on the glass, it does not stand.
++				tall = 0.35,
++				transparency = 0.82,
++				color = "violet",
++				texture = "veil",
++				lean = 4,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1.4, tilt = 4, span = 14, periods = { 7, 10 } },
++			priority = 2,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 4,
++				lift = 0.4,
++				toward = "up",
++				rise = 1.2,
++				life = { 2.5, 4 },
++				rate = 3,
++				size = 0.4,
++				tall = 2,
++				transparency = 0.3,
++				color = "pale",
++				texture = "wisp",
++				lean = 16,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 10, span = 10, periods = { 3.7, 5.3 } },
++			priority = 3,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 6, max = 2, range = 13, brightness = 1.1, color = "violet" },
++			motion = { kind = "pulse", period = 2.9, depth = 0.4 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 822077f0..d8ac6987 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -229,6 +229,22 @@ local rows: { [string]: Row } = {
+ 		"A fallen outer gate of the Labyrinth gate's brick, one side of its lintel down.",
+ 		MOOR
+ 	),
++	["sculpt:waste_glass_splash"] = row(
++		"A burst of violet glass shards frozen mid-throw, where a bolt of the gate's storm struck the Wasteland.",
++		MOOR
++	),
++	["sculpt:waste_glass_needle"] = row(
++		"A single tall splinter of violet storm-glass leaning out of the Wasteland's ash.",
++		MOOR
++	),
++	["sculpt:waste_glass_bead"] = row(
++		"A low cluster of fused violet glass beads spattered over the Wasteland's scorched ash.",
++		MOOR
++	),
++	["sculpt:waste_glass_core"] = row(
++		"One tall spire of violet storm-glass fused at the heart of the Wasteland's glass strike.",
++		MOOR
++	),
+ 	-- data/RunRecipes
+ 	["run:moor_field_wall"] = row("A dry-stone field wall run along the moor's old field edges.", MOOR),
+ 	["run:moor_retaining_wall"] = row(
+diff --git a/src/shared/systems/features/WasteGlassStrike.luau b/src/shared/systems/features/WasteGlassStrike.luau
+new file mode 100644
+index 00000000..be6b857b
+--- /dev/null
++++ b/src/shared/systems/features/WasteGlassStrike.luau
+@@ -0,0 +1,887 @@
++--!strict
++-- A map feature for the Wasteland: where a bolt of the Labyrinth gate's storm came
++-- down. The dunes are fused to a floor of muted violet glass, one tall spire or a dark
++-- pit marks the point of impact, a frozen splash of shattered spires stands thrown up
++-- on the side the bolt came from, the ash is scorched dark in rays, and the storm's
++-- charge still crawls over the glass. The Wasteland has glass thickets and glass
++-- crusts; it has nothing that fell out of the sky.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first,
++-- then look). The first draws choose the structure, the rest only dress it:
++--   1. the strike: a single bolt, a twin strike of two overlapping craters, a gouge
++--      ploughed through the dunes, or a ringed crater with a raised glass ridge inside;
++--   2. the frozen splash: two or three big tilted clusters, one broad fan, or a cluster
++--      and a comet tail, always massed on the bolt's side; the road's side is left open;
++--   3. the heart: one tall fused spire, a dark scorched pit, or a dark rift;
++--   4. the rim: intact, breached, shattered into arcs, or slumped into a walkable ramp;
++--   5. then the footprint's size, the crater's stretch and turn, the road's way in and
++--      out, and the scorch rays.
++-- The bowl floor is one flat sheet of glass with a short ramp up to the rim, so the
++-- road's pale line across it is the only line on it (critique: "make the glass one
++-- sheet"). Everything stands on the wasteland's own glass (waste_glass_* sculpts and a
++-- new burst of shards); the crawling sparks are a new set piece.
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++local Noise = require("../Noise")
++
++type Point = { x: number, z: number }
++type Gap = { a: number, h: number }
++
++-- One crater's frame: its centre, its stretch and turn, its flank, and how deep its
++-- flat floor sits below the rim.
++type Crater = {
++	cx: number,
++	cz: number,
++	cos: number,
++	sin: number,
++	rx: number,
++	rz: number,
++	minAxis: number,
++	rimW: number,
++	depth: number,
++	lipW: number, -- cells of ramp from the rim down to the floor
++	floorR: number, -- cells from the centre out to the flat floor's edge
++}
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- Radians between two angles, 0..pi.
++local function apart(a: number, b: number): number
++	return math.abs((a - b + math.pi) % (2 * math.pi) - math.pi)
++end
++
++local FORMS = { "bolt", "twin", "gouge", "ringed" }
++local SPLASHES = { "pair", "trio", "fan", "comet" }
++local HEARTS = { "spire", "pit", "rift" }
++local RIMS = { "intact", "breached", "shattered", "slumped" }
++
++-- Ground is a surface only, inside the bible's limits (saturation 0.50, value
++-- 0.40). The fused glass takes Ice, the rift's heat CrackedLava, the raised bank Rock
++-- and the burnt pit and ash Asphalt: none of them is a material the wasteland tileset
++-- already colours (Sand, Limestone, Ground, Basalt, and the wall backing's Slate).
++local GLASS = { material = "Ice", color = { 80, 62, 100 } }
++local CRACK = { material = "CrackedLava", color = { 54, 38, 68 } }
++local RIM = { material = "Rock", color = { 62, 56, 70 } }
++local SCORCH = { material = "Asphalt", color = { 28, 26, 30 } }
++-- The storm's violet, bright on purpose: it is light, not surface (bible B2).
++local VIOLET = { 186, 130, 255 }
++
++local function newCrater(
++	cx: number,
++	cz: number,
++	radius: number,
++	stretch: number,
++	turn: number,
++	rimW: number,
++	depth: number,
++	floorR: number
++): Crater
++	local rx, rz = radius * stretch, radius / stretch
++	local minAxis = math.min(rx, rz)
++	return {
++		cx = cx,
++		cz = cz,
++		cos = math.cos(turn),
++		sin = math.sin(turn),
++		rx = rx,
++		rz = rz,
++		minAxis = minAxis,
++		rimW = rimW,
++		depth = depth,
++		lipW = math.max(0.1, minAxis - floorR),
++		floorR = floorR,
++	}
++end
++
++-- Signed distance from a crater's rim in cells: negative inside the bowl.
++local function craterDist(c: Crater, x: number, z: number): number
++	local dx, dz = x - c.cx, z - c.cz
++	local lx, lz = dx * c.cos + dz * c.sin, -dx * c.sin + dz * c.cos
++	local u = math.sqrt((lx / c.rx) ^ 2 + (lz / c.rz) ^ 2)
++	return (u - 1) * c.minAxis
++end
++
++-- How far along the crater's long axis a cell sits, in its own turned cells.
++local function alongAxis(c: Crater, x: number, z: number): number
++	return (x - c.cx) * c.cos + (z - c.cz) * c.sin
++end
++
++local function craterAngle(c: Crater, x: number, z: number): number
++	return math.atan2(z - c.cz, x - c.cx)
++end
++
++-- The bowl's height at `dist` from the rim: 0 at the rim, a short ramp down, then one
++-- flat floor at -depth, so the glass shows as a single sheet.
++local function bowlHeight(c: Crater, dist: number): number
++	if dist >= 0 then
++		return 0
++	end
++	local inset = -dist
++	if inset >= c.lipW then
++		return -c.depth
++	end
++	return -c.depth * (inset / c.lipW)
++end
++
++-- A point `extra` cells outside the rim along world angle `a` (fractional cells).
++local function rimPoint(c: Crater, a: number, extra: number): Point
++	local ux, uz = math.cos(a), math.sin(a)
++	local lx, lz = ux * c.cos + uz * c.sin, -ux * c.sin + uz * c.cos
++	local u = math.sqrt((lx / c.rx) ^ 2 + (lz / c.rz) ^ 2)
++	local k = (c.minAxis + extra) / (u * c.minAxis)
++	return { x = c.cx + ux * k, z = c.cz + uz * k }
++end
++
++local function inGap(a: number, gaps: { Gap }): boolean
++	for _, g in gaps do
++		if apart(a, g.a) < g.h then
++			return true
++		end
++	end
++	return false
++end
++
++-- A coordinate on the quarter-cell grid: landmarks sit on readable fractions, so a
++-- stamped point is exactly its own position plus the footprint's offset.
++local function quarter(v: number): number
++	return math.floor(v * 4 + 0.5) / 4
++end
++
++-- A point within `w` cells of a broken line.
++local function nearLine(px: number, pz: number, points: { Point }, w: number): boolean
++	for k = 2, #points do
++		local a, b = points[k - 1], points[k]
++		local vx, vz = b.x - a.x, b.z - a.z
++		local len = vx * vx + vz * vz
++		local t = if len > 1e-9 then math.clamp(((px - a.x) * vx + (pz - a.z) * vz) / len, 0, 1) else 0
++		local qx, qz = a.x + vx * t, a.z + vz * t
++		if (px - qx) ^ 2 + (pz - qz) ^ 2 < w * w then
++			return true
++		end
++	end
++	return false
++end
++
++local feature: MapFeature.Feature = {
++	name = "WasteGlassStrike",
++	about = "Where a bolt of the Labyrinth gate's storm struck the dunes: a flat sheet of fused violet glass in a crater, with one tall spire or a dark pit at the point of impact, its shattered spires thrown up in a frozen splash on the bolt's side, the ash scorched dark in rays and the storm's charge still crawling on the glass.",
++	tileset = "wasteland",
++	scale = "medium",
++	role = "crossing",
++	mood = { "storm-struck", "glassy", "shattered", "violet", "unearthly" },
++	cells = {
++		-- The crater floor: one sheet of fused glass, a few crusts still floating in it.
++		glass = {
++			ground = GLASS,
++			lift = 0.2,
++			clear = true,
++			props = { { sculpt = "waste_glass_crust", every = 30, scale = { 0.2, 0.45 }, sink = 0.2 } },
++		},
++		-- The point of impact: a burnt pit in the glass, its heat still glowing violet.
++		pit = {
++			ground = SCORCH,
++			clear = true,
++			glow = { color = VIOLET, range = 13, brightness = 1.4, every = 5, height = 0.3 },
++		},
++		-- The rift: the same heat left open along a seam, glowing along its length.
++		crack = {
++			ground = CRACK,
++			clear = true,
++			glow = { color = VIOLET, range = 12, brightness = 1.6, every = 3, height = 0.3 },
++		},
++		-- The bank thrown up round the bowl: ash fused to a clean glassy crust.
++		rim = { ground = RIM, clear = true },
++		-- The ash scorched by the bolt: a dark halo and the rays thrown out over it.
++		scorch = {
++			ground = SCORCH,
++			lift = 0.2,
++			clear = true,
++			props = { { sculpt = "waste_glass_bead", every = 8, scale = { 0.3, 0.6 }, sink = 0.15 } },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-4: the structure, first, so the seeds differ in kind and not only in detail.
++		local form = FORMS[whole(rng, 1, #FORMS)]
++		local splash = SPLASHES[whole(rng, 1, #SPLASHES)]
++		local heart = HEARTS[whole(rng, 1, #HEARTS)]
++		local rimState = RIMS[whole(rng, 1, #RIMS)]
++
++		-- 5: the frame: how big the whole is, where it sits, how deep it goes.
++		local w, d = whole(rng, 28, 32), whole(rng, 28, 32)
++		local rimW = between(rng, 1.4, 1.9)
++		local stretch = if form == "gouge"
++			then between(rng, 1.35, 1.55)
++			elseif form == "bolt" then between(rng, 0.82, 1.2)
++			else between(rng, 0.9, 1.1)
++		local wide = math.max(stretch, 1 / stretch)
++		local half = math.min(w, d) / 2 - 0.75
++		local maxR = (half - rimW - 1.5) / wide
++		local R = between(rng, 6.4, math.max(6.5, math.min(9.8, maxR)))
++		local turn = between(rng, 0, math.pi)
++		local minAxis = R / wide
++		local floorR = math.max(3.2, math.min(minAxis - 1.8, minAxis * between(rng, 0.5, 0.66)))
++		local depth = between(rng, 2.8, math.min(7.0, (minAxis - floorR) * 1.7))
++		-- Near the middle of the footprint, so the game camera over the middle sees the
++		-- point of impact (critique: "so the game camera sees where the bolt landed").
++		local cx = (w + 1) / 2 + between(rng, -0.75, 0.75)
++		local cz = (d + 1) / 2 + between(rng, -0.75, 0.75)
++		local craters: { Crater } = { newCrater(cx, cz, R, stretch, turn, rimW, depth, floorR) }
++		local main = craters[1]
++
++		-- The road's way, and the side the heart is passed on.
++		local inAt = between(rng, 0, 2 * math.pi)
++		local outAt = inAt + math.pi + between(rng, -0.45, 0.45)
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++		local passAngle = inAt + side * math.pi / 2
++
++		-- A twin strike: a second bowl thrown out on the side away from the road's pass.
++		if form == "twin" then
++			local s2 = between(rng, 0.9, 1.1)
++			local wide2 = math.max(s2, 1 / s2)
++			local R2max = (math.min(w, d) / 2 - rimW - 1.8) / wide2
++			local R2 = math.min(R * between(rng, 0.5, 0.7), R2max)
++			local a2 = passAngle + math.pi + between(rng, -0.5, 0.5)
++			local reach = math.min(R * between(rng, 0.86, 1.0) + R2 * between(rng, 0.4, 0.62), R + R2 - 1.6)
++			local need2 = R2 * wide2 + rimW + 1.8
++			local x2 = math.clamp(cx + math.cos(a2) * reach, need2, w + 1 - need2)
++			local z2 = math.clamp(cz + math.sin(a2) * reach, need2, d + 1 - need2)
++			local dx, dz = x2 - cx, z2 - cz
++			local got = math.sqrt(dx * dx + dz * dz)
++			local most = R + R2 - 1.6
++			if got > most and got > 1e-6 then
++				x2 = cx + dx / got * most
++				z2 = cz + dz / got * most
++			end
++			x2 = math.clamp(x2, need2, w + 1 - need2)
++			z2 = math.clamp(z2, need2, d + 1 - need2)
++			local minAxis2 = R2 / wide2
++			local floorR2 = math.max(2.6, minAxis2 * between(rng, 0.5, 0.66))
++			table.insert(
++				craters,
++				newCrater(
++					x2,
++					z2,
++					R2,
++					s2,
++					between(rng, 0, math.pi),
++					rimW * 0.9,
++					depth * between(rng, 0.65, 0.9),
++					floorR2
++				)
++			)
++		end
++
++		-- Gaps through each rim: the road's two, then what the rim's state adds.
++		local gapHalf = between(rng, 1.1, 1.7) / (R + rimW / 2)
++		local gaps: { { Gap } } = { { { a = inAt, h = gapHalf }, { a = outAt, h = gapHalf } } }
++		for k = 2, #craters do
++			gaps[k] = {}
++			for _ = 1, whole(rng, 0, 2) do
++				table.insert(
++					gaps[k],
++					{ a = between(rng, 0, 2 * math.pi), h = between(rng, 0.9, 1.6) / (craters[k].minAxis + rimW) }
++				)
++			end
++		end
++		local slumpA, slumpH = 0, 0
++		if rimState == "breached" then
++			for _ = 1, whole(rng, 1, 2) do
++				local a = between(rng, 0, 2 * math.pi)
++				if apart(a, inAt) > 0.7 and apart(a, outAt) > 0.7 then
++					table.insert(gaps[1], { a = a, h = between(rng, 1.0, 1.7) / (R + rimW / 2) })
++				end
++			end
++		elseif rimState == "shattered" then
++			-- Wide breaks that split the bank into standing arcs of glassy crust.
++			for _ = 1, whole(rng, 2, 4) do
++				local a = between(rng, 0, 2 * math.pi)
++				if apart(a, inAt) > 0.55 and apart(a, outAt) > 0.55 then
++					table.insert(gaps[1], { a = a, h = between(rng, 2.0, 3.4) / (R + rimW / 2) })
++				end
++			end
++		elseif rimState == "slumped" then
++			slumpA = between(rng, 0, 2 * math.pi)
++			for _ = 1, 2 do
++				if apart(slumpA, inAt) < 0.9 then
++					slumpA += 2.4
++				end
++				if apart(slumpA, outAt) < 0.9 then
++					slumpA += 2.4
++				end
++			end
++			slumpH = between(rng, 0.55, 0.85)
++		end
++
++		-- The ringed form: a low broken ridge of glass standing on the flat floor.
++		local ringR, ringW, ringGapA, ringGapH = 0, 0, 0, 0
++		if form == "ringed" then
++			ringR = floorR * between(rng, 0.55, 0.75)
++			ringW = between(rng, 0.8, 1.0)
++			ringGapA = between(rng, 0, 2 * math.pi)
++			ringGapH = between(rng, 0.3, 0.5)
++		end
++
++		-- The heart's reach, and how far out the road passes it.
++		local heartR = 0
++		local riftLen = 0
++		if heart == "pit" then
++			heartR = math.min(between(rng, 1.0, 1.9), floorR - 1.4)
++		elseif heart == "rift" then
++			riftLen = math.min(between(rng, 1.8, 3.0), floorR - 1.2)
++		end
++		local heartClear = if heart == "spire" then 2.4 elseif heart == "pit" then heartR + 1.4 else riftLen + 1.2
++		local ringOuter = if form == "ringed" then ringR + ringW / 2 + 0.8 else 0
++		local passR = math.min(math.max(heartClear, ringOuter, 2.2), floorR + 0.6)
++
++		-- The scorch rays thrown out of the strike: each runs as far toward its own
++		-- side of the footprint as there is room for, so they read as long spokes.
++		local function borderReach(a: number): number
++			local c, s = math.cos(a), math.sin(a)
++			local tx = if c > 1e-6 then (w + 0.5 - cx) / c elseif c < -1e-6 then (0.5 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d + 0.5 - cz) / s elseif s < -1e-6 then (0.5 - cz) / s else math.huge
++			return math.min(tx, tz)
++		end
++		local rayCount = whole(rng, 4, 7)
++		local rayBase = between(rng, 0, 2 * math.pi)
++		local rays: { { a: number, h: number, outer: number } } = {}
++		for k = 1, rayCount do
++			local a = rayBase + (k - 1) * between(rng, 0.24, 0.5) + between(rng, -0.16, 0.16)
++			table.insert(rays, {
++				a = a,
++				h = between(rng, 0.16, 0.34),
++				outer = math.min(main.minAxis + rimW + between(rng, 6.0, 12.0), borderReach(a) - 0.6),
++			})
++		end
++		local halo = between(rng, 0.4, 0.9)
++
++		-- From here the draws only dress it: a noise field for the bank's crest and
++		-- the ragged edges of the scorch, the bank's height, the splash.
++		local field = Noise.field(rng)
++		local phase = between(rng, 0, 2 * math.pi)
++		local bankTop = between(rng, 2.6, 4.2)
++
++		local walk: { boolean } = table.create(w * d, true)
++		local heights: { number } = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++
++		-- The bank's crest: a ridge across its width, uneven round the ring, with
++		-- long low stretches and occasional high teeth.
++		local function rimLift(cr: Crater, x: number, z: number, dist: number, top: number): number
++			local a = craterAngle(cr, x, z)
++			local across = math.clamp(dist / cr.rimW, 0, 1)
++			local crest = 0.55 + 0.45 * math.sin(math.pi * across)
++			local wobble = 0.55
++				+ 0.45 * (0.5 + 0.5 * Noise.sample(field, math.cos(a) * 2.7 + phase, math.sin(a) * 2.7 - phase))
++			local tooth = 0.75 + 0.35 * (0.5 + 0.5 * math.sin(5 * a + phase * 0.7))
++			return math.clamp(math.floor(top * crest * wobble * tooth * 2 + 0.5) / 2, 1.0, 7.5)
++		end
++
++		-- The inner ridge of a ringed strike, standing on the flat floor.
++		local function ridgeLift(x: number, z: number): number
++			local wob = 0.5 + 0.5 * Noise.sample(field, x * 0.7 + 5.5, z * 0.7 - 3.3)
++			return math.floor((2.2 + 1.4 * wob) * 2 + 0.5) / 2
++		end
++
++		-- Phase one: the bowls, their banks and the inner ridge.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local dists: { number } = {}
++				local dmin = math.huge
++				for k, cr in craters do
++					dists[k] = craterDist(cr, x, z)
++					dmin = math.min(dmin, dists[k])
++				end
++				if dmin < 0 then
++					-- Inside a bowl: one flat sheet of glass, down a short ramp from the rim.
++					local h = 0
++					for k, cr in craters do
++						h = math.min(h, bowlHeight(cr, dists[k]))
++					end
++					heights[i] = h
++					kinds[i] = "glass"
++					if form == "ringed" then
++						local dx, dz = x - main.cx, z - main.cz
++						local rc = math.sqrt(dx * dx + dz * dz)
++						if math.abs(rc - ringR) < ringW / 2 and apart(craterAngle(main, x, z), ringGapA) > ringGapH then
++							walk[i] = false
++							kinds[i] = "rim"
++							lifts[i] = ridgeLift(x, z)
++						end
++					end
++				else
++					-- Outside every bowl: on a bank, through a breach, or on the ash.
++					local rimmed = false
++					for k, cr in craters do
++						local dist = dists[k]
++						if dist < cr.rimW then
++							-- A gouge is open at its ends: no bank across the plough's mouth.
++							local along = true
++							if form == "gouge" and k == 1 then
++								along = math.abs(alongAxis(main, x, z)) < main.rx * 0.86
++							end
++							if along then
++								local a = craterAngle(cr, x, z)
++								if inGap(a, gaps[k]) then
++									-- A breach is floored with glass, level with the ash.
++									kinds[i] = "glass"
++									lifts[i] = 0.2
++									heights[i] = 0
++								elseif k == 1 and slumpH > 0 and apart(a, slumpA) < slumpH then
++									-- The bank slumped into a low walkable ramp down into the bowl.
++									kinds[i] = "rim"
++									lifts[i] = 0.2
++									heights[i] = -0.6 * math.min(1, dist / cr.rimW)
++								else
++									walk[i] = false
++									kinds[i] = "rim"
++									lifts[i] = rimLift(cr, x, z, dist, if k == 1 then bankTop else bankTop * 0.85)
++								end
++								rimmed = true
++								break
++							end
++						end
++					end
++					if not rimmed then
++						heights[i] = 0
++						-- The scorch: a dark halo at the bank's foot, and rays thrown out.
++						local dx, dz = x - cx, z - cz
++						local rr = math.sqrt(dx * dx + dz * dz)
++						local a = if rr > 1e-6 then math.atan2(dz, dx) else 0
++						local jag = Noise.sample(field, x * 0.31 + 13.7, z * 0.31 - 6.1) * 0.06
++						local scorch = dmin
++							< rimW + halo * (0.75 + 0.25 * Noise.sample(field, x * 0.5 - 2.1, z * 0.5 + 8.4))
++						if not scorch then
++							for _, r in rays do
++								if rr < r.outer and apart(a, r.a) < r.h + jag then
++									scorch = true
++									break
++								end
++							end
++						end
++						if scorch then
++							kinds[i] = "scorch"
++							lifts[i] = 0.2
++						end
++					end
++				end
++			end
++		end
++
++		-- Phase two: the heart. A pit burns a hole at the point of impact; a rift opens
++		-- a short seam of it across the floor. The spire heart is stood in phase three.
++		local riftPoints: { Point } = {}
++		if heart == "pit" then
++			for z = 1, d do
++				for x = 1, w do
++					local dx, dz = x - cx, z - cz
++					local i = at(x, z)
++					if walk[i] and dx * dx + dz * dz < heartR * heartR and craterDist(main, x, z) < -0.1 then
++						walk[i] = false
++						kinds[i] = "pit"
++						lifts[i] = nil
++						heights[i] = -depth - 2.8
++					end
++				end
++			end
++		elseif heart == "rift" then
++			local ra = between(rng, 0, math.pi)
++			for s = -1, 1, 2 do
++				table.insert(riftPoints, {
++					x = cx + math.cos(ra) * riftLen * s + between(rng, -0.4, 0.4),
++					z = cz + math.sin(ra) * riftLen * s + between(rng, -0.4, 0.4),
++				})
++			end
++			for z = 1, d do
++				for x = 1, w do
++					local i = at(x, z)
++					if walk[i] and craterDist(main, x, z) < -0.1 and nearLine(x, z, riftPoints, 0.55) then
++						walk[i] = false
++						kinds[i] = "crack"
++						lifts[i] = nil
++						heights[i] = -depth - 2.2
++					end
++				end
++			end
++		end
++
++		-- Where a map's road joins the footprint, straight out from `a`.
++		local function border(a: number): Point
++			local c, s = math.cos(a), math.sin(a)
++			local tx = if c > 1e-6 then (w - cx) / c elseif c < -1e-6 then (1 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d - cz) / s elseif s < -1e-6 then (1 - cz) / s else math.huge
++			local t = math.min(tx, tz)
++			local x = math.clamp(math.floor(cx + c * t + 0.5), 1, w)
++			local z = math.clamp(math.floor(cz + s * t + 0.5), 1, d)
++			if tx <= tz then
++				x = if c > 0 then w else 1
++			else
++				z = if s > 0 then d else 1
++			end
++			return { x = x, z = z }
++		end
++		local function ringAt(a: number, rr: number): Point
++			return { x = cx + math.cos(a) * rr, z = cz + math.sin(a) * rr }
++		end
++
++		-- Phase three: the frozen splash, massed on the bolt's side, and the heart.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local outSegments = {
++			{ border(inAt), rimPoint(main, inAt, main.rimW + 2.0) },
++			{ border(outAt), rimPoint(main, outAt, main.rimW + 2.0) },
++		}
++		local function onRoadOut(x: number, z: number): boolean
++			for _, seg in outSegments do
++				if nearLine(x, z, seg, 1.0) then
++					return true
++				end
++			end
++			return false
++		end
++		local function openGround(x: number, z: number): boolean
++			if x < 0.6 or z < 0.6 or x > w + 0.4 or z > d + 0.4 then
++				return false
++			end
++			local gx, gz = math.floor(x + 0.5), math.floor(z + 0.5)
++			if gx < 1 or gx > w or gz < 1 or gz > d or not walk[at(gx, gz)] then
++				return false
++			end
++			for _, cr in craters do
++				local dist = craterDist(cr, x, z)
++				if dist >= -0.01 and dist < cr.rimW + 0.25 then
++					return false
++				end
++			end
++			return true
++		end
++		local function addSplashAt(x: number, z: number, scale: number)
++			x, z = quarter(x), quarter(z)
++			if not openGround(x, z) or onRoadOut(x, z) then
++				return false
++			end
++			table.insert(marks, {
++				sculpt = "waste_glass_splash",
++				x = x,
++				z = z,
++				yaw = between(rng, 0, 360),
++				scale = scale,
++				sink = 0.25,
++				solid = true,
++			})
++			return true
++		end
++		local function addNeedle(x: number, z: number, scale: number, outward: number?)
++			x, z = quarter(x), quarter(z)
++			if not openGround(x, z) or onRoadOut(x, z) then
++				return false
++			end
++			local yaw = if outward ~= nil then -math.deg(outward) else between(rng, 0, 360)
++			table.insert(marks, {
++				sculpt = "waste_glass_needle",
++				x = x,
++				z = z,
++				yaw = yaw,
++				scale = scale,
++				sink = 0.2,
++				solid = true,
++			})
++			return true
++		end
++
++		-- The bolt threw its splash one way: big tilted clusters on that side of the
++		-- rim, the road's side left open, so the bowl stays the subject.
++		local splashA = passAngle + math.pi + between(rng, -0.3, 0.3)
++		local function addCluster(a: number, big: number)
++			-- The burst at the rim's inner lip, leaning over the glass.
++			local rr = main.minAxis - between(rng, 0.4, 1.0)
++			addSplashAt(cx + math.cos(a) * rr, cz + math.sin(a) * rr, big)
++			-- Its mate at the rim's outer foot, so the mass straddles the bank.
++			local p = rimPoint(main, a + between(rng, -0.08, 0.08), main.rimW + between(rng, 0.15, 0.9))
++			addSplashAt(p.x, p.z, big * between(rng, 0.65, 0.85))
++			-- And a splinter thrown clear of it.
++			local q = rimPoint(main, a + between(rng, -0.18, 0.18), main.rimW + between(rng, 0.6, 1.6))
++			addNeedle(q.x, q.z, between(rng, 0.35, 0.6), a)
++		end
++
++		if splash == "pair" then
++			local off = between(rng, 0.3, 0.55)
++			addCluster(splashA - off, between(rng, 1.05, 1.4))
++			addCluster(splashA + off, between(rng, 1.05, 1.45))
++		elseif splash == "trio" then
++			for _, k in { -1, 0, 1 } do
++				addCluster(splashA + k * between(rng, 0.38, 0.55), between(rng, 1.0, 1.45))
++			end
++		elseif splash == "fan" then
++			local count = whole(rng, 4, 6)
++			local spread = between(rng, 0.55, 0.9)
++			for k = 1, count do
++				local a = splashA + (2 * (k - 1) / (count - 1) - 1) * spread + between(rng, -0.06, 0.06)
++				local rr = main.minAxis - between(rng, 0.4, 1.0)
++				addSplashAt(cx + math.cos(a) * rr, cz + math.sin(a) * rr, between(rng, 0.95, 1.4))
++			end
++			for _ = 1, whole(rng, 2, 4) do
++				local a = splashA + between(rng, -spread, spread)
++				local p = rimPoint(main, a, main.rimW + between(rng, 0.2, 1.2))
++				addNeedle(p.x, p.z, between(rng, 0.3, 0.55), a)
++			end
++		else
++			-- A cluster with a tail of shards strewn downwind of it, thinning as it goes.
++			addCluster(splashA, between(rng, 1.05, 1.4))
++			local count = whole(rng, 5, 8)
++			for k = 1, count do
++				local t = (k - 1) / (count - 1)
++				local a = splashA + between(rng, -0.16, 0.16) * (0.5 + t)
++				local p = rimPoint(main, a, main.rimW + 0.6 + 5.5 * t)
++				if t < 0.4 and rng:NextNumber() < 0.5 then
++					addSplashAt(p.x, p.z, between(rng, 0.7, 1.0))
++				else
++					addNeedle(p.x, p.z, between(rng, 0.35, 0.65) * (1 - 0.3 * t), a)
++				end
++			end
++		end
++		if form == "twin" then
++			-- The second bowl's far rim takes a burst too: the bolt's side.
++			local a2 = math.atan2(craters[2].cz - cz, craters[2].cx - cx)
++			local p = rimPoint(craters[2], a2, craters[2].rimW + between(rng, 0.2, 0.9))
++			addSplashAt(p.x, p.z, between(rng, 0.9, 1.2))
++		end
++
++		-- A few lone needles on the glass, for the scale of the place.
++		for _ = 1, whole(rng, 3, 5) do
++			local a = splashA + between(rng, -0.9, 0.9)
++			local rr = between(rng, floorR * 0.45, main.minAxis - 1.0)
++			addNeedle(cx + math.cos(a) * rr, cz + math.sin(a) * rr, between(rng, 0.45, 0.9), a)
++		end
++
++		if heart == "spire" then
++			table.insert(marks, {
++				sculpt = "waste_glass_core",
++				x = quarter(cx),
++				z = quarter(cz),
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.85, 1.05),
++				sink = 0.35,
++				solid = true,
++			})
++			for _ = 1, whole(rng, 2, 4) do
++				local a = between(rng, 0, 2 * math.pi)
++				local rr = between(rng, 1.6, 2.6)
++				addNeedle(cx + math.cos(a) * rr, cz + math.sin(a) * rr, between(rng, 0.4, 0.7), a)
++			end
++		elseif heart == "pit" then
++			for _ = 1, whole(rng, 3, 5) do
++				local a = between(rng, 0, 2 * math.pi)
++				local rr = heartR + between(rng, 0.3, 0.9)
++				addNeedle(cx + math.cos(a) * rr, cz + math.sin(a) * rr, between(rng, 0.4, 0.75), a)
++			end
++		else
++			for _ = 1, whole(rng, 3, 5) do
++				local k = if rng:NextNumber() < 0.5 then 1 else 2
++				local p = riftPoints[k]
++				local a = math.atan2(p.z - cz, p.x - cx)
++				addNeedle(p.x + between(rng, -0.6, 0.6), p.z + between(rng, -0.6, 0.6), between(rng, 0.4, 0.75), a)
++			end
++		end
++
++		-- The storm's charge still crawling over the glass at the point of impact.
++		local function effect(x: number, z: number, lift: number)
++			table.insert(effects, { recipe = "waste_glass_crawl", x = x, z = z, lift = lift })
++		end
++		if heart == "spire" then
++			effect(cx, cz, 0.7)
++		elseif heart == "pit" then
++			effect(cx, cz, 0.4)
++		elseif #riftPoints >= 2 then
++			effect(riftPoints[1].x, riftPoints[1].z, 0.4)
++			effect(riftPoints[2].x, riftPoints[2].z, 0.4)
++		end
++
++		-- Phase four: the road. In through one breach, round the heart on the pass
++		-- side, and out through the other.
++		local road: { Point } = { border(inAt) }
++		table.insert(road, rimPoint(main, inAt, main.rimW + 1.6))
++		table.insert(road, rimPoint(main, inAt, main.rimW * 0.5))
++		table.insert(road, ringAt(inAt, math.min(passR + 1.0, main.minAxis - 0.6)))
++		local sweep = math.pi + ((outAt - inAt - math.pi) * side)
++		for k = 1, 4 do
++			table.insert(road, ringAt(inAt + side * sweep * k / 5, passR))
++		end
++		table.insert(road, ringAt(outAt, math.min(passR + 1.0, main.minAxis - 0.6)))
++		table.insert(road, rimPoint(main, outAt, main.rimW * 0.5))
++		table.insert(road, rimPoint(main, outAt, main.rimW + 1.6))
++		table.insert(road, border(outAt))
++
++		local function nearestWalkable(p: Point): Point
++			local gx, gz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			if gx >= 1 and gx <= w and gz >= 1 and gz <= d and walk[at(gx, gz)] then
++				return p
++			end
++			for ring = 1, 8 do
++				for k = 0, 7 do
++					local a = k * math.pi / 4
++					local x, z = p.x + math.cos(a) * ring * 0.5, p.z + math.sin(a) * ring * 0.5
++					local qx, qz = math.floor(x + 0.5), math.floor(z + 0.5)
++					if qx >= 1 and qx <= w and qz >= 1 and qz <= d and walk[at(qx, qz)] then
++						return { x = x, z = z }
++					end
++				end
++			end
++			return p
++		end
++		for k = 2, #road - 1 do
++			local p = nearestWalkable(road[k])
++			road[k] = p
++		end
++
++		-- One walkable ground: should a rare draw close a pocket, crack a glassy way in.
++		local g = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		local regions = Grid.regions(g)
++		if #regions > 1 then
++			local mainRegion = regions[1]
++			for r = 2, #regions do
++				local bestA, bestB, bestD = regions[r][1], mainRegion[1], math.huge
++				for _, a in regions[r] do
++					local ax, az = Grid.coords(g, a)
++					for _, b in mainRegion do
++						local bx, bz = Grid.coords(g, b)
++						local dd = (ax - bx) ^ 2 + (az - bz) ^ 2
++						if dd < bestD then
++							bestD, bestA, bestB = dd, a, b
++						end
++					end
++				end
++				local ax, az = Grid.coords(g, bestA)
++				local bx, bz = Grid.coords(g, bestB)
++				local ha, hb = heights[bestA], heights[bestB]
++				local path: { number } = {}
++				local px, pz = ax, az
++				while px ~= bx or pz ~= bz do
++					if math.abs(bx - px) >= math.abs(bz - pz) then
++						px += if bx > px then 1 else -1
++					else
++						pz += if bz > pz then 1 else -1
++					end
++					table.insert(path, at(px, pz))
++				end
++				for k, i in path do
++					if not walk[i] then
++						walk[i] = true
++						kinds[i] = "glass"
++						lifts[i] = 0.2
++						heights[i] = ha + (hb - ha) * (k / (#path + 1))
++						g.cells[i] = Grid.FLOOR
++					end
++				end
++			end
++		end
++
++		-- A walkable border cell sits within a step of the level ground round the pad.
++		for i, ok in walk do
++			local x, z = Grid.coords(g, i)
++			if ok and (x == 1 or z == 1 or x == w or z == d) then
++				heights[i] = 0
++			end
++		end
++		-- The contract's step rule: no two walkable neighbours more than two studs
++		-- apart (just under two, so float rounding never reads as two and a hair).
++		local STEP = 1.9
++		for _ = 1, 4 do
++			for i, ok in walk do
++				if ok then
++					local x, z = Grid.coords(g, i)
++					local lo, hi = -math.huge, math.huge
++					for _, nb in Grid.NEIGHBOURS do
++						local nx, nz = x + nb[1], z + nb[2]
++						if Grid.inBounds(g, nx, nz) then
++							local j = Grid.index(g, nx, nz)
++							if walk[j] then
++								lo = math.max(lo, heights[j] - STEP)
++								hi = math.min(hi, heights[j] + STEP)
++							end
++						end
++					end
++					if lo <= hi then
++						heights[i] = math.clamp(heights[i], lo, hi)
++					else
++						heights[i] = (heights[i] + lo + hi) / 3
++					end
++				end
++			end
++		end
++
++		-- The road shows as the map's own stone: keep a corridor along it unpainted,
++		-- so its pale line is the only line across the sheet of glass.
++		for i, ok in walk do
++			local kind = kinds[i]
++			if ok and kind ~= nil and kind ~= "rim" then
++				local x, z = Grid.coords(g, i)
++				if nearLine(x, z, road, 0.55) then
++					kinds[i] = nil
++					lifts[i] = nil
++				end
++			end
++		end
++
++		-- The photographs: from the open road side, looking across the flat glass at
++		-- the heart and the frozen splash on the far rim; and from low on the glass.
++		local function cameraAt(x: number, z: number): Point
++			if x < 0.6 or z < 0.6 or x > w + 0.4 or z > d + 0.4 then
++				return { x = x, z = z }
++			end
++			return nearestWalkable({ x = x, z = z })
++		end
++		local heroA = passAngle + between(rng, -0.35, 0.35)
++		local hero = rimPoint(main, heroA, main.rimW + between(rng, 6.0, 8.0))
++		hero = {
++			x = math.clamp(hero.x, 1 - MapFeature.PAD + 0.6, w + MapFeature.PAD - 0.6),
++			z = math.clamp(hero.z, 1 - MapFeature.PAD + 0.6, d + MapFeature.PAD - 0.6),
++		}
++		local heroEye = cameraAt(hero.x, hero.z)
++		local stand = ringAt(passAngle + between(rng, -0.3, 0.3), math.min(passR + 2.0, floorR + 0.4))
++		local inside = cameraAt(stand.x, stand.z)
++		local aim = if heart == "spire" then between(rng, 5.0, 8.0) else between(rng, 1.5, 3.5)
++		local closeAim = if heart == "spire" then between(rng, 4.0, 6.0) else between(rng, 1.5, 3.0)
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "the frozen splash",
++					from = { x = heroEye.x, z = heroEye.z, lift = between(rng, 26, 34) },
++					to = { x = cx, z = cz, lift = aim },
++					fov = 62,
++				},
++				{
++					name = "on the glass",
++					from = { x = inside.x, z = inside.z, lift = between(rng, 2.6, 3.4) },
++					to = { x = cx, z = cz, lift = closeAim },
++					fov = 66,
++				},
++			},
++		}
++	end,
++}
++
++return feature

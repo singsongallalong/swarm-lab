@@ -1,0 +1,34 @@
+{
+  "skill": "Waste",
+  "look": "WasteGlassStrike",
+  "rows_added": [
+    "waste_glass_splash",
+    "waste_glass_needle",
+    "waste_glass_bead",
+    "waste_glass_core",
+    "waste_glass_crawl"
+  ],
+  "sculpts": ["waste_glass_splash", "waste_glass_needle", "waste_glass_bead", "waste_glass_core"],
+  "setpiece": "waste_glass_crawl",
+  "variation": [
+    "strike: a single bolt / a twin strike of two overlapping bowls / a gouge ploughed through the dunes / a ringed crater with a raised glass ridge inside",
+    "frozen splash: two big tilted clusters / three big tilted clusters / one broad fan / a cluster and a comet tail, always massed on the bolt's side with the road's side left open",
+    "heart: one tall fused spire / a dark scorched pit / a dark rift",
+    "rim: intact / breached / shattered into standing arcs / slumped into a walkable ramp",
+    "frame: footprint 28-32 cells a side, the crater's reach, stretch and turn, the flat floor's size, the road's way in and out, and 4-7 scorch rays"
+  ],
+  "intent": "A bolt of the Labyrinth gate's storm fused the dunes into one flat sheet of violet glass in a crater, one tall spire or a dark pit at the point of impact, with the shattered glass thrown up in two or three big tilted clusters on the bolt's side and the road's side left open, the ash scorched dark in rays and the storm's charge still crawling over the glass.",
+  "renders": [
+    ".swarm/out/feature-shots-r5.png",
+    ".swarm/out/feature-seeds-r5.png",
+    ".swarm/out/feature-whole-r5.png",
+    ".swarm/out/feature-sculpts-r5.png",
+    ".swarm/out/feature-setpiece-r5.png"
+  ],
+  "revisions": 4,
+  "requests": [
+    "The feature's own renders draw no set pieces, so the crawling violet sparks can only be judged in the set piece's own render.",
+    "The crater's short lip ramp still draws as one-cell terrace rows in the ground-fill renderer; the flat floor above it is one sheet.",
+    "The wasteland's giant-bones prop is not quiet, so in some seeds it lands on the pad inside the feature's frame."
+  ]
+}

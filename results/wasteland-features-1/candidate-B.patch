@@ -1,0 +1,1170 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 0e499725..2cf26c08 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -34,6 +34,7 @@ local MoorSheepfold = require("../systems/features/MoorSheepfold")
+ local MoorSinkhole = require("../systems/features/MoorSinkhole")
+ local MoorSplitBarrow = require("../systems/features/MoorSplitBarrow")
+ local MoorStrikeCrater = require("../systems/features/MoorStrikeCrater")
++local WasteColossusHand = require("../systems/features/WasteColossusHand")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+@@ -68,6 +69,7 @@ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	MoorPeatCutting = MoorPeatCutting,
+ 	MoorHillfort = MoorHillfort,
+ 	MoorDrownedCauseway = MoorDrownedCauseway,
++	WasteColossusHand = WasteColossusHand,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1d3e1b2..1da52b00 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -6014,6 +6014,135 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The colossus's hand (Wasteland, WasteColossusHand): the glass grown over one
++-- knuckle of the statue's stone. A bar of weathered stone across the finger's
++-- crest with a crust of violet glass burst up through it, in a low pool and a
++-- ring of leaning shards. It stands on the ridge's glassed top, so its stone is
++-- a shade paler than the ash around it.
++Sculpts.waste_hand_knuckle = {
++	kind = "assembly",
++	size = { 7.5, 5.8, 6.5 },
++	material = "Rock",
++	colors = { { 84, 82, 90 }, { 68, 66, 76 }, { 64, 50, 78 }, { 54, 44, 66 } },
++	materials = { [1] = "Rock", [2] = "Rock", [3] = "Glass", [4] = "Glass" },
++	maxPrims = 14,
++	parts = {
++		-- The knuckle's stone: two tilted blocks swelling over the ridge, the
++		-- lower one set into it.
++		{
++			shape = "Block",
++			size = { 6.4, 2.4, 5.0 },
++			at = { 0, 1.0, 0 },
++			color = 1,
++			jitter = { size = 0.08, rot = { 3, 8, 3 } },
++		},
++		{
++			shape = "Block",
++			size = { 4.6, 1.8, 4.2 },
++			at = { 0.4, 2.55, 0.2 },
++			rot = { 0, 22, 0 },
++			color = 2,
++			jitter = { size = 0.12, rot = { 4, 10, 4 } },
++		},
++		-- A pool of the glass spilling over the stone's crown.
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 4.2, 0.5, 3.6 },
++			at = { 0.1, 3.3, 0 },
++			color = 3,
++			jitter = { size = 0.15, rot = { 4, 0, 4 } },
++		},
++		-- Shards standing out of it, leaning every way.
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 0.75, 3.0, 0.75 },
++			at = { 0, 4.6, 0 },
++			color = 3,
++			ring = { count = 5, radius = 1.5, start = 12, tilt = 20 },
++			jitter = { size = 0.3, at = { 0.3, 0.5, 0.3 } },
++		},
++		{
++			shape = "Wedge",
++			size = { 1.4, 2.2, 0.9 },
++			at = { 0.6, 4.4, -0.2 },
++			rot = { 0, 30, -18 },
++			color = 4,
++			chance = 0.7,
++		},
++	} :: { Node },
++}
++-- The colossus's hand (Wasteland, WasteColossusHand): a severed finger of the
++-- statue lying in the ash. Three tapering segments with their knuckle bands
++-- swelled, the break at one end jagged with violet glass burst through it, a
++-- chipped nail at the other. It lies along +X, so a placement's yaw points it.
++Sculpts.waste_hand_finger = {
++	kind = "assembly",
++	size = { 17, 4.2, 4.6 },
++	material = "Rock",
++	colors = { { 86, 84, 92 }, { 72, 70, 80 }, { 64, 50, 78 }, { 52, 44, 64 } },
++	materials = { [1] = "Rock", [2] = "Rock", [3] = "Glass", [4] = "Rock" },
++	maxPrims = 20,
++	parts = {
++		-- Three segments of the finger, the near one thickest and the far one
++		-- tapering, lying as one body.
++		{
++			shape = "Block",
++			size = { 4.6, 3.4, 4.0 },
++			at = { -5.2, 1.5, 0 },
++			color = 1,
++			jitter = { size = 0.05, rot = { 3, 6, 3 } },
++		},
++		{
++			shape = "Block",
++			size = { 4.2, 3.0, 3.6 },
++			at = { -0.6, 1.4, 0.1 },
++			rot = { 0, 6, 0 },
++			color = 2,
++			jitter = { size = 0.05, rot = { 3, 6, 3 } },
++		},
++		{
++			shape = "Block",
++			size = { 3.8, 2.6, 3.2 },
++			at = { 3.7, 1.2, -0.1 },
++			rot = { 0, 12, 0 },
++			color = 1,
++			jitter = { size = 0.05, rot = { 3, 6, 3 } },
++		},
++		-- The knuckle bands swelled between the segments.
++		{ shape = "Block", size = { 0.9, 3.5, 4.2 }, at = { -2.9, 1.6, 0 }, rot = { 0, -4, 0 }, color = 2 },
++		{ shape = "Block", size = { 0.9, 3.1, 3.8 }, at = { 1.6, 1.45, 0 }, rot = { 0, 8, 0 }, color = 2 },
++		-- The break: a jagged stub and the glass burst through it.
++		{
++			shape = "Wedge",
++			size = { 1.8, 2.8, 3.4 },
++			at = { -7.9, 1.4, 0 },
++			rot = { 0, 0, 14 },
++			color = 1,
++			jitter = { rot = { 0, 0, 10 } },
++		},
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 0.7, 2.4, 0.7 },
++			at = { -8.0, 2.0, 0.5 },
++			rot = { -18, 0, 8 },
++			color = 3,
++		},
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 0.6, 1.8, 0.6 },
++			at = { -7.4, 1.8, -0.8 },
++			rot = { 14, 0, -22 },
++			color = 3,
++		},
++		-- A chipped nail at the far end.
++		{ shape = "Wedge", size = { 1.4, 1.2, 2.8 }, at = { 6.2, 1.3, 0 }, rot = { 0, -90, 0 }, color = 2 },
++	} :: { Node },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 822a6a8e..2e1f661e 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -5027,4 +5027,71 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The colossus's hand (Wasteland, WasteColossusHand): the glass in its palm
++-- breathing out a tall column of violet motes, the one bright place in the
++-- ash. A paler dust of ash and a few cold glints are folded into it, so the
++-- whole effect is the hand's breath and nothing else. The path is a short,
++-- steep worm, so the column rises out of the palm rather than running.
++recipes.waste_hand_motes = {
++	about = "A tall column of violet motes and ash dust rising out of the Wasteland colossus's cupped glass palm, with cold glints in it.",
++	theme = "plasma",
++	path = { kind = "worm", length = 16, step = 2, bend = 40, climb = 70, start = 85, round = 1 },
++	layers = {
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 2,
++				thick = 6,
++				lift = 0.4,
++				toward = "up",
++				rise = 2.4,
++				life = { 6, 9 },
++				rate = 4,
++				size = 0.9,
++				tall = 1.3,
++				transparency = 0.3,
++				color = "spark",
++				lean = 10,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1.8, tilt = 5, span = 7, periods = { 4.5, 7 } },
++			priority = 1,
++		},
++		{
++			name = "glow",
++			look = { kind = "light", every = 4, max = 3, range = 22, brightness = 1.4, color = "glow" },
++			motion = { kind = "pulse", period = 3.8, depth = 0.35 },
++			priority = 2,
++		},
++		{
++			name = "dust",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 5,
++				lift = 2,
++				toward = "up",
++				rise = 0.9,
++				life = { 4, 6 },
++				rate = 1.4,
++				size = 2.4,
++				tall = 1.2,
++				transparency = 0.92,
++				color = "glow",
++				lean = 8,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 6, span = 8, periods = { 6, 9 } },
++			priority = 3,
++		},
++		{
++			name = "glints",
++			look = { kind = "arcs", every = 1.6, pieces = 2, reach = 1.5, span = 2.5, width = 0.12, color = "spark" },
++			motion = { kind = "crackle", every = 0.22, swell = { wavelength = 24, speed = 2, depth = 0.5 } },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index 822077f0..c31990c2 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -842,6 +842,15 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Wasteland's colossus's hand (WasteColossusHand)
++	["sculpt:waste_hand_knuckle"] = row(
++		"The glass grown over one knuckle of the Wasteland colossus's stone hand, a crust of violet shards in a low pool.",
++		MOOR
++	),
++	["sculpt:waste_hand_finger"] = row(
++		"A severed colossal finger lying in the Wasteland's ash, its break burst through with violet glass.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/WasteColossusHand.luau b/src/shared/systems/features/WasteColossusHand.luau
+new file mode 100644
+index 00000000..27cc62db
+--- /dev/null
++++ b/src/shared/systems/features/WasteColossusHand.luau
+@@ -0,0 +1,908 @@
++--!strict
++-- The colossus's hand on the Wasteland (docs/guides/map-features.md): the open
++-- hand of a fallen giant statue, as big as a house, rising out of the glass-ash
++-- palm-up. The palm is a raised court of fused violet glass, the one bright
++-- place in the ash; four tapering stone fingers and a low thumb stand round it,
++-- each with two joints, curling in over the palm, violet glass grown from the
++-- knuckle out over the finger; a dune of wind-packed ash is banked against the
++-- wrist, and the wrist rises out of it as one broad ramp. The road climbs the
++-- dune onto the wrist, crosses the palm and leaves through a gate between two
++-- fingers.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure, the rest only dress
++-- it:
++--   1. the gesture: a shelter (the fingers long and curled in round a deep
++--      palm), splayed (the fingers open and low, the palm shallow), broken (a
++--      finger sheared to a stump and another gone, its segment left in the
++--      ash), or a claw (the fingers short and driven down, their tips in the
++--      ash);
++--   2. the palm's heart: a lens of brighter glass, bare fused glass, an ash
++--      drift, or a cracked rise;
++--   3. the wrist: a high dune banked over it, a low dune split round a way
++--      through, or a dune banked to one side;
++--   4. the footprint, the palm's size and set, the hand's turn, the fingers'
++--      spread and length, and which gaps between them are gates;
++--   5. then the fingers' heights, the glass on them and the road's way.
++-- Everything stands on the Wasteland's own kit (waste_* sculpts, the plasma and
++-- ashwind themes), plus two sculpts and one set piece of its own.
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++-- A finger's or thumb's ridge: its spine sampled in world cells, how thick it
++-- is (cells), and its height from the root up over the knuckle and down to the
++-- tip (studs over the ash plain).
++type Spine = {
++	samples: { { x: number, z: number, t: number } },
++	width: number, -- at the root, cells
++	taper: number, -- the share of the width the tip loses
++	rootTop: number,
++	crest: number,
++	tip: number,
++	knuckle: Point,
++	thumb: boolean,
++}
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function pick<T>(rng: Random, list: { T }): T
++	return list[whole(rng, 1, #list)]
++end
++
++local function sign(v: number): number
++	return if v < 0 then -1 elseif v > 0 then 1 else 0
++end
++
++-- Half studs, so a floor and its steps draw as a few clean runs, not a tiled sheet.
++local function halfStuds(v: number): number
++	return math.floor(v * 2 + 0.5) / 2
++end
++
++-- Radians between two angles, 0..pi.
++local function apart(a: number, b: number): number
++	return math.abs((a - b + math.pi) % (2 * math.pi) - math.pi)
++end
++
++local function distanceToSegment(px: number, pz: number, a: Point, b: Point): number
++	local vx, vz = b.x - a.x, b.z - a.z
++	local len2 = vx * vx + vz * vz
++	local t = if len2 > 0 then math.clamp(((px - a.x) * vx + (pz - a.z) * vz) / len2, 0, 1) else 0
++	local qx, qz = a.x + vx * t, a.z + vz * t
++	return math.sqrt((px - qx) ^ 2 + (pz - qz) ^ 2)
++end
++
++local STEP = 2 -- Terrain.terraces.maxStep: the most walkable neighbours may differ.
++local RAMP = 6 -- cells the palm's foot takes to reach the ash plain.
++
++-- Surfaces inside the art bible's limits (saturation 0.50, value 0.40), one
++-- colour per terrain material: the palm's fused violet glass and the glass
++-- grown over the knuckles in Ice, the glass pooled in the palm's cup in the
++-- free Glacier (a brighter violet), the statue's stone in the Wasteland's own
++-- basalt, and the wind-packed ash of the dune in Sandstone. Light and effects
++-- may be bright.
++local PALM_GROUND = { material = "Ice", color = { 64, 50, 86 } }
++local STONE_GROUND = { material = "Basalt", color = { 50, 48, 56 } }
++local GLASS_GROUND = { material = "Glacier", color = { 72, 56, 96 } }
++local DUNE_GROUND = { material = "Sandstone", color = { 88, 86, 94 } }
++-- The storm's violet in the glass: a light, so it may be bright.
++local VIOLET = { 168, 132, 255 }
++
++local feature: MapFeature.Feature = {
++	name = "WasteColossusHand",
++	about = "The open hand of a fallen colossus, as big as a house, rising out of the ash palm-up: a raised palm of fused violet glass ringed by tapering stone fingers, glass grown from their knuckles out, and a dune banked against its wrist.",
++	tileset = "wasteland",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "colossal", "fallen", "sheltered", "glass-grown", "ancient" },
++	cells = {
++		-- The feature's own clearing in the ash: no look of its own (the
++		-- Wasteland's ground shows), only its quiet props kept off it, so the
++		-- hand stands alone instead of among the map's glass and giant bones.
++		apron = { clear = true },
++		-- The statue's palm: the ash fused to violet glass under the storm, so the
++		-- hand's cup is the one bright place in the ash.
++		palm = {
++			ground = PALM_GROUND,
++			lift = 0.25,
++			clear = true,
++			props = {
++				{ sculpt = "waste_glass_crust", every = 20, scale = { 0.35, 0.6 }, sink = 0.25 },
++			} :: { FeatureDress.CellProp },
++		},
++		-- The risen ridges of the fingers: dark stone, its planes catching the moon.
++		finger = {
++			ground = STONE_GROUND,
++			clear = true,
++			props = {
++				{ sculpt = "waste_glass_low", every = 11, scale = { 0.4, 0.75 }, sink = 0.35 },
++			} :: { FeatureDress.CellProp },
++		},
++		-- Fused violet glass grown from the knuckle out over the finger, catching
++		-- its own cold light.
++		knuckle = {
++			ground = PALM_GROUND,
++			lift = 0.4,
++			clear = true,
++			glow = { color = VIOLET, range = 16, brightness = 1.3, every = 11, height = 1.5 },
++			props = {
++				{ sculpt = "waste_glass_low", every = 3, scale = { 0.5, 0.85 }, sink = 0.2 },
++			} :: { FeatureDress.CellProp },
++		},
++		-- The lens of glass pooled in the palm's cup, brighter than the palm round it.
++		glass = {
++			ground = GLASS_GROUND,
++			lift = 0.25,
++			clear = true,
++			glow = { color = VIOLET, range = 16, brightness = 1.2, every = 9, height = 1.0 },
++			props = {
++				{ sculpt = "waste_glass_crust", every = 4, scale = { 0.5, 0.9 }, sink = 0.15 },
++			} :: { FeatureDress.CellProp },
++		},
++		-- Ash banked and wind-packed against the wrist.
++		dune = {
++			ground = DUNE_GROUND,
++			lift = 0.2,
++			clear = true,
++			props = {
++				{ sculpt = "waste_glass_low", every = 16, scale = { 0.3, 0.6 }, sink = 0.4 },
++			} :: { FeatureDress.CellProp },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, first.
++		local gesture = pick(rng, { "shelter", "splayed", "broken", "claw" })
++		local heart = pick(rng, { "lens", "bare", "drift", "cracked" })
++		local wrist = pick(rng, { "high", "split", "side" })
++
++		-- 4: the footprint and the hand's pose.
++		local w, d = whole(rng, 30, 32), whole(rng, 30, 32)
++		local cx = (w + 1) / 2 + between(rng, -0.8, 0.8)
++		local cz = (d + 1) / 2 + between(rng, -0.8, 0.8)
++		local turn = between(rng, 0, 2 * math.pi)
++		local stretch = between(rng, 0.9, 1.1)
++		local palmR = between(rng, 4.8, 6.0)
++		local palmH = between(rng, 4.6, 7.2)
++		local dish = between(rng, 0.9, 1.7)
++		local spread = between(rng, 1.1, 1.45)
++		local fingerLen = between(rng, 5.8, 7.8)
++		local wobA, wobB = between(rng, 0, 2 * math.pi), between(rng, 0, 2 * math.pi)
++
++		local ax, az = math.cos(turn), math.sin(turn)
++		local bx, bz = -az, ax
++		local function localOf(x: number, z: number): (number, number)
++			local dx, dz = x - cx, z - cz
++			return dx * ax + dz * az, dx * bx + dz * bz
++		end
++		local function worldOf(u: number, v: number): Point
++			return { x = cx + u * ax + v * bx, z = cz + u * az + v * bz }
++		end
++		-- The palm's rim as a radius by local angle: an oval of `palmR`, uneven
++		-- like a worn stone.
++		local function rimAt(a: number): number
++			local c, s = math.cos(a), math.sin(a)
++			local k = math.sqrt((c / stretch) ^ 2 + (s * stretch) ^ 2)
++			return palmR * (1 + 0.05 * math.sin(3 * a + wobA) + 0.025 * math.sin(5 * a + wobB)) / k
++		end
++		-- How far the footprint reaches from the palm's middle along a world angle.
++		local function roomAt(a: number): number
++			local c, s = math.cos(a), math.sin(a)
++			local tx = if c > 1e-6 then (w - cx) / c elseif c < -1e-6 then (1 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d - cz) / s elseif s < -1e-6 then (1 - cz) / s else math.huge
++			return math.min(tx, tz)
++		end
++		-- The ground's level at a local point: the cupped palm inside the rim, a
++		-- ramp down to the ash plain outside it.
++		local function groundLevel(u: number, v: number): number
++			local r = math.sqrt(u * u + v * v)
++			local a = math.atan2(v, u)
++			local rim = rimAt(a)
++			if r <= rim then
++				-- The palm's cup: its heart a step lower than its rim.
++				return palmH - (if r < rim * 0.58 then dish else 0)
++			end
++			-- The ash falls away from the palm's foot in a few terraces, each a
++			-- clean ring rather than a tiled slope.
++			local steps = math.max(2, math.ceil(palmH / 2))
++			local k = math.floor(math.clamp((r - rim) / RAMP, 0, 0.999) * steps)
++			local h = palmH - (palmH / steps) * (k + 1)
++			return math.max(0, math.floor(h * 2) / 2)
++		end
++		local function clampLen(a: number, want: number): number
++			local room = roomAt(turn + a) - rimAt(a) - 2.2
++			return math.clamp(want, 1.2, math.max(1.2, room))
++		end
++
++		-- The fingers: four round the far rim, then the thumb out to one side.
++		local FINGER_COUNT = 4
++		local fingerAngles: { number } = {}
++		for k = 1, FINGER_COUNT do
++			fingerAngles[k] = -spread + 2 * spread * (k - 1) / (FINGER_COUNT - 1) + between(rng, -0.05, 0.05)
++		end
++		-- A broken hand: one finger sheared to a stump, one gone with its
++		-- segment left in the ash.
++		local missing, stump = 0, 0
++		if gesture == "broken" then
++			missing = whole(rng, 1, FINGER_COUNT)
++			stump = missing % FINGER_COUNT + 1
++		end
++
++		-- The spine of one finger: out from the rim, then two joints turning it
++		-- in toward the palm, sampled every half segment for the raster. It
++		-- tapers from the root to the tip.
++		local function makeSpine(
++			a: number,
++			len: number,
++			width: number,
++			crest: number,
++			tip: number,
++			bend: number,
++			rootTop: number,
++			thumb: boolean,
++			taper: number
++		): Spine
++			local rim = rimAt(a)
++			local u = (rim - 0.55) * math.cos(a)
++			local v = (rim - 0.55) * math.sin(a)
++			local travelled = 0
++			local samples: { { x: number, z: number, t: number } } = {}
++			local function add(uu: number, vv: number, t: number)
++				local p = worldOf(uu, vv)
++				table.insert(samples, { x = p.x, z = p.z, t = t })
++			end
++			add(u, v, 0)
++			-- The first segment stands straight out of the palm; the second and
++			-- third turn at the knuckle and the second joint.
++			local shares = { 0.3, 0.34, 0.36 }
++			local turns = { 0, 0.45, 1 }
++			for si = 1, #shares do
++				local segLen = len * shares[si]
++				local ang = a + bend * turns[si]
++				local cu, su = math.cos(ang), math.sin(ang)
++				for ss = 1, 2 do
++					local f = segLen * ss / 2
++					add(u + cu * f, v + su * f, math.clamp((travelled + f) / len, 0, 1))
++				end
++				u += cu * segLen
++				v += su * segLen
++				travelled += segLen
++			end
++			local knuckle = samples[1]
++			for _, s in samples do
++				if math.abs(s.t - 0.45) < math.abs(knuckle.t - 0.45) then
++					knuckle = s
++				end
++			end
++			return {
++				samples = samples,
++				width = width,
++				taper = taper,
++				rootTop = rootTop,
++				crest = crest,
++				tip = tip,
++				knuckle = { x = knuckle.x, z = knuckle.z },
++				thumb = thumb,
++			}
++		end
++
++		-- The ridge's width at `t`: thick at the root, tapering to the tip.
++		local function spineWidth(s: Spine, t: number): number
++			return s.width * (1 - s.taper * t)
++		end
++
++		-- Its top: up over the knuckle, a saddle, a second joint, then down to
++		-- the tip, so a finger reads as two segments from the side.
++		local function spineHeight(s: Spine, t: number): number
++			if t < 0.4 then
++				local q = t / 0.4
++				return s.rootTop + (s.crest - s.rootTop) * (q * q * (3 - 2 * q))
++			elseif t < 0.56 then
++				local q = (t - 0.4) / 0.16
++				return s.crest + (s.crest * 0.8 - s.crest) * q
++			elseif t < 0.76 then
++				local q = (t - 0.56) / 0.2
++				return s.crest * 0.8 + (s.crest * 0.95 - s.crest * 0.8) * (q * q * (3 - 2 * q))
++			end
++			local q = (t - 0.76) / 0.24
++			return s.crest * 0.95 + (s.tip - s.crest * 0.95) * q
++		end
++
++		local spines: { Spine } = {}
++		for k = 1, FINGER_COUNT do
++			if k ~= missing then
++				local a = fingerAngles[k]
++				local crest, tip, len, width
++				if gesture == "shelter" then
++					crest = between(rng, 18, 29)
++					tip = crest * between(rng, 0.6, 0.8)
++					len = fingerLen * between(rng, 0.98, 1.1)
++					width = between(rng, 1.45, 1.75)
++				elseif gesture == "splayed" then
++					crest = between(rng, 15, 23)
++					tip = crest * between(rng, 0.36, 0.52)
++					len = fingerLen * between(rng, 1.0, 1.14)
++					width = between(rng, 1.35, 1.6)
++				elseif gesture == "claw" then
++					crest = between(rng, 10, 16)
++					tip = between(rng, 2.2, 4.2)
++					len = fingerLen * between(rng, 0.82, 0.98)
++					width = between(rng, 1.55, 1.85)
++				else
++					crest = between(rng, 16, 26)
++					tip = crest * between(rng, 0.45, 0.65)
++					len = fingerLen * between(rng, 0.92, 1.06)
++					width = between(rng, 1.45, 1.7)
++				end
++				local rootTop = palmH + between(rng, 0.8, 1.8)
++				if k == stump then
++					len = between(rng, 1.8, 2.8)
++					width = between(rng, 1.6, 1.9)
++					crest = math.max(rootTop + 1.4, between(rng, 6.5, 10.5))
++					tip = between(rng, 5, 8)
++				end
++				crest = math.max(crest, rootTop + 2)
++				local conv = if math.abs(a) < 0.1 then (if rng:NextNumber() < 0.5 then 1 else -1) else -sign(a)
++				local bend = conv * between(rng, 0.26, 0.7)
++				if gesture == "claw" then
++					bend *= 1.5
++				end
++				if k == stump then
++					bend *= 0.5
++				end
++				len = clampLen(a, len)
++				table.insert(
++					spines,
++					makeSpine(a, len, width, crest, tip, bend, rootTop, false, between(rng, 0.4, 0.55))
++				)
++			end
++		end
++		-- The thumb, out to one side of the palm and clearly lower than the
++		-- fingers, so it reads as a thumb and not a fifth finger.
++		local thumbA = (if rng:NextNumber() < 0.5 then 1 else -1) * between(rng, 1.55, 2.05)
++		local thumbRootTop = palmH + between(rng, 0.3, 0.9)
++		local thumbCrest = math.max(thumbRootTop + 1.6, between(rng, 8, 12))
++		local thumbLen = clampLen(thumbA, between(rng, 3.6, 5.0))
++		table.insert(
++			spines,
++			makeSpine(
++				thumbA,
++				thumbLen,
++				between(rng, 1.85, 2.2),
++				thumbCrest,
++				thumbCrest * between(rng, 0.45, 0.62),
++				-sign(thumbA) * between(rng, 0.35, 0.65),
++				thumbRootTop,
++				true,
++				between(rng, 0.3, 0.42)
++			)
++		)
++
++		-- The gates between the standing fingers: the palm's ways out besides
++		-- the wrist.
++		local present: { number } = {}
++		for k = 1, FINGER_COUNT do
++			if k ~= missing then
++				table.insert(present, k)
++			end
++		end
++		local gaps: { number } = {}
++		for k = 1, #present - 1 do
++			table.insert(gaps, (fingerAngles[present[k]] + fingerAngles[present[k + 1]]) / 2)
++		end
++		local gateCount = if gesture == "splayed" or gesture == "claw" then 2 else 1
++		local gates: { { a: number, half: number } } = {}
++		local taken: { number } = {}
++		for _ = 1, 40 do
++			if #taken >= gateCount or #gaps == 0 then
++				break
++			end
++			local g = whole(rng, 1, #gaps)
++			local ok = true
++			for _, p in taken do
++				ok = ok and math.abs(p - g) >= 1
++			end
++			if ok then
++				table.insert(taken, g)
++				table.insert(gates, { a = gaps[g], half = between(rng, 0.2, 0.32) })
++			end
++		end
++		if #gates == 0 then
++			table.insert(gates, { a = gaps[1] or 0, half = 0.26 })
++		end
++
++		-- The dune banked against the wrist, one or two lobes of wind-packed ash:
++		-- low enough at the wrist that the stone ramp rises out of it.
++		local long = palmR * stretch
++		local duneU = -(long + 2.2)
++		type Lobe = { u: number, v: number, ru: number, rv: number, h: number }
++		local lobes: { Lobe } = {}
++		local wristSide = 0
++		if wrist == "high" then
++			table.insert(lobes, {
++				u = duneU,
++				v = between(rng, -0.8, 0.8),
++				ru = between(rng, 2.8, 3.8),
++				rv = between(rng, 4.2, 6.2),
++				h = palmH - between(rng, 1.6, 2.8),
++			})
++		elseif wrist == "split" then
++			local off = between(rng, 2.2, 3.2)
++			local ru, rv = between(rng, 2.0, 2.8), between(rng, 2.2, 3.2)
++			table.insert(lobes, { u = duneU, v = -off, ru = ru, rv = rv, h = palmH * between(rng, 0.42, 0.6) })
++			table.insert(lobes, { u = duneU, v = off, ru = ru, rv = rv, h = palmH * between(rng, 0.42, 0.6) })
++		else
++			wristSide = if rng:NextNumber() < 0.5 then 1 else -1
++			table.insert(lobes, {
++				u = duneU,
++				v = wristSide * between(rng, 2.8, 4.0),
++				ru = between(rng, 2.4, 3.4),
++				rv = between(rng, 3.2, 4.6),
++				h = palmH - between(rng, 2.2, 3.4),
++			})
++		end
++		local function duneAt(u: number, v: number): number
++			local best = 0
++			for _, l in lobes do
++				local du, dv = (u - l.u) / l.ru, (v - l.v) / l.rv
++				local e = du * du + dv * dv
++				if e < 1 then
++					local h = l.h * 0.5 * (1 + math.cos(math.pi * math.sqrt(e)))
++					if h > best then
++						best = h
++					end
++				end
++			end
++			return best
++		end
++
++		-- The palm's heart, drawn before the cell loop.
++		local lensU, lensV, lensR, lensDrop = 0, 0, 0, 0
++		if heart == "lens" then
++			lensU, lensV = between(rng, -1.2, 1.2), between(rng, -1.2, 1.2)
++			lensR = between(rng, 1.8, 3.0)
++			lensDrop = between(rng, 0.5, 1.6)
++		end
++		local driftA, driftOff = 0, 0
++		if heart == "drift" then
++			driftA = between(rng, 0, 2 * math.pi)
++			driftOff = between(rng, -1.6, 1.6)
++		end
++		local crackFrom, crackTo, crackWidth, crackRise = nil, nil, 0, 0
++		if heart == "cracked" then
++			local ca = between(rng, 0, 2 * math.pi)
++			local outer = rimAt(ca) - 0.5
++			local innerR = between(rng, 0.8, 2.2)
++			local innerA = ca + between(rng, -0.5, 0.5)
++			crackFrom = worldOf(outer * math.cos(ca), outer * math.sin(ca))
++			crackTo = worldOf(innerR * math.cos(innerA), innerR * math.sin(innerA))
++			crackWidth = between(rng, 0.6, 0.95)
++			crackRise = between(rng, 2.5, 5.5)
++		end
++
++		-- Lay the hand out cell by cell.
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inBounds(x: number, z: number): boolean
++			return x >= 1 and x <= w and z >= 1 and z <= d
++		end
++
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local u, v = localOf(x, z)
++				local r = math.sqrt(u * u + v * v)
++				local ang = math.atan2(v, u)
++				local rim = rimAt(ang)
++				local foot = groundLevel(u, v)
++				heights[i] = foot
++				-- The feature's own clearing: every cell of it keeps the map's
++				-- quiet props off, so the hand stands alone in the ash.
++				kinds[i] = "apron"
++				if r <= rim then
++					-- The palm's floor: fused violet glass, the one bright place.
++					kinds[i] = "palm"
++				elseif r - rim <= 3.4 and apart(ang, math.pi) < 0.85 then
++					-- The wrist: one broad ramp of the statue's stone rising out of
++					-- the dune, in two low shelves, the way in.
++					local shelf = if r - rim <= 1.6 then palmH - 1.2 else palmH - 2.3
++					heights[i] = math.max(foot, halfStuds(shelf))
++					kinds[i] = "palm"
++				end
++				-- The dune of ash heaped against the wrist, walkable on the way in.
++				if walk[i] then
++					local dh = math.floor(duneAt(u, v) / 2) * 2
++					if dh > heights[i] + 0.05 then
++						heights[i] = dh
++						kinds[i] = "dune"
++					end
++				end
++				-- The palm's heart.
++				if r <= rim then
++					if heart == "lens" then
++						local lr = math.sqrt((u - lensU) ^ 2 + (v - lensV) ^ 2)
++						if lr < lensR then
++							kinds[i] = "glass"
++							heights[i] = math.max(0, halfStuds(heights[i] - lensDrop))
++						end
++					elseif heart == "drift" then
++						local side = u * math.cos(driftA) + v * math.sin(driftA) - driftOff
++						if side > 0.3 * math.sin(3 * ang + driftOff) then
++							kinds[i] = "dune"
++							heights[i] = halfStuds(heights[i] + math.min(1.5, 0.5 + side * 0.35))
++						end
++					end
++				end
++			end
++		end
++
++		-- The fingers and thumb stand over all of it.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				for _, s in spines do
++					local best, bestT = math.huge, 0
++					for _, q in s.samples do
++						local dx, dz = x - q.x, z - q.z
++						local dd = dx * dx + dz * dz
++						if dd < best then
++							best, bestT = dd, q.t
++						end
++					end
++					local wdt = spineWidth(s, bestT)
++					if best <= wdt * wdt then
++						local top = spineHeight(s, bestT)
++						walk[i] = false
++						-- The glass grows from the knuckle out over the finger.
++						kinds[i] = if bestT >= 0.45 then "knuckle" else "finger"
++						local lift = top - heights[i]
++						if bestT >= 0.45 and bestT < 0.62 then
++							lift += 0.3 -- the glass swells over the knuckle
++						end
++						lifts[i] = math.max(lifts[i] or 0, lift)
++					end
++				end
++			end
++		end
++
++		-- Keep each gate a way in: the webbing between two finger roots stays
++		-- open ash, so the palm is entered there as well as over the wrist.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] then
++					continue
++				end
++				local u, v = localOf(x, z)
++				local r = math.sqrt(u * u + v * v)
++				local ang = math.atan2(v, u)
++				local rim = rimAt(ang)
++				local core = false
++				for _, gate in gates do
++					core = core or apart(ang, gate.a) < gate.half * 0.72
++				end
++				if core and r - rim >= -0.4 and r - rim <= RAMP * 0.72 then
++					walk[i] = true
++					kinds[i] = "apron"
++					lifts[i] = nil
++					heights[i] = groundLevel(u, v)
++				end
++			end
++		end
++
++		-- Glass grown over the knuckles: the stone's crest turns violet and
++		-- rises a little, and the hand's own glass sits on each.
++		local knuckleCells: { { x: number, z: number, lift: number } } = {}
++		for _, s in spines do
++			local kx, kz = math.floor(s.knuckle.x + 0.5), math.floor(s.knuckle.z + 0.5)
++			if inBounds(kx, kz) then
++				local found = false
++				for oz = -1, 1 do
++					for ox = -1, 1 do
++						local qx, qz = kx + ox, kz + oz
++						if inBounds(qx, qz) and ox * ox + oz * oz <= 1.2 then
++							local qi = at(qx, qz)
++							if not walk[qi] then
++								kinds[qi] = "knuckle"
++								lifts[qi] = (lifts[qi] or 0) + 0.4
++								if qx == kx and qz == kz then
++									found = true
++								end
++							end
++						end
++					end
++				end
++				local ki = at(kx, kz)
++				if found then
++					table.insert(knuckleCells, { x = kx, z = kz, lift = lifts[ki] or 0 })
++				end
++			end
++		end
++
++		-- The sheared socket of the finger that is gone.
++		if missing > 0 then
++			local a = fingerAngles[missing]
++			local rim = rimAt(a)
++			local root = worldOf((rim - 0.3) * math.cos(a), (rim - 0.3) * math.sin(a))
++			local stubRise = palmH + between(rng, 1.5, 3.5)
++			for z = 1, d do
++				for x = 1, w do
++					local i = at(x, z)
++					local dx, dz = x - root.x, z - root.z
++					if dx * dx + dz * dz <= 1.5 then
++						walk[i] = false
++						kinds[i] = "finger"
++						lifts[i] = math.max(lifts[i] or 0, stubRise - heights[i])
++					end
++				end
++			end
++		end
++
++		-- A cracked rise across the palm: the statue's stone split and lifted.
++		if crackFrom and crackTo then
++			for z = 1, d do
++				for x = 1, w do
++					local i = at(x, z)
++					if walk[i] and distanceToSegment(x, z, crackFrom, crackTo) <= crackWidth then
++						walk[i] = false
++						kinds[i] = "finger"
++						lifts[i] = math.max(lifts[i] or 0, palmH + crackRise - heights[i])
++					end
++				end
++			end
++		end
++
++		-- Walkable ground must join up: a pocket cut off by a ridge becomes
++		-- fallen stone rather than a hole in the hand.
++		local g = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		local regions = Grid.regions(g)
++		if #regions > 1 then
++			local biggest, best = 1, 0
++			for k, region in regions do
++				if #region > best then
++					biggest, best = k, #region
++				end
++			end
++			for k, region in regions do
++				if k ~= biggest then
++					for _, i in region do
++						walk[i] = false
++						kinds[i] = "finger"
++						lifts[i] = 1.5
++					end
++				end
++			end
++		end
++
++		-- Never leave two walkable cells more than a step apart: ease the higher
++		-- of a pair down until every slope is walkable.
++		for _ = 1, 16 do
++			local changed = false
++			for z = 1, d do
++				for x = 1, w do
++					local i = at(x, z)
++					if not walk[i] then
++						continue
++					end
++					local cap = math.huge
++					for _, nb in Grid.NEIGHBOURS do
++						local nx, nz = x + nb[1], z + nb[2]
++						if inBounds(nx, nz) then
++							local j = at(nx, nz)
++							if walk[j] then
++								cap = math.min(cap, heights[j] + STEP * 0.999)
++							end
++						end
++					end
++					if cap < heights[i] then
++						heights[i] = cap
++						changed = true
++					end
++				end
++			end
++			if not changed then
++				break
++			end
++		end
++		-- Ground on a half-stud grid: floors and steps draw as a few clean runs.
++		for i, ok in walk do
++			if ok then
++				heights[i] = math.floor(heights[i] * 2) / 2
++			end
++		end
++
++		-- The road: in off the border, over the dune onto the wrist, across the
++		-- palm and out through the first gate between two fingers.
++		local function borderAt(a: number): Point
++			local x, z = cx, cz
++			for _ = 1, 400 do
++				local nx, nz = x + math.cos(a) * 0.25, z + math.sin(a) * 0.25
++				if nx < 1 or nx > w or nz < 1 or nz > d then
++					break
++				end
++				x, z = nx, nz
++			end
++			local ix = math.clamp(math.floor(x + 0.5), 1, w)
++			local iz = math.clamp(math.floor(z + 0.5), 1, d)
++			local toW, toE, toN, toS = ix - 1, w - ix, iz - 1, d - iz
++			local least = math.min(toW, toE, toN, toS)
++			if least == toW then
++				return { x = 1, z = iz }
++			elseif least == toE then
++				return { x = w, z = iz }
++			elseif least == toN then
++				return { x = ix, z = 1 }
++			end
++			return { x = ix, z = d }
++		end
++		local entryA = math.pi - wristSide * 0.4 + between(rng, -0.25, 0.25)
++		local exitA = gates[1].a + between(rng, -0.08, 0.08)
++		local entryV = if wrist == "side" then -wristSide * 1.4 else between(rng, -0.6, 0.6)
++		local road: { Point } = { borderAt(turn + entryA) }
++		table.insert(road, worldOf(-(long + 3.2), entryV))
++		table.insert(road, worldOf(-(long + 0.7), entryV * 0.5))
++		table.insert(road, worldOf(-(long - 1.2), 0))
++		local exitRim = rimAt(exitA)
++		table.insert(
++			road,
++			worldOf(between(rng, -1.4, -0.2) * math.cos(exitA), between(rng, -1.4, -0.2) * math.sin(exitA))
++		)
++		table.insert(
++			road,
++			worldOf((exitRim + fingerLen * 0.55) * math.cos(exitA), (exitRim + fingerLen * 0.55) * math.sin(exitA))
++		)
++		table.insert(
++			road,
++			worldOf((exitRim + fingerLen + 2.2) * math.cos(exitA), (exitRim + fingerLen + 2.2) * math.sin(exitA))
++		)
++		table.insert(road, borderAt(turn + exitA))
++		-- Keep every road point on walkable ground: nudge one that fell on a
++		-- wall to the nearest walkable cell.
++		for _, p in road do
++			local ipx, ipz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			local ok = inBounds(ipx, ipz) and walk[at(ipx, ipz)]
++			if not ok then
++				local best, bestD = nil, math.huge
++				for oz = -3, 3 do
++					for ox = -3, 3 do
++						local qx, qz = ipx + ox, ipz + oz
++						if inBounds(qx, qz) and walk[at(qx, qz)] then
++							local dd = ox * ox + oz * oz
++							if dd < bestD then
++								best, bestD = { x = qx, z = qz }, dd
++							end
++						end
++					end
++				end
++				if best then
++					p.x, p.z = best.x, best.z
++				end
++			end
++		end
++		-- Hold the ends on the border, where a map's road joins the feature.
++		for _, k in { 1, #road } do
++			local p = road[k]
++			local ipx, ipz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			local toW, toE, toN, toS = math.abs(ipx - 1), math.abs(ipx - w), math.abs(ipz - 1), math.abs(ipz - d)
++			local least = math.min(toW, toE, toN, toS)
++			if least == toW then
++				p.x = 1
++			elseif least == toE then
++				p.x = w
++			elseif least == toN then
++				p.z = 1
++			else
++				p.z = d
++			end
++		end
++
++		-- What the hand stands itself: the glass at each knuckle, and the
++		-- segment of the finger it lost, lying in the ash.
++		local marks: { FeatureDress.Landmark } = {}
++		for _, k in knuckleCells do
++			table.insert(marks, {
++				sculpt = "waste_hand_knuckle",
++				x = k.x,
++				z = k.z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.8, 1.15),
++				-- Stand it on the ridge's glassed top, not at the wall's foot.
++				sink = -k.lift + 0.35,
++				solid = true,
++			})
++		end
++		local fallenA = if missing > 0 then fingerAngles[missing] else between(rng, 0, 2 * math.pi)
++		if missing > 0 or rng:NextNumber() < 0.4 then
++			local room = roomAt(turn + fallenA) - 1.8
++			local rr = math.min(rimAt(fallenA) + fingerLen + between(rng, 1.6, 2.6), room)
++			local p = worldOf(rr * math.cos(fallenA), rr * math.sin(fallenA))
++			table.insert(marks, {
++				sculpt = "waste_hand_finger",
++				x = p.x,
++				z = p.z,
++				yaw = math.deg(fallenA) + 180 + between(rng, -25, 25),
++				scale = between(rng, 1.0, 1.25),
++				sink = 0.3,
++				solid = true,
++			})
++		end
++
++		-- A spire of the same violet glass about a person tall, standing in the
++		-- palm: the scale the hand is read by, and one more detail of the glass
++		-- grown here.
++		local spireA = gates[1].a + math.pi
++		for k = 0, 6 do
++			local a = spireA + (if k == 0 then 0 else (if k % 2 == 1 then 1 else -1) * math.ceil(k / 2) * 0.4)
++			local p =
++				worldOf(palmR * between(rng, 0.45, 0.7) * math.cos(a), palmR * between(rng, 0.45, 0.7) * math.sin(a))
++			local ix, iz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			if inBounds(ix, iz) and walk[at(ix, iz)] then
++				table.insert(marks, {
++					sculpt = "waste_glass",
++					x = p.x,
++					z = p.z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.6, 0.8),
++					sink = 0.2,
++				})
++				break
++			end
++		end
++
++		-- The glass in the palm breathes a tall column of violet motes out of the
++		-- hand: the one bright place in the ash, with a glint and a dust of ash
++		-- folded into it.
++		local effects: { FeatureDress.Effect } = {
++			{ recipe = "waste_hand_motes", x = worldOf(0, 0).x, z = worldOf(0, 0).z, lift = 1.2 },
++		}
++
++		-- The photographs: pulled back to frame the whole hand with the palm as
++		-- the subject, from over the wrist dune and from off the fingertips.
++		local heroFrom = worldOf(-(long + fingerLen + 8.2), entryV * 0.5 + between(rng, -4, 4))
++		local heroTo = worldOf(between(rng, -1.2, 1.2), between(rng, -1.2, 1.2))
++		local gapFrom = worldOf(long + fingerLen + 7.8, between(rng, -4, 4))
++		local gapTo = worldOf(between(rng, -1.2, 1.2), between(rng, -1.2, 1.2))
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "over the wrist dune at the whole hand",
++					from = { x = heroFrom.x, z = heroFrom.z, lift = between(rng, 34, 40) },
++					to = { x = heroTo.x, z = heroTo.z, lift = between(rng, 2, 4) },
++					fov = 62,
++				},
++				{
++					name = "off the fingertips at the palm",
++					from = { x = gapFrom.x, z = gapFrom.z, lift = between(rng, 36, 42) },
++					to = { x = gapTo.x, z = gapTo.z, lift = between(rng, 3, 5) },
++					fov = 62,
++				},
++			},
++		}
++	end,
++}
++
++return feature
