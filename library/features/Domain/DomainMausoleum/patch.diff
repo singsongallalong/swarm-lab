@@ -1,0 +1,1092 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..d05bec93 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,12 +2,14 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainMausoleum = require("../systems/features/DomainMausoleum")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	DomainMausoleum = DomainMausoleum,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..eac8e2d1 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,325 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (the mausoleum of a god, domain-features-2, 2026-10-30): the
++-- god's tomb in its four parts and the colossi that keep it. Assemblies, so every
++-- shape is data: ivory marble in a light and a shaded tone, the Domain's gold as
++-- trim and crown, a dark sanctum for the one the tomb is for. Each is written with
++-- its parts at the real size and its height in `size[2]`, the front facing +X.
++-- The tomb's gilded pediment roof: two great marble slopes meeting at a gold ridge,
++-- gold raking cornices and a gold diamond on the gable the road looks at. Its width
++-- is the roof's span across the cella, its depth the ridge's run from door to apse.
++Sculpts.domain_mausoleum_roof = {
++	kind = "assembly",
++	size = { 52, 18, 68 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 206, 190 }, { 230, 190, 110 } },
++	materials = { [3] = "Foil" },
++	maxPrims = 18,
++	parts = {
++		{ name = "west slope", shape = "Wedge", size = { 52, 18, 34 }, at = { 0, 9, -17 }, color = 1 },
++		{
++			name = "east slope",
++			shape = "Wedge",
++			size = { 52, 18, 34 },
++			at = { 0, 9, 17 },
++			rot = { 0, 180, 0 },
++			color = 2,
++		},
++		{ name = "ridge", shape = "Block", size = { 52, 1.4, 2.6 }, at = { 0, 17.3, 0 }, color = 3 },
++		{
++			name = "gable eaves",
++			shape = "Block",
++			size = { 2.4, 1.8, 68 },
++			at = { 26, 0.9, 0 },
++			color = 3,
++			mirror = "x",
++		},
++		{
++			name = "side eaves",
++			shape = "Block",
++			size = { 52, 1.8, 2.4 },
++			at = { 0, 0.9, 34 },
++			color = 3,
++			mirror = "z",
++		},
++		{
++			name = "rakes",
++			shape = "Block",
++			size = { 1.6, 38.5, 1.6 },
++			at = { 26.5, 9, -17 },
++			rot = { 62.1, 0, 0 },
++			color = 3,
++			mirror = "z",
++		},
++		{
++			name = "gable emblem",
++			shape = "Block",
++			size = { 1.4, 2.4, 2.4 },
++			at = { 26.9, 15.9, 0 },
++			rot = { 45, 0, 0 },
++			color = 3,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The broad order of the same roof: the ridge run shorter, the span wider, so a
++-- wide heroon is covered as exactly as a deep cella.
++Sculpts.domain_mausoleum_roof_broad = {
++	kind = "assembly",
++	size = { 52, 18, 76 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 206, 190 }, { 230, 190, 110 } },
++	materials = { [3] = "Foil" },
++	maxPrims = 18,
++	parts = {
++		{ name = "west slope", shape = "Wedge", size = { 52, 18, 38 }, at = { 0, 9, -19 }, color = 1 },
++		{
++			name = "east slope",
++			shape = "Wedge",
++			size = { 52, 18, 38 },
++			at = { 0, 9, 19 },
++			rot = { 0, 180, 0 },
++			color = 2,
++		},
++		{ name = "ridge", shape = "Block", size = { 52, 1.4, 2.6 }, at = { 0, 17.3, 0 }, color = 3 },
++		{
++			name = "gable eaves",
++			shape = "Block",
++			size = { 2.4, 1.8, 76 },
++			at = { 26, 0.9, 0 },
++			color = 3,
++			mirror = "x",
++		},
++		{
++			name = "side eaves",
++			shape = "Block",
++			size = { 52, 1.8, 2.4 },
++			at = { 0, 0.9, 38 },
++			color = 3,
++			mirror = "z",
++		},
++		{
++			name = "rakes",
++			shape = "Block",
++			size = { 1.6, 42.1, 1.6 },
++			at = { 26.5, 9, -19 },
++			rot = { 64.7, 0, 0 },
++			color = 3,
++			mirror = "z",
++		},
++		{
++			name = "gable emblem",
++			shape = "Block",
++			size = { 1.4, 2.4, 2.4 },
++			at = { 26.9, 15.9, 0 },
++			rot = { 45, 0, 0 },
++			color = 3,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The round tomb's crown: a dome of five shrinking drums in the marble's light
++-- tone, a gold ring at its foot and another at its eye, and a gold ball finial, so
++-- a tholos reads as a dome from the high camera and not as a drum with a lid.
++Sculpts.domain_mausoleum_dome = {
++	kind = "assembly",
++	size = { 64, 26, 64 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 206, 190 }, { 230, 190, 110 } },
++	materials = { [3] = "Foil" },
++	maxPrims = 14,
++	parts = {
++		{ name = "foot ring", shape = "Cylinder", axis = "y", size = { 64, 2, 64 }, at = { 0, 1, 0 }, color = 3 },
++		{
++			name = "drums",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 60, 6, 60 },
++			at = { 0, 3, 0 },
++			color = 1,
++			stack = { count = 5, step = 6, shrink = 0.84 },
++		},
++		{ name = "eye ring", shape = "Cylinder", axis = "y", size = { 19, 1.6, 19 }, at = { 0, 22.2, 0 }, color = 3 },
++		{ name = "finial", shape = "Ball", size = { 4.6, 4.6, 4.6 }, at = { 0, 23.7, 0 }, color = 3 },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The god's door: a gilded jamb-and-lintel frame on a broad threshold, its cornice
++-- crowned with a gold diamond, and one gold leaf standing ajar into the dark, so
++-- the tomb is sealed by light and stone while its god still shows through the gap.
++Sculpts.domain_mausoleum_door = {
++	kind = "assembly",
++	size = { 10, 40, 18 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 206, 190 }, { 230, 190, 110 } },
++	materials = { [3] = "Foil" },
++	maxPrims = 20,
++	parts = {
++		{ name = "threshold", shape = "Block", size = { 10, 1.2, 25 }, at = { 0.5, 0.6, 0 }, color = 2 },
++		{ name = "jamb", shape = "Block", size = { 9, 30, 3 }, at = { 0, 16.2, -10 }, color = 1, mirror = "z" },
++		{
++			name = "jamb capital",
++			shape = "Block",
++			size = { 9.6, 1.6, 3.8 },
++			at = { 0, 32, -10 },
++			color = 3,
++			mirror = "z",
++		},
++		{ name = "architrave", shape = "Block", size = { 9.8, 1.2, 26.4 }, at = { 0, 32.8, 0 }, color = 3 },
++		{ name = "lintel", shape = "Block", size = { 9.4, 3.6, 26 }, at = { 0, 35.4, 0 }, color = 1 },
++		{ name = "cornice", shape = "Block", size = { 10, 1.6, 26 }, at = { 0, 38, 0 }, color = 2 },
++		{ name = "crest", shape = "Block", size = { 1.2, 2, 2 }, at = { 4.9, 38.4, 0 }, rot = { 45, 0, 0 }, color = 3 },
++		{
++			name = "door leaf",
++			at = { 0, 14.2, -8.5 },
++			rot = { 0, -62, 0 },
++			children = {
++				{ name = "leaf", shape = "Block", size = { 1.2, 26, 10.5 }, at = { 0, 0, 5.25 }, color = 3 },
++				{
++					name = "handle",
++					shape = "Cylinder",
++					axis = "x",
++					size = { 0.6, 1.4, 1.4 },
++					at = { 0.8, -1.2, 9.6 },
++					color = 3,
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The god's sarcophagus, all a person's height and four of them long: a stepped
++-- bier, a marble coffer banded in gold, a lid, and on it the god in low relief —
++-- head at the crown end, a gold crown, folded arms and a sword laid down the body.
++Sculpts.domain_sarcophagus = {
++	kind = "assembly",
++	size = { 26, 11, 12 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 206, 190 }, { 230, 190, 110 } },
++	materials = { [3] = "Foil" },
++	maxPrims = 26,
++	parts = {
++		{ name = "bier", shape = "Block", size = { 24, 1.2, 10 }, at = { 0, 0.6, 0 }, color = 2 },
++		{ name = "bier step", shape = "Block", size = { 21, 1.1, 8.6 }, at = { 0, 1.75, 0 }, color = 1 },
++		{ name = "coffer", shape = "Block", size = { 20, 4, 7.4 }, at = { 0, 4.3, 0 }, color = 2 },
++		{ name = "lower band", shape = "Block", size = { 20.6, 0.7, 8 }, at = { 0, 3.4, 0 }, color = 3 },
++		{ name = "upper band", shape = "Block", size = { 20.6, 0.6, 8 }, at = { 0, 5.6, 0 }, color = 3 },
++		{ name = "lid", shape = "Block", size = { 21, 1.2, 8.6 }, at = { 0, 6.9, 0 }, color = 1 },
++		{ name = "lid rim", shape = "Block", size = { 21.4, 0.4, 9 }, at = { 0, 6.2, 0 }, color = 3 },
++		{ name = "effigy", shape = "Block", size = { 13, 1.3, 4.2 }, at = { -1, 8.15, 0 }, color = 1 },
++		{ name = "feet", shape = "Block", size = { 5, 1.1, 3.4 }, at = { -7.5, 7.9, 0 }, color = 2 },
++		{ name = "head", shape = "Ball", size = { 2.6, 2.6, 2.6 }, at = { 6.3, 8.6, 0 }, color = 1 },
++		{ name = "crown", shape = "Cylinder", axis = "y", size = { 3, 0.9, 3 }, at = { 6.3, 10.55, 0 }, color = 3 },
++		{
++			name = "arms",
++			shape = "Block",
++			size = { 4.6, 0.8, 1.1 },
++			at = { 0.6, 8.7, 1.2 },
++			rot = { 0, -18, 0 },
++			color = 2,
++			mirror = "z",
++		},
++		{ name = "sword", shape = "Block", size = { 9, 0.5, 1 }, at = { 1.5, 8.75, 0 }, color = 3 },
++		{
++			name = "rosettes",
++			shape = "Ball",
++			size = { 1.1, 1, 1.1 },
++			at = { 9.6, 7.4, 3.6 },
++			color = 3,
++			mirror = "z",
++			chance = 0.7,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The tomb's guardian: a veiled colossus on a stepped plinth, wings folded up
++-- behind its shoulders, a tall gold crest on its helm, both hands on a great
++-- sword planted point-down before it. Six people tall, so the door is a doorway.
++Sculpts.domain_guardian = {
++	kind = "assembly",
++	size = { 14, 30, 16 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 206, 190 }, { 230, 190, 110 } },
++	materials = { [3] = "Foil" },
++	maxPrims = 40,
++	parts = {
++		{ name = "plinth", shape = "Block", size = { 9, 1.3, 9 }, at = { 0, 0.65, 0 }, color = 2 },
++		{ name = "plinth step", shape = "Block", size = { 7, 1, 7 }, at = { 0, 1.8, 0 }, color = 1 },
++		{ name = "hem", shape = "Block", size = { 5.6, 2.6, 6.2 }, at = { 0, 3.6, 0 }, color = 2 },
++		{ name = "robe", shape = "Block", size = { 4, 11, 5 }, at = { 0, 10.4, 0 }, color = 1 },
++		{ name = "robe fold", shape = "Block", size = { 1.2, 9, 3 }, at = { 2.2, 9.5, 0 }, color = 2 },
++		{ name = "torso", shape = "Block", size = { 3.6, 4.6, 4.6 }, at = { 0, 18.2, 0 }, color = 1 },
++		{ name = "chest", shape = "Block", size = { 0.9, 2.8, 3.2 }, at = { 1.8, 18.4, 0 }, color = 2 },
++		{ name = "shoulders", shape = "Block", size = { 4.6, 1.3, 6.4 }, at = { 0, 20.9, 0 }, color = 1 },
++		{ name = "neck", shape = "Cylinder", axis = "y", size = { 1.4, 1.2, 1.4 }, at = { 0, 21.9, 0 }, color = 2 },
++		{ name = "head", shape = "Block", size = { 2.6, 3, 2.8 }, at = { 0, 24.2, 0 }, color = 1 },
++		{ name = "face", shape = "Block", size = { 0.5, 1.8, 2.2 }, at = { 1.4, 24, 0 }, color = 2 },
++		{ name = "helm crown", shape = "Cylinder", axis = "y", size = { 3.2, 1.1, 3.2 }, at = { 0, 26, 0 }, color = 3 },
++		{ name = "helm crest", shape = "Block", size = { 0.8, 5, 1.2 }, at = { 0, 27.2, 0 }, color = 3 },
++		{
++			name = "wings",
++			shape = "Block",
++			size = { 0.9, 12, 3.4 },
++			at = { -1.6, 21.5, 3.2 },
++			rot = { 20, 0, 0 },
++			color = 2,
++			mirror = "z",
++		},
++		{
++			name = "arm",
++			mirror = "z",
++			children = {
++				{
++					name = "upper arm",
++					shape = "Block",
++					size = { 1.5, 3.6, 1.5 },
++					at = { 1, 19.1, 2.5 },
++					rot = { 0, 0, 14 },
++					color = 1,
++				},
++				{
++					name = "forearm",
++					shape = "Block",
++					size = { 1.3, 3.4, 1.3 },
++					at = { 2, 16.6, 1.7 },
++					rot = { 0, -18, 10 },
++					color = 1,
++				},
++				{ name = "hand", shape = "Block", size = { 1.1, 0.9, 1.2 }, at = { 2.6, 16.1, 0.9 }, color = 2 },
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{ name = "sword blade", shape = "Block", size = { 1.1, 13.5, 0.7 }, at = { 2.6, 7.4, 0 }, color = 1 },
++		{ name = "sword guard", shape = "Block", size = { 1.5, 0.6, 3.4 }, at = { 2.6, 14.5, 0 }, color = 3 },
++		{
++			name = "sword grip",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 0.7, 2.2, 0.7 },
++			at = { 2.6, 15.9, 0 },
++			color = 3,
++		},
++		{ name = "sword pommel", shape = "Ball", size = { 1.2, 1.2, 1.2 }, at = { 2.6, 17.3, 0 }, color = 3 },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The tomb's lamp: a stepped foot, a fluted stem, a gold collar and a broad gold
++-- bowl with a pale flame in it. The kit's brazier reads as a stool at this size
++-- (the first Domain run), so the mausoleum has a lamp of its own: a chalice on a
++-- column, one per cell, its light standing in the bowl.
++Sculpts.domain_tomb_lamp = {
++	kind = "assembly",
++	size = { 5, 12, 5 },
++	material = "Marble",
++	colors = { { 230, 222, 205 }, { 212, 204, 188 }, { 230, 190, 110 }, { 232, 210, 156 } },
++	materials = { [3] = "Foil", [4] = "Neon" },
++	maxPrims = 12,
++	parts = {
++		{ name = "foot", shape = "Block", size = { 4.8, 0.7, 4.8 }, at = { 0, 0.35, 0 }, color = 2 },
++		{ name = "foot step", shape = "Block", size = { 4, 0.5, 4 }, at = { 0, 0.95, 0 }, color = 1 },
++		{ name = "foot third", shape = "Block", size = { 3.2, 0.5, 3.2 }, at = { 0, 1.45, 0 }, color = 2 },
++		{ name = "stem", shape = "Cylinder", axis = "y", size = { 1.3, 5.4, 1.3 }, at = { 0, 4.4, 0 }, color = 1 },
++		{ name = "collar", shape = "Cylinder", axis = "y", size = { 1.8, 0.5, 1.8 }, at = { 0, 7.1, 0 }, color = 3 },
++		{ name = "bowl", shape = "Cylinder", axis = "y", size = { 3.4, 1.4, 3.4 }, at = { 0, 8.1, 0 }, color = 3 },
++		{ name = "flame", shape = "Cylinder", axis = "y", size = { 2.6, 0.3, 2.6 }, at = { 0, 8.9, 0 }, color = 4 },
++		{ name = "tongue", shape = "Ball", size = { 1.4, 2.2, 1.4 }, at = { 0, 10.1, 0 }, color = 4, chance = 0.85 },
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..ddeac934 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,92 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain (the mausoleum of a god, domain-features-2, 2026-10-30): the
++-- seal of holy light standing in the god's door. The gold leaf is ajar and the tomb
++-- is sealed by light: gold motes climb out of the threshold, a soft gold veil stands
++-- behind them (the tomb's dark chamber seen through a lit curtain), a rare cold
++-- sky-blue glint now and then (the area's one cool note, B12), and two warm lights
++-- breathe on the jambs so the door lights the plateau. Short and steep (climb 80),
++-- so the emitters stack in the doorway rather than trailing along the threshold, and
++-- few (three streams and a light), so a phone keeps every layer (EF3).
++recipes.domain_tomb_glory = {
++	about = "The seal of holy light in the Eternal Domain's tomb door: gold motes and a soft gold veil rising from the threshold, with a cold sky-blue glint.",
++	theme = "domain",
++	path = { kind = "worm", length = 6, step = 2, bend = 10, climb = 80, round = 1 },
++	layers = {
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 2,
++				thick = 3,
++				lift = 0.4,
++				toward = "up",
++				rise = 2.6,
++				life = { 4, 6.5 },
++				rate = 4,
++				size = 0.6,
++				tall = 1.8,
++				transparency = 0.2,
++				color = "gold",
++				texture = "wisp",
++				lean = 10,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 8, span = 8, periods = { 4.3, 6.1 } },
++			priority = 1,
++		},
++		{
++			name = "veil",
++			look = {
++				kind = "stream",
++				every = 2,
++				thick = 7,
++				lift = 0.8,
++				toward = "up",
++				rise = 1.2,
++				life = { 6, 9 },
++				rate = 1.5,
++				size = 5,
++				tall = 2.3,
++				transparency = 0.88,
++				color = "glow",
++				texture = "veil",
++				lean = 8,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 1.1, tilt = 6, span = 10, periods = { 7.1, 11.3 } },
++			priority = 2,
++		},
++		{
++			name = "cold glints",
++			look = {
++				kind = "stream",
++				every = 2,
++				thick = 2.6,
++				lift = 1,
++				toward = "up",
++				rise = 2,
++				life = { 3, 5 },
++				rate = 0.7,
++				size = 0.4,
++				tall = 1.8,
++				transparency = 0.3,
++				color = "sky",
++				texture = "wisp",
++				lean = 14,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 10, span = 9, periods = { 5.3, 3.7 } },
++			priority = 3,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 3, max = 2, range = 18, brightness = 1.1, color = "glow" },
++			motion = { kind = "pulse", period = 4.2, depth = 0.3 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..c2f7bdb0 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,35 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain (the mausoleum of a god, domain-features-2)
++	["sculpt:domain_mausoleum_roof"] = row(
++		"The Eternal Domain's god-tomb roof: two great marble slopes meeting at a gold ridge, with gold raking cornices and a gold diamond on the gable.",
++		MOOR
++	),
++	["sculpt:domain_mausoleum_roof_broad"] = row(
++		"The broad order of the Eternal Domain's tomb roof: the same gold-ridged pediment over a wide heroon.",
++		MOOR
++	),
++	["sculpt:domain_mausoleum_dome"] = row(
++		"The Eternal Domain's round tomb crown: a dome of five shrinking marble drums in gold rings, under a gold ball finial.",
++		MOOR
++	),
++	["sculpt:domain_mausoleum_door"] = row(
++		"The door of a god's tomb in the Eternal Domain: a gilt jamb-and-lintel frame with a gold diamond crest and one gold leaf standing ajar.",
++		MOOR
++	),
++	["sculpt:domain_sarcophagus"] = row(
++		"A god's sarcophagus in the Eternal Domain: a stepped bier and a marble coffer banded in gold, the god lying in relief with a gold crown and a sword.",
++		MOOR
++	),
++	["sculpt:domain_guardian"] = row(
++		"A tomb guardian of the Eternal Domain: a winged colossus in marble on a stepped plinth, a gold crest on its helm and both hands on a planted sword.",
++		MOOR
++	),
++	["sculpt:domain_tomb_lamp"] = row(
++		"The Eternal Domain's tomb lamp: a pale marble chalice on a stepped stem, its gold bowl a flame of holy light.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainMausoleum.luau b/src/shared/systems/features/DomainMausoleum.luau
+new file mode 100644
+index 00000000..4836ce3e
+--- /dev/null
++++ b/src/shared/systems/features/DomainMausoleum.luau
+@@ -0,0 +1,600 @@
++--!strict
++-- The Mausoleum of a God, a feature for the Eternal Domain (bible B12): a colossal
++-- tomb on a stepped plinth of ivory terraces, its cella walled in white stone under a
++-- gilded pediment, its gold door standing ajar on a dark sanctum where a god's
++-- sarcophagus lies; a colonnade walks the plateau's rim, colossi guard the stair and
++-- the door, and a road crosses the plaza at its foot. The Domain has halls, gates and
++-- spires (the kit), but no place a god is buried.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first,
++-- then look). The first draws choose the structure, the rest only dress it:
++--   1. the tomb: a deep cella, a broad heroon, a round drum, or a cella within its
++--      walled precinct with a gate front and back;
++--   2. the plinth: concentric square terraces, concentric round ones, or straight
++--      bands climbing from the road to the tomb (a processional ascent);
++--   3. how many tiers and how wide their terraces (4 to 6 tiers of 4 studs, 2 to 3
++--      cells a band), which sets the plateau's height and the plinth's reach;
++--   4. the colonnade: a peristyle round the plateau, a portico across the tomb's
++--      front, two avenues down the stair's sides, or none;
++--   5. the guardians: two at the door, two at the stair's foot, both, or none;
++--   6. then the road's way out (east, west or round the plinth to the north), the
++--      wall's height, the lamps and the small turns of the dressing.
++-- Everything stands on the Domain's own stone and gold (the domain_ kit, the
++-- domain_ theme), and the new pieces are its mausoleum, its door, its sarcophagus,
++-- its guardians, its lamp, its roofs and the light sealed across its threshold.
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function pick(rng: Random, list: { string }): string
++	return list[whole(rng, 1, #list)]
++end
++
++-- Ivory stone for the ground, inside the Domain's own limits (B12: stone value
++-- 0.75-0.92, saturation at most 0.20): the plaza, the three terrace tones, the gold
++-- of the processional stair and the plateau's rim (gold is the Domain's crown, and
++-- here it is the way up), the marble plateau (the tileset's own Marble colour, since
++-- Roblox colours a material once), the dark sanctum floor, and the white salt stone
++-- of the tomb. The terraces step through three tones and the coping is darker still,
++-- so a colossus of steps reads from the game camera and not as one pale mass.
++local APRON = { material = "Concrete", color = { 216, 209, 194 } }
++local STEP_LIGHT = { material = "Concrete", color = { 234, 227, 211 } }
++local STEP_MID = { material = "Concrete", color = { 216, 209, 193 } }
++local STEP_DARK = { material = "Concrete", color = { 196, 189, 173 } }
++local STAIR = { material = "Concrete", color = { 226, 192, 126 } }
++local PLATEAU = { material = "Marble", color = { 214, 208, 194 } }
++local SANCTUM = { material = "Basalt", color = { 44, 42, 50 } }
++local TOMB_STONE = { material = "Salt", color = { 232, 227, 215 } }
++local COPING = { material = "Concrete", color = { 192, 184, 168 } }
++local RIM = { material = "Concrete", color = { 220, 182, 106 } }
++local LAMP_STONE = { material = "Concrete", color = { 226, 219, 202 } }
++
++-- The Domain's holy light (EnvThemes `domain`): gold on the threshold, warm white
++-- in the lamps.
++local HOLY = { 255, 226, 160 }
++
++local TOMBS = { "deep", "broad", "round", "precinct" }
++local PLINTHS = { "square", "round", "bands" }
++local COLONNADES = { "peristyle", "portico", "avenue", "none" }
++local GUARDS = { "door", "stair", "both", "none" }
++
++local feature: MapFeature.Feature = {
++	name = "DomainMausoleum",
++	about = "A god's mausoleum: a white cella under a gilded roof on a stepped ivory plinth, its gold door ajar on a colossal sarcophagus, guarded by colossi and ringed by a colonnade.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "centrepiece",
++	mood = { "monumental", "sealed", "gilded", "processional", "awe" },
++	cells = {
++		-- The plaza at the plinth's foot, where the road crosses.
++		apron = { ground = APRON, lift = 0.15, clear = true },
++		-- The terraces, three pale tones so every tier reads from the game camera.
++		step1 = { ground = STEP_LIGHT, lift = 0.15, clear = true },
++		step2 = { ground = STEP_MID, lift = 0.15, clear = true },
++		step3 = { ground = STEP_DARK, lift = 0.15, clear = true },
++		-- The stair through a coping ring, gilded: the god's way up, half a rise a step.
++		stair = { ground = STAIR, lift = 0.15, clear = true },
++		-- The plateau court, on the tileset's own marble.
++		plateau = { ground = PLATEAU, lift = 0.2, clear = true },
++		-- The chamber's floor: dark basalt, so the white god and its gold read in the door.
++		sanctum = { ground = SANCTUM, lift = 0.2, clear = true },
++		-- The tomb's own stone: bright white salt, its cells lifted into walls.
++		tomb = { ground = TOMB_STONE, clear = true },
++		-- The flush coping of each terrace's retaining ring, and the gilded ring round
++		-- the plateau's own lip.
++		coping = { ground = COPING, lift = 4, clear = true },
++		rim = { ground = RIM, lift = 4, clear = true },
++		door = { ground = SANCTUM, lift = 0.2, clear = true },
++		-- A lamp cell: one pedestal lamp of our own (a mark, placed on the cell) and its
++		-- light in the bowl.
++		lamp = {
++			ground = LAMP_STONE,
++			lift = 0.2,
++			clear = true,
++			glow = { color = HOLY, range = 18, brightness = 1.3, every = 1, height = 9.6 },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		local w, d = 56, 56
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++
++		-- 1-2: the tomb and the plinth, the two big structures.
++		local tomb = pick(rng, TOMBS)
++		local plinth = pick(rng, PLINTHS)
++		-- The cella's half extents (cells, from a cell boundary), and a precinct ring's
++		-- where there is one.
++		local ax, az = 8, 6
++		local ringAx, ringAz = 0, 0
++		if tomb == "broad" then
++			ax, az = 9, 6
++		elseif tomb == "round" then
++			ax, az = 8, 8
++		elseif tomb == "precinct" then
++			ax, az = 7, 5
++			ringAx, ringAz = 11.5, 9.5
++		end
++		local reach = math.max(ax, az, ringAx, ringAz)
++		local minR = math.ceil(reach + 3)
++		-- 3: the tiers, their band width and the plateau's reach.
++		local tiers = whole(rng, 4, 6)
++		local band = if tiers * 3 <= 25 - minR then whole(rng, 2, 3) else 2
++		local slack = math.max(0, math.min(2, 25 - minR - tiers * band))
++		local plateauR = minR + whole(rng, 0, slack)
++		local Rp = plateauR + tiers * band
++		local apron = 28 - Rp
++		local rise = 4
++		local plateauH = tiers * rise
++		-- The plateau's walkable half extent: the tier stops climbing one band before
++		-- the plinth's edge, and that band's outer ring is its coping.
++		local plateauHalf = plateauR + band - 1
++		-- Where the tomb stands: the plateau's middle, nearer its back than its front.
++		-- Its middle is a cell boundary (an n.5 coordinate), so the walls and the door
++		-- fall in whole cells either side of it. It is placed by its outermost walls
++		-- (a precinct ring reaches further than its cella), and kept a court in from
++		-- the plateau's lip on every side.
++		local function half(n: number): number
++			return math.floor(n) + 0.5
++		end
++		local outerZ = math.max(az, ringAz)
++		local court = whole(rng, 3, 5)
++		local tcx, tcz
++		if plinth == "bands" then
++			-- The bands climb from the front; the plateau is the back of the plinth.
++			local frontEdge = cz + Rp - (tiers - 1) * band
++			local mid = (frontEdge + (cz - Rp)) / 2 - whole(rng, 0, 1)
++			tcx = cx
++			tcz = half(math.clamp(mid, cz - Rp + outerZ + 1, frontEdge - outerZ - court))
++		else
++			tcx = cx
++			tcz = half(cz + plateauHalf - outerZ - court)
++		end
++		-- The wall's height, and how tall the door is let to be (it stands under the roof).
++		local wallHeight = whole(rng, 36, 44)
++		local precinctH = whole(rng, 8, 12)
++		-- The front face of the cella, in cells (the front wall's outer edge).
++		local frontFace = if tomb == "round" then tcz + ax else tcz + az
++
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++
++		-- The plinth's plan: how far out from its middle (or its front, for bands) a cell is.
++		local function metric(x: number, z: number): number
++			if plinth == "round" then
++				return math.sqrt((x - cx) ^ 2 + (z - cz) ^ 2)
++			elseif plinth == "bands" then
++				if math.abs(x - cx) > Rp or z > cz + Rp or z < cz - Rp then
++					return math.huge
++				end
++				return (cz + Rp) - z
++			end
++			return math.max(math.abs(x - cx), math.abs(z - cz))
++		end
++		local function tierAt(x: number, z: number): number
++			local m = metric(x, z)
++			if m == math.huge then
++				return 0
++			end
++			if plinth == "bands" then
++				return math.clamp(math.floor(m / band) + 1, 0, tiers)
++			end
++			if m > Rp then
++				return 0
++			end
++			return math.min(tiers, math.floor((Rp - m) / band) + 1)
++		end
++
++		-- 4: the terraces, each a walkable band ringed by a flush coping wall; the stair
++		-- cuts the coping at the front (and, on the ring plans, at the back too).
++		local hw = whole(rng, 3, 5)
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local t = tierAt(x, z)
++				if t == 0 then
++					walk[i] = true
++					heights[i] = 0
++					kinds[i] = "apron"
++					continue
++				end
++				local boundary, low = false, t
++				for _, nb in Grid.NEIGHBOURS do
++					local other = tierAt(x + nb[1], z + nb[2])
++					if other < t then
++						boundary = true
++						low = math.min(low, other)
++					end
++				end
++				if boundary and low == t - 1 and math.abs(x - cx) <= hw then
++					-- A stair through the coping: half a rise, walkable either side.
++					walk[i] = true
++					heights[i] = t * rise - 2
++					kinds[i] = "stair"
++				elseif boundary then
++					walk[i] = false
++					heights[i] = (t - 1) * rise
++					kinds[i] = if t == tiers then "rim" else "coping"
++				else
++					walk[i] = true
++					heights[i] = t * rise
++					kinds[i] = if t == tiers then "plateau" else `step{t % 3 + 1}`
++				end
++			end
++		end
++
++		-- 5: the tomb. Its walls are cells of the plateau lifted into stone; the chamber
++		-- is a dark walkable room, and the door a slot through the front wall.
++		local function tombCell(x: number, z: number): string?
++			local dx, dz = x - tcx, z - tcz
++			if ringAx > 0 then
++				local inRing = math.abs(dx) <= ringAx
++					and math.abs(dz) <= ringAz
++					and not (math.abs(dx) < ringAx - 1 and math.abs(dz) < ringAz - 1)
++				if inRing then
++					-- The gates cut the ring's whole thickness, front and back.
++					if math.abs(dx) <= 1 and math.abs(dz) >= ringAz - 1 then
++						return "gate"
++					end
++					return "ring"
++				end
++			end
++			if tomb == "round" then
++				local r = math.sqrt(dx * dx + dz * dz)
++				if r > ax then
++					return nil
++				end
++				if r <= ax - 2 then
++					return "chamber"
++				end
++				if math.abs(dx) <= 1.5 and dz > 0 then
++					return "door"
++				end
++				return "wall"
++			end
++			if math.abs(dx) > ax or math.abs(dz) > az then
++				return nil
++			end
++			if math.abs(dx) <= ax - 2 and math.abs(dz) <= az - 2 then
++				return "chamber"
++			end
++			if math.abs(dx) <= 1.5 and dz > az - 2 then
++				return "door"
++			end
++			return "wall"
++		end
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local cell = tombCell(x, z)
++				if cell == "wall" then
++					walk[i] = false
++					heights[i] = plateauH
++					kinds[i] = "tomb"
++					lifts[i] = wallHeight
++				elseif cell == "ring" then
++					walk[i] = false
++					heights[i] = plateauH
++					kinds[i] = "tomb"
++					lifts[i] = precinctH
++				elseif cell == "chamber" then
++					walk[i] = true
++					heights[i] = plateauH
++					kinds[i] = "sanctum"
++				elseif cell == "door" or cell == "gate" then
++					walk[i] = true
++					heights[i] = plateauH
++					kinds[i] = if cell == "door" then "door" else "plateau"
++				end
++			end
++		end
++
++		-- One walkable ground: a round plinth's coping can pinch a few terrace cells
++		-- off at a diagonal, so any pocket that does not join the plaza is walled.
++		do
++			local g = Grid.new(w, d, Grid.WALL)
++			for i, ok in walk do
++				g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++			end
++			local regions = Grid.regions(g)
++			if #regions > 1 then
++				local keep = nil
++				for _, region in regions do
++					for _, i in region do
++						local x, z = Grid.coords(g, i)
++						if x == 1 or z == 1 or x == w or z == d then
++							keep = region
++							break
++						end
++					end
++					if keep then
++						break
++					end
++				end
++				for _, region in regions do
++					if region ~= keep then
++						for _, i in region do
++							walk[i] = false
++							kinds[i] = "coping"
++						end
++					end
++				end
++			end
++		end
++
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local function standing(x: number, z: number): boolean
++			local gx, gz = math.floor(x + 0.5), math.floor(z + 0.5)
++			return gx >= 1 and gx <= w and gz >= 1 and gz <= d and walk[at(gx, gz)]
++		end
++		local function nearTomb(x: number, z: number, margin: number): boolean
++			local dx, dz = math.abs(x - tcx), math.abs(z - tcz)
++			local rx, rz = math.max(ax, ringAx), math.max(az, ringAz)
++			return dx <= rx + margin and dz <= rz + margin
++		end
++
++		-- 6: the colonnade.
++		local colonnade = pick(rng, COLONNADES)
++		local columnScale = between(rng, 0.66, 0.82)
++		local columnStep = whole(rng, 4, 6)
++		local function column(x: number, z: number, scale: number?)
++			if not standing(x, z) or nearTomb(x, z, 1.5) then
++				return
++			end
++			if math.abs(x - cx) <= hw + 1 and z > cz then
++				return
++			end
++			table.insert(marks, {
++				sculpt = "domain_column",
++				x = x,
++				z = z,
++				yaw = whole(rng, 0, 3) * 90,
++				scale = (scale or columnScale) * between(rng, 0.94, 1.06),
++				sink = 0.2,
++				solid = true,
++			})
++		end
++		if colonnade == "peristyle" then
++			local r = plateauHalf - 1.5
++			local count = whole(rng, 10, 16)
++			local first = between(rng, 0, 2 * math.pi)
++			for k = 0, count - 1 do
++				local a = first + k * 2 * math.pi / count
++				local u = if plinth == "round" then r else r / math.max(math.abs(math.cos(a)), math.abs(math.sin(a)))
++				column(cx + u * math.cos(a), cz + u * math.sin(a))
++			end
++		elseif colonnade == "portico" then
++			local count = whole(rng, 5, 7)
++			local reachX = ax + 1
++			local scale = between(rng, 0.64, 0.74)
++			for k = 0, count - 1 do
++				local x = tcx - reachX + 2 * reachX * (if count > 1 then k / (count - 1) else 0.5)
++				column(x, frontFace + 2.6, scale)
++			end
++		elseif colonnade == "avenue" then
++			local z0 = frontFace + 3
++			local z1 = if plinth == "bands" then cz + Rp - (tiers - 1) * band - 1.5 else cz + plateauHalf - 2
++			local steps = math.max(1, math.floor((z1 - z0) / columnStep))
++			for k = 0, steps do
++				local z = z0 + (z1 - z0) * k / steps
++				table.insert(marks, {
++					sculpt = "domain_column",
++					x = tcx - hw - 1.5,
++					z = z,
++					yaw = whole(rng, 0, 3) * 90,
++					scale = columnScale * between(rng, 0.94, 1.06),
++					sink = 0.2,
++					solid = true,
++				})
++				table.insert(marks, {
++					sculpt = "domain_column",
++					x = tcx + hw + 1.5,
++					z = z,
++					yaw = whole(rng, 0, 3) * 90,
++					scale = columnScale * between(rng, 0.94, 1.06),
++					sink = 0.2,
++					solid = true,
++				})
++			end
++		end
++
++		-- 7: the guardians, at the door or the stair's foot.
++		local guard = pick(rng, GUARDS)
++		local function guardian(x: number, z: number, face: number, scale: number)
++			if not standing(x, z) then
++				return
++			end
++			table.insert(marks, {
++				sculpt = "domain_guardian",
++				x = x,
++				z = z,
++				yaw = face,
++				scale = scale,
++				sink = 0.2,
++				solid = true,
++			})
++		end
++		if guard == "door" or guard == "both" then
++			local off = ax + 2.6
++			local scale = between(rng, 0.98, 1.14)
++			guardian(tcx - off, frontFace + 2.4, -90, scale)
++			guardian(tcx + off, frontFace + 2.4, -90, scale * between(rng, 0.96, 1.04))
++		end
++		if guard == "stair" or guard == "both" then
++			local off = hw + 2.6
++			local scale = between(rng, 1.02, 1.2)
++			guardian(cx - off, cz + Rp + 2, -90, scale)
++			guardian(cx + off, cz + Rp + 2, -90, scale * between(rng, 0.96, 1.04))
++		end
++
++		-- 8: the lamps: a pair at the stair's foot, and a pair at the door (if the
++		-- guardians leave the cell free).
++		local function lamp(x: number, z: number)
++			local gx, gz = math.floor(x + 0.5), math.floor(z + 0.5)
++			if not standing(gx, gz) then
++				return
++			end
++			local i = at(gx, gz)
++			if kinds[i] == "lamp" then
++				return
++			end
++			for _, m in marks do
++				if m.sculpt ~= "domain_column" and math.abs(m.x - gx) < 1.2 and math.abs(m.z - gz) < 1.2 then
++					return
++				end
++			end
++			kinds[i] = "lamp"
++			table.insert(marks, {
++				sculpt = "domain_tomb_lamp",
++				x = gx,
++				z = gz,
++				yaw = whole(rng, 0, 3) * 90,
++				scale = between(rng, 0.96, 1.08),
++				sink = 0.2,
++			})
++		end
++		lamp(cx - hw - 1, cz + Rp + 2)
++		lamp(cx + hw + 1, cz + Rp + 2)
++		if rng:NextNumber() < 0.75 then
++			lamp(tcx - ax - 4, frontFace + 2.6)
++			lamp(tcx + ax + 4, frontFace + 2.6)
++		end
++
++		-- 9: the tomb's own standing pieces.
++		local roofScale = if tomb == "precinct" then 0.82 else 1
++		local roof = if tomb == "round"
++			then "domain_mausoleum_dome"
++			elseif tomb == "broad" then "domain_mausoleum_roof_broad"
++			else "domain_mausoleum_roof"
++		table.insert(marks, {
++			sculpt = roof,
++			x = tcx,
++			z = tcz,
++			-- The roof's pediment faces the door, which looks along +Z.
++			yaw = if tomb == "round" then whole(rng, 0, 3) * 90 else -90,
++			scale = roofScale,
++			sink = -wallHeight,
++			solid = true,
++		})
++		table.insert(marks, {
++			sculpt = "domain_mausoleum_door",
++			x = tcx,
++			z = frontFace,
++			yaw = -90,
++			scale = math.min(1, (wallHeight - 1) / 40),
++			sink = 0,
++			solid = true,
++		})
++		local sarcScale = if tomb == "precinct" then 0.95 elseif tomb == "round" then 1.05 else 1.2
++		table.insert(marks, {
++			sculpt = "domain_sarcophagus",
++			x = tcx,
++			z = tcz + math.min(2.2, az - 3.4),
++			yaw = 0,
++			scale = sarcScale,
++			sink = 0,
++			solid = true,
++		})
++
++		-- The light sealed across the threshold: the god's door is ajar, and holy light
++		-- stands in it.
++		table.insert(effects, { recipe = "domain_tomb_glory", x = tcx, z = frontFace + 1, lift = 1.5 })
++
++		-- 10: the road across the plaza at the foot of the plinth.
++		local mid = Rp + apron * 0.5
++		local entryX = math.clamp(cx + whole(rng, -7, 7), 4, w - 3)
++		local zr = cz + mid
++		local road: { Point } = { { x = entryX, z = d } }
++		local way = whole(rng, 1, 3)
++		if way == 1 then
++			-- East, out through the apron's corner.
++			local xr = cx + mid
++			table.insert(road, { x = entryX, z = zr })
++			table.insert(road, { x = xr, z = zr })
++			table.insert(road, { x = w, z = zr })
++		elseif way == 2 then
++			-- West.
++			local xr = cx - mid
++			table.insert(road, { x = entryX, z = zr })
++			table.insert(road, { x = xr, z = zr })
++			table.insert(road, { x = 1, z = zr })
++		else
++			-- Round the plinth's east side and out to the north.
++			local xr = cx + mid
++			table.insert(road, { x = entryX, z = zr })
++			table.insert(road, { x = xr, z = zr })
++			table.insert(road, { x = xr, z = cz - mid })
++			table.insert(road, { x = xr, z = 1 })
++		end
++		-- Keep every road point on walkable ground.
++		for _, p in road do
++			for _ = 1, 8 do
++				if standing(p.x, p.z) then
++					break
++				end
++				p.x = math.clamp(p.x, 1, w)
++				p.z = math.clamp(p.z, 1, d)
++				if p.z ~= 1 and p.z ~= d then
++					p.z += 0.5
++				else
++					p.x += 0.5
++				end
++			end
++		end
++
++		-- The photographs: the mausoleum from the plaza at the foot of its plinth,
++		-- three-quarters with the stair leading up to the god's door; and the door
++		-- itself, ajar, with the sarcophagus in the dark beyond it. `eye` sets a camera
++		-- a number of studs over the *plateau*, wherever it stands (the plaza, a terrace
++		-- or the court), so the shot is composed on the tomb and not on the ground it
++		-- happens to stand over.
++		local function eye(x: number, z: number, over: number): { x: number, z: number, lift: number }
++			local gx = math.clamp(math.floor(x + 0.5), 1, w)
++			local gz = math.clamp(math.floor(z + 0.5), 1, d)
++			return { x = x, z = z, lift = plateauH + over - heights[at(gx, gz)] }
++		end
++		local shots: { MapFeature.Shot } = {
++			{
++				name = "the mausoleum of a god",
++				from = eye(tcx + 12, cz + Rp + 9, 19),
++				to = eye(tcx - 1, frontFace - 1, 13),
++				fov = 56,
++			},
++			{
++				name = "the door ajar",
++				from = eye(tcx + 0.8, frontFace + 18, 13),
++				to = eye(tcx, tcz, 11),
++				fov = 52,
++			},
++		}
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = shots,
++		}
++	end,
++}
++
++return feature

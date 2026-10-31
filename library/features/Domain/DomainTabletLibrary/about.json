@@ -1,0 +1,22 @@
+{
+  "letter": "U",
+  "generator": "g13",
+  "run": "domain-features-2",
+  "intent": "The gods' library: a broad court of tall double-faced marble shelves stacked with gold tablets, reading lecterns, and a colonnaded rotunda where a colossal sealed book stands under a ring of gold lights and its light unwinds upward in twin threads \u2014 a place in the Eternal Domain built to read in, with gold tablets as its furniture and its only ruin.",
+  "critic": {
+    "idea": 7,
+    "photo": 6,
+    "topology": 6,
+    "look": 5,
+    "game_camera": 5,
+    "usable": 6,
+    "total": 6.12,
+    "reads_as_itself": "yes",
+    "inorganic": 10,
+    "figures": "partly",
+    "best_shot": "feature-shots-final: shelves ringing the rotunda",
+    "why": "An archive with good furniture; the sealed book is small for its billing."
+  },
+  "role": "Side court: library as a lore/vendor alcove.",
+  "notes": "# U\n\nKeep: Keep the tablet shelves, lecterns and fallen shelves.\n\n1. Make the sealed book colossal with a clear spine and pages.\n2. Raise shelf height so the aisles read as canyons from eye level.\n3. Clear clutter near the rotunda so the dais reads.\n"
+}

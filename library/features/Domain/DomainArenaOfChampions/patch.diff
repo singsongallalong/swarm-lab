@@ -1,0 +1,880 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..593f7562 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainArenaOfChampions = require("../systems/features/DomainArenaOfChampions")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainArenaOfChampions = DomainArenaOfChampions,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..02d0a1c8 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,161 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (a feature, 2026-10-30): the arena of champions' own kit.
++-- Its lamp: a stepped pedestal, a fluted shaft and a wide gold bowl with a pale
++-- gold flame standing in it. A pedestal and bowl, not the kit's tripod brazier,
++-- which reads as a stool at arena size; the flame is Neon, the place's own light.
++Sculpts.domain_arena_pyre = {
++	kind = "assembly",
++	size = { 5, 10.9, 5 },
++	material = "Marble",
++	colors = { { 232, 226, 212 }, { 218, 211, 196 }, { 230, 193, 111 }, { 234, 202, 118 } },
++	materials = { [3] = "Foil", [4] = "Neon" },
++	maxPrims = 16,
++	parts = {
++		{ shape = "Block", size = { 3.8, 0.5, 3.8 }, at = { 0, 0.25, 0 }, color = 2 },
++		{ shape = "Block", size = { 2.6, 0.45, 2.6 }, at = { 0, 0.72, 0 }, color = 1 },
++		{ shape = "Cylinder", axis = "y", size = { 1.15, 5, 1.15 }, at = { 0, 3.45, 0 }, color = 1 },
++		{ shape = "Cylinder", axis = "y", size = { 1.6, 0.35, 1.6 }, at = { 0, 6.1, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 3.5, 1, 3.5 }, at = { 0, 6.8, 0 }, color = 2 },
++		{ shape = "Cylinder", axis = "y", size = { 4, 0.3, 4 }, at = { 0, 7.45, 0 }, color = 3 },
++		{
++			shape = "Ball",
++			size = { 0.45, 0.45, 0.45 },
++			at = { 0, 7.7, 0 },
++			ring = { count = 6, radius = 1.7, start = 30 },
++			color = 3,
++		},
++		{ shape = "Ball", size = { 1.1, 2.4, 1.1 }, at = { 0, 8.8, 0 }, color = 4 },
++		{ shape = "Ball", size = { 0.55, 1.5, 0.55 }, at = { 0, 10, 0 }, color = 4, jitter = { size = 0.12 } },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The royal box: a marble tribune with a gold-railed front, four gilded posts
++-- carrying an ivory cloth canopy edged in gold, a hanging valance, a throne and
++-- two banners. Its front faces +X, so a builder turns it to the arena floor.
++Sculpts.domain_arena_canopy = {
++	kind = "assembly",
++	size = { 16, 16.5, 26 },
++	material = "Marble",
++	colors = { { 232, 226, 212 }, { 218, 211, 196 }, { 230, 193, 111 }, { 232, 208, 160 } },
++	materials = { [3] = "Foil", [4] = "Fabric" },
++	maxPrims = 40,
++	parts = {
++		{ shape = "Block", size = { 14, 1, 24 }, at = { 0, 0.5, 0 }, color = 1 },
++		{ shape = "Block", size = { 2, 0.5, 24 }, at = { 8, 0.25, 0 }, color = 2 },
++		{ shape = "Block", size = { 1.2, 11, 24 }, at = { -7, 6, 0 }, color = 1 },
++		{ shape = "Block", size = { 1.8, 0.5, 24.8 }, at = { -7, 11.75, 0 }, color = 3 },
++		{ shape = "Block", size = { 0.5, 10, 1.4 }, at = { -6.3, 5.5, 8.5 }, mirror = "z", color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 1, 12, 1 }, at = { 5.5, 6.5, 10.5 }, mirror = "xz", color = 3 },
++		{ shape = "Block", size = { 17, 0.5, 26 }, at = { 0.5, 13.1, 0 }, color = 4 },
++		{ shape = "Block", size = { 17.4, 0.55, 0.7 }, at = { 0.5, 13.1, 12.8 }, mirror = "z", color = 3 },
++		{ shape = "Block", size = { 0.7, 0.55, 26 }, at = { 8.6, 13.1, 0 }, color = 3 },
++		{
++			shape = "Block",
++			size = { 0.28, 1.3, 0.9 },
++			at = { 8.6, 12.2, 0 },
++			row = { count = 8, step = { 0, 0, 3 }, center = true },
++			color = 3,
++		},
++		{ shape = "Block", size = { 4, 0.5, 4 }, at = { 0.5, 13.6, 0 }, color = 3 },
++		{ shape = "Block", size = { 2.6, 0.5, 2.6 }, at = { 0.5, 14.1, 0 }, color = 3 },
++		{ shape = "Ball", size = { 1.4, 2.2, 1.4 }, at = { 0.5, 15.4, 0 }, color = 3 },
++		{ shape = "Block", size = { 4, 0.6, 5 }, at = { -4, 1.3, 0 }, color = 2 },
++		{ shape = "Block", size = { 3.4, 2.2, 4.4 }, at = { -4.2, 2.7, 0 }, color = 1 },
++		{ shape = "Block", size = { 0.7, 3.6, 4.4 }, at = { -5.9, 3.4, 0 }, color = 1 },
++		{ shape = "Block", size = { 0.9, 0.5, 4.8 }, at = { -5.9, 5.4, 0 }, color = 3 },
++		{ shape = "Block", size = { 0.2, 6.5, 2.4 }, at = { -6.3, 7.6, 5.5 }, mirror = "z", color = 4 },
++		{ shape = "Block", size = { 0.26, 0.5, 2.4 }, at = { -6.3, 4.1, 5.5 }, mirror = "z", color = 3 },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The champions' weapon rack: a marble foot, two gilt posts and a bar, spears
++-- standing in it and two swords hung behind, for the edge of the arena floor.
++Sculpts.domain_arena_rack = {
++	kind = "assembly",
++	size = { 7, 7.2, 3.4 },
++	material = "Marble",
++	colors = { { 232, 226, 212 }, { 198, 180, 150 }, { 230, 193, 111 } },
++	materials = { [2] = "Wood", [3] = "Foil" },
++	maxPrims = 20,
++	parts = {
++		{ shape = "Block", size = { 6.4, 0.5, 2.8 }, at = { 0, 0.25, 0 }, color = 1 },
++		{ shape = "Block", size = { 0.55, 5.6, 0.55 }, at = { -2.7, 3.1, 0 }, mirror = "x", color = 3 },
++		{ shape = "Block", size = { 6, 0.5, 0.5 }, at = { 0, 5.6, 0 }, color = 3 },
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 0.16, 6.2, 0.16 },
++			at = { 0, 3.5, 0.6 },
++			row = { count = 4, step = { 1.4, 0, 0 }, center = true },
++			color = 2,
++		},
++		{
++			shape = "Ball",
++			size = { 0.3, 0.75, 0.3 },
++			at = { 0, 6.85, 0.6 },
++			row = { count = 4, step = { 1.4, 0, 0 }, center = true },
++			color = 3,
++		},
++		{ shape = "Block", size = { 0.14, 2.8, 0.45 }, at = { 1.4, 3.2, -0.8 }, mirror = "x", color = 2 },
++		{ shape = "Block", size = { 0.7, 0.25, 0.55 }, at = { 1.4, 4.6, -0.8 }, mirror = "x", color = 3 },
++		{ shape = "Ball", size = { 0.3, 0.3, 0.3 }, at = { 1.4, 4.9, -0.8 }, mirror = "x", color = 3 },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The champions' medallion: a gold ring of stones with an inner ring and eight
++-- rays round a pale marble boss, set flat in the arena floor at the heart of it.
++Sculpts.domain_arena_medallion = {
++	kind = "assembly",
++	size = { 20, 0.8, 20 },
++	material = "Marble",
++	colors = { { 232, 226, 212 }, { 230, 193, 111 } },
++	materials = { [2] = "Foil" },
++	maxPrims = 40,
++	parts = {
++		{ shape = "Cylinder", axis = "y", size = { 6, 0.35, 6 }, at = { 0, 0.15, 0 }, color = 1 },
++		{ shape = "Ball", size = { 1.8, 0.6, 1.8 }, at = { 0, 0.5, 0 }, color = 2 },
++		{
++			shape = "Block",
++			size = { 2.6, 0.28, 0.55 },
++			at = { 0, 0.35, 0 },
++			ring = { count = 18, radius = 8.6, start = 10 },
++			color = 2,
++		},
++		{
++			shape = "Block",
++			size = { 1.5, 0.26, 0.45 },
++			at = { 0, 0.33, 0 },
++			ring = { count = 12, radius = 4.6, start = 0 },
++			color = 2,
++		},
++		{
++			shape = "Block",
++			size = { 2.4, 0.22, 0.4 },
++			at = { 0, 0.3, 0 },
++			ring = { count = 8, radius = 6.7, start = 22.5 },
++			color = 2,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- A champion's banner standard: a marble foot, a gold pole with a crossbar and
++-- finial, and an ivory cloth with a gold hem and emblem hanging from it.
++Sculpts.domain_arena_banner = {
++	kind = "assembly",
++	size = { 5, 15.8, 1.6 },
++	material = "Marble",
++	colors = { { 232, 226, 212 }, { 230, 193, 111 }, { 234, 229, 218 } },
++	materials = { [2] = "Foil", [3] = "Fabric" },
++	maxPrims = 10,
++	parts = {
++		{ shape = "Block", size = { 2.8, 0.5, 1.4 }, at = { 0, 0.25, 0 }, color = 1 },
++		{ shape = "Cylinder", axis = "y", size = { 0.32, 14.6, 0.32 }, at = { 0, 7.8, 0 }, color = 2 },
++		{ shape = "Block", size = { 3.6, 0.3, 0.3 }, at = { 0.9, 13.9, 0 }, color = 2 },
++		{ shape = "Ball", size = { 0.7, 0.9, 0.7 }, at = { 0, 15.3, 0 }, color = 2 },
++		{ shape = "Block", size = { 2.8, 6, 0.14 }, at = { 1, 10.6, 0 }, color = 3 },
++		{ shape = "Block", size = { 2.8, 0.5, 0.16 }, at = { 1, 7.35, 0 }, color = 2 },
++		{ shape = "Ball", size = { 0.9, 0.9, 0.18 }, at = { 1, 11, 0.1 }, color = 2 },
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..c97fe3fc 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,93 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's arena of champions (a map feature, 2026-10-30): the
++-- champions' crown, the light standing on the medallion at the heart of the
++-- fighting floor. A slow low crown of gold motes rising off the marble through
++-- a warm gold wash, a rare cold sky-blue glint among them and a few breathing
++-- lights on the floor, so the ring is lit from within when the crowd looks
++-- down at it. Short and wide on purpose (a 12-stud worm, climb 2): a crown, not
++-- a column, and low enough never to cross the game camera (SE10). Two emitters
++-- of motes and one of wash keep the piece inside a phone's share beside the
++-- arena's own lamps.
++recipes.domain_arena_crown = {
++	about = "The champions' crown at the heart of the Eternal Domain's arena: gold motes rising off the medallion through a warm wash, a cold glint and breathing lights.",
++	theme = "domain",
++	path = { kind = "worm", length = 12, step = 3, bend = 30, climb = 2, round = 2 },
++	layers = {
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 6,
++				lift = 0.5,
++				toward = "up",
++				rise = 2.6,
++				life = { 4, 6 },
++				rate = 8,
++				size = 0.6,
++				tall = 2,
++				transparency = 0.2,
++				color = "gold",
++				texture = "wisp",
++				lean = 10,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 6, span = 10, periods = { 5.3, 7.9 } },
++			priority = 1,
++		},
++		{
++			name = "wash",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 8,
++				lift = 0.3,
++				toward = "up",
++				rise = 1.2,
++				life = { 6, 8 },
++				rate = 1.4,
++				size = 5,
++				tall = 1.2,
++				transparency = 0.9,
++				color = "gold",
++				texture = "veil",
++				lean = 8,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.4, tilt = 6, span = 14, periods = { 9, 6 } },
++			priority = 2,
++		},
++		{
++			name = "glint",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 5,
++				lift = 0.6,
++				toward = "up",
++				rise = 3,
++				life = { 3, 4.5 },
++				rate = 1.2,
++				size = 0.35,
++				tall = 1.3,
++				transparency = 0.2,
++				color = "sky",
++				texture = "wisp",
++				lean = 16,
++				vary = 0.7,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 9, span = 9, periods = { 4.1, 6.7 } },
++			priority = 3,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 6, max = 3, range = 20, brightness = 1, color = "glow" },
++			motion = { kind = "pulse", period = 4.6, depth = 0.3 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..799f142f 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,27 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain (a feature, 2026-10-30): the arena of champions' kit.
++	["sculpt:domain_arena_pyre"] = row(
++		"The arena's lamp: a stepped marble pedestal under a wide gold bowl with a pale gold flame standing in it.",
++		MOOR
++	),
++	["sculpt:domain_arena_canopy"] = row(
++		"The arena's royal box: a marble tribune under an ivory cloth canopy edged in gold, with a throne and banners.",
++		MOOR
++	),
++	["sculpt:domain_arena_rack"] = row(
++		"A weapon rack at the arena's edge: a marble foot and gilt posts holding spears and two hung swords.",
++		MOOR
++	),
++	["sculpt:domain_arena_medallion"] = row(
++		"The champions' medallion: gold rings and rays round a pale marble boss, set flat in the arena floor.",
++		MOOR
++	),
++	["sculpt:domain_arena_banner"] = row(
++		"A champion's banner standard: a gold pole with a crossbar and finial, an ivory cloth with a gold hem hanging from it.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainArenaOfChampions.luau b/src/shared/systems/features/DomainArenaOfChampions.luau
+new file mode 100644
+index 00000000..b7a82cb8
+--- /dev/null
++++ b/src/shared/systems/features/DomainArenaOfChampions.luau
+@@ -0,0 +1,560 @@
++--!strict
++-- The arena of champions, for the Eternal Domain (bible B12): an oval fighting floor
++-- sunk below rings of marble seating, with a grand processional stair down into it
++-- under a triumphal gate at either end, a canopied royal box over one long side,
++-- weapon racks on the sand and the champions' medallion at the heart of the floor.
++-- The Domain is ivory and gold under holy light; it has no place where a crowd
++-- came to watch, and no ground cut open.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first,
++-- then look). The first draws choose the structure, the rest only dress it:
++--   1. the bowl: the footprint's size, the ellipse's stretch and so the floor's;
++--   2. the stands: how many rings of seating, how deep each, and how deep the bowl
++--      is cut (four to seven rings, ten to seventeen studs down);
++--   3. the ways in: two grand stairs at the ends, or a third cut into one flank;
++--   4. the court: which long side the royal box takes, how many statue plinths
++--      stand on the floor, and which ring of the stands is gilded;
++--   5. the gates' order, then the lamps, banners, racks, columns and trees.
++-- The seating is solid stone (walls), as stands are: the road and the fight keep the
++-- floor and the apron, and the stairs are the only way between them.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- The Domain's stone and gold inside B12's limits (stone worth 0.75-0.92 at
++-- saturation up to 0.20, gold up to 0.55): the tileset's own paving colours where
++-- it has them, so no material is coloured twice in the place.
++local IVORY = { 228, 221, 206 } -- the stands' pale warm marble (Salt)
++local WARM = { 196, 187, 170 } -- the shaded riser stone between the rings (Slate)
++local FLAG = { 202, 194, 178 } -- the precinct's dressed limestone (Limestone)
++local SAND = { 194, 182, 156 } -- the fighting floor's warm sand (Sand)
++local WAY = { 226, 212, 184 } -- the processional gold-leaning paving (Pavement)
++local GOLD = { 228, 196, 132 } -- gilded stone: the podium ring and the stair walls
++local HOLY = { 255, 226, 160 } -- the Domain's warm light (light, not surface)
++
++local feature: MapFeature.Feature = {
++	name = "DomainArenaOfChampions",
++	about = "The arena of champions: an oval fighting floor sunk below rings of marble seating, grand stairs and gates at both ends, a canopied royal box and weapon racks.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "crossing",
++	mood = { "monumental", "holy", "contested", "spectacle" },
++	cells = {
++		-- The precinct round the bowl: plain dressed limestone, its own props cleared.
++		apron = { ground = { material = "Limestone", color = FLAG }, clear = true },
++		-- The fighting floor: warm pale sand, a shade below the ivory of the stands.
++		floor = { ground = { material = "Sand", color = SAND }, clear = true },
++		-- The stands: pale ivory rings and the darker riser stone between them.
++		tierA = { ground = { material = "Salt", color = IVORY }, clear = true },
++		tierB = { ground = { material = "Slate", color = WARM }, clear = true },
++		-- Gilt stone: the ring wall round the floor, the stair's balustrades and one
++		-- gilded ring of the stands.
++		gilt = { ground = { material = "Concrete", color = GOLD }, clear = true },
++		-- The processional stair down into the bowl, the road's own colour.
++		way = { ground = { material = "Pavement", color = WAY }, clear = true },
++		-- The lamp's cell: the precinct's stone under a pyre, and its light.
++		lamp = {
++			ground = { material = "Limestone", color = FLAG },
++			clear = true,
++			glow = { color = HOLY, range = 16, brightness = 1.2, every = 1, height = 8.6 },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1: the bowl's place and shape.
++		local w = whole(rng, 50, 56)
++		local d = whole(rng, 42, 50)
++		local stretch = between(rng, 1.06, 1.34)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		-- The rim ellipse fits the footprint with two cells of precinct round it.
++		local Rrim = math.min((w / 2 - 2) / stretch, (d / 2 - 2) * stretch)
++		local maxBand = math.floor(Rrim - 6)
++
++		-- 2: the stands, and so how deep the bowl is cut.
++		local tiers = whole(rng, 4, 7)
++		local rowW = whole(rng, 2, 3)
++		while 1 + tiers * rowW > maxBand and tiers > 4 do
++			tiers -= 1
++		end
++		while 1 + tiers * rowW > maxBand and rowW > 2 do
++			rowW -= 1
++		end
++		local band = 1 + tiers * rowW
++		local Rfloor = Rrim - band
++
++		-- 3: the ways in, and 4: the court's shape.
++		local stairs = whole(rng, 2, 3)
++		local stairW = whole(rng, 3, 4)
++		-- The rings of the stands rise two or three studs each, so the bowl is cut
++		-- deep. The flank stair is shorter than the end stairs, so a third stair is
++		-- only taken when a stair two studs a cell can still descend the bowl; and
++		-- the floor is kept above the preview's ground slab (18 studs) so it draws.
++		local rise = whole(rng, 2, 3)
++		local reach = if stairs == 3 then band / stretch else band * stretch
++		while rise > 2 and rise * tiers + 2 > 2 * (reach - 1.2) do
++			rise -= 1
++		end
++		while tiers > 4 and rise * tiers + 2 > 17 do
++			tiers -= 1
++		end
++		-- The podium wall stands four above the floor, the top ring two above the
++		-- precinct: so the floor is a rise a ring + 2 down.
++		local H = rise * tiers + 2
++		local boxSide = if rng:NextNumber() < 0.5 then -1 else 1
++		local thirdSide = -boxSide
++		local plinths = whole(rng, 0, 2)
++		local gilded = whole(rng, 1, tiers)
++		-- 5: only dressing from here.
++		local gateStyle = whole(rng, 1, 3)
++		local gateScale = between(rng, 1.3, 1.5)
++		local gateOff = between(rng, 0.7, 1.4)
++		local lampCount = whole(rng, 5, 8)
++		local rackCount = whole(rng, 2, 4)
++		local bannerCount = whole(rng, 4, 6)
++		local columnCount = whole(rng, 8, 13)
++		local treeCount = whole(rng, 1, 4)
++
++		local n = w * d
++		local walk, heights = table.create(n, true), table.create(n, 0)
++		local kinds: { [number]: string } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inside(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= w and z <= d
++		end
++		local function uOf(x: number, z: number): number
++			local dx, dz = (x - cx) / stretch, (z - cz) * stretch
++			return math.sqrt(dx * dx + dz * dz)
++		end
++		local function paint(x: number, z: number, kind: string, h: number, floor: boolean)
++			local i = at(x, z)
++			walk[i] = floor
++			heights[i] = h
++			kinds[i] = kind
++		end
++		-- The point on the ellipse of radius `u` at angle `a`.
++		local function pointAt(a: number, u: number): Point
++			return { x = cx + math.cos(a) * u * stretch, z = cz + math.sin(a) * u / stretch }
++		end
++		local function cellOf(p: Point): (number, number)
++			return math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++		end
++
++		-- The bowl: the floor, the precinct, and the rings of stands between them.
++		for z = 1, d do
++			for x = 1, w do
++				local u = uOf(x, z)
++				if u <= Rfloor then
++					-- A gilt band inside the podium: the arena's own edge line.
++					paint(x, z, if u > Rfloor - 1.15 then "gilt" else "floor", -H, true)
++				elseif u > Rrim then
++					-- A gilt ambulatory line on the precinct, framing the bowl.
++					local giltLine = u > Rrim + 1.1 and u < Rrim + 2.05
++					paint(x, z, if giltLine then "gilt" else "apron", 0, true)
++				else
++					local idx = math.min(band, math.floor(u - Rfloor) + 1)
++					if idx <= 1 then
++						-- The ring wall at the floor's lip: the arena's gold edge.
++						paint(x, z, "gilt", -H + 4, false)
++					else
++						-- `rowW` cells to a ring, then a rise up to the next.
++						local t = math.min(tiers, math.floor((idx - 2) / rowW) + 1)
++						local giltRing = t == gilded or t == tiers
++						local kind = if giltRing then "gilt" elseif t % 2 == 0 then "tierA" else "tierB"
++						paint(x, z, kind, -H + rise * t + 4, false)
++					end
++				end
++			end
++		end
++
++		-- The rim's x reach at a row, in cells (for the end stairs).
++		local function xRimAt(z: number): number
++			local dz = (z - cz) * stretch
++			return math.sqrt(math.max(0, Rrim * Rrim - dz * dz)) * stretch
++		end
++
++		-- The two grand stairs at the ends: each a trench of walkable steps cut
++		-- through the stands, two studs down a cell from the rim to the floor,
++		-- balustraded in gilt a cell each side.
++		local zLo = math.floor(cz - stairW / 2 + 0.5)
++		local zHi = zLo + stairW - 1
++		local function cutEndStair(sign: number)
++			local function x0At(z: number): number
++				local half = xRimAt(z)
++				return if sign < 0 then math.ceil(cx - half) else math.floor(cx + half)
++			end
++			local function stepsAt(x: number, x0: number): number
++				return if sign < 0 then x - x0 + 1 else x0 - x + 1
++			end
++			for z = zLo, zHi do
++				local x0 = x0At(z)
++				local x = x0
++				while x >= 1 and x <= w do
++					if uOf(x, z) <= Rfloor then
++						break
++					end
++					local h = -2 * math.min(H / 2, stepsAt(x, x0))
++					paint(x, z, "way", h, true)
++					x -= sign
++				end
++			end
++			for _, zP in { zLo - 1, zHi + 1 } do
++				if zP >= 1 and zP <= d then
++					local zInner = if zP < zLo then zLo else zHi
++					local x0 = x0At(zInner)
++					local x = x0
++					while x >= 1 and x <= w do
++						if uOf(x, zInner) <= Rfloor then
++							break
++						end
++						local h = -2 * math.min(H / 2, stepsAt(x, x0))
++						if h < 0 then
++							paint(x, zP, "gilt", h + 3, false)
++						end
++						x -= sign
++					end
++				end
++			end
++		end
++		cutEndStair(-1)
++		cutEndStair(1)
++
++		-- A third stair on one flank, where the precinct has no royal box.
++		local thirdLo = math.floor(cx - stairW / 2 + 0.5)
++		local thirdHi = thirdLo + stairW - 1
++		local function zRimAt(x: number): number
++			local a = (x - cx) / stretch
++			return math.sqrt(math.max(0, Rrim * Rrim - a * a)) / stretch
++		end
++		if stairs == 3 then
++			local function z0At(x: number): number
++				local half = zRimAt(x)
++				return if thirdSide < 0 then math.ceil(cz - half) else math.floor(cz + half)
++			end
++			local function flankSteps(z: number, z0: number): number
++				return if thirdSide < 0 then z - z0 + 1 else z0 - z + 1
++			end
++			for x = thirdLo, thirdHi do
++				local z0 = z0At(x)
++				local z = z0
++				while z >= 1 and z <= d do
++					if uOf(x, z) <= Rfloor then
++						break
++					end
++					paint(x, z, "way", -2 * math.min(H / 2, flankSteps(z, z0)), true)
++					z -= thirdSide
++				end
++			end
++			for _, xP in { thirdLo - 1, thirdHi + 1 } do
++				if xP >= 1 and xP <= w then
++					local xInner = if xP < thirdLo then thirdLo else thirdHi
++					local z0 = z0At(xInner)
++					local z = z0
++					while z >= 1 and z <= d do
++						if uOf(xInner, z) <= Rfloor then
++							break
++						end
++						local h = -2 * math.min(H / 2, flankSteps(z, z0))
++						if h < 0 then
++							paint(xP, z, "gilt", h + 3, false)
++						end
++						z -= thirdSide
++					end
++				end
++			end
++		end
++
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local fHalfX, fHalfZ = Rfloor * stretch, Rfloor / stretch
++		local function floorCell(x: number, z: number): boolean
++			local qx, qz = math.floor(x + 0.5), math.floor(z + 0.5)
++			return inside(qx, qz) and kinds[at(qx, qz)] == "floor"
++		end
++
++		-- The champions' medallion, set in the floor at the heart of the bowl.
++		table.insert(marks, {
++			sculpt = "domain_arena_medallion",
++			x = cx,
++			z = cz,
++			yaw = between(rng, 0, 360),
++			scale = between(rng, 0.95, 1.15),
++			sink = 0,
++		})
++
++		-- Statue plinths standing on the floor, solid islands in the fighting ground.
++		local plinthSpots: { Point } = {}
++		for k = 1, plinths do
++			local side = if k % 2 == 1 then 1 else -1
++			local px = cx + side * between(rng, 2.8, math.max(3.4, fHalfX - 3.2))
++			local pz = cz + (if rng:NextNumber() < 0.5 then -1 else 1) * between(rng, 3, math.max(3.6, fHalfZ - 2.4))
++			local qx0, qz0 = math.floor(px + 0.5), math.floor(pz + 0.5)
++			local ok = math.abs(pz - cz) > stairW / 2 + 1.4 and math.abs(px - cx) > 2.2
++			for dz = -1, 1 do
++				for dx = -1, 1 do
++					local qx, qz = qx0 + dx, qz0 + dz
++					if not inside(qx, qz) or uOf(qx, qz) > Rfloor - 0.6 or kinds[at(qx, qz)] ~= "floor" then
++						ok = false
++					end
++				end
++			end
++			if ok then
++				for dz = -1, 1 do
++					for dx = -1, 1 do
++						paint(qx0 + dx, qz0 + dz, "gilt", -H + 3, false)
++					end
++				end
++				table.insert(plinthSpots, { x = px, z = pz })
++				table.insert(marks, {
++					sculpt = "domain_waystone",
++					x = px,
++					z = pz,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.8, 1),
++					sink = 0,
++				})
++			end
++		end
++
++		-- Weapon racks on the sand, near the gates and out of the road's way.
++		local racks = 0
++		for k = 1, rackCount * 3 do
++			if racks >= rackCount then
++				break
++			end
++			local side = if k % 2 == 1 then -1 else 1
++			local rx = cx + side * between(rng, fHalfX * 0.4, math.max(fHalfX * 0.45, fHalfX - 4))
++			local rz = cz + (if rng:NextNumber() < 0.5 then -1 else 1) * between(rng, 2.6, math.max(3.2, fHalfZ - 2))
++			if floorCell(rx, rz) and math.abs(rz - cz) > 2.4 then
++				local clear = true
++				for _, p in plinthSpots do
++					clear = clear and (p.x - rx) ^ 2 + (p.z - rz) ^ 2 > 8
++				end
++				if clear then
++					racks += 1
++					table.insert(marks, {
++						sculpt = "domain_arena_rack",
++						x = rx,
++						z = rz,
++						yaw = -math.deg(math.atan2(cz - rz, cx - rx)) + between(rng, -8, 8),
++						scale = between(rng, 0.9, 1.15),
++						sink = 0,
++					})
++				end
++			end
++		end
++
++		-- The gates at both ends: a triumphal arch over each stair's mouth.
++		local westGate = if gateStyle == 2 then "domain_triumphal_arch_high" else "domain_triumphal_arch"
++		local eastGate = if gateStyle == 3 then "domain_triumphal_arch_high" else westGate
++		local gateReach = Rrim * stretch + gateOff
++		for _, sign in { -1, 1 } do
++			table.insert(marks, {
++				sculpt = if sign < 0 then westGate else eastGate,
++				x = cx + sign * gateReach,
++				z = cz,
++				yaw = 90,
++				scale = gateScale,
++				sink = 0,
++			})
++			table.insert(effects, { recipe = "domain_gate_glory", x = cx + sign * gateReach, z = cz, lift = 1 })
++			-- A waystone at either pier: the gatehouse's standing markers.
++			for _, off in { -0.17, 0.17 } do
++				local p = pointAt(if sign < 0 then math.pi + off else off, Rrim + 1.3)
++				local qx, qz = cellOf(p)
++				if inside(qx, qz) and walk[at(qx, qz)] and heights[at(qx, qz)] == 0 then
++					table.insert(marks, {
++						sculpt = "domain_waystone",
++						x = p.x,
++						z = p.z,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 0.8, 1),
++						sink = 0,
++					})
++				end
++			end
++		end
++
++		-- The royal box, on one long side, its canopy over the top ring. It takes
++		-- the first place along that side with precinct deep enough to stand on,
++		-- so a flank's narrow apron never leaves it hanging off the pad.
++		local boxA = (if boxSide < 0 then -math.pi / 2 else math.pi / 2) + between(rng, -0.3, 0.3)
++		local boxP = pointAt(boxA, Rrim + 2.6)
++		for _, a in { boxA, boxA + 0.4, boxA - 0.4, boxA + 0.75, boxA - 0.75, boxA + 1.05, boxA - 1.05 } do
++			local p = pointAt(a, Rrim + 2.6)
++			local qx, qz = cellOf(p)
++			if
++				inside(qx, qz)
++				and walk[at(qx, qz)]
++				and heights[at(qx, qz)] == 0
++				and p.x > 3.5
++				and p.x < w - 2.5
++				and p.z > 3.5
++				and p.z < d - 2.5
++			then
++				boxP = p
++				boxA = a
++				break
++			end
++		end
++		table.insert(marks, {
++			sculpt = "domain_arena_canopy",
++			x = boxP.x,
++			z = boxP.z,
++			yaw = -math.deg(math.atan2(cz - boxP.z, cx - boxP.x)),
++			scale = between(rng, 1.35, 1.55),
++			sink = 0,
++		})
++
++		-- The champions' crown: the light rising off the medallion.
++		table.insert(effects, { recipe = "domain_arena_crown", x = cx, z = cz, lift = 0.6 })
++
++		-- Lamps on the precinct ring, clear of the gates and the box.
++		local lampStart = between(rng, 0, 2 * math.pi)
++		for k = 1, lampCount do
++			local a = lampStart + (k - 1) * 2 * math.pi / lampCount + between(rng, -0.1, 0.1)
++			local gateNear = math.abs(math.sin(a)) < 0.42
++			local boxNear = math.sin(a) * boxSide > 0.85
++			local stairNear = stairs == 3 and math.sin(a) * thirdSide > 0.85
++			if not (gateNear or boxNear or stairNear) then
++				local p = pointAt(a, Rrim + 2.8)
++				local qx, qz = cellOf(p)
++				if inside(qx, qz) and walk[at(qx, qz)] and heights[at(qx, qz)] == 0 then
++					kinds[at(qx, qz)] = "lamp"
++					table.insert(marks, {
++						sculpt = "domain_arena_pyre",
++						x = p.x,
++						z = p.z,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 0.9, 1.1),
++						sink = 0,
++					})
++				end
++			end
++		end
++
++		-- Banner standards about the gates and the box.
++		local bannerAt = { 0.34, -0.34, math.pi + 0.34, math.pi - 0.34, boxA + 0.4, boxA - 0.4 }
++		local bannerStart = whole(rng, 1, #bannerAt)
++		local banners = 0
++		for k = 1, #bannerAt do
++			if banners >= bannerCount then
++				break
++			end
++			local a = bannerAt[(bannerStart + k - 2) % #bannerAt + 1]
++			local p = pointAt(a, Rrim + 1.5)
++			local qx, qz = cellOf(p)
++			if inside(qx, qz) and walk[at(qx, qz)] and heights[at(qx, qz)] == 0 then
++				banners += 1
++				table.insert(marks, {
++					sculpt = "domain_arena_banner",
++					x = p.x,
++					z = p.z,
++					yaw = -math.deg(math.atan2(cz - p.z, cx - p.x)) + 90,
++					scale = between(rng, 0.95, 1.15),
++					sink = 0,
++				})
++			end
++		end
++
++		-- A colonnade of columns round the precinct, framing the bowl from afar.
++		local colonnade = whole(rng, 5, columnCount)
++		local columnStart = between(rng, 0, 2 * math.pi)
++		for k = 1, colonnade do
++			local a = columnStart + (k - 1) * 2 * math.pi / colonnade + between(rng, -0.06, 0.06)
++			local gateNear = math.abs(math.sin(a)) < 0.36
++			local boxNear = math.sin(a) * boxSide > 0.82
++			local stairNear = stairs == 3 and math.sin(a) * thirdSide > 0.82
++			if not (gateNear or boxNear or stairNear) then
++				local p = pointAt(a, Rrim + between(rng, 3.3, 4.6))
++				local qx, qz = cellOf(p)
++				if inside(qx, qz) and walk[at(qx, qz)] and heights[at(qx, qz)] == 0 then
++					table.insert(marks, {
++						sculpt = "domain_column",
++						x = p.x,
++						z = p.z,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 0.5, 0.72),
++						sink = 0,
++					})
++				end
++			end
++		end
++
++		-- A gold tree or two in the outer corners.
++		local treeAt = { math.pi / 4, -math.pi / 4, 3 * math.pi / 4, -3 * math.pi / 4 }
++		local treeStart = whole(rng, 1, #treeAt)
++		local trees = 0
++		for k = 1, #treeAt do
++			if trees >= treeCount then
++				break
++			end
++			local a = treeAt[(treeStart + k - 2) % #treeAt + 1]
++			local p = pointAt(a, Rrim + between(rng, 8, 11))
++			local qx, qz = cellOf(p)
++			if inside(qx, qz) and walk[at(qx, qz)] and heights[at(qx, qz)] == 0 then
++				trees += 1
++				table.insert(marks, {
++					sculpt = "domain_gold_tree",
++					x = p.x,
++					z = p.z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.75, 0.95),
++					sink = 0,
++				})
++			end
++		end
++
++		-- The road: in at the west border, down the stair under the gate, across
++		-- the medallion, up the east stair and out.
++		local westFoot, eastFoot = cx - Rfloor * stretch - 1, cx + Rfloor * stretch + 1
++		local road: { Point } = {
++			{ x = 1, z = cz },
++			{ x = cx - gateReach, z = cz },
++			{ x = westFoot, z = cz },
++			{ x = cx, z = cz },
++			{ x = eastFoot, z = cz },
++			{ x = cx + gateReach, z = cz },
++			{ x = w, z = cz },
++		}
++
++		-- Cameras: down the champions' stair, and over the royal box at the bowl.
++		local westRim = cx - Rrim * stretch
++		local camP = pointAt(boxA + math.pi - 0.35, Rrim - 3)
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "down the champions' stair",
++					from = { x = westRim + 2.6, z = cz, lift = 16 },
++					to = { x = cx, z = cz, lift = 1 },
++					fov = 66,
++				},
++				{
++					name = "over the royal box",
++					from = { x = camP.x, z = camP.z, lift = 24 },
++					to = { x = boxP.x, z = boxP.z, lift = 13 },
++					fov = 58,
++				},
++			},
++		}
++	end,
++}
++
++return feature

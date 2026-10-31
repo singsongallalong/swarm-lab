@@ -1,0 +1,849 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..c4fe13fb 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainMeadHall = require("../systems/features/DomainMeadHall")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainMeadHall = DomainMeadHall,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..c220ebf0 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,176 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain's mead hall (systems/features/DomainMeadHall): the long
++-- tables the gods eat at. A marble board on two trestles with benches down
++-- both sides, and the gold on it: a platter, three cups and a great bowl.
++-- Four cells of hall go to a table, so a row is a line of these set end to
++-- end. Warm ivory, a shaded tone and gold, inside B12's domain limits.
++Sculpts.domain_mead_table = {
++	kind = "assembly",
++	size = { 16, 4, 8 },
++	material = "Marble",
++	colors = { { 234, 228, 214 }, { 214, 208, 194 }, { 230, 190, 110 } },
++	maxPrims = 18,
++	parts = {
++		{ name = "top", shape = "Block", size = { 15, 0.6, 3.6 }, at = { 0, 2.7, 0 }, color = 1 },
++		{ name = "trestle", shape = "Block", size = { 1.2, 2.4, 3 }, at = { 5.5, 1.2, 0 }, color = 2, mirror = "x" },
++		{ name = "bench", shape = "Block", size = { 15, 0.5, 1.5 }, at = { 0, 1.2, 2.9 }, color = 1, mirror = "z" },
++		{
++			name = "bench legs",
++			mirror = "z",
++			color = 2,
++			children = {
++				{
++					shape = "Block",
++					size = { 0.8, 0.95, 1.3 },
++					at = { 0, 0.475, 2.9 },
++					row = { count = 3, step = { 5.5, 0, 0 }, center = true },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "platter",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 2.2, 0.2, 2.2 },
++			at = { -3, 2.9, 0 },
++			color = 3,
++		},
++		{
++			name = "cups",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 0.6, 1, 0.6 },
++			at = { 3.4, 3.5, 0 },
++			color = 3,
++			row = { count = 3, step = { 2.2, 0, 0 }, center = true },
++		},
++		{ name = "bowl", shape = "Ball", size = { 1.6, 1, 1.6 }, at = { 0, 3.5, 0 }, color = 3 },
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain's mead hall: the shield-hung column of its colonnade.
++-- A marble pier on a squared base, gold rings at a man's height and at the
++-- capital, and a gold-rimmed shield hung on its front (the +X side) facing
++-- the aisle. Seeds turn the shield a little on its nail. The hall sinks the
++-- foot of it in the parapet, so the shaft rises out of the wall's coping.
++Sculpts.domain_mead_column = {
++	kind = "assembly",
++	size = { 8, 37.8, 8 },
++	material = "Marble",
++	colors = { { 234, 228, 214 }, { 214, 208, 194 }, { 230, 190, 110 } },
++	maxPrims = 12,
++	parts = {
++		{ name = "base", shape = "Block", size = { 6.6, 1.4, 6.6 }, at = { 0, 0.7, 0 }, color = 2 },
++		{
++			name = "shaft",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 4.6, 34, 4.6 },
++			at = { 0, 18.4, 0 },
++			color = 1,
++			jitter = { rot = { 0, 12, 0 } },
++		},
++		{ name = "gold band", shape = "Cylinder", axis = "y", size = { 5.4, 0.6, 5.4 }, at = { 0, 7, 0 }, color = 3 },
++		{
++			name = "gold band high",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 5.4, 0.6, 5.4 },
++			at = { 0, 26, 0 },
++			color = 3,
++		},
++		{ name = "capital", shape = "Block", size = { 6.4, 1.8, 6.4 }, at = { 0, 36.3, 0 }, color = 1 },
++		{ name = "abacus", shape = "Block", size = { 7.4, 0.6, 7.4 }, at = { 0, 37.5, 0 }, color = 3 },
++		{
++			name = "shield rim",
++			shape = "Cylinder",
++			size = { 0.6, 5.4, 5.4 },
++			at = { 2.6, 14, 0 },
++			color = 3,
++			jitter = { rot = { 0, 4, 0 } },
++		},
++		{ name = "shield face", shape = "Cylinder", size = { 0.8, 4.9, 4.9 }, at = { 2.8, 14, 0 }, color = 3 },
++		{ name = "shield boss", shape = "Ball", size = { 1.2, 1.2, 1.2 }, at = { 3.3, 14, 0 }, color = 2 },
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain's mead hall: the gods' high seat. A marble throne on a
++-- stepped foot, a footstool before it, armrests, and a tall back carrying a
++-- gold sun and a gold crown of spikes, the tallest at the middle. Its front
++-- (+X) faces down the hall. A god's seat, three times a person and more.
++Sculpts.domain_high_seat = {
++	kind = "assembly",
++	size = { 10, 21.4, 6 },
++	material = "Marble",
++	colors = { { 234, 228, 214 }, { 214, 208, 194 }, { 230, 190, 110 } },
++	maxPrims = 18,
++	parts = {
++		{ name = "foot", shape = "Block", size = { 8, 1, 6 }, at = { 0, 0.5, 0 }, color = 2 },
++		{ name = "footstool", shape = "Block", size = { 3, 0.6, 3 }, at = { 3.2, 0.3, 0 }, color = 3 },
++		{ name = "pedestal", shape = "Block", size = { 4, 1.2, 4 }, at = { 0, 1.6, 0 }, color = 2 },
++		{ name = "seat", shape = "Block", size = { 5.2, 0.8, 4.6 }, at = { 0, 2.6, 0 }, color = 1 },
++		{ name = "back", shape = "Block", size = { 1, 14, 4.8 }, at = { -2.4, 10, 0 }, color = 1 },
++		{
++			name = "crown",
++			shape = "Block",
++			size = { 0.55, 3, 0.55 },
++			at = { -2.4, 18.5, 0 },
++			color = 3,
++			row = { count = 5, step = { 1.2, 0, 0 }, center = true },
++		},
++		{ name = "crown spike", shape = "Block", size = { 0.7, 4.2, 0.7 }, at = { -2.4, 19.3, 0 }, color = 3 },
++		{ name = "armrest", shape = "Block", size = { 4, 0.7, 1.2 }, at = { 0, 3.35, 1.8 }, color = 1, mirror = "z" },
++		{ name = "sun band", shape = "Block", size = { 0.3, 1.1, 3.6 }, at = { -1.85, 13.5, 0 }, color = 3 },
++		{ name = "sun", shape = "Ball", size = { 0.4, 3, 3 }, at = { -1.8, 11.4, 0 }, color = 3 },
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain's mead hall: a tongue of the fire trench. Three gold
++-- lobes and a paler heart, low enough to stand in the channel and read from
++-- the game camera as a line of fire down the hall. Strewn along the trench
++-- by the cell kind's props, so every seed's fire flickers differently.
++Sculpts.domain_mead_flame = {
++	kind = "assembly",
++	size = { 2.6, 4.5, 2.6 },
++	material = "Marble",
++	colors = { { 230, 190, 110 }, { 234, 228, 214 }, { 214, 178, 100 } },
++	maxPrims = 8,
++	parts = {
++		-- A coal under it, sunk into the trench's bed, so the flame stands on
++		-- the ground however its jitter turns.
++		{ name = "coal", shape = "Ball", size = { 1.8, 0.6, 1.8 }, at = { 0, 0.05, 0 }, color = 3 },
++		{
++			name = "heart",
++			shape = "Ball",
++			size = { 1.2, 3.8, 1.2 },
++			at = { 0, 1.9, 0 },
++			color = 1,
++			jitter = { at = { 0.12, 0.1, 0.12 }, rot = { 0, 10, 0 } },
++		},
++		{
++			name = "lobe",
++			shape = "Ball",
++			size = { 0.75, 2.3, 0.75 },
++			at = { 0.65, 1.1, 0 },
++			color = 1,
++			mirror = "x",
++			jitter = { size = 0.15, at = { 0.08, 0.12, 0.08 } },
++		},
++		{ name = "core", shape = "Ball", size = { 0.6, 2, 0.6 }, at = { 0, 1.3, 0 }, color = 2, chance = 0.8 },
++		{
++			name = "tip",
++			shape = "Ball",
++			size = { 0.5, 1.7, 0.5 },
++			at = { 0, 3.4, 0 },
++			color = 2,
++			chance = 0.75,
++			jitter = { at = { 0.08, 0.08, 0.08 } },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..54082d5e 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,77 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's mead hall (systems/features/DomainMeadHall): the
++-- trench of holy fire down its middle. Not a bowl flame but a length of
++-- fire: a low gold bed running along the channel, smaller tongues climbing
++-- out of it, gold sparks crackling off and two lights breathing on the
++-- stone. The path is a short, almost straight worm down the trench (bend
++-- 1.2, so it cannot wander off the channel) carrying its emitters along the
++-- run; the flames themselves are the trench's own props, so a run longer
++-- than this recipe still burns at every cell. Kept to five emitters and two
++-- lights, a phone's share, because a hall may hold four of these.
++recipes.domain_trench_fire = {
++	about = "The Eternal Domain's fire trench: a low bed of holy fire running down the channel, gold tongues and sparks off it, and soft lights breathing on the stone.",
++	theme = "domain",
++	path = { kind = "worm", length = 24, step = 4, bend = 1.2, climb = 2, start = 0, round = 2 },
++	layers = {
++		{
++			name = "bed",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 8,
++				lift = 0.1,
++				toward = "up",
++				rise = 1.4,
++				life = { 1.6, 2.4 },
++				rate = 3,
++				size = 4.5,
++				tall = 0.6,
++				transparency = 0.55,
++				color = "glow",
++				texture = "veil",
++				lean = 8,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 5, span = 12, periods = { 3.6, 5.2 } },
++			priority = 1,
++		},
++		{
++			name = "tongues",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 4,
++				lift = 0.2,
++				toward = "up",
++				rise = 4.5,
++				life = { 0.9, 1.6 },
++				rate = 4,
++				size = 1.8,
++				tall = 3,
++				transparency = 0.3,
++				color = "gold",
++				texture = "wisp",
++				lean = 6,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.5, tilt = 8, span = 10, periods = { 2.1, 3.4 } },
++			priority = 2,
++		},
++		{
++			name = "sparks",
++			look = { kind = "arcs", every = 7, pieces = 3, reach = 1.6, span = 2.2, width = 0.07, color = "core" },
++			motion = { kind = "crackle", every = 0.14 },
++			priority = 3,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 12, max = 2, range = 20, brightness = 1.1, color = "glow" },
++			motion = { kind = "pulse", period = 3.4, depth = 0.28 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..a73814bf 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,22 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	["sculpt:domain_mead_table"] = row(
++		"A long marble table of the Eternal Domain's mead hall: a trestle board with benches down both sides and gold platters, cups and a bowl on it.",
++		MOOR
++	),
++	["sculpt:domain_mead_column"] = row(
++		"An ivory column of the Eternal Domain's mead hall, ringed in gold and hung with a gold-rimmed shield facing the aisle.",
++		MOOR
++	),
++	["sculpt:domain_high_seat"] = row(
++		"The Eternal Domain's high seat: a marble throne with a footstool, a gold sun on its back and a gold crown of spikes.",
++		MOOR
++	),
++	["sculpt:domain_mead_flame"] = row(
++		"A low tongue of gold flame from the Eternal Domain's fire trench, with a paler heart.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainMeadHall.luau b/src/shared/systems/features/DomainMeadHall.luau
+new file mode 100644
+index 00000000..7d6059da
+--- /dev/null
++++ b/src/shared/systems/features/DomainMeadHall.luau
+@@ -0,0 +1,535 @@
++--!strict
++-- The Eternal Domain's mead hall (roadmap areas/eternal-domain.md): the gods'
++-- feasting hall. A long paved hall on a plinth, a colonnade of shield-hung
++-- columns along both walls, long marble tables with benches and gold vessels
++-- one or two rows deep, a trench of holy fire down its middle, a golden
++-- processional way crossing it, and a high seat under a round apse at its
++-- head. The road crosses the hall between the fires, so the feature is a
++-- crossing: the fires part where the way comes through.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure, the rest only
++-- dress it:
++--   1. the plan: a plain long hall, or apsidal (a round wall round the high
++--      seat, so the hall's head is a half-round room);
++--   2. the walk: the hall's walls on the footprint's edge, or a processional
++--      terrace two cells wide round the hall at ground level;
++--   3. the fire: one spine trench split by the road, twin trenches flanking
++--      the central way, or three square hearth pits on the axis;
++--   4. the tables: one or two rows a side, standing whole or broken into
++--      shorter runs;
++--   5. the head: one high seat, a pair of them, or the gods' gold tree
++--      standing where the high seat would be;
++--   6. then the hall's size, the crossing's place, the parapet's height, the
++--      colonnade's spacing and the gold inlay down the paving.
++-- Built on the domain's own kit for the head and the light (the gold tree, the
++-- kneeling god's light spilling from the fire), and on four sculpts of its
++-- own: the table, the shield-hung column, the high seat and the flame.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++type Band = { z0: number, z1: number, role: string }
++type Span = { z0: number, z1: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function pick<T>(rng: Random, list: { T }): T
++	return list[whole(rng, 1, #list)]
++end
++
++local PLANS = { "nave", "apse" }
++local FIRES = { "spine", "twin", "hearths" }
++local HEADS = { "seat", "pair", "tree" }
++local PATTERNS = { "bars", "ring", "both", "none" }
++
++local feature: MapFeature.Feature = {
++	name = "DomainMeadHall",
++	about = "The gods' mead hall: long marble tables and gold vessels between trenches of holy fire, shields on the colonnade, and a high seat at its head.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "crossing",
++	mood = { "monumental", "feasting", "gold-lit", "colossal" },
++	cells = {
++		-- The hall's paving: dressed ivory, a shade warmer than the domain's
++		-- open marble, so the hall reads as built ground from above.
++		floor = { ground = { material = "Slate", color = { 234, 228, 214 } }, lift = 0.1, clear = true },
++		-- The processional terrace round the hall.
++		walk = { ground = { material = "Concrete", color = { 222, 214, 196 } }, lift = 0.1, clear = true },
++		-- Under the tables: a darker stone, hidden by the tabletop anyway.
++		table = { ground = { material = "Cobblestone", color = { 206, 200, 184 } }, lift = 0.05, clear = true },
++		-- The fire trench's bed, deep gold-brown, two studs under the floor.
++		-- Its flames are props of their own (domain_mead_flame), scattered a
++		-- cell and a half, so the whole channel burns and not just one point.
++		trench = {
++			ground = { material = "Basalt", color = { 106, 84, 52 } },
++			lift = 0.1,
++			clear = true,
++			props = { { sculpt = "domain_mead_flame", every = 1.8, scale = { 0.8, 1.25 }, sink = 0.15 } },
++		},
++		-- The wall ring and the apse's curved wall. Its height is drawn per
++		-- seed (lifts on these cells), a low balustrade or a tall wall.
++		parapet = { ground = { material = "Rock", color = { 210, 202, 186 } }, lift = 1.5, clear = true },
++		dais = { ground = { material = "Marble", color = { 214, 208, 194 } }, lift = 0.1, clear = true },
++		step = { ground = { material = "Limestone", color = { 202, 194, 178 } }, lift = 0.1, clear = true },
++		-- The road's own warm gold paving, the colour the domain lays on its
++		-- roads, carried through the hall as the processional way.
++		procession = { ground = { material = "Pavement", color = { 226, 212, 184 } }, lift = 0.12, clear = true },
++		-- Gold inlay in the paving: the kerb along the fires and the hall's
++		-- bands. Gold is trim here, not a surface (bible B12).
++		gold = { ground = { material = "Salt", color = { 214, 178, 100 } }, lift = 0.14, clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-5: the structure, first.
++		local plan = pick(rng, PLANS)
++		local terrace = if rng:NextNumber() < 0.42 then 2 else 0
++		local fire = pick(rng, FIRES)
++		local rows = if rng:NextNumber() < 0.5 then 1 else 2
++		local head = pick(rng, HEADS)
++
++		-- 6: the hall's size and the crossing's place inside it.
++		local hallLen = whole(rng, 46, 50)
++		local hallWide = if rows == 1 then 21 + 2 * whole(rng, 0, 3) else 27 + 2 * whole(rng, 0, 3)
++		local w = hallLen + 2 + 2 * terrace
++		local d = hallWide + 2 + 2 * terrace
++		local wallN, wallS = terrace + 1, d - terrace
++		local wallW, wallE = terrace + 1, w - terrace
++		local hallN, hallS = wallN + 1, wallS - 1
++		local hallW, hallE = wallW + 1, wallE - 1
++		local zc = (hallN + hallS) // 2
++		local daisX = if plan == "apse" then hallE - 7 else hallE - 4
++		local xc = whole(rng, hallW + 7, daisX - 8)
++		local corridor0, corridor1 = xc - 1, xc + 1
++
++		-- 6, still: the dress the seeds vary in, drawn now so the structure
++		-- above never changes with them.
++		local tableChance = between(rng, 0.58, 0.94)
++		local colGap = whole(rng, 4, 6)
++		local parapetLift = between(rng, 1.5, 6.5)
++		local pattern = pick(rng, PATTERNS)
++		local goldGap = whole(rng, 6, 9)
++
++		local n = w * d
++		local walk = table.create(n, false)
++		local heights = table.create(n, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function set(x: number, z: number, ok: boolean, h: number, kind: string?)
++			if x < 1 or z < 1 or x > w or z > d then
++				return
++			end
++			local i = at(x, z)
++			walk[i] = ok
++			heights[i] = h
++			kinds[i] = kind
++		end
++
++		-- The footprint is the hall's stone mass; the walk and the floor are
++		-- cut into it.
++		for z = 1, d do
++			for x = 1, w do
++				set(x, z, false, 4, "parapet")
++			end
++		end
++		if terrace > 0 then
++			for z = 1, d do
++				for x = 1, w do
++					if x <= terrace or z <= terrace or x > w - terrace or z > d - terrace then
++						set(x, z, true, 0, "walk")
++					end
++				end
++			end
++		end
++		for z = hallN, hallS do
++			for x = hallW, hallE do
++				set(x, z, true, 4, "floor")
++			end
++		end
++
++		-- The cross-section, north to south: outer aisle, table row(s), the
++		-- middle span (open floor and the fires), and back again.
++		local a, t, m, b = 2, 2, 1, 2
++		local middle = hallWide - 2 * a - 2 * t * rows - 2 * m * (rows - 1) - 2 * b
++		local fw, cw = 1, (if fire == "twin" then 5 else 0)
++		local open = if fire == "hearths" then middle else middle - 2 * fw - cw
++		local openL = open // 2
++		local bands: { Band } = {}
++		local z = hallN
++		local function band(role: string, count: number)
++			if count > 0 then
++				table.insert(bands, { z0 = z, z1 = z + count - 1, role = role })
++				z += count
++			end
++		end
++		band("walk", a)
++		band("table", t)
++		if rows == 2 then
++			band("walk", m)
++			band("table", t)
++		end
++		band("walk", b)
++		if fire == "hearths" then
++			band("walk", middle)
++		else
++			band("walk", openL)
++			band("fire", fw)
++			if fire == "twin" then
++				band("walk", cw)
++			end
++			band("fire", fw)
++			band("walk", open - openL)
++		end
++		band("walk", b)
++		if rows == 2 then
++			band("table", t)
++			band("walk", m)
++		end
++		band("table", t)
++		band("walk", a)
++
++		-- The fires, one span per trench (adjacent bands are one trench).
++		local fires: { Span } = {}
++		local last: Span? = nil
++		local tableBands: { Band } = {}
++		for _, bd in bands do
++			if bd.role == "fire" then
++				if last and bd.z0 == last.z1 + 1 then
++					last.z1 = bd.z1
++				else
++					local span: Span = { z0 = bd.z0, z1 = bd.z1 }
++					table.insert(fires, span)
++					last = span
++				end
++			else
++				last = nil
++				if bd.role == "table" then
++					table.insert(tableBands, bd)
++				end
++			end
++		end
++
++		-- The hall's working length: from the west aisle to the dais's steps.
++		local westStart = hallW + 2
++		local eastLimit = daisX - 4
++		local function inCorridor(x: number): boolean
++			return x >= corridor0 and x <= corridor1
++		end
++
++		-- The trench: two long runs, parted by the road at the crossing.
++		for _, span in fires do
++			for zz = span.z0, span.z1 do
++				for x = hallW + 1, eastLimit do
++					if not inCorridor(x) then
++						set(x, zz, false, 2, "trench")
++					end
++				end
++			end
++		end
++		-- Or three square hearth pits on the axis, clear of the road.
++		local pits: { number } = {}
++		if fire == "hearths" then
++			local spots: { number } = {}
++			for x = hallW + 3, daisX - 5 do
++				if math.abs(x - xc) >= 5 then
++					table.insert(spots, x)
++				end
++			end
++			if #spots >= 3 then
++				for k = 1, 3 do
++					local idx = math.floor((k - 0.5) * #spots / 3) + 1
++					table.insert(pits, spots[math.min(idx, #spots)])
++				end
++			end
++			for _, px in pits do
++				for zz = zc - 1, zc + 1 do
++					for x = px - 1, px + 1 do
++						set(x, zz, false, 2, "trench")
++					end
++				end
++			end
++		end
++
++		-- The long tables: four-cell lengths set end to end, some gone (a
++		-- broken row still leaves the floor walkable where it is missing).
++		for _, bd in tableBands do
++			local zMid = (bd.z0 + bd.z1) / 2
++			for x = westStart, eastLimit - 3, 4 do
++				if not (x <= corridor1 and x + 3 >= corridor0) then
++					if rng:NextNumber() < tableChance then
++						for zz = bd.z0, bd.z1 do
++							for xx = x, x + 3 do
++								set(xx, zz, false, 4, "table")
++							end
++						end
++						table.insert(marks, {
++							sculpt = "domain_mead_table",
++							x = x + 1.5,
++							z = zMid,
++							yaw = 0,
++							sink = 0.05,
++						})
++					end
++				end
++			end
++		end
++
++		-- The dais and the high seat, against the hall's head.
++		local halfX = 2
++		local halfZ = if head == "pair" then 3 else 2
++		for zz = zc - halfZ - 1, zc + halfZ + 1 do
++			for x = daisX - halfX - 1, daisX + halfX + 1 do
++				if math.abs(x - daisX) <= halfX and math.abs(zz - zc) <= halfZ then
++					set(x, zz, true, 7, "dais")
++				else
++					set(x, zz, true, 5.5, "step")
++				end
++			end
++		end
++		local function plinth(x0: number, z0: number, x1: number, z1: number)
++			for zz = z0, z1 do
++				for x = x0, x1 do
++					set(x, zz, false, 7, "dais")
++				end
++			end
++		end
++		if head == "pair" then
++			plinth(daisX - 1, zc - 3, daisX, zc - 2)
++			plinth(daisX - 1, zc + 2, daisX, zc + 3)
++			for _, zz in { zc - 2.5, zc + 2.5 } do
++				table.insert(marks, {
++					sculpt = "domain_high_seat",
++					x = daisX,
++					z = zz,
++					yaw = 180,
++					scale = 0.9,
++					sink = 0.2,
++					solid = true,
++				})
++			end
++		else
++			plinth(daisX - 1, zc - 1, daisX + 1, zc + 1)
++			if head == "tree" then
++				table.insert(marks, {
++					sculpt = "domain_gold_tree",
++					x = daisX,
++					z = zc,
++					yaw = between(rng, 0, 360),
++					sink = 0.3,
++					solid = true,
++				})
++			else
++				table.insert(marks, {
++					sculpt = "domain_high_seat",
++					x = daisX,
++					z = zc,
++					yaw = 180,
++					sink = 0.2,
++					solid = true,
++				})
++			end
++		end
++
++		-- The apse: the head's floor rounded off inside the circle round the
++		-- high seat; the corners outside it are the hall's stone.
++		if plan == "apse" then
++			local rap = 7
++			for zz = hallN, hallS do
++				for x = daisX, hallE do
++					local dx, dz = x - daisX, zz - zc
++					if dx * dx + dz * dz > rap * rap and kinds[at(x, zz)] == "floor" then
++						set(x, zz, false, 4, "parapet")
++					end
++				end
++			end
++		end
++
++		-- The processional way: a broad golden road through the wall, over the
++		-- terrace and across the hall, between the fires.
++		for x = corridor0, corridor1 do
++			for zz = 1, d do
++				local h = 4
++				if zz <= wallN then
++					h = if zz == wallN then 2 else 0
++				elseif zz >= wallS then
++					h = if zz == wallS then 2 else 0
++				end
++				set(x, zz, true, h, "procession")
++			end
++		end
++
++		-- Gold: the kerb along every fire, then the hall's bands.
++		local function paintGold(x: number, zz: number)
++			if x < 1 or zz < 1 or x > w or zz > d then
++				return
++			end
++			local i = at(x, zz)
++			if walk[i] and kinds[i] == "floor" then
++				kinds[i] = "gold"
++			end
++		end
++		for zz = hallN, hallS do
++			for x = hallW, hallE do
++				if kinds[at(x, zz)] == "trench" then
++					paintGold(x + 1, zz)
++					paintGold(x - 1, zz)
++					paintGold(x, zz + 1)
++					paintGold(x, zz - 1)
++				end
++			end
++		end
++		if pattern == "bars" or pattern == "both" then
++			for x = hallW + 3, daisX - 5, goldGap do
++				for zz = hallN, hallS do
++					paintGold(x, zz)
++				end
++			end
++		end
++		if pattern == "ring" or pattern == "both" then
++			for zz = zc - halfZ - 2, zc + halfZ + 2 do
++				for x = daisX - halfX - 2, daisX + halfX + 2 do
++					if math.abs(x - daisX) == halfX + 2 or math.abs(zz - zc) == halfZ + 2 then
++						paintGold(x, zz)
++					end
++				end
++			end
++		end
++
++		-- The colonnade: shield-hung columns along both walls, facing the hall.
++		-- The wall rises in a pier under each column, so the long walls read
++		-- as bays from inside and out.
++		local piers: { [number]: boolean } = {}
++		local colEnd = if plan == "apse" then daisX - 1 else hallE - 2
++		for x = hallW + 2, colEnd, colGap do
++			if math.abs(x - xc) > 5 then
++				if kinds[at(x, wallN)] == "parapet" then
++					piers[at(x, wallN)] = true
++					table.insert(marks, {
++						sculpt = "domain_mead_column",
++						x = x,
++						z = wallN,
++						yaw = -90,
++						sink = 0.1,
++						solid = true,
++					})
++				end
++				if kinds[at(x, wallS)] == "parapet" then
++					piers[at(x, wallS)] = true
++					table.insert(marks, {
++						sculpt = "domain_mead_column",
++						x = x,
++						z = wallS,
++						yaw = 90,
++						sink = 0.1,
++						solid = true,
++					})
++				end
++			end
++		end
++
++		-- The wall's height: a low balustrade or a high wall, per seed; the
++		-- piers stand above it, and the head wall behind the high seat rises
++		-- as the hall's tall gable, the backdrop of its photograph.
++		local headLift = between(rng, 14, 22)
++		for zz = 1, d do
++			for x = 1, w do
++				local i = at(x, zz)
++				if kinds[i] == "parapet" then
++					lifts[i] = parapetLift
++					if x == wallE or (plan == "apse" and x >= daisX) then
++						lifts[i] = headLift
++					elseif piers[i] then
++						lifts[i] = parapetLift + 2.5
++					end
++				end
++			end
++		end
++
++		-- The gates: a triumphal arch over each way in, its piers on the wall
++		-- either side of the road and its passage spanning the corridor.
++		for _, zz in { wallN, wallS } do
++			table.insert(marks, {
++				sculpt = "domain_triumphal_arch",
++				x = xc,
++				z = zz,
++				yaw = 0,
++				sink = 0,
++				solid = true,
++			})
++		end
++
++		-- The fires' light: one set piece per run or pit.
++		if fire == "hearths" then
++			for _, px in pits do
++				table.insert(effects, { recipe = "domain_trench_fire", x = px, z = zc, lift = 0.4 })
++			end
++		else
++			for _, span in fires do
++				local zMid = (span.z0 + span.z1) / 2
++				for _, run in { { hallW + 1, corridor0 - 1 }, { corridor1 + 1, eastLimit } } do
++					if run[2] - run[1] + 1 >= 6 then
++						table.insert(effects, {
++							recipe = "domain_trench_fire",
++							x = (run[1] + run[2]) / 2,
++							z = zMid,
++							lift = 0.4,
++						})
++					end
++				end
++			end
++		end
++
++		-- The road: in from one border, up through the gate, across the hall
++		-- between the fires, and out the far wall.
++		local road: { Point } = {
++			{ x = xc, z = 1 },
++			{ x = xc, z = wallN },
++			{ x = xc, z = zc },
++			{ x = xc, z = wallS },
++			{ x = xc, z = d },
++		}
++		-- One camera down the fire to the high seat, one along the tables
++		-- from the hall's south aisle, under the shields. The first stands
++		-- back at least sixteen cells from the dais, so the seat is framed
++		-- whatever place the road crosses at.
++		local approach = math.min(xc, daisX - 22)
++		local cameras: { MapFeature.Shot } = {
++			{
++				name = "down the fire to the high seat",
++				from = { x = approach, z = zc, lift = 7 },
++				to = { x = daisX, z = zc, lift = 9 },
++				fov = 52,
++			},
++			{
++				name = "along the tables, under the shields",
++				from = { x = hallW + 2 + colGap / 2, z = hallS - 2, lift = 7 },
++				to = { x = daisX - 3, z = zc, lift = 8 },
++				fov = 60,
++			},
++		}
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

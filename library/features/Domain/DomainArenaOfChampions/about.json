@@ -1,0 +1,22 @@
+{
+  "letter": "K",
+  "generator": "g17",
+  "run": "domain-features-2",
+  "intent": "An arena of champions: an oval sand floor sunk below rings of ivory stands, entered down a processional stair under a gate at either end, with a canopied royal box over the precinct, weapon racks on the sand and a gold medallion at its heart under a crown of rising gold motes.",
+  "critic": {
+    "idea": 8,
+    "photo": 8,
+    "topology": 3,
+    "look": 4,
+    "game_camera": 5,
+    "usable": 7,
+    "total": 6.3,
+    "reads_as_itself": "yes",
+    "inorganic": 10,
+    "figures": "yes",
+    "best_shot": "feature-whole-final: eye-level down the stair to the arch and stands",
+    "why": "A complete, readable arena with a fine medallion; every seed is the same oval."
+  },
+  "role": "Landmark/boss court: arena for an elite or event fight.",
+  "notes": "# K\n\nKeep: Keep the oval bowl, the sunburst medallion and the canopied box.\n\n1. Vary the bowl: half-ruined stands, a round bowl, gates on different axes.\n2. Put a few cover pieces on the sand so it is a place to fight, not just a floor.\n3. Add gold to the stands' rims so it reads Domain, not grey.\n"
+}

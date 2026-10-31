@@ -1,0 +1,22 @@
+{
+  "letter": "W",
+  "generator": "g11",
+  "run": "domain-features-2",
+  "intent": "A gilded hedge labyrinth in the Eternal Domain that is a genuinely different maze on every seed, entered through white marble gateways and centred on a winged gold idol with holy pollen drifting in the lanes.",
+  "critic": {
+    "idea": 7,
+    "photo": 7,
+    "topology": 9,
+    "look": 7,
+    "game_camera": 5,
+    "usable": 6,
+    "total": 7.17,
+    "reads_as_itself": "yes",
+    "inorganic": 6,
+    "figures": "partly",
+    "best_shot": "feature-shots-final: idol rising over the hedge maze",
+    "why": "A genuinely different maze each seed; the heavy green fights the ivory and gold palette."
+  },
+  "role": "Garden side area: hedge maze as an optional detour with a reward at the idol.",
+  "notes": "# W\n\nKeep: Keep the per-seed maze generation and the marble gateways.\n\n1. Lighten the hedges or gild their tops so they belong to the Domain palette.\n2. Make the idol read: wings and a clear head; it reads as a gold torch.\n3. Widen lanes for fights; tight corridors will choke packs.\n"
+}

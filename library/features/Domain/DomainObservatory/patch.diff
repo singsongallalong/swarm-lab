@@ -1,0 +1,1148 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..f49dc488 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainObservatory = require("../systems/features/DomainObservatory")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainObservatory = DomainObservatory,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..5e223cdd 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,306 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (a map feature, 2026-10-30): the gods' observatory's armillary
++-- sphere, a great instrument turning the rings of the heavens. A stepped ivory pedestal
++-- carries a gold axle; round the pale orb at its heart stand the rings, each a faceted
++-- band of gilded blocks (counts are set so the blocks nearly touch, so a ring reads as a
++-- band and not a dashed circle from the high camera): the horizon, the meridian and the
++-- colure upright, the ecliptic tilted a little off level, and one ivory ring inside them
++-- to keep the gold from closing. Seeds tilt each band a hair and sometimes hang a gold
++-- star from the axle's crown.
++Sculpts.domain_armillary = {
++	kind = "assembly",
++	size = { 20, 29.8, 20 },
++	material = "Marble",
++	colors = { { 232, 224, 208 }, { 218, 210, 194 }, { 201, 195, 183 }, { 230, 190, 110 }, { 234, 220, 186 } },
++	maxPrims = 130,
++	parts = {
++		{ name = "plinth", shape = "Cylinder", axis = "y", size = { 11, 1.1, 11 }, at = { 0, 0.55, 0 }, color = 2 },
++		{ name = "step", shape = "Cylinder", axis = "y", size = { 8.6, 0.9, 8.6 }, at = { 0, 1.55, 0 }, color = 1 },
++		{ name = "drum", shape = "Cylinder", axis = "y", size = { 6.2, 0.9, 6.2 }, at = { 0, 2.45, 0 }, color = 3 },
++		{ name = "collar", shape = "Cylinder", axis = "y", size = { 5, 0.5, 5 }, at = { 0, 3.15, 0 }, color = 4 },
++		{ name = "stem", shape = "Cylinder", axis = "y", size = { 2.4, 3, 2.4 }, at = { 0, 4.9, 0 }, color = 1 },
++		{ name = "axle", shape = "Cylinder", axis = "y", size = { 0.55, 24, 0.55 }, at = { 0, 16.8, 0 }, color = 4 },
++		{
++			name = "orb",
++			shape = "Ball",
++			size = { 3, 3, 3 },
++			at = { 0, 17, 0 },
++			color = 5,
++			material = "Neon",
++		},
++		{
++			name = "horizon",
++			at = { 0, 17, 0 },
++			children = {
++				{
++					name = "band",
++					ring = { count = 22, radius = 9.6 },
++					children = {
++						{
++							shape = "Block",
++							size = { 0.55, 0.62, 2.79 },
++							color = 4,
++							jitter = { at = { 0.05, 0.06, 0 }, rot = { 0, 2, 2 } },
++						},
++					} :: { SculptTypes.AssemblyNode },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "meridian",
++			at = { 0, 17, 0 },
++			rot = { 0, 0, 90 },
++			children = {
++				{
++					name = "band",
++					ring = { count = 22, radius = 9.4 },
++					children = {
++						{
++							shape = "Block",
++							size = { 0.55, 0.62, 2.73 },
++							color = 4,
++							jitter = { at = { 0.05, 0.06, 0 }, rot = { 0, 2, 2 } },
++						},
++					} :: { SculptTypes.AssemblyNode },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "colure",
++			at = { 0, 17, 0 },
++			rot = { 90, 0, 0 },
++			children = {
++				{
++					name = "band",
++					ring = { count = 20, radius = 8.9 },
++					children = {
++						{
++							shape = "Block",
++							size = { 0.55, 0.6, 2.84 },
++							color = 4,
++							jitter = { at = { 0.05, 0.06, 0 }, rot = { 0, 2, 2 } },
++						},
++					} :: { SculptTypes.AssemblyNode },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "ecliptic",
++			at = { 0, 17, 0 },
++			rot = { 23.5, 0, 0 },
++			children = {
++				{
++					name = "band",
++					ring = { count = 18, radius = 8.3 },
++					children = {
++						{
++							shape = "Block",
++							size = { 0.5, 0.56, 2.94 },
++							color = 4,
++							chance = 0.92,
++							jitter = { at = { 0.05, 0.06, 0 }, rot = { 0, 2, 2 } },
++						},
++					} :: { SculptTypes.AssemblyNode },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "inner ring",
++			at = { 0, 17, 0 },
++			rot = { 0, 0, 62 },
++			children = {
++				{
++					name = "band",
++					ring = { count = 16, radius = 6.4 },
++					children = {
++						{ shape = "Block", size = { 0.45, 0.5, 2.55 }, color = 1, jitter = { rot = { 0, 2, 2 } } },
++					} :: { SculptTypes.AssemblyNode },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "crown",
++			shape = "Ball",
++			size = { 1.2, 1.2, 1.2 },
++			at = { 0, 29.2, 0 },
++			color = 4,
++		},
++		{
++			name = "crown star",
++			shape = "Ball",
++			size = { 0.5, 0.5, 0.5 },
++			at = { 0, 30, 0 },
++			color = 5,
++			material = "Neon",
++			chance = 0.55,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain's star-dial, a plate of gold rings and spokes inlaid in the
++-- observatory's paving. A pale disc, a gold rim and inner ring, radial spokes and a
++-- gold boss, with a needle set to the pole star on top; seeds give it eight spokes or
++-- twelve. It is set flush: its whole height is a knee's, so it reads from above as an
++-- instrument drawn on the floor and not as a piece of furniture.
++Sculpts.domain_star_dial = {
++	kind = "assembly",
++	size = { 9, 2.85, 9 },
++	material = "Marble",
++	colors = { { 226, 218, 202 }, { 214, 206, 190 }, { 198, 192, 180 }, { 230, 190, 110 }, { 234, 220, 186 } },
++	maxPrims = 50,
++	parts = {
++		{ name = "plate", shape = "Cylinder", axis = "y", size = { 8.6, 0.3, 8.6 }, at = { 0, 0.15, 0 }, color = 2 },
++		{
++			name = "rim",
++			at = { 0, 0.34, 0 },
++			children = {
++				{
++					name = "band",
++					ring = { count = 16, radius = 4.15 },
++					children = {
++						{ shape = "Block", size = { 0.5, 0.42, 1.66 }, color = 4 },
++					} :: { SculptTypes.AssemblyNode },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "spokes",
++			at = { 0, 0.34, 0 },
++			children = {
++				{
++					name = "arms",
++					oneOf = {
++						{
++							name = "eight",
++							ring = { count = 8, radius = 0.01, start = 22.5 },
++							children = {
++								{ shape = "Block", size = { 2.5, 0.34, 0.3 }, at = { 2, 0, 0 }, color = 4 },
++							} :: { SculptTypes.AssemblyNode },
++						},
++						{
++							name = "twelve",
++							ring = { count = 12, radius = 0.01, start = 0 },
++							children = {
++								{ shape = "Block", size = { 2.5, 0.34, 0.3 }, at = { 2, 0, 0 }, color = 4 },
++							} :: { SculptTypes.AssemblyNode },
++						},
++					} :: { SculptTypes.AssemblyNode },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "inner ring",
++			at = { 0, 0.34, 0 },
++			children = {
++				{
++					name = "band",
++					ring = { count = 12, radius = 2.55 },
++					children = {
++						{ shape = "Block", size = { 0.34, 0.36, 1.36 }, color = 4 },
++					} :: { SculptTypes.AssemblyNode },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{ name = "boss", shape = "Cylinder", axis = "y", size = { 1.2, 0.5, 1.2 }, at = { 0, 0.4, 0 }, color = 4 },
++		{
++			name = "needle",
++			shape = "Block",
++			size = { 0.3, 2.4, 0.3 },
++			at = { 0.4, 1.45, 0 },
++			rot = { 0, 0, -26 },
++			color = 4,
++		},
++		{ name = "pole star", shape = "Ball", size = { 0.45, 0.45, 0.45 }, at = { 1, 2.6, 0 }, color = 5 },
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain's telescope pillar, an ivory pier with a gilded tube on its
++-- shoulder, aimed up over the sea of cloud. A stepped foot, a fluted shaft ringed in
++-- gold, a capital and yoke, and the long tube with its bands and a small finder beside
++-- it. Seeds swing and roll the tube a little, so a run of them never aims together.
++Sculpts.domain_telescope = {
++	kind = "assembly",
++	size = { 11, 20.4, 5.2 },
++	material = "Marble",
++	colors = { { 232, 224, 208 }, { 218, 210, 194 }, { 201, 195, 183 }, { 230, 190, 110 }, { 234, 220, 186 } },
++	maxPrims = 26,
++	parts = {
++		{ name = "plinth", shape = "Cylinder", axis = "y", size = { 5, 0.8, 5 }, at = { 0, 0.4, 0 }, color = 2 },
++		{ name = "step", shape = "Cylinder", axis = "y", size = { 3.6, 0.7, 3.6 }, at = { 0, 1.15, 0 }, color = 1 },
++		{ name = "shaft", shape = "Cylinder", axis = "y", size = { 1.8, 11.5, 1.8 }, at = { 0, 7.15, 0 }, color = 1 },
++		{
++			name = "low collar",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 2.4, 0.5, 2.4 },
++			at = { 0, 3.6, 0 },
++			color = 4,
++		},
++		{
++			name = "high collar",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 2.4, 0.5, 2.4 },
++			at = { 0, 10.2, 0 },
++			color = 4,
++		},
++		{ name = "capital", shape = "Cylinder", axis = "y", size = { 3.2, 0.9, 3.2 }, at = { 0, 13.35, 0 }, color = 2 },
++		{ name = "crown", shape = "Cylinder", axis = "y", size = { 3.6, 0.4, 3.6 }, at = { 0, 13.95, 0 }, color = 4 },
++		{
++			name = "yoke",
++			shape = "Block",
++			size = { 0.6, 1.6, 0.6 },
++			at = { 0, 14.9, 1.5 },
++			mirror = "z",
++			color = 1,
++		},
++		{ name = "pivot", shape = "Cylinder", axis = "z", size = { 0.5, 0.5, 3.4 }, at = { 0, 15.4, 0 }, color = 4 },
++		{
++			name = "tube",
++			at = { 0, 15.4, 0 },
++			rot = { 0, 0, 34 },
++			jitter = { rot = { 3, 10, 6 } },
++			children = {
++				{ shape = "Cylinder", size = { 11, 2.2, 2.2 }, color = 1 },
++				{ shape = "Cylinder", size = { 1.6, 2.9, 2.9 }, at = { 4.6, 0, 0 }, color = 4 },
++				{ shape = "Cylinder", size = { 0.7, 2.5, 2.5 }, at = { 2.8, 0, 0 }, color = 4 },
++				{ shape = "Cylinder", size = { 1.2, 1.2, 1.2 }, at = { -6, 0, 0 }, color = 4 },
++				{ shape = "Ball", size = { 1.5, 1.5, 1.5 }, at = { -4.9, -1.5, 0 }, color = 3 },
++				{ shape = "Cylinder", size = { 2.6, 0.55, 0.55 }, at = { 1, 1.7, 0.4 }, color = 2, chance = 0.7 },
++			} :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain's observatory lamp: a gold bowl of holy light on a slim ivory
++-- pedestal, made as an assembly so it reads as a lamp and not as the kit's tripod
++-- brazier (which a critic read as a stool). Small enough to ring a terrace.
++Sculpts.domain_observatory_lamp = {
++	kind = "assembly",
++	size = { 3.2, 5.4, 3.2 },
++	material = "Marble",
++	colors = { { 232, 224, 208 }, { 218, 210, 194 }, { 201, 195, 183 }, { 230, 190, 110 }, { 234, 220, 186 } },
++	maxPrims = 8,
++	parts = {
++		{ name = "foot", shape = "Cylinder", axis = "y", size = { 3, 0.5, 3 }, at = { 0, 0.25, 0 }, color = 2 },
++		{ name = "stem", shape = "Cylinder", axis = "y", size = { 0.85, 3.4, 0.85 }, at = { 0, 2.15, 0 }, color = 1 },
++		{ name = "collar", shape = "Cylinder", axis = "y", size = { 1.6, 0.35, 1.6 }, at = { 0, 3.9, 0 }, color = 4 },
++		{ name = "bowl", shape = "Cylinder", axis = "y", size = { 2.5, 0.9, 2.5 }, at = { 0, 4.5, 0 }, color = 4 },
++		{ name = "lip", shape = "Cylinder", axis = "y", size = { 2.9, 0.3, 2.9 }, at = { 0, 5, 0 }, color = 3 },
++		{
++			name = "light",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 1.8, 0.25, 1.8 },
++			at = { 0, 5.2, 0 },
++			color = 5,
++			material = "Neon",
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..599dd284 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,69 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's observatory (a map feature, 2026-10-30): the stars themselves
++-- falling over the terrace. Slow gold motes drift down out of the night, a few pale
++-- sky-blue glints among them, and a light breathes below so the paving is lit where they
++-- land. Placed high (lift 24 to 26) over a terrace, aimed down, so the fall is seen from
++-- above as a slow shower over the marble rather than a column standing on it. Kept to
++-- three layers and few emitters: the whole piece is one idea, and a phone has to keep it.
++recipes.domain_starfall = {
++	about = "Stars falling slowly over the Eternal Domain's observatory: bright gold motes with rare pale sky-blue glints, and a light breathing below where they land.",
++	theme = "domain",
++	radius = 300,
++	path = { kind = "worm", length = 22, step = 3, bend = 24, climb = 0, round = 2 },
++	layers = {
++		{
++			name = "stars",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 20,
++				lift = 0,
++				toward = "down",
++				rise = 3.4,
++				life = { 6, 8 },
++				rate = 6,
++				size = 1.1,
++				tall = 2.6,
++				transparency = 0.06,
++				color = "gold",
++				texture = "wisp",
++				lean = 5,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2.2, tilt = 6, span = 18, periods = { 7, 11 } },
++			priority = 1,
++		},
++		{
++			name = "glints",
++			look = {
++				kind = "stream",
++				every = 9,
++				thick = 22,
++				lift = 1.5,
++				toward = "down",
++				rise = 4.2,
++				life = { 5, 7 },
++				rate = 2.4,
++				size = 0.55,
++				tall = 1.6,
++				transparency = 0.04,
++				color = "sky",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.8,
++			},
++			motion = { kind = "sway", amplitude = 3, tilt = 10, span = 14, periods = { 5, 9 } },
++			priority = 2,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 10, max = 2, range = 24, brightness = 1, color = "glow" },
++			motion = { kind = "pulse", period = 5.6, depth = 0.35 },
++			priority = 3,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..b5d5517a 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,23 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's observatory (a map feature)
++	["sculpt:domain_armillary"] = row(
++		"The Eternal Domain's armillary sphere: gilded rings of the heavens turning round a pale-glowing orb on a stepped ivory pedestal.",
++		MOOR
++	),
++	["sculpt:domain_star_dial"] = row(
++		"A star-dial inlaid in the Eternal Domain's paving: a gold rim, spokes and a needle set to the pole star.",
++		MOOR
++	),
++	["sculpt:domain_telescope"] = row(
++		"The Eternal Domain's telescope pillar: an ivory pier ringed in gold, its long gilded tube aimed up over the sea of cloud.",
++		MOOR
++	),
++	["sculpt:domain_observatory_lamp"] = row(
++		"An observatory lamp of the Eternal Domain: a bowl of holy light on a slim ivory pedestal.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainObservatory.luau b/src/shared/systems/features/DomainObservatory.luau
+new file mode 100644
+index 00000000..bb07d8a7
+--- /dev/null
++++ b/src/shared/systems/features/DomainObservatory.luau
+@@ -0,0 +1,711 @@
++--!strict
++-- The Eternal Domain's observatory, a map feature for the domain tileset: a raised
++-- terrace of pale marble standing over a bed of cloud, climbed by long stairs, with the
++-- gods' armillary sphere at its heart, star-dials inlaid in the paving, telescopes at the
++-- rim and lamps of holy light round the balustrade. The domain is the one place the art
++-- bible lets pale (B12): ivory stone and gold in holy light, monumental and a little
++-- terrible, so the terrace stands high, the stairs are long and the cloud below is bright.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first, then
++-- look). The first draws choose the plan and the rest only dress it:
++--   1. the plan: a round drum, twin drums joined by a bridge over the cloud, a drum cut by
++--      a straight brink over the cloud, or an eight-sided terrace;
++--   2. the height it stands: 8, 10 or 12 studs, so a flight of four, five or six treads;
++--   3. the cloud: a sea round the terrace, a narrow girdle, or none at all;
++--   4. the flights: two to four stairs at a new turn each seed (the road climbs one and
++--      leaves by another);
++--   5. the balustrade: a whole ring, a ring of piers, or broken down into low rubble;
++--   then the dressing: the star-dials round the heart or out on the court, the telescopes
++--   at the rim, the lamps and the columns that frame each stair.
++--
++-- One structure, made and stamped alone: `lune run scripts/dresspreview shots out.png 4 1
++-- feature=DomainObservatory`.
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++local Noise = require("../Noise")
++
++type Point = { x: number, z: number }
++type Drum = { x: number, z: number, r: number }
++type Flight = { drum: number, angle: number, ax: number, az: number, half: number, inner: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return lo + math.floor((hi - lo + 1) * rng:NextNumber())
++end
++
++local function pick(rng: Random, list: { string }): string
++	return list[whole(rng, 1, #list)]
++end
++
++-- Radians between two angles, 0..pi.
++local function apart(a: number, b: number): number
++	return math.abs((a - b + math.pi) % (2 * math.pi) - math.pi)
++end
++
++local FORMS = { "drum", "twin", "brink", "octagon" }
++local RAILS = { "ring", "piers", "broken" }
++local CLOUDS = { "sea", "girdle", "none" }
++local RISES = { 8, 10, 12 }
++
++-- The walkable terrace stops this far inside the balustrade's outer face, so the
++-- balustrade is a wall over a cell thick and no walkable cell can touch the open ground
++-- beyond it (a step of the terrace's whole height, which the contract forbids).
++local RAIL = 1.1
++-- The cloud's floor, studs under the ground round the terrace.
++local CLOUD_DEPTH = 6
++-- How far the cloud's outer bank may wander from the terrace, cells.
++local BANK = 0.7
++
++local feature: MapFeature.Feature = {
++	name = "DomainObservatory",
++	about = "The gods' observatory: a raised marble terrace over the sea of cloud, star-dials inlaid in its paving, a great armillary sphere of gilded rings at its heart and telescopes at the rim.",
++	tileset = "domain",
++	scale = "medium",
++	role = "crossing",
++	mood = { "celestial", "raised", "monumental", "starlit" },
++	cells = {
++		-- The terrace: a pale, smooth marble, a little lighter and cooler than the
++		-- domain's heath paving so the built ground reads against it.
++		terrace = {
++			ground = { material = "Sandstone", color = { 196, 186, 166 } },
++			lift = 0.22,
++			clear = true,
++		},
++		-- The ground round it and the court below the stairs, a warmer grey stone.
++		approach = {
++			ground = { material = "Marble", color = { 214, 208, 194 } },
++			lift = 0.18,
++			clear = true,
++		},
++		-- Treads, darker and lined, so the flights read from above.
++		stair = {
++			ground = { material = "Cobblestone", color = { 194, 186, 170 } },
++			lift = 0.2,
++			clear = true,
++		},
++		-- The gilded inlay ring at the terrace's lip (the domain's own warm paving
++		-- colour, so it reads as gold worked into the marble).
++		gilt = {
++			ground = { material = "Pavement", color = { 226, 212, 184 } },
++			lift = 0.24,
++			clear = true,
++		},
++		-- The dais the armillary stands on: veined marble, a step off the paving.
++		dais = {
++			ground = { material = "Marble", color = { 214, 208, 194 } },
++			lift = 0.5,
++			clear = true,
++		},
++		-- The balustrade: heavy ivory limestone, waist high on the terrace.
++		parapet = {
++			ground = { material = "Salt", color = { 230, 226, 214 } },
++			lift = 2.4,
++			clear = true,
++		},
++		-- Its piers, a head above the rail.
++		pier = {
++			ground = { material = "Salt", color = { 230, 226, 214 } },
++			lift = 4.2,
++			clear = true,
++		},
++		-- A broken stretch of it, fallen to a low kerb.
++		rubble = {
++			ground = { material = "Salt", color = { 230, 226, 214 } },
++			lift = 0.9,
++			clear = true,
++		},
++		-- The bed of cloud the terrace stands in: the domain's own cloud colour,
++		-- sunk, so from above the terrace reads as an island.
++		cloud = {
++			ground = { material = "Ice", color = { 190, 204, 234 } },
++			lift = 0.15,
++			clear = true,
++		},
++		-- Under each lamp: the terrace's own paving, with one warm light of holy gold.
++		lamp = {
++			ground = { material = "Sandstone", color = { 196, 186, 166 } },
++			lift = 0.22,
++			clear = true,
++			glow = { color = { 255, 224, 168 }, range = 14, brightness = 1.2, every = 1, height = 4.6 },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-4: the plan, first. These draws are the structure; the rest only dress it.
++		local form = pick(rng, FORMS)
++		local rise = RISES[whole(rng, 1, #RISES)]
++		local treads = rise // 2
++		local rail = pick(rng, RAILS)
++		local cloud = pick(rng, CLOUDS)
++		local w = if form == "twin" then 32 else whole(rng, 30, 32)
++		local d = if form == "twin" then 32 else whole(rng, 30, 32)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		local band = if cloud == "sea"
++			then between(rng, 2.1, 2.8)
++			elseif cloud == "girdle" then between(rng, 0.9, 1.5)
++			else 0
++		-- How far a flight reaches out from the terrace's outer edge, in studs of the
++		-- platform's own measure: far enough to cross the cloud bank and land on open
++		-- ground. The treads divide that reach into rings, so neighbouring cells of a
++		-- flight are never more than a step apart.
++		local reach = math.max(treads - RAIL, band + 0.9)
++		local stairCount = if form == "twin" then whole(rng, 2, 3) else whole(rng, 2, 4)
++		local axis = between(rng, 0, 2 * math.pi)
++		local first = between(rng, 0, 2 * math.pi)
++		local perStair = 2 * math.pi / stairCount
++		local octagon = form == "octagon"
++		local brink = form == "brink"
++
++		-- Distance from (x, z) to the middle of the footprint's border along `a`, in
++		-- cells: what the stairs and the cloud bank have to fit inside.
++		local function room(x: number, z: number, a: number): number
++			local ux, uz = math.cos(a), math.sin(a)
++			local tx = if math.abs(ux) > 1e-6 then (if ux > 0 then w - x else x - 1) / math.abs(ux) else math.huge
++			local tz = if math.abs(uz) > 1e-6 then (if uz > 0 then d - z else z - 1) / math.abs(uz) else math.huge
++			return math.min(tx, tz)
++		end
++
++		local drums: { Drum } = {}
++		local flights: { Flight } = {}
++		local armX, armZ = cx, cz
++		local cutDist, cutX, cutZ = 0, 0, 0
++		local brinkMid: number? = nil
++
++		local function addFlight(drum: number, a: number, half: number, edge: number)
++			table.insert(flights, {
++				drum = drum,
++				angle = a,
++				ax = math.cos(a),
++				az = math.sin(a),
++				half = half,
++				inner = edge,
++			})
++		end
++
++		-- 5: each plan's own body, and the room its flights need.
++		local R = 0
++		if form == "twin" then
++			local gap = between(rng, 1.1, 1.7)
++			local rm, rs = between(rng, 4.8, 5.6), between(rng, 2.8, 3.4)
++			local halfD = (rm + gap + rs) / 2
++			local m1 = { x = cx - math.cos(axis) * halfD, z = cz - math.sin(axis) * halfD }
++			local m2 = { x = cx + math.cos(axis) * halfD, z = cz + math.sin(axis) * halfD }
++			-- Both drums' stairs point across the twin, so the bridge stays clear.
++			local across = axis + math.pi / 2
++			addFlight(1, across + between(rng, -0.4, 0.4), between(rng, 1.5, 1.8), rm - RAIL)
++			addFlight(2, across + math.pi + between(rng, -0.4, 0.4), between(rng, 1.3, 1.6), rs - RAIL)
++			if stairCount > 2 then
++				addFlight(1, across + math.pi + between(rng, -0.45, 0.45), between(rng, 1.3, 1.6), rm - RAIL)
++			end
++			drums = { { x = m1.x, z = m1.z, r = rm }, { x = m2.x, z = m2.z, r = rs } }
++			local roomMain, roomSat = math.huge, math.huge
++			for _, f in flights do
++				local drum = drums[f.drum]
++				local fit = room(drum.x, drum.z, f.angle) - reach - 0.6
++				if f.drum == 1 then
++					roomMain = math.min(roomMain, fit)
++				else
++					roomSat = math.min(roomSat, fit)
++				end
++			end
++			for k = 0, 7 do
++				local a = k * math.pi / 4
++				roomMain = math.min(roomMain, room(drums[1].x, drums[1].z, a) - band - 1.3)
++				roomSat = math.min(roomSat, room(drums[2].x, drums[2].z, a) - band - 1.3)
++			end
++			drums[1].r = math.max(4.2, math.min(rm, roomMain))
++			drums[2].r = math.max(2.6, math.min(rs, roomSat))
++			for _, f in flights do
++				f.inner = drums[f.drum].r - RAIL
++			end
++			armX, armZ = drums[1].x, drums[1].z
++			R = math.max(drums[1].r, drums[2].r)
++		else
++			local angles: { number } = {}
++			for k = 1, stairCount do
++				angles[k] = first + (k - 1) * perStair + between(rng, -0.16, 0.16) * perStair
++			end
++			local r = between(rng, 6.4, 7.6)
++			for _, a in angles do
++				r = math.min(r, room(cx, cz, a) - reach - 0.6)
++			end
++			for k = 0, 7 do
++				r = math.min(r, room(cx, cz, k * math.pi / 4) - band - 1.3)
++			end
++			R = math.max(5, r)
++			drums = { { x = cx, z = cz, r = R } }
++			for _, a in angles do
++				addFlight(1, a, between(rng, 1.5, 1.9), R - RAIL)
++			end
++			if brink then
++				-- The brink runs where it is furthest from every flight, so no stair
++				-- is cut off; the heart's clearance is set below, once it is measured.
++				local best, bestGap = 0, -1
++				for k = 0, 23 do
++					local a = k * math.pi / 12
++					local least = math.pi
++					for _, f in flights do
++						least = math.min(least, apart(a, f.angle))
++					end
++					if least > bestGap then
++						bestGap, best = least, a
++					end
++				end
++				brinkMid = best
++			end
++		end
++
++		local terraceEdge = drums[1].r - RAIL
++		local daisR = math.max(1.6, math.min(between(rng, 2, 2.5), terraceEdge - 2.6))
++		-- The gilded meridian and its cross, drawn through the heart: the floor is
++		-- the instrument the armillary reads, and the lines make it read from above.
++		local lineAngle = flights[1].angle + math.pi / 2
++		local lineX, lineZ = math.cos(lineAngle), math.sin(lineAngle)
++		if brink and brinkMid then
++			-- The straight lip runs across the wider gap between the flights, so the
++			-- terrace the road crosses stays whole and the heart keeps a dais' width
++			-- clear of it.
++			local n = brinkMid + between(rng, -0.35, 0.35)
++			cutX, cutZ = math.cos(n), math.sin(n)
++			cutDist = between(rng, daisR + 1.8, math.min(daisR + 3.4, R - 1.2))
++		end
++
++		local field = Noise.field(rng)
++		local walk = table.create(w * d, false)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inFootprint(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= w and z <= d
++		end
++		local function cellOf(p: Point): number?
++			local ix, iz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			if not inFootprint(ix, iz) then
++				return nil
++			end
++			return at(ix, iz)
++		end
++
++		-- The signed distance out from the platform's edge: negative on the terrace,
++		-- then the balustrade's thickness, then the bed of cloud, then open ground.
++		local function edge(x: number, z: number): number
++			local dx, dz = x - cx, z - cz
++			if form == "twin" then
++				local e1 = math.sqrt((x - drums[1].x) ^ 2 + (z - drums[1].z) ^ 2) - drums[1].r
++				local e2 = math.sqrt((x - drums[2].x) ^ 2 + (z - drums[2].z) ^ 2) - drums[2].r
++				-- The bridge between them: a walk a balustrade's width each side, its
++				-- ends buried in the two drums.
++				local ax, az = math.cos(axis), math.sin(axis)
++				local along = dx * ax + dz * az
++				local perp = math.abs(-dx * az + dz * ax)
++				local s1 = (drums[1].x - cx) * ax + (drums[1].z - cz) * az
++				local s2 = (drums[2].x - cx) * ax + (drums[2].z - cz) * az
++				local lo, hi = math.min(s1, s2), math.max(s1, s2)
++				local bridge = math.max(perp - 2, lo - along, along - hi)
++				return math.min(e1, e2, bridge)
++			end
++			local m = if octagon
++				then math.max(math.abs(dx), math.abs(dz), (math.abs(dx) + math.abs(dz)) * 0.70710678) - R
++				else math.sqrt(dx * dx + dz * dz) - R
++			if brink then
++				return math.max(m, dx * cutX + dz * cutZ - cutDist)
++			end
++			return m
++		end
++
++		-- Which flight's tread or kerb this cell is on, if any. The ring comes from the
++		-- cell's distance out from the platform's edge, so it rises and falls evenly
++		-- round the flight's mouth however the terrace's edge curves; the kerb is a
++		-- full cell wider than the walk, so a tread can never stand beside open ground
++		-- a step away.
++		local function onFlight(x: number, z: number, e: number): (number?, number?)
++			if e <= -RAIL or e > reach then
++				return nil, nil
++			end
++			local ring = math.clamp(math.ceil((e + RAIL) * treads / (reach + RAIL)), 1, treads)
++			local tread: number? = nil
++			local kerb: number? = nil
++			for _, f in flights do
++				local drum = drums[f.drum]
++				local dx, dz = x - drum.x, z - drum.z
++				if dx * f.ax + dz * f.az > 0.3 then
++					local perp = math.abs(-dx * f.az + dz * f.ax)
++					if perp <= f.half then
++						tread = math.max(tread or 0, ring)
++					elseif perp <= f.half + 1.2 then
++						kerb = math.max(kerb or 0, ring)
++					end
++				end
++			end
++			return tread, kerb
++		end
++
++		-- Where the balustrade stands: piers round it, or broken stretches of it.
++		local pierCount = whole(rng, 6, 10)
++		local pierPhase = between(rng, 0, 2 * math.pi)
++		local broken: { number } = {}
++		if rail == "broken" then
++			table.insert(broken, between(rng, 0, 2 * math.pi))
++			table.insert(broken, between(rng, 0, 2 * math.pi))
++		end
++		local function railKind(x: number, z: number): string
++			local c = drums[1]
++			if form == "twin" then
++				local d1 = (x - drums[1].x) ^ 2 + (z - drums[1].z) ^ 2
++				local d2 = (x - drums[2].x) ^ 2 + (z - drums[2].z) ^ 2
++				c = if d1 <= d2 then drums[1] else drums[2]
++			end
++			local a = math.atan2(z - c.z, x - c.x)
++			if rail == "piers" then
++				for k = 0, pierCount - 1 do
++					if apart(a, pierPhase + k * 2 * math.pi / pierCount) < 0.26 then
++						return "pier"
++					end
++				end
++			elseif rail == "broken" then
++				for _, b in broken do
++					if apart(a, b) < 0.42 then
++						return "rubble"
++					end
++				end
++			end
++			return "parapet"
++		end
++
++		-- The paving: the dais at the heart, a gilded inlay ring at the lip, terrace
++		-- between them.
++		local function paving(x: number, z: number, e: number): string
++			local dx, dz = x - armX, z - armZ
++			if dx * dx + dz * dz <= daisR * daisR then
++				return "dais"
++			end
++			if e <= -2.2 then
++				return "gilt"
++			end
++			if math.abs(-dx * lineZ + dz * lineX) < 0.55 or math.abs(dx * lineZ + dz * lineX) < 0.55 then
++				return "gilt"
++			end
++			return "terrace"
++		end
++
++		-- 6: lay the plan out cell by cell.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local e = edge(x, z)
++				local tread, kerb = onFlight(x, z, e)
++				if kerb and not tread then
++					walk[i] = false
++					heights[i] = rise - 2 * kerb
++					kinds[i] = "stair"
++				elseif tread then
++					walk[i] = true
++					heights[i] = rise - 2 * tread
++					kinds[i] = "stair"
++				elseif e <= -RAIL then
++					walk[i] = true
++					heights[i] = rise
++					kinds[i] = paving(x, z, e)
++				elseif e <= 0 then
++					walk[i] = false
++					heights[i] = rise
++					kinds[i] = railKind(x, z)
++				elseif e <= band + math.max(0.3, BANK * Noise.sample(field, x * 0.34, z * 0.34)) then
++					walk[i] = false
++					heights[i] = -CLOUD_DEPTH
++					kinds[i] = "cloud"
++				else
++					walk[i] = true
++					heights[i] = 0
++					kinds[i] = "approach"
++				end
++			end
++		end
++
++		-- A wide stair's kerb can fence a scrap of open ground in between two flights;
++		-- wall any such pocket as a sink of cloud, so every walkable cell is reachable.
++		local g = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		local main: { number }? = nil
++		for _, region in Grid.regions(g) do
++			for _, i in region do
++				local x, z = Grid.coords(g, i)
++				if x == 1 or z == 1 or x == w or z == d then
++					main = region
++					break
++				end
++			end
++			if main then
++				break
++			end
++		end
++		if main then
++			local kept: { [number]: boolean } = {}
++			for _, i in main do
++				kept[i] = true
++			end
++			for i, ok in walk do
++				if ok and not kept[i] then
++					walk[i] = false
++					heights[i] = -CLOUD_DEPTH
++					kinds[i] = "cloud"
++				end
++			end
++		end
++
++		-- 7: the dressing. The armillary at the heart, on its dais.
++		table.insert(marks, {
++			sculpt = "domain_armillary",
++			x = armX,
++			z = armZ,
++			yaw = between(rng, 0, 360),
++			scale = between(rng, 0.92, 1.12),
++			sink = -0.5,
++			solid = true,
++		})
++
++		-- Whether a spot is clear of the stairs and the heart (for the dials).
++		local function offTheWays(x: number, z: number): boolean
++			local i = cellOf({ x = x, z = z })
++			if not i or not walk[i] or kinds[i] == "stair" then
++				return false
++			end
++			for _, f in flights do
++				local drum = drums[f.drum]
++				local dx, dz = x - drum.x, z - drum.z
++				local along = dx * f.ax + dz * f.az
++				if along > f.inner - 1 and along < drum.r + reach + 1.5 then
++					if math.abs(-dx * f.az + dz * f.ax) < f.half + 0.9 then
++						return false
++					end
++				end
++			end
++			return true
++		end
++
++		-- Star-dials, inlaid where the seed wants them read: round the heart, out on
++		-- the court below the stairs, or both.
++		local dialMode = pick(rng, { "terrace", "court", "both" })
++		local dialCount = whole(rng, 2, 5)
++		local dials: { Point } = {}
++		for k = 1, dialCount do
++			local onTerrace = dialMode == "terrace" or (dialMode == "both" and k % 2 == 1)
++			local c = if onTerrace then drums[1] else { x = cx, z = cz }
++			local lo = if onTerrace then daisR + 1.5 else drums[1].r + reach + 2.4
++			local hi = if onTerrace then terraceEdge - 1.7 else drums[1].r + reach + 4.4
++			if hi < lo then
++				hi = lo + 0.4
++			end
++			local a = between(rng, 0, 2 * math.pi)
++			local spot: Point? = nil
++			for _ = 1, 16 do
++				local radius = between(rng, lo, hi)
++				local p = { x = c.x + math.cos(a) * radius, z = c.z + math.sin(a) * radius }
++				local clear = offTheWays(p.x, p.z)
++				local dx, dz = p.x - armX, p.z - armZ
++				clear = clear and dx * dx + dz * dz > (daisR + 1.4) ^ 2
++				for _, q in dials do
++					clear = clear and (q.x - p.x) ^ 2 + (q.z - p.z) ^ 2 > 9
++				end
++				if clear then
++					spot = p
++					break
++				end
++				a += 0.7
++			end
++			if spot then
++				table.insert(dials, spot)
++				local i = cellOf(spot) :: number
++				table.insert(marks, {
++					sculpt = "domain_star_dial",
++					x = spot.x,
++					z = spot.z,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.72, 0.95),
++					sink = -(if kinds[i] == "approach" then 0.18 else 0.22),
++				})
++			end
++		end
++
++		-- Telescopes at the rim, aimed away from the stairs.
++		local scopeCount = whole(rng, 1, 3)
++		local scopes: { Point } = {}
++		for _ = 1, scopeCount do
++			local a = between(rng, 0, 2 * math.pi)
++			local spot: Point? = nil
++			for _ = 1, 16 do
++				local p = { x = armX + math.cos(a) * (terraceEdge - 1.5), z = armZ + math.sin(a) * (terraceEdge - 1.5) }
++				local clear = offTheWays(p.x, p.z)
++				local i = cellOf(p)
++				clear = clear and i ~= nil and kinds[i :: number] ~= "dais"
++				for _, f in flights do
++					clear = clear and apart(a, f.angle) > 0.45
++				end
++				for _, q in scopes do
++					clear = clear and (q.x - p.x) ^ 2 + (q.z - p.z) ^ 2 > 16
++				end
++				if clear then
++					spot = p
++					break
++				end
++				a += 0.55
++			end
++			if spot then
++				table.insert(scopes, spot)
++				table.insert(marks, {
++					sculpt = "domain_telescope",
++					x = spot.x,
++					z = spot.z,
++					yaw = -math.deg(a) + between(rng, -28, 28),
++					scale = between(rng, 0.9, 1.1),
++					sink = -0.22,
++					solid = true,
++				})
++			end
++		end
++
++		-- Lamps of holy light round the balustrade; each lights its own cell.
++		local lampCount = whole(rng, 2, 6)
++		for _ = 1, lampCount do
++			local a = between(rng, 0, 2 * math.pi)
++			for _ = 1, 18 do
++				local p = { x = armX + math.cos(a) * (terraceEdge - 0.7), z = armZ + math.sin(a) * (terraceEdge - 0.7) }
++				local i = cellOf(p)
++				local clear = i ~= nil and walk[i :: number] and kinds[i :: number] ~= "dais"
++				for _, f in flights do
++					clear = clear and apart(a, f.angle) > 0.24
++				end
++				for _, q in scopes do
++					clear = clear and (q.x - p.x) ^ 2 + (q.z - p.z) ^ 2 > 4
++				end
++				if clear then
++					kinds[i :: number] = "lamp"
++					table.insert(marks, {
++						sculpt = "domain_observatory_lamp",
++						x = p.x,
++						z = p.z,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 1, 1.15),
++						sink = -0.22,
++						solid = true,
++					})
++					break
++				end
++				a += 0.5
++			end
++		end
++
++		-- 8: the light the place is for. The stars fall over the terrace, and holy
++		-- light gathers at the armillary's foot and climbs it.
++		table.insert(effects, { recipe = "domain_starfall", x = armX, z = armZ, lift = 18 })
++		table.insert(effects, { recipe = "domain_column_glory", x = armX, z = armZ, lift = 0.6 })
++
++		-- 9: the road. In off the border, up the first flight, across the terrace
++		-- round the heart, down another and out.
++		local function borderPoint(f: Flight): Point
++			local drum = drums[f.drum]
++			local t = room(drum.x, drum.z, f.angle)
++			return { x = drum.x + f.ax * t, z = drum.z + f.az * t }
++		end
++		local function flightIn(f: Flight, into: { Point })
++			local drum = drums[f.drum]
++			table.insert(into, borderPoint(f))
++			table.insert(
++				into,
++				{ x = drum.x + f.ax * (drum.r + reach + 1.6), z = drum.z + f.az * (drum.r + reach + 1.6) }
++			)
++			for k = treads, 1, -1 do
++				local e = -RAIL + (reach + RAIL) * (k - 0.5) / treads
++				local t = drum.r + e
++				table.insert(into, { x = drum.x + f.ax * t, z = drum.z + f.az * t })
++			end
++		end
++		local fa, fb = flights[1], flights[2]
++		local road: { Point } = {}
++		flightIn(fa, road)
++		local sign = if rng:NextNumber() < 0.5 then 1 else -1
++		if form == "twin" then
++			-- Over the bridge, round the armillary's drum.
++			local ax, az = math.cos(axis), math.sin(axis)
++			local perpX, perpZ = -az, ax
++			table.insert(road, { x = drums[1].x + perpX * 2.2 * sign, z = drums[1].z + perpZ * 2.2 * sign })
++			table.insert(road, { x = drums[1].x + ax * 1.6, z = drums[1].z + az * 1.6 })
++			table.insert(road, { x = cx, z = cz })
++			table.insert(road, { x = drums[2].x, z = drums[2].z })
++		else
++			local pa = { x = drums[1].x + fa.ax * (fa.inner - 1.2), z = drums[1].z + fa.az * (fa.inner - 1.2) }
++			local pb = { x = drums[1].x + fb.ax * (fb.inner - 1.2), z = drums[1].z + fb.az * (fb.inner - 1.2) }
++			local chordX, chordZ = pb.x - pa.x, pb.z - pa.z
++			local len = math.max(math.sqrt(chordX * chordX + chordZ * chordZ), 1e-6)
++			table.insert(road, pa)
++			table.insert(road, { x = cx - chordZ / len * 3.2 * sign, z = cz + chordX / len * 3.2 * sign })
++			table.insert(road, pb)
++		end
++		local back: { Point } = {}
++		flightIn(fb, back)
++		for k = #back, 1, -1 do
++			table.insert(road, back[k])
++		end
++
++		-- Keep every road point on a walkable cell: nudge it in across the terrace.
++		for _, p in road do
++			for _ = 1, 10 do
++				local ix, iz = math.clamp(math.floor(p.x + 0.5), 1, w), math.clamp(math.floor(p.z + 0.5), 1, d)
++				if walk[at(ix, iz)] then
++					break
++				end
++				p.x += (cx - p.x) * 0.16
++				p.z += (cz - p.z) * 0.16
++			end
++		end
++
++		-- 10: the photographs. One from below the first stair, one from the open side.
++		local fromA = {
++			x = drums[1].x + fa.ax * (drums[1].r + reach + 3),
++			z = drums[1].z + fa.az * (drums[1].r + reach + 3),
++		}
++		local acrossX, acrossZ = -fa.az, fa.ax
++		local side = if form == "brink" then -1 else 1
++		local fromB = {
++			x = armX + acrossX * (terraceEdge + band + 7) * side,
++			z = armZ + acrossZ * (terraceEdge + band + 7) * side,
++		}
++		local cameras: { MapFeature.Shot } = {
++			{
++				name = "the stair up to the sphere",
++				from = { x = fromA.x, z = fromA.z, lift = rise + 9 },
++				to = { x = armX, z = armZ, lift = rise + 11 },
++				fov = 60,
++			},
++			{
++				name = "the floor of the sky",
++				from = { x = fromB.x, z = fromB.z, lift = rise + 24 },
++				to = { x = armX, z = armZ, lift = rise + 4 },
++				fov = 55,
++			},
++		}
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

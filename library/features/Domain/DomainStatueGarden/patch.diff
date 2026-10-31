@@ -1,0 +1,953 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..7d5e1098 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,12 +2,14 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainStatueGarden = require("../systems/features/DomainStatueGarden")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	DomainStatueGarden = DomainStatueGarden,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..045acf72 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,156 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (a trial, 2026-10-30): the garden's god, a robed figure on a
++-- stepped marble plinth with a gilded band, a gold circlet and a halo of eight gold
++-- bosses, and in its hands a spear, a bowl, a sword or an orb (one per seed). A person
++-- is 5 studs; it stands 34, seven people tall, so a garden of them reads from the game
++-- camera. The kit had no figure, only columns, gates and trees.
++Sculpts.domain_statue = {
++	kind = "assembly",
++	size = { 12, 34, 12 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 205, 186 }, { 196, 188, 172 }, { 230, 190, 110 } },
++	materials = { [4] = "Foil" },
++	maxPrims = 40,
++	parts = {
++		-- the plinth: foot, drum, cornice, a gold band and the statue's slab
++		{ name = "foot", shape = "Block", size = { 10.5, 1.0, 10.5 }, at = { 0, 0.5, 0 }, color = 2 },
++		{ name = "plinth", shape = "Block", size = { 8.6, 3.4, 8.6 }, at = { 0, 2.7, 0 } },
++		{ name = "cornice", shape = "Block", size = { 9.8, 0.8, 9.8 }, at = { 0, 4.8, 0 }, color = 2 },
++		{ name = "band", shape = "Block", size = { 9.0, 0.3, 9.0 }, at = { 0, 5.35, 0 }, color = 4 },
++		{ name = "slab", shape = "Block", size = { 5.4, 0.9, 5.4 }, at = { 0, 5.95, 0 }, color = 3 },
++		-- the robe: three drums, each smaller than the one under it
++		{
++			name = "robe",
++			at = { 0, 6.4, 0 },
++			children = {
++				{
++					name = "robe drums",
++					shape = "Cylinder",
++					axis = "y",
++					size = { 6.0, 5.2, 6.0 },
++					at = { 0, 2.6, 0 },
++					stack = { count = 3, step = 4.4, shrink = 0.78 },
++				},
++			},
++		},
++		-- the body
++		{ name = "torso", shape = "Block", size = { 3.9, 5.6, 2.7 }, at = { 0, 19.8, 0 } },
++		{ name = "shoulders", shape = "Block", size = { 6.0, 1.2, 2.9 }, at = { 0, 22.6, 0 }, color = 2 },
++		{
++			name = "arm left",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 1.15, 6.2, 1.15 },
++			at = { -2.9, 20.0, 0 },
++			rot = { 0, 0, 7 },
++			color = 3,
++		},
++		{
++			name = "arm right",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 1.15, 6.2, 1.15 },
++			at = { 2.9, 20.0, 0 },
++			rot = { 0, 0, -7 },
++			color = 3,
++		},
++		{ name = "neck", shape = "Cylinder", axis = "y", size = { 1.3, 1.6, 1.3 }, at = { 0, 23.3, 0 }, color = 3 },
++		{ name = "head", shape = "Ball", size = { 2.3, 2.8, 2.3 }, at = { 0, 25.0, 0 } },
++		{ name = "circlet", shape = "Cylinder", axis = "y", size = { 2.7, 0.45, 2.7 }, at = { 0, 26.4, 0 }, color = 4 },
++		{
++			name = "halo",
++			shape = "Block",
++			size = { 0.45, 0.45, 0.45 },
++			at = { 0, 27.3, 0 },
++			color = 4,
++			ring = { count = 8, radius = 2.3 },
++		},
++		-- what the god holds
++		{
++			name = "hands",
++			oneOf = {
++				{
++					name = "spear",
++					at = { 3.3, 0, 0 },
++					children = {
++						{ shape = "Cylinder", axis = "y", size = { 0.4, 22, 0.4 }, at = { 0, 16, 0 }, color = 4 },
++						{
++							shape = "Wedge",
++							size = { 1.2, 0.4, 2.2 },
++							at = { 0, 28.4, 0 },
++							rot = { -90, 0, 0 },
++							color = 4,
++						},
++					},
++				},
++				{
++					name = "bowl",
++					children = {
++						{ shape = "Cylinder", axis = "y", size = { 2.8, 0.9, 2.8 }, at = { 3.0, 23.2, 0 }, color = 4 },
++						{ shape = "Cylinder", axis = "y", size = { 1.2, 0.6, 1.2 }, at = { 3.0, 22.4, 0 }, color = 3 },
++					},
++				},
++				{
++					name = "sword",
++					children = {
++						{ shape = "Block", size = { 0.45, 9.5, 1.0 }, at = { 3.0, 16.5, 0 }, color = 4 },
++						{ shape = "Block", size = { 0.5, 0.5, 2.6 }, at = { 3.0, 21.4, 0 }, color = 4 },
++						{ shape = "Ball", size = { 0.9, 0.9, 0.9 }, at = { 3.0, 22.0, 0 }, color = 4 },
++					},
++				},
++				{
++					name = "orb",
++					children = {
++						{ shape = "Ball", size = { 1.3, 1.3, 1.3 }, at = { 3.0, 23.2, 0 }, color = 4 },
++					},
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The Eternal Domain (a trial, 2026-10-30): the garden's urn, a gilded marble vase on
++-- a small plinth, strewn over the lawn by the hundred so the beds have a detail to
++-- read at close quarters.
++Sculpts.domain_urn = {
++	kind = "assembly",
++	size = { 3.4, 5.4, 3.4 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 205, 186 }, { 196, 188, 172 }, { 230, 190, 110 } },
++	materials = { [4] = "Foil" },
++	maxPrims = 12,
++	parts = {
++		{ shape = "Block", size = { 2.8, 0.55, 2.8 }, at = { 0, 0.275, 0 }, color = 3 },
++		{ shape = "Block", size = { 2.0, 0.9, 2.0 }, at = { 0, 0.95, 0 }, color = 2 },
++		{ shape = "Cylinder", axis = "y", size = { 0.8, 1.9, 0.8 }, at = { 0, 2.35, 0 } },
++		{ shape = "Ball", size = { 2.9, 2.3, 2.9 }, at = { 0, 4.0, 0 } },
++		{ shape = "Cylinder", axis = "y", size = { 1.0, 0.3, 1.0 }, at = { 0, 3.25, 0 }, color = 4 },
++		{ shape = "Cylinder", axis = "y", size = { 3.0, 0.45, 3.0 }, at = { 0, 5.0, 0 }, color = 4 },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The Eternal Domain (a trial, 2026-10-30): the garden's lamp, a tall marble standard
++-- with a gold collar, a shallow bowl and a pale gold flame. The kit's tripod brazier
++-- read as a stool (domain-features-1 critic); this one is a pedestal and a bowl.
++Sculpts.domain_lamp = {
++	kind = "assembly",
++	size = { 4.2, 15, 4.2 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 205, 186 }, { 230, 190, 110 }, { 234, 220, 180 } },
++	materials = { [3] = "Foil", [4] = "Neon" },
++	maxPrims = 14,
++	parts = {
++		{ shape = "Block", size = { 3.4, 0.8, 3.4 }, at = { 0, 0.4, 0 }, color = 2 },
++		{ shape = "Block", size = { 2.2, 2.2, 2.2 }, at = { 0, 1.9, 0 } },
++		{ shape = "Block", size = { 2.8, 0.4, 2.8 }, at = { 0, 3.2, 0 }, color = 2 },
++		{ shape = "Block", size = { 2.4, 0.18, 2.4 }, at = { 0, 3.49, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 1.0, 7.6, 1.0 }, at = { 0, 7.3, 0 } },
++		{ shape = "Cylinder", axis = "y", size = { 1.6, 0.5, 1.6 }, at = { 0, 11.35, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 2.6, 1.1, 2.6 }, at = { 0, 12.1, 0 }, color = 2 },
++		{ shape = "Ball", size = { 1.5, 2.1, 1.5 }, at = { 0, 13.6, 0 }, color = 4 },
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..497e8cb2 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,92 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's sculpture garden (a trial, 2026-10-30): the petals of
++-- holy light its gold trees shed over the parterre. A wide drift of pale gold
++-- petals sifting down out of a warm glow, turning and leaning as they fall,
++-- with a rare sky-blue glint (the domain's cool note, sparing), and a few
++-- breathing lights so the court glows where the petals land. The path wanders
++-- across the garden and the emitters hang under the trees' crowns, so the fall
++-- covers the court rather than one spot; the core stays to six emitters, a
++-- phone's share with a layer to spare (EF3, SE10).
++recipes.domain_petal_fall = {
++	about = "Petals of holy light sifting down over the Eternal Domain's garden: pale gold motes through a warm glow, with a rare sky-blue glint.",
++	theme = "domain",
++	path = { kind = "worm", length = 44, step = 4, bend = 16, climb = 0, round = 2 },
++	layers = {
++		{
++			name = "petals",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 26,
++				lift = 18,
++				toward = "down",
++				rise = 2.4,
++				life = { 7, 10 },
++				rate = 6,
++				size = 0.7,
++				tall = 1.8,
++				transparency = 0.32,
++				color = "gold",
++				texture = "wisp",
++				lean = 26,
++				vary = 0.7,
++			},
++			motion = { kind = "sway", amplitude = 2.5, tilt = 12, span = 20, periods = { 8, 12 } },
++			priority = 1,
++		},
++		{
++			name = "glow",
++			look = {
++				kind = "stream",
++				every = 12,
++				thick = 16,
++				lift = 17,
++				toward = "down",
++				rise = 1.2,
++				life = { 8, 11 },
++				rate = 1.2,
++				size = 4,
++				tall = 1.3,
++				transparency = 0.86,
++				color = "glow",
++				texture = "veil",
++				lean = 10,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 8, span = 24, periods = { 11, 17 } },
++			priority = 2,
++		},
++		{
++			name = "glints",
++			look = {
++				kind = "stream",
++				every = 22,
++				thick = 20,
++				lift = 19,
++				toward = "down",
++				rise = 2.8,
++				life = { 6, 9 },
++				rate = 0.7,
++				size = 0.4,
++				tall = 1,
++				transparency = 0.2,
++				color = "sky",
++				texture = "wisp",
++				lean = 30,
++				vary = 0.9,
++			},
++			motion = { kind = "sway", amplitude = 2.5, tilt = 10, span = 16, periods = { 6, 9 } },
++			priority = 3,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 14, max = 3, range = 18, brightness = 0.8, color = "glow" },
++			motion = { kind = "pulse", period = 4.6, depth = 0.3 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..5cab6659 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,19 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's sculpture garden (a trial, 2026-10-30)
++	["sculpt:domain_statue"] = row(
++		"A robed marble god on a stepped, gilt-banded plinth, crowned in gold and holding a spear, bowl, sword or orb: the Eternal Domain's garden statue.",
++		MOOR
++	),
++	["sculpt:domain_urn"] = row(
++		"A gilded marble urn on a small plinth, strewn over the Eternal Domain's garden lawn.",
++		MOOR
++	),
++	["sculpt:domain_lamp"] = row(
++		"A tall marble lamp standard with a gold collar, a shallow bowl and a pale gold flame, for the Eternal Domain's garden walks.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainStatueGarden.luau b/src/shared/systems/features/DomainStatueGarden.luau
+new file mode 100644
+index 00000000..69fc5981
+--- /dev/null
++++ b/src/shared/systems/features/DomainStatueGarden.luau
+@@ -0,0 +1,646 @@
++--!strict
++-- The Eternal Domain's sculpture garden: a lawn court of clipped turf laid out in a
++-- formal parterre, its beds raised and hedged, gravel and ivory walks crossed through
++-- it, a rill of still gold water running down its middle, pale statues on plinths about
++-- it and gold-leaved trees at its corners. At its heart a colossus, a fountain of light
++-- or a ring of waystones round a gilded head stone.
++--
++-- The Domain (bible B12) is ivory stone and gold in holy light, so the garden is pale:
++-- a sage turf court, ivory gravel, Marble-and-Limestone walks, gold-gravel beds, and
++-- all the gold trim of the place on its statues, lamps and water. Cloud takes the drop
++-- past the pad, not this feature.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first, then
++-- look). The first draws choose the structure, the rest only dress it:
++--   1. the plan: a bed in each quadrant (parterre), free-standing islands turned on the
++--      lawn, long strips down two opposite quadrants, or four L-shaped beds in a
++--      pinwheel round the heart;
++--   2. the levels: a flush lawn, a court sunk two studs below its stone edge, or a
++--      garden mount rising two terraces to the heart (0, 2 and 4 studs);
++--   3. the heart: a colossal statue on a dais, a fountain of gold water, or a ring of
++--      waystones round a gilded head stone, standing up at the far end of the long walk
++--      so the road and the game camera see the whole court before it;
++--   4. the walks: two crossed walks, or one long allée with a lawn crossing; the size,
++--      the walks' widths, the bed count (3 to 5), how much of the lawn its beds take,
++--      and how far up the allée the heart stands;
++--   5. then the statues' scale, the trees, the lamps and the rill's width.
++-- Everything stands on the Domain's own kit (domain_ sculpts and the domain set pieces)
++-- and the three sculpts added with this feature: the statue, the urn and the lamp.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++-- A raised parterre bed: its planting rectangle, centred on cx,cz (fractional cells)
++-- and turned by `turn` radians, with a hedge `ht` cells thick round it.
++type Bed = {
++	cx: number,
++	cz: number,
++	hx: number,
++	hz: number,
++	turn: number,
++	ht: number,
++	level: number, -- the walk level it stands on
++	rise: number, -- its top over that walk
++}
++
++-- One bed and the statue that stands on it. `statue` is the point on the bed top.
++type Group = { bed: Bed, statue: Point? }
++
++local PLANS = { "parterre", "islands", "strips", "pinwheel" }
++local RELIEFS = { "flush", "sunken", "mount" }
++local HEARTS = { "colossus", "fountain", "wayring" }
++
++-- The Domain's own surfaces, from outdoorTilesets/Domain.luau. Marble and Limestone are
++-- the tileset's colours exactly, since Roblox colours a terrain material once for the
++-- whole place; Grass, LeafyGrass, Cobblestone and Sand are left free to it.
++local WALK = { material = "Limestone", color = { 202, 194, 178 } }
++local PATH = { material = "Cobblestone", color = { 224, 216, 198 } }
++local LAWN = { material = "Grass", color = { 164, 182, 140 } }
++local HEDGE = { material = "LeafyGrass", color = { 116, 134, 92 } }
++-- Gold gravel for the raised beds: Sand is left free to the Domain, and a warmer
++-- gold than the road's pavement so a bed reads apart from a walk from the high camera.
++local BED = { material = "Sand", color = { 214, 196, 150 } }
++local DAIS = { material = "Marble", color = { 214, 208, 194 } }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function roundCell(n: number): number
++	return math.floor(n + 0.5)
++end
++
++-- Degrees that turn a sculpt's +X front toward the point (toX, toZ) from (x, z).
++local function facing(x: number, z: number, toX: number, toZ: number): number
++	return -math.deg(math.atan2(toZ - z, toX - x))
++end
++
++-- The kind of bed cell at (x, z): "bed" inside the planting, "hedge" in the ring.
++local function bedCell(b: Bed, x: number, z: number): string?
++	local dx, dz = x - b.cx, z - b.cz
++	local c, s = math.cos(b.turn), math.sin(b.turn)
++	local p, q = dx * c + dz * s, -dx * s + dz * c
++	local ax, az = math.abs(p), math.abs(q)
++	if ax <= b.hx and az <= b.hz then
++		return "bed"
++	elseif ax <= b.hx + b.ht and az <= b.hz + b.ht then
++		return "hedge"
++	end
++	return nil
++end
++
++local feature: MapFeature.Feature = {
++	name = "DomainStatueGarden",
++	about = "A formal sculpture garden of the Eternal Domain: a lawn court in a parterre of raised gold beds and clipped hedges, walks and a gold rill crossed through it, pale statues and gold-leaved trees about a colossus, a fountain or a ring of waystones.",
++	tileset = "domain",
++	scale = "medium",
++	role = "crossing",
++	mood = { "formal", "holy", "monumental", "garden", "ivory" },
++	cells = {
++		-- The stone edge round the garden and the border walk.
++		walk = { ground = WALK, lift = 0.2, clear = true },
++		-- The two cross walks, gravel in a formal pattern.
++		path = { ground = PATH, lift = 0.2, clear = true },
++		-- The clipped court: pale turf, walked on, with a few gilded urns on it.
++		lawn = {
++			ground = LAWN,
++			lift = 0.2,
++			clear = true,
++			props = { { sculpt = "domain_urn", every = 34, scale = { 0.85, 1.15 }, sink = 0 } },
++		},
++		-- A clipped hedge, one step above its bed.
++		hedge = { ground = HEDGE, lift = 0.2, clear = true },
++		-- The raised gold-gravel beds of the parterre.
++		bed = { ground = BED, lift = 0.2, clear = true },
++		-- The heart's marble dais.
++		dais = { ground = DAIS, lift = 0.2, clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, first.
++		local plan = PLANS[whole(rng, 1, #PLANS)]
++		local relief = RELIEFS[whole(rng, 1, #RELIEFS)]
++		local heart = HEARTS[whole(rng, 1, #HEARTS)]
++		-- 4: the size, the walks, the beds, the road's way.
++		local w = whole(rng, 27, 32)
++		local d = whole(rng, 26, 32)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		local kerb = whole(rng, 1, 2)
++		local cw = whole(rng, 4, 7)
++		local cw2 = math.clamp(cw + whole(rng, -1, 1), 4, 8)
++		local halfC, halfD = cw / 2, cw2 / 2
++		local heartR = whole(rng, 3, 4)
++		local ringW = whole(rng, 3, 4)
++		local bedsWanted = whole(rng, 3, 5)
++		local bedScale = between(rng, 0.7, 1.3)
++		local bedRise = between(rng, 1.8, 2.6)
++		local hedgeRise = between(rng, 0.7, 1.1)
++		local daisRise = between(rng, 1.6, 2.6)
++		-- Two crossed walks, or one long allée with a lawn crossing.
++		local crossWays = rng:NextNumber() < 0.62
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++		-- The road comes in at the south gate (the near side of the game camera's
++		-- view) and runs the length of the garden; the heart stands up at the far
++		-- (north) end, so the long walk leads to it and the game camera sees the whole
++		-- court before the god rather than the base of its plinth.
++		local R = heartR + 2
++		local offMax = math.floor((d + 1) / 2 - R - 2)
++		local hx, hz = cx, cz - (if offMax >= 2 then whole(rng, 2, offMax) else 1)
++		local rOuter = whole(rng, 5, 8)
++		local rInner = math.max(1, whole(rng, 1, 3))
++		if rInner >= rOuter then
++			rInner = rOuter - 1
++		end
++		-- How far the beds keep off the cross walks (the lawn crossing is narrower).
++		local keepD = if crossWays then halfD else halfD * 0.55
++
++		local function levelAt(x: number, z: number): number
++			if relief == "mount" then
++				local r = math.max(math.abs(x - cx), math.abs(z - cz))
++				if r > rOuter then
++					return 0
++				elseif r > rInner then
++					return 2
++				end
++				return 4
++			elseif relief == "sunken" then
++				local edge = math.min(x - 1, z - 1, w - x, d - z)
++				return if edge < kerb then 0 else -2
++			end
++			return 0
++		end
++
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local walk, heights, kinds = table.create(w * d, true), table.create(w * d, 0), {}
++
++		-- The court: turf everywhere, a stone edge and the two cross walks over it, and
++		-- a gravel ring round the heart. Every walkable border cell stays at 0, so the
++		-- map's ground meets it.
++		local function onCross(x: number, z: number): boolean
++			return math.abs(x - cx) <= halfC or (crossWays and math.abs(z - cz) <= halfD)
++		end
++		local function onRondel(x: number, z: number, extra: number): boolean
++			local dx, dz = x - hx, z - hz
++			return math.sqrt(dx * dx + dz * dz) <= heartR + ringW + extra
++		end
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local edge = math.min(x - 1, z - 1, w - x, d - z)
++				heights[i] = levelAt(x, z)
++				kinds[i] = if edge < kerb then "walk" else "lawn"
++				if onCross(x, z) then
++					kinds[i] = "path"
++				end
++				if onRondel(x, z, 0) then
++					kinds[i] = "path"
++				end
++			end
++		end
++
++		-- 4: the beds, in the plan's own arrangement.
++		local quads = {}
++		do
++			local xl0, xl1 = 1 + kerb, math.floor(cx - halfC) - 1
++			local xr0, xr1 = math.ceil(cx + halfC) + 1, w - kerb
++			local zn0, zn1 = 1 + kerb, math.floor(cz - halfD) - 1
++			local zs0, zs1 = math.ceil(cz + halfD) + 1, d - kerb
++			for _, xs in { { xl0, xl1 }, { xr0, xr1 } } do
++				for _, zs in { { zn0, zn1 }, { zs0, zs1 } } do
++					if xs[2] - xs[1] >= 4 and zs[2] - zs[1] >= 4 then
++						table.insert(quads, { x0 = xs[1], x1 = xs[2], z0 = zs[1], z1 = zs[2] })
++					end
++				end
++			end
++		end
++
++		local beds: { Bed } = {}
++		local groups: { Group } = {}
++
++		-- A bed stands clear of the stone edge, the cross walks and the rondel, and off
++		-- every bed already laid.
++		local function fits(b: Bed): boolean
++			-- Its middle must stand clear of the heart's rondel walk; its inner corner
++			-- may be clipped by it, so the beds bend round the heart.
++			if math.sqrt((b.cx - hx) ^ 2 + (b.cz - hz) ^ 2) < heartR + ringW then
++				return false
++			end
++			local reach = math.max(b.hx, b.hz) + b.ht + 1
++			for z = math.floor(b.cz - reach), math.ceil(b.cz + reach) do
++				for x = math.floor(b.cx - reach), math.ceil(b.cx + reach) do
++					if bedCell(b, x, z) then
++						if x < 2 or x > w - 1 or z < 2 or z > d - 1 then
++							return false
++						end
++						if math.abs(x - cx) <= halfC + 0.5 or math.abs(z - cz) <= keepD + 0.5 then
++							return false
++						end
++						for _, other in beds do
++							if bedCell(other, x, z) then
++								return false
++							end
++						end
++					end
++				end
++			end
++			return true
++		end
++
++		local function levelOf(x: number, z: number): number
++			return levelAt(roundCell(x), roundCell(z))
++		end
++
++		-- Lays a bed, shrinking it a little if the quadrant cannot hold it.
++		local function addBed(b: Bed, statue: Point?): boolean
++			for _ = 1, 3 do
++				if fits(b) then
++					table.insert(beds, b)
++					table.insert(groups, { bed = b, statue = statue })
++					return true
++				end
++				b = {
++					cx = b.cx,
++					cz = b.cz,
++					hx = b.hx * 0.82,
++					hz = b.hz * 0.82,
++					turn = b.turn,
++					ht = b.ht,
++					level = b.level,
++					rise = b.rise,
++				}
++			end
++			return false
++		end
++
++		local function rectBed(x0: number, x1: number, z0: number, z1: number, ht: number, level: number): Bed
++			return {
++				cx = (x0 + x1) / 2,
++				cz = (z0 + z1) / 2,
++				hx = (x1 - x0) / 2,
++				hz = (z1 - z0) / 2,
++				turn = 0,
++				ht = ht,
++				level = level,
++				rise = bedRise,
++			}
++		end
++
++		if plan == "parterre" then
++			local skip = if bedsWanted == 3 then whole(rng, 1, 4) else 0
++			for k, q in quads do
++				if k ~= skip and #groups < bedsWanted then
++					local qcx, qcz = (q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2
++					local inset = whole(rng, 1, 2)
++					local bhx = math.max(2.2, ((q.x1 - q.x0) / 2 - inset) * bedScale)
++					local bhz = math.max(2.2, ((q.z1 - q.z0) / 2 - inset) * bedScale)
++					local b: Bed = {
++						cx = qcx,
++						cz = qcz,
++						hx = bhx,
++						hz = bhz,
++						turn = 0,
++						ht = 1,
++						level = levelOf(qcx, qcz),
++						rise = bedRise,
++					}
++					addBed(b, { x = qcx, z = qcz })
++				end
++			end
++		elseif plan == "islands" then
++			-- Free-standing beds turned at their own angles on the open lawn, set off
++			-- the quadrant middle rather than squared to the walks.
++			local tries = 0
++			while #groups < bedsWanted and tries < 60 do
++				tries += 1
++				local q = quads[whole(rng, 1, #quads)]
++				local qcx, qcz = (q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2
++				local qhx, qhz = (q.x1 - q.x0) / 2, (q.z1 - q.z0) / 2
++				local b: Bed = {
++					cx = qcx + between(rng, -qhx * 0.55, qhx * 0.55),
++					cz = qcz + between(rng, -qhz * 0.55, qhz * 0.55),
++					hx = between(rng, 1.8, 3.2) * bedScale,
++					hz = between(rng, 1.6, 2.8) * bedScale,
++					turn = between(rng, -0.8, 0.8),
++					ht = 1,
++					level = levelOf(qcx, qcz),
++					rise = bedRise,
++				}
++				addBed(b, { x = b.cx, z = b.cz })
++			end
++		elseif plan == "strips" then
++			-- Two opposite quadrants get long parterre strips; the rest of the garden
++			-- stays open lawn, so this plan reads as a long allée with a court beside it.
++			local pair = whole(rng, 1, 2)
++			local use: { [number]: boolean } = {}
++			local want = math.min(bedsWanted, #quads)
++			local n = 0
++			for _, k in (if pair == 1 then { 1, 4 } else { 2, 3 }) do
++				if quads[k] then
++					use[k] = true
++					n += 1
++				end
++			end
++			for k = 1, #quads do
++				if n >= want then
++					break
++				end
++				if not use[k] then
++					use[k] = true
++					n += 1
++				end
++			end
++			for k, q in quads do
++				if use[k] then
++					local qcx, qcz = (q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2
++					local inset = whole(rng, 1, 2)
++					local bhx = between(rng, 1.8, 2.4) * bedScale
++					local bhz = math.max(2.4, ((q.z1 - q.z0) / 2 - inset) * bedScale)
++					local b: Bed = {
++						cx = qcx,
++						cz = qcz,
++						hx = bhx,
++						hz = bhz,
++						turn = 0,
++						ht = 1,
++						level = levelOf(qcx, qcz),
++						rise = bedRise,
++					}
++					addBed(b, { x = qcx, z = qcz })
++				end
++			end
++		else
++			-- The pinwheel: an L-shaped bed in each quadrant, its elbow on a different
++			-- corner of the quadrant each time, so the four turn round the heart.
++			local turnOffset = whole(rng, 1, 4)
++			local inset = 2.4
++			for k, q in quads do
++				local pick = (turnOffset + k - 2) % 4 + 1
++				local corners = {
++					{ x = q.x0 + inset, z = q.z0 + inset, dx = 1, dz = 1 },
++					{ x = q.x1 - inset, z = q.z0 + inset, dx = -1, dz = 1 },
++					{ x = q.x0 + inset, z = q.z1 - inset, dx = 1, dz = -1 },
++					{ x = q.x1 - inset, z = q.z1 - inset, dx = -1, dz = -1 },
++				}
++				local c = corners[pick]
++				local maxLen = math.min(
++					math.abs(c.dx) * (if c.dx > 0 then q.x1 - inset - c.x else c.x - q.x0 - inset),
++					math.abs(c.dz) * (if c.dz > 0 then q.z1 - inset - c.z else c.z - q.z0 - inset)
++				)
++				local len = math.min(between(rng, 4.6, 7.2), maxLen)
++				local armW = between(rng, 2.2, 3.0) * bedScale
++				local level = levelOf(c.x, c.z)
++				-- the arm along x, and the arm along z; the corner square joins them
++				local ax0, ax1 = math.min(c.x, c.x + c.dx * len), math.max(c.x, c.x + c.dx * len)
++				local az0, az1 = math.min(c.z, c.z + c.dz * armW), math.max(c.z, c.z + c.dz * armW)
++				local bx0, bx1 = math.min(c.x, c.x + c.dx * armW), math.max(c.x, c.x + c.dx * armW)
++				local bz0, bz1 = math.min(c.z, c.z + c.dz * len), math.max(c.z, c.z + c.dz * len)
++				local a = rectBed(ax0, ax1, az0, az1, 1, level)
++				local b = rectBed(bx0, bx1, bz0, bz1, 1, level)
++				local elbow = { x = c.x + c.dx * armW / 2, z = c.z + c.dz * armW / 2 }
++				if fits(a) and fits(b) then
++					table.insert(beds, a)
++					table.insert(beds, b)
++					table.insert(groups, { bed = a, statue = elbow })
++				end
++			end
++		end
++
++		-- The beds' cells: walls, a hedge ring round a raised gold top.
++		for _, b in beds do
++			local reach = math.max(b.hx, b.hz) + b.ht + 1
++			for z = math.floor(b.cz - reach), math.ceil(b.cz + reach) do
++				for x = math.floor(b.cx - reach), math.ceil(b.cx + reach) do
++					local cell = bedCell(b, x, z)
++					local inRondel = math.sqrt((x - hx) ^ 2 + (z - hz) ^ 2) <= heartR + ringW
++					if cell and not inRondel and x >= 1 and x <= w and z >= 1 and z <= d then
++						local i = at(x, z)
++						walk[i] = false
++						kinds[i] = cell
++						heights[i] = b.level + b.rise + (if cell == "hedge" then hedgeRise else 0)
++					end
++				end
++			end
++		end
++
++		-- The heart's dais: a marble round, a step or two over the walks.
++		local daisLevel = levelOf(hx, hz)
++		for z = math.floor(hz - heartR - 1), math.ceil(hz + heartR + 1) do
++			for x = math.floor(hx - heartR - 1), math.ceil(hx + heartR + 1) do
++				if x >= 1 and x <= w and z >= 1 and z <= d then
++					local dx, dz = x - hx, z - hz
++					if dx * dx + dz * dz <= heartR * heartR then
++						local i = at(x, z)
++						walk[i] = false
++						kinds[i] = "dais"
++						heights[i] = daisLevel + daisRise
++					end
++				end
++			end
++		end
++
++		-- 5: the dressing, from here on.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++
++		local function mark(x: number, z: number, sculpt: string, yaw: number?, scale: number?, solid: boolean?)
++			table.insert(marks, {
++				sculpt = sculpt,
++				x = x,
++				z = z,
++				yaw = yaw,
++				scale = scale,
++				sink = -0.24,
++				solid = solid,
++			})
++		end
++
++		-- The garden's own statues: one on each bed, facing the heart; two guardians
++		-- at the dais's foot on the side the road does not take, facing out.
++		local heartYaw = facing(hx, hz, hx, hz + 8)
++		for _, g in groups do
++			local p = g.statue
++			if p then
++				mark(
++					p.x,
++					p.z,
++					"domain_statue",
++					facing(p.x, p.z, hx, hz) + between(rng, -5, 5),
++					between(rng, 0.82, 0.98),
++					true
++				)
++			end
++		end
++		local freeA = if side > 0 then 135 else 45
++		for _, deg in { freeA, freeA + 90 } do
++			local a = math.rad(deg)
++			local gx = hx + math.cos(a) * (heartR + 1.3)
++			local gz = hz + math.sin(a) * (heartR + 1.3)
++			mark(gx, gz, "domain_statue", facing(hx, hz, gx, gz) + between(rng, -4, 4), between(rng, 0.95, 1.08), true)
++		end
++
++		-- The heart itself.
++		if heart == "colossus" then
++			mark(hx, hz, "domain_statue", heartYaw, between(rng, 1.32, 1.5), true)
++			table.insert(effects, {
++				recipe = "domain_petal_fall",
++				x = hx,
++				z = hz,
++				lift = 0,
++				seed = whole(rng, 1, 100000),
++			})
++		elseif heart == "fountain" then
++			local basin = between(rng, 0.78, 0.92)
++			mark(hx, hz, "domain_pool_basin", 0, basin, true)
++			table.insert(marks, {
++				sculpt = "domain_pool_water",
++				x = hx,
++				z = hz,
++				yaw = 0,
++				scale = basin,
++				sink = -1.1,
++			})
++			mark(hx, hz, "domain_statue", heartYaw, between(rng, 0.72, 0.86), true)
++			table.insert(effects, {
++				recipe = "domain_pool_light",
++				x = hx,
++				z = hz,
++				lift = 0.3,
++				seed = whole(rng, 1, 100000),
++			})
++		else
++			-- A ring of waystones round a gilded head stone: the gods' own marker,
++			-- set at the garden's heart.
++			mark(hx, hz, "domain_wayring", between(rng, 0, 360), between(rng, 0.86, 0.98), true)
++			mark(hx, hz, "domain_waystone", between(rng, 0, 360), between(rng, 0.9, 1.05), true)
++			table.insert(effects, {
++				recipe = "domain_petal_fall",
++				x = hx,
++				z = hz,
++				lift = 0,
++				seed = whole(rng, 1, 100000),
++			})
++		end
++
++		-- Gold-leaved trees at the garden's corners, their shed light drifting over
++		-- the court (the first of them carries the set piece).
++		local treeCount = whole(rng, 2, 4)
++		local treeStart = whole(rng, 1, 4)
++		local corners = {
++			{ x = 2.7, z = 2.7 },
++			{ x = w - 1.7, z = 2.7 },
++			{ x = 2.7, z = d - 1.7 },
++			{ x = w - 1.7, z = d - 1.7 },
++		}
++		local treeSpots: { Point } = {}
++		for k = 0, treeCount - 1 do
++			local c = corners[(treeStart + k - 1) % 4 + 1]
++			mark(c.x, c.z, "domain_gold_tree_low", between(rng, 0, 360), between(rng, 0.85, 1.05))
++			table.insert(treeSpots, c)
++		end
++		table.insert(effects, {
++			recipe = "domain_gold_leaves",
++			x = treeSpots[1].x,
++			z = treeSpots[1].z,
++			lift = 0,
++			seed = whole(rng, 1, 100000),
++		})
++
++		-- Lamps flanking the road at the garden's two gates, off the walk.
++		local lampX = halfC + 1.8
++		for _, z in { 2.5, d - 2.0 } do
++			for _, sx in { -1, 1 } do
++				mark(cx + sx * lampX, z, "domain_lamp", facing(cx + sx * lampX, z, cx, cz), between(rng, 0.95, 1.05))
++			end
++		end
++
++		-- A rill of still gold water down the main walk, from the south gate to the
++		-- heart and on to the north gate.
++		local rillScale = between(rng, 0.43, 0.52)
++		local function rill(x: number, z: number)
++			table.insert(
++				marks,
++				{ sculpt = "domain_pool_water", x = x, z = z, yaw = 0, scale = rillScale, sink = -0.34 }
++			)
++		end
++		local south = hz + (heartR + ringW) + 0.8
++		local z = d - 1.5
++		while z >= south do
++			rill(cx, z)
++			z -= 2
++		end
++		z = hz - (heartR + ringW) - 0.8
++		while z >= 2.2 do
++			rill(cx, z)
++			z -= 2
++		end
++
++		-- Petals of holy light sifting down over the court, besides the heart's own.
++		local spare = quads[whole(rng, 1, #quads)]
++		table.insert(effects, {
++			recipe = "domain_petal_fall",
++			x = (spare.x0 + spare.x1) / 2,
++			z = (spare.z0 + spare.z1) / 2,
++			lift = 0,
++			seed = whole(rng, 1, 100000),
++		})
++
++		-- The road: in at the south gate, up the long walk, round the heart and out
++		-- at the north gate.
++		local road: { Point } = {
++			{ x = cx, z = d },
++			{ x = cx, z = hz + R },
++			{ x = hx + side * R * 0.7071, z = hz + R * 0.7071 },
++			{ x = hx + side * R, z = hz },
++			{ x = hx + side * R * 0.7071, z = hz - R * 0.7071 },
++			{ x = hx, z = hz - R },
++			{ x = cx, z = 1 },
++		}
++
++		-- The photograph: up the long walk from the gate, and over the parterre
++		-- from whichever near corner the trees leave clearest.
++		local aim = if heart == "colossus" then 18 elseif heart == "wayring" then 12 else 10
++		local camSide, clearest = -1, -1
++		for _, sx in { -1, 1 } do
++			local camX = cx + sx * w * 0.46
++			local closestTree = math.huge
++			for _, t in treeSpots do
++				closestTree = math.min(closestTree, (t.x - camX) ^ 2 + (t.z - (d + 7)) ^ 2)
++			end
++			if closestTree > clearest then
++				clearest, camSide = closestTree, sx
++			end
++		end
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "up the long walk",
++					from = { x = cx, z = d + 6.5, lift = 8 },
++					to = { x = hx, z = hz, lift = aim },
++					fov = 62,
++				},
++				{
++					name = "over the parterre",
++					from = { x = cx + camSide * w * 0.46, z = d + 7, lift = 24 },
++					to = { x = hx, z = hz, lift = aim * 0.5 },
++					fov = 55,
++				},
++			},
++		}
++	end,
++}
++
++return feature

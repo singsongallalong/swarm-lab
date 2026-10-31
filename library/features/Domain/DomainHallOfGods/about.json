@@ -1,0 +1,22 @@
+{
+  "letter": "I",
+  "generator": "g00",
+  "run": "domain-features-2",
+  "intent": "The gods' roofless great hall: a narrow gold-inlaid aisle between two rows of colossal ivory colonnades under open transverse arches, ending at a stepped dais and an empty crowned throne under falling holy light.",
+  "critic": {
+    "idea": 6,
+    "photo": 7,
+    "topology": 3,
+    "look": 3,
+    "game_camera": 5,
+    "usable": 7,
+    "total": 5.35,
+    "reads_as_itself": "yes",
+    "inorganic": 10,
+    "figures": "yes",
+    "best_shot": "feature-shots-final: nave down the gold runner to the throne",
+    "why": "A strong axial throne hall; one layout jittered, and the colonnades read as blank slabs."
+  },
+  "role": "Main-route platform: throne nave on a straight stretch.",
+  "notes": "# I\n\nKeep: Keep the long gold runner ending at the crested throne.\n\n1. Break the slab walls into real columns and arches; they read as monoliths.\n2. Vary seeds: transept, two thrones, a bend in the aisle.\n3. Light the throne end so the eye goes there.\n"
+}

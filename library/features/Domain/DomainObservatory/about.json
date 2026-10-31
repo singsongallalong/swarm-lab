@@ -1,0 +1,22 @@
+{
+  "letter": "Q",
+  "generator": "g15",
+  "run": "domain-features-2",
+  "intent": "The gods' observatory on the sea of cloud: a raised ivory terrace climbed by long balustraded flights, a great gilded armillary sphere of five rings turning over inlaid star-dials and a gold meridian cross, telescopes at the rim, lamps of holy light round the balustrade, and slow stars falling over it all: a monument the domain kit never had, made of its own carved instruments rather than its reused props.",
+  "critic": {
+    "idea": 9,
+    "photo": 8,
+    "topology": 5,
+    "look": 5,
+    "game_camera": 4,
+    "usable": 6,
+    "total": 6.95,
+    "reads_as_itself": "yes",
+    "inorganic": 10,
+    "figures": "yes",
+    "best_shot": "feature-shots-final: armillary rings over the terrace with telescope",
+    "why": "Beautiful bespoke instruments, all recognisable; one centre per seed."
+  },
+  "role": "Landmark: observatory terrace at a route end or overlook.",
+  "notes": "# Q\n\nKeep: Keep the armillary, star dial and telescope sculpts as they are.\n\n1. Vary layout: two armillaries, terrace at a corner, long stairs on different sides.\n2. Dress the terrace rim with balustrades so the drop reads.\n3. Shrink the sphere a touch or move the game camera so it frames the terrace.\n"
+}

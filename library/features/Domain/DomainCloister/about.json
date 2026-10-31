@@ -1,0 +1,22 @@
+{
+  "letter": "A",
+  "generator": "g10",
+  "run": "domain-features-2",
+  "intent": "A cloister of the Eternal Domain: a square of tall ivory arches round a walled garden court, rills and gold cypresses and a fountain of holy light at its heart, the processional road passing through the arcade; the game has no cloister, no enclosed garden court and no fountain.",
+  "critic": {
+    "idea": 6,
+    "photo": 7,
+    "topology": 3,
+    "look": 3,
+    "game_camera": 6,
+    "usable": 7,
+    "total": 5.42,
+    "reads_as_itself": "yes",
+    "inorganic": 8,
+    "figures": "yes",
+    "best_shot": "feature-shots-final: fountain framed by the arcade",
+    "why": "Clean, legible cloister with a good fountain; one layout repeated."
+  },
+  "role": "Crossing: cloister the processional road passes through.",
+  "notes": "# A\n\nKeep: Keep the arcade-round-fountain read; it is the clearest garden court in the run.\n\n1. Vary the plan across seeds: L-shaped or double courts, an off-centre fountain, a broken arcade side.\n2. Put one tall figure or obelisk in the court so the arcade rhythm has a peak.\n3. Run rills out from the fountain so the garden beds read from above, not only the ring.\n"
+}

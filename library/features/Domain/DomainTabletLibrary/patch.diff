@@ -1,0 +1,1307 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..e891bb8d 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainTabletLibrary = require("../systems/features/DomainTabletLibrary")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainTabletLibrary = DomainTabletLibrary,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..f36eec08 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,323 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain's library of tablets (map feature DomainTabletLibrary): the
++-- column of its rotunda. Two ivory drums under a capital, gold rings at the
++-- foot, the collar and the abacus, gilt balls at the capital's corners and a
++-- glowing gold finial: white stone and gold, the Domain's look in one order.
++-- Smaller than the kit's fifty-stud colossi, so a ring of them frames the
++-- sealed book instead of walling it in.
++Sculpts.domain_reading_column = {
++	kind = "assembly",
++	size = { 5.6, 24, 5.6 },
++	material = "Marble",
++	colors = { { 232, 224, 207 }, { 216, 208, 192 }, { 228, 186, 104 }, { 234, 198, 110 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Neon" },
++	maxPrims = 16,
++	parts = {
++		{ name = "base", shape = "Block", size = { 4.8, 0.9, 4.8 }, at = { 0, 0.45, 0 }, color = 2 },
++		{ name = "foot ring", shape = "Block", size = { 4.4, 0.28, 4.4 }, at = { 0, 1, 0 }, color = 3 },
++		{
++			name = "lower drum",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 3.8, 9.6, 3.8 },
++			at = { 0, 5.94, 0 },
++			color = 1,
++		},
++		{ name = "collar", shape = "Block", size = { 4.2, 0.3, 4.2 }, at = { 0, 10.95, 0 }, color = 3 },
++		{
++			name = "upper drum",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 3.2, 8.8, 3.2 },
++			at = { 0, 15.5, 0 },
++			color = 2,
++		},
++		{ name = "capital", shape = "Block", size = { 5, 1.3, 5 }, at = { 0, 20.55, 0 }, color = 1 },
++		{ name = "abacus", shape = "Block", size = { 5.2, 0.35, 5.2 }, at = { 0, 21.35, 0 }, color = 3 },
++		{ name = "finial", shape = "Ball", size = { 1.1, 1.3, 1.1 }, at = { 0, 22.4, 0 }, color = 4 },
++		{
++			name = "volutes",
++			ring = { count = 4, radius = 2.2, start = 45 },
++			at = { 0, 21.85, 0 },
++			children = { { shape = "Ball", size = { 0.55, 0.55, 0.55 }, at = { 0, 0, 0 }, color = 3 } } :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The Eternal Domain's library of tablets (map feature DomainTabletLibrary): a
++-- freestanding range of shelves, ivory marble and gilt, its two faces stacked
++-- with gold tablets that glow, a gilt crown along the top. Double-faced, so it
++-- can stand down the middle of a court with a reading aisle on either side.
++-- Merged: a library sets out twenty of them, and one unioned part apiece keeps
++-- the map on a phone.
++Sculpts.domain_tablet_shelf = {
++	kind = "assembly",
++	size = { 6.2, 16, 12 },
++	material = "Marble",
++	colors = { { 226, 218, 201 }, { 208, 200, 183 }, { 228, 186, 104 }, { 234, 198, 110 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Neon" },
++	maxPrims = 64,
++	merge = 6,
++	parts = {
++		{ name = "base", shape = "Block", size = { 6, 0.8, 12 }, at = { 0, 0.4, 0 }, color = 2 },
++		{ name = "spine", shape = "Block", size = { 0.9, 14.6, 11.4 }, at = { 0, 7.9, 0 }, color = 1 },
++		{
++			name = "ends",
++			mirror = "z",
++			children = { { shape = "Block", size = { 5.6, 15, 0.8 }, at = { 0, 7.5, 5.6 }, color = 1 } } :: { SculptTypes.AssemblyNode },
++		},
++		{ name = "cornice", shape = "Block", size = { 6.4, 0.6, 12.4 }, at = { 0, 15.4, 0 }, color = 1 },
++		{ name = "gilt line", shape = "Block", size = { 6.5, 0.22, 12.5 }, at = { 0, 15.02, 0 }, color = 3 },
++		-- A broad gilt top: from the game camera each range is a gold bar
++		-- along its aisle, so the library reads from straight above.
++		{ name = "gilt cap", shape = "Block", size = { 6.2, 0.18, 12.2 }, at = { 0, 15.79, 0 }, color = 3 },
++		{
++			name = "crown tablets",
++			row = { count = 3, step = { 0, 0, 3.6 }, center = true },
++			at = { 0, 15.85, 0 },
++			children = {
++				{
++					oneOf = {
++						{ shape = "Block", size = { 1.7, 1.5, 0.35 }, at = { 0, 0.75, 0 }, color = 4 },
++						{
++							shape = "Block",
++							size = { 1.7, 1.1, 0.35 },
++							at = { 0, 0.55, 0 },
++							rot = { 6, 0, 0 },
++							color = 4,
++						},
++					} :: { SculptTypes.AssemblyNode },
++					weights = { 4, 1 },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "faces",
++			mirror = "x",
++			children = {
++				{
++					name = "bays",
++					row = { count = 4, step = { 0, 3.45, 0 } },
++					at = { 1.55, 2.1, 0 },
++					children = {
++						{ name = "board", shape = "Block", size = { 1.75, 0.28, 11.2 }, at = { 0, 0, 0 }, color = 2 },
++						{
++							name = "tablets",
++							row = { count = 3, step = { 0, 0, 3.35 }, center = true },
++							at = { 0.16, 0, 0 },
++							children = {
++								{
++									oneOf = {
++										{ shape = "Block", size = { 0.3, 2.9, 2.3 }, at = { 0, 1.6, 0 }, color = 4 },
++										{
++											shape = "Block",
++											size = { 0.3, 2.9, 2.3 },
++											at = { 0, 1.6, 0 },
++											rot = { 0, 0, 7 },
++											color = 4,
++											jitter = { rot = { 0, 0, 4 } },
++										},
++										{ shape = "Block", size = { 0.3, 0.34, 2.3 }, at = { 0, 0.3, 0 }, color = 4 },
++									} :: { SculptTypes.AssemblyNode },
++									weights = { 4, 2, 1 },
++								},
++							} :: { SculptTypes.AssemblyNode },
++						},
++					} :: { SculptTypes.AssemblyNode },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- A range toppled forward into its aisle: the back slab down on the paving,
++-- its boards come apart and the gold tablets spilled round it, one still
++-- standing on its corner. The domain's one untidy thing, and the ruin that
++-- tells a reader the library was left.
++Sculpts.domain_tablet_shelf_fallen = {
++	kind = "assembly",
++	size = { 10, 1.8, 16 },
++	material = "Marble",
++	colors = { { 226, 218, 201 }, { 208, 200, 183 }, { 228, 186, 104 }, { 234, 198, 110 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Neon" },
++	maxPrims = 28,
++	merge = 4,
++	parts = {
++		{ name = "slab", shape = "Block", size = { 7.4, 0.5, 12 }, at = { 0, 0.25, 0 }, color = 1 },
++		{
++			name = "posts",
++			mirror = "z",
++			children = { { shape = "Block", size = { 5.8, 0.9, 0.9 }, at = { 0, 0.75, 5.5 }, color = 1 } } :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "boards",
++			row = { count = 3, step = { 2.1, 0, 0 }, center = true },
++			at = { 0, 0.85, 0 },
++			children = {
++				{
++					shape = "Block",
++					size = { 1.7, 0.3, 10.6 },
++					at = { 0, 0, 0 },
++					rot = { 0, 0, 3 },
++					color = 2,
++					jitter = { rot = { 0, 0, 2 } },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "gilt",
++			shape = "Block",
++			size = { 0.5, 0.25, 11.4 },
++			at = { 2.9, 0.7, 0 },
++			color = 3,
++			jitter = { rot = { 0, 0, 4 } },
++		},
++		{
++			name = "spilled",
++			ring = { count = 6, radius = 3.5, start = 20 },
++			at = { 0, 0.2, 0 },
++			children = {
++				{
++					oneOf = {
++						{ shape = "Block", size = { 1.2, 0.16, 1.9 }, at = { 0, 0.08, 0 }, color = 4 },
++						{
++							shape = "Block",
++							size = { 1.2, 0.16, 1.9 },
++							at = { 0, 0.08, 0 },
++							rot = { 0, 30, 0 },
++							color = 4,
++							jitter = { at = { 0.6, 0, 0.6 } },
++						},
++					} :: { SculptTypes.AssemblyNode },
++					weights = { 3, 1 },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- A reader's lectern: a marble stem under a sloped desk, a gold tablet open on
++-- it and gilt ribs at its edges. Five studs is a person's height, so a row of
++-- them down an aisle reads as readers who have stepped away.
++Sculpts.domain_lectern = {
++	kind = "assembly",
++	size = { 3.2, 5, 3.2 },
++	material = "Marble",
++	colors = { { 226, 218, 201 }, { 208, 200, 183 }, { 228, 186, 104 }, { 234, 198, 110 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Neon" },
++	maxPrims = 10,
++	parts = {
++		{ shape = "Block", size = { 2.8, 0.35, 2.8 }, at = { 0, 0.175, 0 }, color = 2 },
++		{ shape = "Cylinder", axis = "y", size = { 0.6, 3.3, 0.6 }, at = { 0, 2, 0 }, color = 1 },
++		{ shape = "Block", size = { 1.1, 0.22, 1.1 }, at = { 0, 3.65, 0 }, color = 3 },
++		{ shape = "Block", size = { 2.6, 0.22, 2.4 }, at = { 0, 4.2, 0 }, rot = { -17, 0, 0 }, color = 1 },
++		{ shape = "Block", size = { 2, 0.1, 1.7 }, at = { 0.3, 4.34, 0 }, rot = { -17, 0, 0 }, color = 4 },
++		{
++			name = "ribs",
++			mirror = "z",
++			children = {
++				{ shape = "Block", size = { 2.5, 0.12, 0.16 }, at = { 0, 4.16, 1.25 }, rot = { -17, 0, 0 }, color = 3 },
++			} :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The gods' sealed book on its pedestal: three ivory steps, a drum, the great
++-- tome in gold covers with gilt bands and chains to the slab, a glowing seal
++-- on its fore edge, and a ring of gold lights hung over it. The library's
++-- heart, and the one thing in it no reader may open.
++Sculpts.domain_sealed_book = {
++	kind = "assembly",
++	-- Colossal: the gods' book is nearly three people tall on its pedestal,
++	-- so it reads from the game camera across the whole court.
++	size = { 15, 13, 15 },
++	material = "Marble",
++	colors = { { 226, 218, 201 }, { 208, 200, 183 }, { 228, 186, 104 }, { 234, 198, 110 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Neon" },
++	maxPrims = 30,
++	parts = {
++		{ shape = "Block", size = { 7.6, 0.5, 7.6 }, at = { 0, 0.25, 0 }, color = 2 },
++		{ shape = "Block", size = { 6.2, 0.5, 6.2 }, at = { 0, 0.75, 0 }, color = 1 },
++		{ shape = "Block", size = { 4.8, 0.5, 4.8 }, at = { 0, 1.25, 0 }, color = 2 },
++		{ shape = "Cylinder", axis = "y", size = { 2.6, 2.3, 2.6 }, at = { 0, 2.65, 0 }, color = 1 },
++		{ shape = "Block", size = { 3.8, 0.35, 5.2 }, at = { 0, 4, 0 }, color = 2 },
++		-- The book: a gold lower board, ivory pages, an ivory upper board, a
++		-- gold spine and two gilt straps over it, so from the game camera it
++		-- reads as a book and not as a gold block.
++		{ shape = "Block", size = { 4.2, 0.3, 5.2 }, at = { 0, 4.32, 0 }, color = 3 },
++		{ shape = "Block", size = { 3.8, 0.9, 4.7 }, at = { 0, 4.92, 0 }, color = 1 },
++		{ shape = "Block", size = { 4.2, 0.3, 5.2 }, at = { 0, 5.5, 0 }, color = 1 },
++		{ name = "spine", shape = "Block", size = { 0.45, 1.15, 5.25 }, at = { -2, 4.95, 0 }, color = 3 },
++		{
++			name = "bands",
++			mirror = "z",
++			children = { { shape = "Block", size = { 4.3, 1.45, 0.42 }, at = { 0, 5, 1.4 }, color = 3 } } :: { SculptTypes.AssemblyNode },
++		},
++		{ shape = "Block", size = { 0.6, 0.6, 1.1 }, at = { 2.1, 5, 0 }, color = 4 },
++		{
++			name = "chains",
++			mirror = "xz",
++			children = {
++				{ shape = "Block", size = { 0.22, 1.5, 0.22 }, at = { 1.8, 3.6, 1.9 }, rot = { 0, 0, 8 }, color = 3 },
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "halo",
++			ring = { count = 8, radius = 2.5 },
++			at = { 0, 6.6, 0 },
++			children = { { shape = "Ball", size = { 0.38, 0.38, 0.38 }, at = { 0, 0, 0 }, color = 4 } } :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- Gold tablets a reader left on the paving: a ring of them flat and leaning,
++-- one stood up on its corner. A scatter for the library's aisles, merged so a
++-- court of them costs a part apiece.
++Sculpts.domain_tablet_scatter = {
++	kind = "assembly",
++	size = { 4.6, 1.4, 4.6 },
++	material = "Marble",
++	colors = { { 228, 186, 104 }, { 234, 198, 110 }, { 226, 218, 201 } },
++	materials = { [1] = "Foil", [2] = "Neon", [3] = "Marble" },
++	maxPrims = 10,
++	merge = 4,
++	parts = {
++		{
++			name = "tablets",
++			ring = { count = 5, radius = 1.5, start = 15 },
++			at = { 0, 0.08, 0 },
++			children = {
++				{
++					oneOf = {
++						{ shape = "Block", size = { 1, 0.14, 1.7 }, at = { 0, 0.07, 0 }, color = 1 },
++						{
++							shape = "Block",
++							size = { 0.9, 1.2, 0.16 },
++							at = { 0, 0.6, 0 },
++							rot = { 0, 0, -14 },
++							color = 1,
++						},
++					} :: { SculptTypes.AssemblyNode },
++					weights = { 3, 1 },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			shape = "Block",
++			size = { 1.2, 0.16, 2 },
++			at = { 0.4, 0.08, 0.2 },
++			rot = { 0, 24, 0 },
++			color = 2,
++			chance = 0.8,
++		},
++		{
++			shape = "Block",
++			size = { 0.9, 1.1, 0.16 },
++			at = { -0.5, 0.55, -0.4 },
++			rot = { 0, -30, 0 },
++			color = 3,
++			chance = 0.5,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..e99c46e2 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,123 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's library of tablets (map feature DomainTabletLibrary):
++-- the light leaving the gods' sealed book. Two gold threads of motes wind
++-- round each other half a turn apart as they climb, like writing coming
++-- unwound off the page, out of a soft warm wash; a few pale sky-blue glints
++-- pass through them and a light breathes on the pedestal. The path is a short
++-- steep worm, so the emitters stack as a column rather than trailing along the
++-- dais, and each layer keeps its own slow periods so the column turns.
++-- Compact on purpose (a handful of emitters): a builder may set one in each
++-- library the Domain raises.
++recipes.domain_book_glory = {
++	about = "The sealed book's light: two gold threads of motes winding up out of a warm wash, pale sky-blue glints through them and a breathing light.",
++	theme = "domain",
++	path = { kind = "worm", length = 6, step = 2, bend = 14, climb = 80, round = 2 },
++	layers = {
++		{
++			name = "script",
++			look = {
++				kind = "stream",
++				every = 1.5,
++				thick = 2.2,
++				lift = 0.5,
++				toward = "up",
++				rise = 2.4,
++				life = { 4, 6 },
++				rate = 6,
++				size = 0.5,
++				tall = 2.6,
++				transparency = 0.18,
++				color = "gold",
++				texture = "wisp",
++				lean = 18,
++				vary = 0.6,
++			},
++			motion = { kind = "worm", amplitude = 1.1, across = 1, periods = { 6, 9 }, twist = 8, coil = 0.8 },
++			priority = 1,
++		},
++		{
++			name = "twin",
++			look = {
++				kind = "stream",
++				every = 2.5,
++				thick = 2.2,
++				lift = 0.5,
++				toward = "up",
++				rise = 2.4,
++				life = { 4, 6 },
++				rate = 4,
++				size = 0.45,
++				tall = 2.4,
++				transparency = 0.25,
++				color = "core",
++				texture = "wisp",
++				lean = 18,
++				vary = 0.6,
++			},
++			motion = {
++				kind = "worm",
++				amplitude = 1.1,
++				across = 1,
++				periods = { 6, 9 },
++				twist = 8,
++				coil = 0.8,
++				turn = 180,
++			},
++			priority = 2,
++		},
++		{
++			name = "glow",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 4.5,
++				lift = 0.3,
++				toward = "up",
++				rise = 1.1,
++				life = { 6, 9 },
++				rate = 1.5,
++				size = 3.5,
++				tall = 1.2,
++				transparency = 0.9,
++				color = "glow",
++				texture = "smoke",
++				lean = 8,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 0.7, tilt = 6, span = 10, periods = { 7.3, 5.1 } },
++			priority = 3,
++		},
++		{
++			name = "glints",
++			look = {
++				kind = "stream",
++				every = 2.5,
++				thick = 3,
++				lift = 0.8,
++				toward = "up",
++				rise = 2,
++				life = { 3.5, 5 },
++				rate = 1.2,
++				size = 0.35,
++				tall = 1.4,
++				transparency = 0.2,
++				color = "sky",
++				texture = "wisp",
++				lean = 20,
++				vary = 0.7,
++			},
++			motion = { kind = "sway", amplitude = 0.9, tilt = 9, span = 8, periods = { 5.3, 3.7 } },
++			priority = 4,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 5, max = 2, range = 20, brightness = 1, color = "glow" },
++			motion = { kind = "pulse", period = 4.2, depth = 0.3 },
++			priority = 5,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..2fba26dd 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,31 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's library of tablets (map feature DomainTabletLibrary)
++	["sculpt:domain_reading_column"] = row(
++		"A reading rotunda's ivory column, gold rings at foot, collar and abacus, gilt volutes and a glowing gold finial.",
++		MOOR
++	),
++	["sculpt:domain_tablet_shelf"] = row(
++		"A double-faced island range of ivory shelves stacked with glowing gold tablets, its top under a gilt crown.",
++		MOOR
++	),
++	["sculpt:domain_tablet_shelf_fallen"] = row(
++		"A library range toppled into its aisle, its boards come apart and gold tablets spilled across the paving.",
++		MOOR
++	),
++	["sculpt:domain_lectern"] = row(
++		"A reader's lectern of ivory marble with a sloped desk and a gold tablet left open on it.",
++		MOOR
++	),
++	["sculpt:domain_sealed_book"] = row(
++		"The Eternal Domain's sealed book on a stepped ivory pedestal, chained in gilt under a ring of gold lights.",
++		MOOR
++	),
++	["sculpt:domain_tablet_scatter"] = row(
++		"Gold tablets left scattered and leaning on the Eternal Domain's paving.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainTabletLibrary.luau b/src/shared/systems/features/DomainTabletLibrary.luau
+new file mode 100644
+index 00000000..1959d7db
+--- /dev/null
++++ b/src/shared/systems/features/DomainTabletLibrary.luau
+@@ -0,0 +1,791 @@
++--!strict
++-- The library of tablets, the Eternal Domain's court of the written word: a
++-- broad paved court of tall marble shelves holding gold tablets, lecterns in
++-- the reading aisles, gold trees at its edges, and at its heart a colonnaded
++-- rotunda where the gods' sealed book stands on a pedestal and its light
++-- climbs. The Domain has halls, gates and spires; it has no place to read.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure, the rest only
++-- dress it:
++--   1. the plan: parallel stacks in a grid, concentric shelf rings, a
++--      cloistered square with corner pavilions, or shelves on rising
++--      terraces;
++--   2. the rotunda: a colonnade, a double ring of columns, or a broken one
++--      with fallen drums;
++--   3. the court's level: at grade, raised a step, or sunk two with a step
++--      round it;
++--   4. the road: through the court or a quarter turn, and which side of the
++--      rotunda it takes;
++--   5. then the counts, the door gaps, the fallen shelves and the planting.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++type Rect = { x0: number, z0: number, x1: number, z1: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- Radians between two angles, 0..pi.
++local function apart(a: number, b: number): number
++	return math.abs((a - b + math.pi) % (2 * math.pi) - math.pi)
++end
++
++-- The bible's Domain palette (B12): ivory stone in three tones, a gold-leaning
++-- paving at the heart, and light that belongs to lamps and gold tablets.
++local COURT_GROUND = { material = "Slate", color = { 228, 222, 208 } }
++local AISLE_GROUND = { material = "Marble", color = { 214, 208, 194 } }
++local PLINTH_GROUND = { material = "Limestone", color = { 202, 194, 178 } }
++local DAIS_GROUND = { material = "Pavement", color = { 226, 212, 184 } }
++local STEP_GROUND = { material = "Sandstone", color = { 196, 186, 166 } }
++local GROVE_GROUND = { material = "Salt", color = { 222, 217, 205 } }
++-- Holy light, the domain theme's warm white-gold.
++local HOLY = { 255, 234, 186 }
++-- The shelves stand on a low marble plinth, so a range reads as one built thing.
++local PLINTH_LIFT = 1.4
++
++local PLANS = { "stacks", "rings", "cloister", "terraces" }
++local FORMS = { "colonnade", "double", "ruined" }
++local LEVELS = { "flat", "raised", "sunken" }
++
++local feature: MapFeature.Feature = {
++	name = "DomainTabletLibrary",
++	about = "A court of tall marble shelves holding gold tablets, reading lecterns, and a colonnaded rotunda where a sealed book stands in holy light.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "crossing",
++	mood = { "holy", "silent", "monumental", "gilded", "studious" },
++	cells = {
++		court = {
++			ground = COURT_GROUND,
++			lift = 0.15,
++			clear = true,
++			props = { { sculpt = "domain_tablet_scatter", every = 70, scale = { 0.7, 1.1 }, sink = 0.08 } },
++		},
++		aisle = {
++			ground = AISLE_GROUND,
++			lift = 0.2,
++			clear = true,
++			props = { { sculpt = "domain_tablet_scatter", every = 90, scale = { 0.6, 1 }, sink = 0.08 } },
++		},
++		plinth = { ground = PLINTH_GROUND, lift = PLINTH_LIFT, clear = true },
++		dais = {
++			ground = DAIS_GROUND,
++			lift = 0.3,
++			clear = true,
++			glow = { color = HOLY, range = 18, brightness = 1.1, every = 44, height = 0.7 },
++			props = { { sculpt = "domain_tablet_scatter", every = 24, scale = { 0.6, 0.9 }, sink = 0.1 } },
++		},
++		step = { ground = STEP_GROUND, lift = 0.1, clear = true },
++		grove = {
++			ground = GROVE_GROUND,
++			lift = 0.1,
++			clear = true,
++			props = { { sculpt = "domain_tablet_scatter", every = 60, scale = { 0.5, 0.8 }, sink = 0.06 } },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-4: the structure, first.
++		local plan = PLANS[whole(rng, 1, #PLANS)]
++		local form = FORMS[whole(rng, 1, #FORMS)]
++		local level = LEVELS[whole(rng, 1, #LEVELS)]
++		local dogleg = rng:NextNumber() < 0.45
++		local w, d = whole(rng, 44, 52), whole(rng, 44, 52)
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		-- The rotunda's ring, and the open court round it. The ring is wide
++		-- enough for the game camera (35 studs back from a player) to stand
++		-- inside it, so the sealed book is seen in the clear from above.
++		local R = between(rng, 6, 7)
++		local courtR = R + between(rng, 5.4, 6.4)
++		local courtH = if level == "raised" then 1 elseif level == "sunken" then -2 else 0
++		local stretch = between(rng, 0.9, 1.1)
++		local turn = between(rng, 0, math.pi)
++		-- The road: in at any side, out opposite or a quarter turn away.
++		local aIn = between(rng, 0, 2 * math.pi)
++		local aOut: number
++		if dogleg then
++			aOut = aIn + (if rng:NextNumber() < 0.5 then 1 else -1) * math.pi / 2
++		else
++			aOut = aIn + math.pi + between(rng, -0.3, 0.3)
++		end
++		local roadR = R + between(rng, 2.6, 3.2)
++		local road: { Point } = {}
++
++		local function border(a: number): Point
++			local c, s = math.cos(a), math.sin(a)
++			local tx = if c > 1e-6 then (w - cx) / c elseif c < -1e-6 then (1 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d - cz) / s elseif s < -1e-6 then (1 - cz) / s else math.huge
++			local t = math.min(tx, tz)
++			local x = math.clamp(math.floor(cx + c * t + 0.5), 1, w)
++			local z = math.clamp(math.floor(cz + s * t + 0.5), 1, d)
++			if tx <= tz then
++				x = if c > 0 then w else 1
++			else
++				z = if s > 0 then d else 1
++			end
++			return { x = x, z = z }
++		end
++
++		table.insert(road, border(aIn))
++		local delta = (aOut - aIn) % (2 * math.pi)
++		if delta > math.pi then
++			delta -= 2 * math.pi
++		end
++		local turns = math.max(3, math.ceil(math.abs(delta) / (math.pi / 24)))
++		for k = 0, turns do
++			local a = aIn + delta * k / turns
++			table.insert(road, { x = cx + math.cos(a) * roadR, z = cz + math.sin(a) * roadR })
++		end
++		table.insert(road, border(aOut))
++
++		local function roadDistance(x: number, z: number): number
++			local best = math.huge
++			for k = 2, #road do
++				local a, b = road[k - 1], road[k]
++				local vx, vz = b.x - a.x, b.z - a.z
++				local len2 = vx * vx + vz * vz
++				local t = if len2 > 0 then math.clamp(((x - a.x) * vx + (z - a.z) * vz) / len2, 0, 1) else 0
++				local px, pz = a.x + vx * t - x, a.z + vz * t - z
++				best = math.min(best, math.sqrt(px * px + pz * pz))
++			end
++			return best
++		end
++
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inFoot(x: number, z: number): boolean
++			return x >= 1 and x <= w and z >= 1 and z <= d
++		end
++
++		-- The court's levels: the paved court, a raised dais at the rotunda,
++		-- and (sunk) a step round the court's lip or (terraces) square
++		-- terraces rising outward, each level a step from the last.
++		local function groundHeight(x: number, z: number): number
++			local dx, dz = x - cx, z - cz
++			local r = math.sqrt(dx * dx + dz * dz)
++			if r <= R + 0.9 then
++				return courtH + 1
++			elseif r <= courtR then
++				return courtH
++			elseif level == "sunken" and r <= courtR + 1.1 then
++				return -1
++			elseif plan == "terraces" then
++				local q = math.max(math.abs(dx), math.abs(dz))
++				if q <= courtR + 3.2 then
++					return math.min(courtH + 1, 2)
++				end
++				return math.min(courtH + 2, 2)
++			end
++			return 0
++		end
++
++		-- Wall cells: never inside the court or on the road's reserved way.
++		local function wallCell(x: number, z: number)
++			if x < 2 or z < 2 or x > w - 1 or z > d - 1 then
++				return
++			end
++			local dx, dz = x - cx, z - cz
++			if dx * dx + dz * dz <= (courtR + 0.2) ^ 2 then
++				return
++			end
++			if roadDistance(x, z) < 2.4 then
++				return
++			end
++			walk[at(x, z)] = false
++		end
++
++		local function wallRect(r: Rect)
++			for z = r.z0, r.z1 do
++				for x = r.x0, r.x1 do
++					wallCell(x, z)
++				end
++			end
++		end
++
++		-- Ranges a shelf can be stood along; the shelf pass checks the cells.
++		local runs: { Rect } = {}
++		local function run(r: Rect)
++			wallRect(r)
++			if math.max(r.x1 - r.x0, r.z1 - r.z0) + 1 >= 3 then
++				table.insert(runs, r)
++			end
++		end
++
++		local function metric(dx: number, dz: number): number
++			local lx, lz = dx * math.cos(turn) + dz * math.sin(turn), -dx * math.sin(turn) + dz * math.cos(turn)
++			return math.sqrt((lx / stretch) ^ 2 + (lz * stretch) ^ 2)
++		end
++
++		local function ringPoint(a: number, radius: number): Point
++			local k = metric(math.cos(a), math.sin(a))
++			return { x = cx + math.cos(a) * radius / k, z = cz + math.sin(a) * radius / k }
++		end
++
++		local function inGaps(x: number, z: number, gaps: { Rect }): boolean
++			for _, g in gaps do
++				if x >= g.x0 and x <= g.x1 and z >= g.z0 and z <= g.z1 then
++					return true
++				end
++			end
++			return false
++		end
++
++		-- A range with door gaps cut out of it; the shelf pass stands its
++		-- shelves only where the cells were actually laid.
++		local function runCut(r: Rect, gaps: { Rect })
++			for z = r.z0, r.z1 do
++				for x = r.x0, r.x1 do
++					if not inGaps(x, z, gaps) then
++						wallCell(x, z)
++					end
++				end
++			end
++			if math.max(r.x1 - r.x0, r.z1 - r.z0) + 1 >= 3 then
++				table.insert(runs, r)
++			end
++		end
++
++		-- The plan's walls, each laid from the first structural draws.
++		local planRings: { number } = {}
++		if plan == "stacks" then
++			-- Parallel ranges across the court, split into stacks with gaps
++			-- between, and now and then a cross wall between two ranges.
++			local across = rng:NextNumber() < 0.5
++			local count = whole(rng, 4, 6)
++			local span = if across then d else w
++			local long = if across then w else d
++			for k = 1, count do
++				local lo = 3 + (span - 6) * (k - 1) / math.max(count - 1, 1) + between(rng, -1.2, 1.2)
++				local from = math.floor(lo + 0.5)
++				local split = if long > 20 and rng:NextNumber() < 0.55 then whole(rng, 7, long - 8) else nil
++				local gapW = whole(rng, 1, 2)
++				local function spanRun(a0: number, a1: number)
++					if a1 - a0 < 2 then
++						return
++					end
++					if across then
++						run({ x0 = a0, z0 = from, x1 = a1, z1 = from + 1 })
++					else
++						run({ x0 = from, z0 = a0, x1 = from + 1, z1 = a1 })
++					end
++				end
++				if split then
++					spanRun(2, split - gapW)
++					spanRun(split + gapW, long - 1)
++				else
++					spanRun(2, long - 1)
++				end
++			end
++			for _ = 1, whole(rng, 1, 3) do
++				local x, z = whole(rng, 7, w - 11), whole(rng, 7, d - 11)
++				local len = whole(rng, 3, 6)
++				if across then
++					run({ x0 = x, z0 = z, x1 = x + 1, z1 = z + len })
++				else
++					run({ x0 = x, z0 = z, x1 = x + len, z1 = z + 1 })
++				end
++			end
++		elseif plan == "rings" then
++			-- Concentric ranges of shelves round the court, each broken by
++			-- doors, so a reader walks in through ring after ring.
++			local count = whole(rng, 2, 3)
++			local firstR = courtR + between(rng, 2.4, 3.6)
++			local spacing = between(rng, 5, 6.4)
++			for k = 1, count do
++				local radius = firstR + (k - 1) * spacing
++				if radius * math.max(stretch, 1 / stretch) > math.min(w, d) / 2 - 2 then
++					break
++				end
++				table.insert(planRings, radius)
++				local gaps: { { a: number, h: number } } = {}
++				for _ = 1, whole(rng, 3, 6) do
++					table.insert(gaps, { a = between(rng, 0, 2 * math.pi), h = between(rng, 0.09, 0.2) })
++				end
++				-- A range three cells thick: a shelf is nearly two cells deep,
++				-- so it needs the room on a curve.
++				for z = 2, d - 1 do
++					for x = 2, w - 1 do
++						local dx, dz = x - cx, z - cz
++						if math.abs(metric(dx, dz) - radius) <= 1.35 then
++							local a = math.atan2(dz, dx)
++							local open = false
++							for _, g in gaps do
++								if apart(a, g.a) < g.h then
++									open = true
++									break
++								end
++							end
++							if not open then
++								wallCell(x, z)
++							end
++						end
++					end
++				end
++			end
++		elseif plan == "cloister" then
++			-- A square of shelves with a door in each side, a pavilion at each
++			-- corner, and wings reaching in toward the reading court.
++			local inset = whole(rng, 4, 7)
++			local thick = whole(rng, 2, 3)
++			local x0, z0, x1, z1 = inset, inset, w - inset + 1, d - inset + 1
++			local function side(horizontal: boolean, fixed: number, from: number, to: number)
++				local door = whole(rng, from + 3, to - 3)
++				local half = whole(rng, 1, 2)
++				if horizontal then
++					run({ x0 = from, z0 = fixed, x1 = door - half, z1 = fixed + thick - 1 })
++					run({ x0 = door + half, z0 = fixed, x1 = to, z1 = fixed + thick - 1 })
++				else
++					run({ x0 = fixed, z0 = from, x1 = fixed + thick - 1, z1 = door - half })
++					run({ x0 = fixed, z0 = door + half, x1 = fixed + thick - 1, z1 = to })
++				end
++			end
++			side(true, z0, x0, x1)
++			side(true, z1 - thick + 1, x0, x1)
++			side(false, x0, z0, z1)
++			side(false, x1 - thick + 1, z0, z1)
++			for _, c in { { x0, z0 }, { x1, z0 }, { x0, z1 }, { x1, z1 } } do
++				wallRect({ x0 = c[1] - 1, z0 = c[2] - 1, x1 = c[1] + thick, z1 = c[2] + thick })
++			end
++			for _ = 1, whole(rng, 1, 3) do
++				local length = whole(rng, 4, 8)
++				local off = whole(rng, -4, 4)
++				local sidePick = whole(rng, 1, 4)
++				if sidePick == 1 then
++					run({
++						x0 = math.floor(cx) + off,
++						z0 = z0 + thick,
++						x1 = math.floor(cx) + off + 1,
++						z1 = z0 + thick + length,
++					})
++				elseif sidePick == 2 then
++					run({
++						x0 = math.floor(cx) + off,
++						z0 = z1 - thick - length,
++						x1 = math.floor(cx) + off + 1,
++						z1 = z1 - thick,
++					})
++				elseif sidePick == 3 then
++					run({
++						x0 = x0 + thick,
++						z0 = math.floor(cz) + off,
++						x1 = x0 + thick + length,
++						z1 = math.floor(cz) + off + 1,
++					})
++				else
++					run({
++						x0 = x1 - thick - length,
++						z0 = math.floor(cz) + off,
++						x1 = x1 - thick,
++						z1 = math.floor(cz) + off + 1,
++					})
++				end
++			end
++		else
++			-- Rising terraces: square ranges of shelves on stepped ground, and
++			-- straight ranges between them, the court at their foot.
++			local count = whole(rng, 2, 3)
++			local firstQ = courtR + between(rng, 2.2, 3.2)
++			local spacing = between(rng, 4.6, 5.6)
++			for k = 1, count do
++				local q = firstQ + (k - 1) * spacing
++				if q > math.min(w, d) / 2 - 2 then
++					break
++				end
++				local gaps: { Rect } = {}
++				for _ = 1, whole(rng, 3, 5) do
++					local a = between(rng, 0, 2 * math.pi)
++					local p = ringPoint(a, q)
++					table.insert(gaps, {
++						x0 = math.floor(p.x) - 1,
++						z0 = math.floor(p.z) - 1,
++						x1 = math.floor(p.x) + 1,
++						z1 = math.floor(p.z) + 1,
++					})
++				end
++				-- The four sides of the square range, each two cells thick.
++				local north = math.floor(cz - q + 0.5)
++				local south = math.floor(cz + q + 0.5)
++				local west = math.floor(cx - q + 0.5)
++				local east = math.floor(cx + q + 0.5)
++				runCut({ x0 = west, z0 = north, x1 = east, z1 = north + 1 }, gaps)
++				runCut({ x0 = west, z0 = south - 1, x1 = east, z1 = south }, gaps)
++				runCut({ x0 = west, z0 = north, x1 = west + 1, z1 = south }, gaps)
++				runCut({ x0 = east - 1, z0 = north, x1 = east, z1 = south }, gaps)
++			end
++			for _ = 1, whole(rng, 2, 4) do
++				local across = rng:NextNumber() < 0.5
++				local at1 = if across then whole(rng, 5, d - 6) else whole(rng, 5, w - 6)
++				local from = if across then whole(rng, 3, math.max(4, w - 14)) else whole(rng, 3, math.max(4, d - 14))
++				local len = whole(rng, 4, 9)
++				if across then
++					run({ x0 = from, z0 = at1, x1 = from + len, z1 = at1 + 1 })
++				else
++					run({ x0 = at1, z0 = from, x1 = at1 + 1, z1 = from + len })
++				end
++			end
++		end
++
++		-- 5: the planting, drawn once the walls are known; the ground round a
++		-- tree is its own pale stone garden.
++		local trees: { Point } = {}
++		local treeYaws: { number } = {}
++		for _ = 1, whole(rng, 0, 2) do
++			for _ = 1, 40 do
++				local x, z = between(rng, 5, w - 4), between(rng, 5, d - 4)
++				local dx, dz = x - cx, z - cz
++				if math.sqrt(dx * dx + dz * dz) > courtR + 4.5 and roadDistance(x, z) > 5 then
++					local clear = true
++					for o = -3, 3 do
++						for p = -3, 3 do
++							local ix, iz = math.floor(x + o + 0.5), math.floor(z + p + 0.5)
++							if not inFoot(ix, iz) or not walk[at(ix, iz)] then
++								clear = false
++								break
++							end
++						end
++					end
++					for _, t in trees do
++						if (t.x - x) ^ 2 + (t.z - z) ^ 2 < 64 then
++							clear = false
++						end
++					end
++					if clear then
++						table.insert(trees, { x = x, z = z })
++						table.insert(treeYaws, between(rng, 0, 360))
++						break
++					end
++				end
++			end
++		end
++
++		-- Paint: the shelves' plinth, the marble aisles round every range, the
++		-- court's paving, the dais, the steps and the gardens. The road's cells
++		-- are left unpainted so the tileset's gold road shows through.
++		local function nearWall(x: number, z: number): boolean
++			for o = -1, 1 do
++				for p = -1, 1 do
++					if (o ~= 0 or p ~= 0) and inFoot(x + o, z + p) and not walk[at(x + o, z + p)] then
++						return true
++					end
++				end
++			end
++			return false
++		end
++		local function inGrove(x: number, z: number): boolean
++			for _, t in trees do
++				if (t.x - x) ^ 2 + (t.z - z) ^ 2 <= 3.1 ^ 2 then
++					return true
++				end
++			end
++			return false
++		end
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				heights[i] = groundHeight(x, z)
++				if roadDistance(x, z) < 2.2 then
++					continue
++				end
++				local dx, dz = x - cx, z - cz
++				local r = math.sqrt(dx * dx + dz * dz)
++				if not walk[i] then
++					kinds[i] = "plinth"
++				elseif r <= R + 0.9 then
++					-- A darker inlay ring round the raised centre, so the
++					-- rotunda floor reads as a built roundel from above.
++					if r > R - 2 and r <= R - 1.2 then
++						kinds[i] = "step"
++					else
++						kinds[i] = "dais"
++						if r <= R - 2 then
++							lifts[i] = 0.75
++						end
++					end
++				elseif level == "sunken" and r <= courtR + 1.1 then
++					kinds[i] = "step"
++				elseif inGrove(x, z) then
++					kinds[i] = "grove"
++				elseif nearWall(x, z) then
++					kinds[i] = "aisle"
++				else
++					kinds[i] = "court"
++				end
++			end
++		end
++
++		-- Landmarks: the shelves down every range, the reading lecterns, the
++		-- rotunda and its sealed book.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local taken: { [number]: boolean } = {}
++		local function shelfFits(px: number, pz: number, yaw: number): boolean
++			if roadDistance(px, pz) < 3.4 then
++				return false
++			end
++			local y = math.rad(yaw)
++			local fx, fz = math.cos(y), -math.sin(y)
++			local lx, lz = math.sin(y), math.cos(y)
++			for _, u in { -1.05, 0, 1.05 } do
++				for _, v in { -0.55, 0.55 } do
++					local x = math.floor(px + lx * u + fx * v + 0.5)
++					local z = math.floor(pz + lz * u + fz * v + 0.5)
++					if not inFoot(x, z) or walk[at(x, z)] or taken[at(x, z)] then
++						return false
++					end
++				end
++			end
++			return true
++		end
++		local function shelfAt(px: number, pz: number, yaw: number)
++			local y = math.rad(yaw)
++			for _, u in { -1, 0, 1 } do
++				local x = math.floor(px + math.sin(y) * u + 0.5)
++				local z = math.floor(pz + math.cos(y) * u + 0.5)
++				if inFoot(x, z) then
++					taken[at(x, z)] = true
++				end
++			end
++			table.insert(marks, {
++				sculpt = "domain_tablet_shelf",
++				x = px,
++				z = pz,
++				yaw = yaw,
++				scale = between(rng, 0.92, 1.12),
++				sink = -PLINTH_LIFT,
++				solid = true,
++			})
++		end
++		for _, r in runs do
++			local alongX = (r.x1 - r.x0) >= (r.z1 - r.z0)
++			local len = if alongX then r.x1 - r.x0 + 1 else r.z1 - r.z0 + 1
++			if len >= 3 then
++				local yaw = if alongX then 90 else 0
++				local cross = if alongX then (r.z0 + r.z1) / 2 else (r.x0 + r.x1) / 2
++				local t = 1.4
++				while t <= len - 1.4 do
++					local px = if alongX then r.x0 - 0.5 + t else cross
++					local pz = if alongX then cross else r.z0 - 0.5 + t
++					if shelfFits(px, pz, yaw) then
++						shelfAt(px, pz, yaw)
++					end
++					t += between(rng, 3.3, 3.8)
++				end
++			end
++		end
++		for _, radius in planRings do
++			local count = math.max(5, math.floor(2 * math.pi * radius / 3.8))
++			local first = between(rng, 0, 2 * math.pi)
++			for k = 0, count - 1 do
++				local a = first + 2 * math.pi * k / count
++				local p = ringPoint(a, radius)
++				local yaw = -math.deg(a) + (if rng:NextNumber() < 0.5 then 0 else 180)
++				if shelfFits(p.x, p.z, yaw) then
++					shelfAt(p.x, p.z, yaw)
++				end
++			end
++		end
++
++		-- The rotunda: columns on the dais, the sealed book at the centre.
++		local columns = math.clamp(math.floor(R * 2 * math.pi / between(rng, 2.1, 2.7)), 8, 20)
++		if form == "ruined" then
++			columns = math.max(6, columns - whole(rng, 2, 4))
++		end
++		local firstCol = between(rng, 0, 2 * math.pi)
++		for k = 0, columns - 1 do
++			local a = firstCol + 2 * math.pi * k / columns
++			local px, pz = cx + math.cos(a) * R, cz + math.sin(a) * R
++			local sculpt = "domain_reading_column"
++			if form == "ruined" and k % 3 == 1 then
++				sculpt = if rng:NextNumber() < 0.5 then "domain_column_broken" else "domain_column_fallen"
++			end
++			table.insert(marks, {
++				sculpt = sculpt,
++				x = px,
++				z = pz,
++				yaw = between(rng, 0, 360),
++				scale = if sculpt == "domain_reading_column" then between(rng, 0.9, 1.05) else between(rng, 0.4, 0.5),
++				sink = -0.3,
++				solid = sculpt ~= "domain_column_fallen",
++			})
++			if form == "double" then
++				-- A low inner ring of pillars round the book, below the sight
++				-- line from the game camera, so it reads as a second order
++				-- rather than a screen.
++				local b = a + math.pi / columns
++				table.insert(marks, {
++					sculpt = "domain_reading_column",
++					x = cx + math.cos(b) * (R - 2.6),
++					z = cz + math.sin(b) * (R - 2.6),
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.34, 0.42),
++					sink = -0.3,
++					solid = true,
++				})
++			end
++		end
++		if form == "ruined" then
++			for _ = 1, whole(rng, 1, 2) do
++				local a = between(rng, 0, 2 * math.pi)
++				local reach = R + between(rng, 0.5, 1.8)
++				table.insert(marks, {
++					sculpt = "domain_column_fallen",
++					x = cx + math.cos(a) * reach,
++					z = cz + math.sin(a) * reach,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.5, 0.7),
++					sink = 0.1,
++					solid = false,
++				})
++			end
++		end
++		table.insert(marks, {
++			sculpt = "domain_sealed_book",
++			x = cx,
++			z = cz,
++			yaw = between(rng, -20, 20),
++			scale = 1,
++			sink = -0.3,
++			solid = true,
++		})
++		table.insert(effects, { recipe = "domain_book_glory", x = cx, z = cz, lift = 11.8 })
++
++		-- Readers' lecterns on the dais itself, drawn up round the book.
++		for _ = 1, whole(rng, 2, 4) do
++			local a = between(rng, 0, 2 * math.pi)
++			local radius = between(rng, 3.2, 4.6)
++			table.insert(marks, {
++				sculpt = "domain_lectern",
++				x = cx + math.cos(a) * radius,
++				z = cz + math.sin(a) * radius,
++				yaw = 180 - math.deg(a) + between(rng, -10, 10),
++				scale = between(rng, 0.9, 1.1),
++				sink = -0.3,
++				solid = false,
++			})
++		end
++
++		-- Lecterns round the rotunda facing the book, and now and then one
++		-- drawn up to a range.
++		local lecterns = whole(rng, 3, 6)
++		for k = 1, lecterns do
++			local a = firstCol + 2 * math.pi * k / lecterns + between(rng, -0.2, 0.2)
++			local radius = R + between(rng, 1.4, 2.6)
++			local px, pz = cx + math.cos(a) * radius, cz + math.sin(a) * radius
++			if roadDistance(px, pz) > 2.6 then
++				table.insert(marks, {
++					sculpt = "domain_lectern",
++					x = px,
++					z = pz,
++					yaw = 180 - math.deg(a) + between(rng, -8, 8),
++					scale = between(rng, 0.9, 1.1),
++					sink = -0.3,
++					solid = false,
++				})
++			end
++		end
++		for _, r in runs do
++			if rng:NextNumber() < 0.45 then
++				local alongX = (r.x1 - r.x0) >= (r.z1 - r.z0)
++				local len = if alongX then r.x1 - r.x0 + 1 else r.z1 - r.z0 + 1
++				if len >= 4 then
++					local t = whole(rng, 2, len - 2)
++					local side = if rng:NextNumber() < 0.5 then -1.25 else 1.25
++					local px = if alongX then r.x0 - 0.5 + t else (r.x0 + r.x1) / 2 + side
++					local pz = if alongX then (r.z0 + r.z1) / 2 + side else r.z0 - 0.5 + t
++					if roadDistance(px, pz) > 2.6 then
++						table.insert(marks, {
++							sculpt = "domain_lectern",
++							x = px,
++							z = pz,
++							yaw = if alongX then 90 else 0,
++							scale = between(rng, 0.9, 1.1),
++							sink = 0,
++							solid = false,
++						})
++					end
++				end
++			end
++		end
++
++		-- Fallen shelves: one or two ranges toppled into their aisle.
++		for _ = 1, whole(rng, 0, 2) do
++			local r = runs[whole(rng, 1, math.max(#runs, 1))]
++			if r then
++				local alongX = (r.x1 - r.x0) >= (r.z1 - r.z0)
++				local len = if alongX then r.x1 - r.x0 + 1 else r.z1 - r.z0 + 1
++				if len >= 4 then
++					local t = between(rng, 2, len - 2)
++					local off = if rng:NextNumber() < 0.5 then 1.8 else -1.8
++					local px = if alongX then r.x0 - 0.5 + t else (r.x0 + r.x1) / 2 + off
++					local pz = if alongX then (r.z0 + r.z1) / 2 + off else r.z0 - 0.5 + t
++					if roadDistance(px, pz) > 3 then
++						table.insert(marks, {
++							sculpt = "domain_tablet_shelf_fallen",
++							x = px,
++							z = pz,
++							yaw = (if alongX then 90 else 0) + between(rng, -6, 6),
++							scale = between(rng, 0.9, 1.1),
++							sink = 0.05,
++							solid = false,
++						})
++					end
++				end
++			end
++		end
++
++		-- The gold trees at the court's edge.
++		for k, t in trees do
++			table.insert(marks, {
++				sculpt = if rng:NextNumber() < 0.55 then "domain_gold_tree" else "domain_gold_tree_low",
++				x = t.x,
++				z = t.z,
++				yaw = treeYaws[k],
++				scale = between(rng, 0.72, 0.94),
++				sink = 0.2,
++				solid = true,
++			})
++		end
++
++		-- The camera: high over the road outside the court, looking in along it
++		-- over the ranges at the rotunda and the book: shelves for a
++		-- foreground, the gold way leading the eye, the colonnade the subject.
++		local camA = if rng:NextNumber() < 0.5 then aIn else aOut
++		local camR = courtR + between(rng, 3.5, 5)
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "over the reading way",
++					from = {
++						x = cx + math.cos(camA) * camR,
++						z = cz + math.sin(camA) * camR,
++						lift = between(rng, 32, 38),
++					},
++					to = { x = cx, z = cz, lift = 5 },
++					fov = 60,
++				},
++			},
++		}
++	end,
++}
++
++return feature

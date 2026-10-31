@@ -1,0 +1,22 @@
+{
+  "letter": "P",
+  "generator": "g06",
+  "run": "domain-features-2",
+  "intent": "A formal sculpture garden of the Eternal Domain: a clipped-turf court in a raised gold-beddded parterre, a rill of still gold water down the all\u00e9e, pale gods on plinths and gold-leaved trees about a colossal heart, with its own statue, lamp and urn sculpts and petals of holy light sifting down over the court.",
+  "critic": {
+    "idea": 6,
+    "photo": 7,
+    "topology": 6,
+    "look": 6,
+    "game_camera": 5,
+    "usable": 7,
+    "total": 6.25,
+    "reads_as_itself": "yes",
+    "inorganic": 7,
+    "figures": "partly",
+    "best_shot": "feature-shots-final: tall statue up the gold all\u00e9e",
+    "why": "A proper formal parterre; turf and gold beds keep it cultivated. The statue is a little thin."
+  },
+  "role": "Garden: formal parterre between platforms.",
+  "notes": "# P\n\nKeep: Keep the turf squares, gold beds and cross all\u00e9e.\n\n1. Make the central statue more colossal with a clear head and gesture.\n2. Clip the trees to cones or balls so nothing reads wild.\n3. Add the gold rill to every seed; it is the best line in the plan.\n"
+}

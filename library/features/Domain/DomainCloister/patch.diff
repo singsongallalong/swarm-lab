@@ -1,0 +1,1255 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..94ba478c 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainCloister = require("../systems/features/DomainCloister")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainCloister = DomainCloister,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..b6b82b73 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,268 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain's cloister (a trial, 2026-10-30): one bay of its arcade, an ivory
++-- arch springing from two marble piers, a gold keystone at its crown. Two bays stand at
++-- every division between the gaps, so a run of them is the cloister's colonnade; the
++-- springing and crown are high enough that a person (5 studs) walks under it.
++Sculpts.domain_cloister_bay = {
++	kind = "assembly",
++	size = { 10.6, 21, 2.6 },
++	material = "Marble",
++	colors = { { 230, 222, 206 }, { 216, 208, 192 }, { 200, 192, 176 } },
++	accent = { 230, 190, 110 },
++	maxPrims = 16,
++	parts = {
++		{ shape = "Block", size = { 2.6, 1, 2.6 }, at = { -4, 0.5, 0 }, color = 2 },
++		{ shape = "Block", size = { 2.6, 1, 2.6 }, at = { 4, 0.5, 0 }, color = 2 },
++		{ shape = "Block", size = { 1.8, 13.4, 1.8 }, at = { -4, 7.7, 0 }, color = 1 },
++		{ shape = "Block", size = { 1.8, 13.4, 1.8 }, at = { 4, 7.7, 0 }, color = 1 },
++		{ shape = "Block", size = { 2.4, 0.9, 2.4 }, at = { -4, 14.85, 0 }, color = 2 },
++		{ shape = "Block", size = { 2.4, 0.9, 2.4 }, at = { 4, 14.85, 0 }, color = 2 },
++		{ shape = "Block", size = { 3.4, 0.9, 1.8 }, at = { 4.35, 15.3, 0 }, rot = { 0, 0, -90 }, color = 1 },
++		{ shape = "Block", size = { 3.4, 0.9, 1.8 }, at = { 3.076, 18.376, 0 }, rot = { 0, 0, -45 }, color = 2 },
++		{ shape = "Block", size = { 3.4, 0.9, 1.8 }, at = { 0, 19.65, 0 }, color = 1 },
++		{ shape = "Block", size = { 3.4, 0.9, 1.8 }, at = { -3.076, 18.376, 0 }, rot = { 0, 0, 45 }, color = 2 },
++		{ shape = "Block", size = { 3.4, 0.9, 1.8 }, at = { -4.35, 15.3, 0 }, rot = { 0, 0, 90 }, color = 1 },
++		{ shape = "Block", size = { 0.9, 2.4, 1.9 }, at = { 0, 19.8, 0 }, color = "accent", material = "Foil" },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The Eternal Domain's cloister fountain: an ivory basin ringed with gold rosettes, a
++-- gold water disc in its floor, a pedestal carrying a second bowl and its own disc, and
++-- a gold finial over both. Its water is light, so the set piece domain_cloister_fount
++-- falls from the upper bowl into the lower.
++Sculpts.domain_cloister_fountain = {
++	kind = "assembly",
++	size = { 15, 18.3, 15 },
++	material = "Marble",
++	colors = { { 232, 224, 208 }, { 218, 210, 194 }, { 204, 196, 180 } },
++	accent = { 234, 200, 128 },
++	maxPrims = 27,
++	parts = {
++		{ shape = "Cylinder", axis = "y", size = { 15, 0.9, 15 }, at = { 0, 0.45, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 12, 0.5, 12 }, at = { 0, 1.1, 0 }, color = 2 },
++		{
++			name = "basin wall",
++			shape = "Block",
++			size = { 1.1, 1.8, 2.7 },
++			at = { 0, 1.6, 0 },
++			color = 1,
++			ring = { count = 12, radius = 6.1 },
++		},
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 11.6, 0.35, 11.6 },
++			at = { 0, 1.7, 0 },
++			color = "accent",
++			material = "Neon",
++		},
++		{ shape = "Cylinder", axis = "y", size = { 2.2, 9.6, 2.2 }, at = { 0, 6.1, 0 }, color = 2 },
++		-- A corbel under the upper bowl, so its underside is a rounded mass, not a plate.
++		{ shape = "Ball", size = { 4.6, 3.2, 4.6 }, at = { 0, 10.3, 0 }, color = 2 },
++		{ shape = "Cylinder", axis = "y", size = { 7.6, 1, 7.6 }, at = { 0, 11.4, 0 }, color = 1 },
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 6.8, 0.3, 6.8 },
++			at = { 0, 11.95, 0 },
++			color = "accent",
++			material = "Neon",
++		},
++		{ shape = "Cylinder", axis = "y", size = { 1.1, 2, 1.1 }, at = { 0, 12.9, 0 }, color = 2 },
++		{ shape = "Ball", size = { 1.6, 2.4, 1.6 }, at = { 0, 15.1, 0 }, color = "accent", material = "Foil" },
++		{ shape = "Block", size = { 0.7, 2, 0.7 }, at = { 0, 17.3, 0 }, color = "accent", material = "Foil" },
++		{
++			name = "rosettes",
++			shape = "Ball",
++			size = { 0.8, 0.8, 0.8 },
++			at = { 0, 2.7, 0 },
++			color = "accent",
++			material = "Foil",
++			ring = { count = 4, radius = 6.1, start = 45 },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The low fountain: a broad round basin with a low marble curb round still gold water,
++-- and a small pedestal holding a shallow bowl, for a cloister whose heart is a mirror
++-- instead of a jet.
++Sculpts.domain_cloister_fountain_low = {
++	kind = "assembly",
++	size = { 13.5, 5.2, 13.5 },
++	material = "Marble",
++	colors = { { 232, 224, 208 }, { 218, 210, 194 }, { 204, 196, 180 } },
++	accent = { 234, 200, 128 },
++	maxPrims = 20,
++	parts = {
++		{ shape = "Cylinder", axis = "y", size = { 13.5, 0.7, 13.5 }, at = { 0, 0.35, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 10.8, 0.4, 10.8 }, at = { 0, 0.95, 0 }, color = 2 },
++		{
++			name = "curb",
++			shape = "Block",
++			size = { 1, 1, 3 },
++			at = { 0, 1, 0 },
++			color = 1,
++			ring = { count = 10, radius = 5.4 },
++		},
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 10.6, 0.25, 10.6 },
++			at = { 0, 1.35, 0 },
++			color = "accent",
++			material = "Neon",
++		},
++		{ shape = "Cylinder", axis = "y", size = { 2, 1.6, 2 }, at = { 0, 2.2, 0 }, color = 2 },
++		{ shape = "Cylinder", axis = "y", size = { 4.6, 0.6, 4.6 }, at = { 0, 3.3, 0 }, color = 1 },
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 4, 0.2, 4 },
++			at = { 0, 3.7, 0 },
++			color = "accent",
++			material = "Neon",
++		},
++		{ shape = "Ball", size = { 1, 1.4, 1 }, at = { 0, 4.5, 0 }, color = "accent", material = "Foil" },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The broken fountain: its rim down for an arc, the shaft snapped off at shoulder
++-- height and the upper bowl thrown down beside it, the fallen stones lying where they
++-- landed. Holy light still pools in the dry basin, so it is a wound, not a ruin.
++Sculpts.domain_cloister_fountain_broken = {
++	kind = "assembly",
++	size = { 14, 3.55, 14 },
++	material = "Marble",
++	colors = { { 232, 224, 208 }, { 218, 210, 194 }, { 204, 196, 180 } },
++	accent = { 234, 200, 128 },
++	maxPrims = 18,
++	parts = {
++		{ shape = "Cylinder", axis = "y", size = { 13.5, 0.6, 13.5 }, at = { 0, 0.3, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 11.8, 0.4, 11.8 }, at = { 0, 0.8, 0 }, color = 2 },
++		{
++			name = "broken rim",
++			shape = "Block",
++			size = { 1, 1, 3 },
++			at = { 0, 1.1, 0 },
++			color = 1,
++			ring = { count = 7, radius = 5.4, start = 20, arc = 250 },
++		},
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 9, 0.08, 9 },
++			at = { 0, 1.05, 0 },
++			color = "accent",
++			material = "Neon",
++		},
++		{ shape = "Cylinder", axis = "y", size = { 2.2, 1.6, 2.2 }, at = { 0, 1.8, 0 }, color = 2 },
++		{ shape = "Block", size = { 2.4, 0.7, 2.4 }, at = { 0.1, 2.9, 0.05 }, rot = { 0, 0, 14 }, color = 1 },
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 4.2, 0.6, 4.2 },
++			at = { 3.1, 0.9, 1 },
++			rot = { 0, 0, 70 },
++			color = 1,
++		},
++		{
++			shape = "Cylinder",
++			axis = "y",
++			size = { 3.2, 0.5, 3.2 },
++			at = { -3, 0.55, 2.4 },
++			rot = { 0, 0, 62 },
++			color = 2,
++		},
++		{ shape = "Block", size = { 1.6, 0.8, 1.2 }, at = { 4.8, 0.4, -2.2 }, rot = { 0, 30, 8 }, color = 3 },
++		{ shape = "Block", size = { 1.2, 0.6, 1.6 }, at = { -4.6, 0.3, -1 }, rot = { 0, -20, -10 }, color = 2 },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The cloister's gold cypress: a slim marble trunk and roots carrying a tapering column
++-- of gilded foliage, the garden's vertical. Each seed frets its tiers a little, so a row
++-- of them is a grove and not a fence.
++Sculpts.domain_cloister_cypress = {
++	kind = "assembly",
++	size = { 5, 21.9, 5 },
++	material = "Marble",
++	colors = { { 226, 218, 202 }, { 196, 172, 104 }, { 214, 190, 120 } },
++	accent = { 230, 198, 122 },
++	maxPrims = 12,
++	parts = {
++		{ shape = "Block", size = { 1.4, 0.8, 1.4 }, at = { -1.3, 0.4, 0 }, color = 1 },
++		{ shape = "Block", size = { 1.4, 0.8, 1.4 }, at = { 1.3, 0.4, 0 }, color = 1 },
++		{ shape = "Cylinder", axis = "y", size = { 1.1, 8, 1.1 }, at = { 0, 4, 0 }, color = 1 },
++		{
++			name = "skirt",
++			shape = "Ball",
++			size = { 5, 4.4, 5 },
++			at = { 0, 6.5, 0 },
++			color = 2,
++			jitter = { size = 0.06, rot = { 2, 0, 2 } },
++		},
++		{
++			shape = "Ball",
++			size = { 4.2, 4.6, 4.2 },
++			at = { 0, 10, 0 },
++			color = 3,
++			jitter = { size = 0.06, rot = { 2, 0, 2 } },
++		},
++		{
++			shape = "Ball",
++			size = { 3.3, 4.2, 3.3 },
++			at = { 0, 13.5, 0 },
++			color = 2,
++			jitter = { size = 0.06, rot = { 2, 0, 2 } },
++		},
++		{
++			shape = "Ball",
++			size = { 2.4, 3.6, 2.4 },
++			at = { 0, 16.8, 0 },
++			color = 3,
++			jitter = { size = 0.06, rot = { 2, 0, 2 } },
++		},
++		{ shape = "Ball", size = { 1.3, 2.6, 1.3 }, at = { 0, 19.6, 0 }, color = 2 },
++		{ shape = "Ball", size = { 0.9, 1.4, 0.9 }, at = { 0, 21.2, 0 }, color = "accent", material = "Foil" },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- A clipped hedge of the cloister garden: a marble kerb, a squared body of gilded
++-- foliage and a lighter crown, with gold buds at its corners now and then. One to a
++-- cell, the beds run as a low border the fountain's light catches.
++Sculpts.domain_cloister_hedge = {
++	kind = "assembly",
++	size = { 3.8, 2.65, 3.8 },
++	material = "Grass",
++	colors = { { 176, 152, 88 }, { 198, 174, 108 }, { 224, 216, 200 } },
++	accent = { 226, 190, 108 },
++	maxPrims = 9,
++	parts = {
++		{ shape = "Block", size = { 3.8, 0.35, 3.8 }, at = { 0, 0.175, 0 }, color = 3, material = "Marble" },
++		{
++			name = "clipped body",
++			shape = "Block",
++			size = { 3.4, 1.5, 3.4 },
++			at = { 0, 1.05, 0 },
++			color = 1,
++			jitter = { size = 0.04, rot = { 0.8, 2, 0.8 } },
++		},
++		{
++			shape = "Block",
++			size = { 3, 0.55, 3 },
++			at = { 0, 2, 0 },
++			color = 2,
++			jitter = { size = 0.05, rot = { 1, 3, 1 } },
++		},
++		{
++			name = "buds",
++			shape = "Ball",
++			size = { 0.55, 0.55, 0.55 },
++			at = { 0, 2.35, 0 },
++			color = "accent",
++			material = "Foil",
++			ring = { count = 4, radius = 1.1, start = 45 },
++			chance = 0.85,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..d7b1a368 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,113 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain (a trial, 2026-10-30): the fountain of holy light at the heart of
++-- its cloister. Holy water that is light: a white-gold jet climbs out of the marble bowl,
++-- a curtain of gold strands falls back into the basin all round it, a wider faint gold
++-- veil bellies out beyond the curtain, a pale sky-blue haze hangs over the fall, and two
++-- lights breathe on the stone. The worm is short and tightly bent, so the emitters ring
++-- the bowl rather than run along the ground; the jet does the climbing and the falls lean
++-- outward as they go, so the water opens into a bell instead of hanging as a rope.
++recipes.domain_cloister_fount = {
++	about = "Holy water of light at an Eternal Domain cloister fountain: a white-gold jet rising from the bowl into gold curtains falling back under a pale sky-blue haze.",
++	theme = "domain",
++	path = { kind = "worm", length = 6, step = 2, bend = 35, climb = 0, round = 2 },
++	layers = {
++		{
++			name = "jet",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 1.4,
++				lift = 0.2,
++				toward = "up",
++				rise = 3.4,
++				life = { 1.4, 2.2 },
++				rate = 5,
++				size = 0.5,
++				tall = 3.2,
++				transparency = 0.25,
++				color = "core",
++				texture = "wisp",
++				lean = 3,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 0.3, tilt = 3, span = 6, periods = { 1.7, 2.3 } },
++			priority = 1,
++		},
++		{
++			name = "fall",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 12,
++				lift = 0,
++				toward = "down",
++				rise = 2.8,
++				life = { 4, 5 },
++				rate = 9,
++				size = 0.5,
++				tall = 4,
++				transparency = 0.35,
++				color = "gold",
++				texture = "wisp",
++				lean = 26,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 6, span = 10, periods = { 4.3, 3.1 } },
++			priority = 2,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 3, max = 2, range = 20, brightness = 1.2, color = "glow" },
++			motion = { kind = "pulse", period = 3.8, depth = 0.3 },
++			priority = 3,
++		},
++		{
++			name = "outer fall",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 18,
++				lift = 0.1,
++				toward = "down",
++				rise = 2.4,
++				life = { 4.2, 5.6 },
++				rate = 4,
++				size = 0.45,
++				tall = 4,
++				transparency = 0.55,
++				color = "gold",
++				texture = "veil",
++				lean = 34,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1.3, tilt = 6, span = 12, periods = { 5, 7 } },
++			priority = 4,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 11,
++				lift = 0.6,
++				toward = "down",
++				rise = 1.1,
++				life = { 3, 5 },
++				rate = 1,
++				size = 4.5,
++				tall = 1.2,
++				transparency = 0.9,
++				color = "sky",
++				texture = "smoke",
++				lean = 6,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.4, tilt = 4, span = 14, periods = { 7, 5 } },
++			priority = 5,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..6932bd7f 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,31 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's cloister (a trial, 2026-10-30)
++	["sculpt:domain_cloister_bay"] = row(
++		"A bay of the Eternal Domain's cloister: an ivory arch on two marble piers under a gold keystone.",
++		MOOR
++	),
++	["sculpt:domain_cloister_fountain"] = row(
++		"The Eternal Domain's cloister fountain: an ivory basin of gold water, a second bowl on a pedestal and a gold finial.",
++		MOOR
++	),
++	["sculpt:domain_cloister_fountain_low"] = row(
++		"The low fountain of an Eternal Domain cloister: a broad marble basin of still gold water under a shallow bowl.",
++		MOOR
++	),
++	["sculpt:domain_cloister_fountain_broken"] = row(
++		"An Eternal Domain fountain broken open, its rim down, its shaft snapped and its upper bowl thrown beside it, light pooled in the basin.",
++		MOOR
++	),
++	["sculpt:domain_cloister_cypress"] = row(
++		"An Eternal Domain cloister cypress: a slim marble trunk carrying a tapering column of gilded foliage.",
++		MOOR
++	),
++	["sculpt:domain_cloister_hedge"] = row(
++		"A clipped hedge of an Eternal Domain cloister garden: gilt foliage in a marble kerb, its crown a lighter gold.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainCloister.luau b/src/shared/systems/features/DomainCloister.luau
+new file mode 100644
+index 00000000..9cc54d65
+--- /dev/null
++++ b/src/shared/systems/features/DomainCloister.luau
+@@ -0,0 +1,804 @@
++--!strict
++-- The Eternal Domain's cloister (roadmap areas/eternal-domain.md): a square arcaded walk
++-- round a walled garden court, a fountain of holy light at its heart, the processional
++-- road passing through the arcade. Ivory marbles and gilt under the Domain's holy light,
++-- its own paved ground, its own garden and its own light; the kit's braziers, columns and
++-- gold trees are left to the halls, and this brings its own order.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first, then
++-- look). The first draws choose the structure, the rest only dress it:
++--   1. the plan: a full square of arcades; one side's outer wall fallen away (its arcade
++--      still stands, rubble heaped in the court); one side open, wall and arcade both
++--      gone; or two adjacent sides open, an L of cloister;
++--   2. the court: a checker parterre; a pale lawn garth; or a checker plaza with a gold
++--      inlay ring round the fountain;
++--   3. the heart: a tiered fountain on a walkable dais; a broad mirror pool in a low
++--      marble curb; or a dry broken fountain in a cracked basin;
++--   4. the road: through the court on opposite sides, through it on adjacent sides (a
++--      corner), or along the widest side's ambulatory;
++--   5. the levels: flush; the whole cloister raised on a plinth; or the court sunk two
++--      studs below the walk;
++--   6. the garden's bosquets: nought to four hedge beds, dealt round the court's corners;
++--   7. then the size: each of the four walks its own 2 to 4 cells deep, so the court sits
++--      off-centre in a footprint 28 to 32 cells a side, and, last, the wall's height, the
++--      fountain's scale and which bays of a ruined side fell.
++-- The court is always 16 cells square, so the arcade's bays and the fountain's ring keep
++-- their measure while the cloister grows.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++type Landmark = FeatureDress.Landmark
++type Effect = FeatureDress.Effect
++
++-- One side of the ring, in its own terms: the wall and walk bands run along `axis`, the
++-- court lies `dirIn` ways from the border. `span` is the arcade line's extent along the
++-- side; `wallSpan` the outer wall's.
++type Side = {
++	name: string,
++	axis: "x" | "z",
++	dirIn: number,
++	wall: { number },
++	walk: { number },
++	arcade: number,
++	span: { number },
++	wallSpan: { number },
++	built: boolean, -- its arcade stands
++	wallPresent: boolean, -- its outer wall stands (a ruined side keeps its arcade)
++}
++
++local SIDE_ORDER = { "N", "E", "S", "W" }
++
++local PLANS = { "square", "ruin", "three", "l" }
++local COURTS = { "parterre", "garth", "plaza" }
++local HEARTS = { "tiered", "mirror", "broken" }
++local ROADS = { "cross", "corner", "ambulatory" }
++local LEVELS = { "flush", "raised", "sunken" }
++
++-- The bay nearest each corner, per side, for a road that turns the corner.
++local CORNER_BAY: { [string]: { [string]: number } } = {
++	NE = { N = 5, E = 1 },
++	SE = { E = 5, S = 5 },
++	SW = { S = 1, W = 5 },
++	NW = { W = 1, N = 1 },
++}
++local CORNER_OF: { [string]: string } = { N = "NE", E = "SE", S = "SW", W = "NW" }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function opposite(side: string): string
++	if side == "N" then
++		return "S"
++	elseif side == "S" then
++		return "N"
++	elseif side == "E" then
++		return "W"
++	end
++	return "E"
++end
++
++local function nextSide(side: string): string
++	if side == "N" then
++		return "E"
++	elseif side == "E" then
++		return "S"
++	elseif side == "S" then
++		return "W"
++	end
++	return "N"
++end
++
++-- Stone, all inside B12's ivory and marble: two tones of the Domain's own paving, a
++-- finer walk, a pale slate terrace and dais, and the garden's pale sage and gold water.
++local MARBLE = { material = "Marble", color = { 214, 208, 194 } } -- the tileset's Marble
++local LIMESTONE = { material = "Limestone", color = { 202, 194, 178 } } -- the tileset's Limestone
++local WALL_STONE = { material = "Sandstone", color = { 196, 186, 166 } } -- the tileset's Sandstone
++local WALK_STONE = { material = "Cobblestone", color = { 226, 220, 206 } }
++local TERRACE = { material = "Slate", color = { 214, 208, 196 } }
++local DAIS = { material = "Slate", color = { 224, 217, 202 } }
++local LAWN = { material = "Grass", color = { 188, 198, 162 } }
++local BED = { material = "Ground", color = { 168, 178, 146 } }
++local WATER = { material = "Ice", color = { 232, 210, 148 } }
++local INLAY = { material = "Concrete", color = { 226, 204, 150 } }
++local ROAD_STONE = { material = "Pavement", color = { 226, 212, 184 } } -- the tileset's road
++
++-- Holy gold for the water's light, the Domain's warm colour (EnvThemes.domain.glow).
++local HOLY = { 255, 224, 150 }
++
++local feature: MapFeature.Feature = {
++	name = "DomainCloister",
++	about = "A cloister of the Eternal Domain: a square of ivory arches round a garden court with a fountain of holy light at its heart, the road passing through the arcade.",
++	tileset = "domain",
++	scale = "medium",
++	role = "crossing",
++	mood = { "monumental", "cloistered", "garden", "holy", "gold-lit" },
++	cells = {
++		-- The terrace round the outer wall, and the floor of the open sides.
++		apron = { ground = TERRACE, lift = 0.05, clear = true },
++		-- Dressed stone of the ambulatory and the walls.
++		walk = { ground = WALK_STONE, lift = 0.1, clear = true },
++		wall = { ground = WALL_STONE, lift = 9, clear = true },
++		-- The two marbles of the court's checker.
++		courtA = { ground = MARBLE, lift = 0.1, clear = true },
++		courtB = { ground = LIMESTONE, lift = 0.1, clear = true },
++		-- The garden's lawn and its clipped gold hedges.
++		lawn = { ground = LAWN, lift = 0.15, clear = true },
++		bed = {
++			ground = BED,
++			lift = 0.7,
++			clear = true,
++			props = {
++				{ sculpt = "domain_cloister_hedge", every = 1, scale = { 0.95, 1.05 }, sink = 0.15 },
++			},
++		},
++		-- The gold inlay of the plaza's ring, and the rills of light that cross the court.
++		inlay = { ground = INLAY, lift = 0.12, clear = true },
++		rill = {
++			ground = WATER,
++			lift = 0.05,
++			clear = true,
++			glow = { color = HOLY, range = 10, brightness = 0.9, every = 12, height = 0.4 },
++		},
++		-- The fountain's basin floor, its water and the pool's curb.
++		dais = { ground = DAIS, lift = 0.8, clear = true },
++		water = {
++			ground = WATER,
++			lift = 0.15,
++			clear = true,
++			glow = { color = HOLY, range = 14, brightness = 1.1, every = 7, height = 0.5 },
++		},
++		rim = { ground = DAIS, lift = 0.45, clear = true },
++		-- The arcade's thresholds, its piers and the gates through the outer wall.
++		threshold = { ground = LIMESTONE, lift = 0.15, clear = true },
++		pier = { ground = MARBLE, lift = 1.2, clear = true },
++		gate = { ground = MARBLE, lift = 0.2, clear = true },
++		-- The road's own band through the cloister, and the fallen stones of a ruined side.
++		band = { ground = ROAD_STONE, lift = 0.12, clear = true },
++		rubble = { ground = LIMESTONE, lift = 0.3, clear = true },
++		rubbleBlock = { ground = LIMESTONE, lift = 1.5, clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1. The structure, first: plan, court, heart, road, levels, the garden's
++		-- bosquets and the four walks' depths.
++		local plan = PLANS[whole(rng, 1, #PLANS)]
++		local court = COURTS[whole(rng, 1, #COURTS)]
++		local heart = HEARTS[whole(rng, 1, #HEARTS)]
++		local roadMode = ROADS[whole(rng, 1, #ROADS)]
++		local level = LEVELS[whole(rng, 1, #LEVELS)]
++		local bosquets = whole(rng, 0, 4)
++
++		-- 2. The ring: the court is always 16 cells square, but each side's walk is its
++		-- own depth, so the court sits off-centre in a footprint 28 to 32 cells a side.
++		local walkW, walkE = whole(rng, 2, 4), whole(rng, 2, 4)
++		local walkN, walkS = whole(rng, 2, 4), whole(rng, 2, 4)
++		local w, d = 24 + walkW + walkE, 24 + walkN + walkS
++		local x0, x1 = 5 + walkW, 20 + walkW
++		local z0, z1 = 5 + walkN, 20 + walkN
++		local cx, cz = (x0 + x1) / 2, (z0 + z1) / 2
++		local poolR = between(rng, 2.9, 3.6)
++		local walkH = if level == "raised" then 2 else 0
++		local courtH = if level == "raised" then 2 elseif level == "sunken" then -2 else 0
++		local thresholdH = (walkH + courtH) / 2
++
++		-- Which sides stand.
++		local built: { [string]: boolean } = { N = true, E = true, S = true, W = true }
++		local ruinSide: string? = nil
++		if plan == "ruin" then
++			ruinSide = SIDE_ORDER[whole(rng, 1, 4)]
++		elseif plan == "three" then
++			built[SIDE_ORDER[whole(rng, 1, 4)]] = false
++		elseif plan == "l" then
++			local first = whole(rng, 1, 4)
++			built[SIDE_ORDER[first]] = false
++			built[SIDE_ORDER[first % 4 + 1]] = false
++		end
++
++		local sides: { [string]: Side } = {}
++		local function addSide(
++			name: string,
++			axis: "x" | "z",
++			dirIn: number,
++			wall: { number },
++			walk: { number },
++			arcade: number,
++			span: { number },
++			wallSpan: { number }
++		)
++			sides[name] = {
++				name = name,
++				axis = axis,
++				dirIn = dirIn,
++				wall = wall,
++				walk = walk,
++				arcade = arcade,
++				span = span,
++				wallSpan = wallSpan,
++				built = built[name],
++				wallPresent = built[name] and name ~= ruinSide,
++			}
++		end
++		addSide("N", "x", 1, { 2, 3 }, { 4, 3 + walkN }, 4 + walkN, { x0, x1 }, { 2, w - 1 })
++		addSide("E", "z", -1, { w - 2, w - 1 }, { w - 2 - walkE, w - 3 }, w - 3 - walkE, { z0, z1 }, { 4, d - 3 })
++		addSide("S", "x", -1, { d - 2, d - 1 }, { d - 2 - walkS, d - 3 }, d - 3 - walkS, { x0, x1 }, { 2, w - 1 })
++		addSide("W", "z", 1, { 2, 3 }, { 4, 3 + walkW }, 4 + walkW, { z0, z1 }, { 4, d - 3 })
++
++		local function cellOf(f: Side, along: number, perp: number): (number, number)
++			if f.axis == "x" then
++				return along, perp
++			end
++			return perp, along
++		end
++
++		local function coord(f: Side, x: number, z: number): (number, number)
++			-- (along, perp) of a cell on this side
++			if f.axis == "x" then
++				return x, z
++			end
++			return z, x
++		end
++
++		local function spanOf(f: Side): (number, number)
++			if f.axis == "x" then
++				return 4, w - 3
++			end
++			return 4, d - 3
++		end
++
++		local at = function(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++
++		-- 3. The ring's base: walls, piers, walks, aprons and the court.
++		local function baseAt(x: number, z: number): (string, number, boolean, number?)
++			if x == 1 or x == w or z == 1 or z == d then
++				return "apron", 0, true, 0.05
++			end
++			if x >= x0 and x <= x1 and z >= z0 and z <= z1 then
++				return "court", courtH, true, 0.1
++			end
++			-- The arcade ring's four corners.
++			local corner = (x == x0 - 1 and z == z0 - 1 and (sides.N.built or sides.W.built))
++				or (x == x1 + 1 and z == z0 - 1 and (sides.N.built or sides.E.built))
++				or (x == x0 - 1 and z == z1 + 1 and (sides.S.built or sides.W.built))
++				or (x == x1 + 1 and z == z1 + 1 and (sides.S.built or sides.E.built))
++			if corner then
++				return "pier", thresholdH, false, 1.2
++			end
++			for _, name in SIDE_ORDER do
++				local f = sides[name]
++				local along, perp = coord(f, x, z)
++				if perp == f.arcade and along >= f.span[1] and along <= f.span[2] then
++					if not f.built then
++						return "court", courtH, true, 0.1
++					end
++					if (along - f.span[1]) % 3 == 0 then
++						return "pier", thresholdH, false, 1.2
++					end
++					return "threshold", thresholdH, true, 0.15
++				end
++			end
++			for _, name in SIDE_ORDER do
++				local f = sides[name]
++				local along, perp = coord(f, x, z)
++				if perp >= f.wall[1] and perp <= f.wall[2] and along >= f.wallSpan[1] and along <= f.wallSpan[2] then
++					if f.wallPresent then
++						return "wall", walkH, false, nil
++					end
++					return "apron", 0, true, 0.05
++				end
++			end
++			for _, name in SIDE_ORDER do
++				local f = sides[name]
++				local along, perp = coord(f, x, z)
++				local lo, hi = spanOf(f)
++				if perp >= f.walk[1] and perp <= f.walk[2] and along >= lo and along <= hi then
++					return "walk", walkH, true, 0.1
++				end
++			end
++			-- The corner pockets between the bands are terrace.
++			return "apron", 0, true, 0.05
++		end
++
++		-- The wall rises a seed's height; the rest of the detail is drawn after the road.
++		local wallTop = whole(rng, 12, 17)
++
++		local walk = table.create(w * d, true)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local kind, h, ok, lift = baseAt(x, z)
++				kinds[i] = kind
++				heights[i] = h
++				walk[i] = ok
++				if kind == "wall" then
++					lifts[i] = wallTop
++				elseif lift then
++					lifts[i] = lift
++				end
++				if kind == "court" then
++					local block = math.floor((x - x0) / 2) + math.floor((z - z0) / 2)
++					kinds[i] = if block % 2 == 0 then "courtA" else "courtB"
++					if court == "garth" and x > x0 and x < x1 and z > z0 and z < z1 then
++						kinds[i] = "lawn"
++					end
++				end
++			end
++		end
++
++		local function put(x: number, z: number, kind: string, h: number, lift: number?): number
++			local i = at(x, z)
++			kinds[i] = kind
++			heights[i] = h
++			walk[i] = true
++			if lift then
++				lifts[i] = lift
++			else
++				lifts[i] = nil
++			end
++			return i
++		end
++
++		-- 4. The heart's frame: a walkable dais for the standing fountains, or a walled
++		-- mirror pool in a low curb. Painted before the garden so the rills stop at it.
++		local daisLift = 0.8
++		if heart == "mirror" then
++			for z = z0, z1 do
++				for x = x0, x1 do
++					local dx, dz = x - cx, z - cz
++					local dist = math.sqrt(dx * dx + dz * dz)
++					local i = at(x, z)
++					if dist <= poolR then
++						kinds[i] = "water"
++						heights[i] = courtH
++						walk[i] = false
++						lifts[i] = nil
++					elseif dist <= poolR + 1.1 then
++						kinds[i] = "rim"
++						heights[i] = courtH
++						walk[i] = true
++						lifts[i] = nil
++					end
++				end
++			end
++		else
++			for z = z0, z1 do
++				for x = x0, x1 do
++					if math.abs(x - cx) <= 3.1 and math.abs(z - cz) <= 3.1 then
++						local i = at(x, z)
++						kinds[i] = "dais"
++						heights[i] = courtH
++						walk[i] = true
++						lifts[i] = nil
++					end
++				end
++			end
++		end
++
++		-- 5. The garden: the plaza's inlay ring and the rills that cross the court. The
++		-- rills run a cell either side of the middle, so the fountain sits in their cross.
++		if court == "plaza" then
++			for z = z0, z1 do
++				for x = x0, x1 do
++					local dx, dz = x - cx, z - cz
++					local dist = math.sqrt(dx * dx + dz * dz)
++					local i = at(x, z)
++					if
++						walk[i]
++						and (kinds[i] == "courtA" or kinds[i] == "courtB" or kinds[i] == "lawn")
++						and dist >= 4.6
++						and dist <= 5.6
++					then
++						kinds[i] = "inlay"
++					end
++				end
++			end
++		end
++		local rillX = { math.floor(cx), math.floor(cx) + 1 }
++		local rillZ = { math.floor(cz), math.floor(cz) + 1 }
++		for _, x in rillX do
++			for z = z0, z1 do
++				local i = at(x, z)
++				if
++					walk[i]
++					and (kinds[i] == "courtA" or kinds[i] == "courtB" or kinds[i] == "lawn" or kinds[i] == "inlay")
++				then
++					kinds[i] = "rill"
++				end
++			end
++		end
++		for _, z in rillZ do
++			for x = x0, x1 do
++				local i = at(x, z)
++				if
++					walk[i]
++					and (kinds[i] == "courtA" or kinds[i] == "courtB" or kinds[i] == "lawn" or kinds[i] == "inlay")
++				then
++					kinds[i] = "rill"
++				end
++			end
++		end
++
++		-- 6. The road's way: through the court on opposite sides, round a corner, or
++		-- along one side's ambulatory.
++		local roadR = if heart == "mirror" then poolR + 2.4 else 5.7
++		local function crossing(f: Side, along: number): { Point }
++			local border = if f.name == "N" then 1 elseif f.name == "S" then d elseif f.name == "W" then 1 else w
++			local gateMid = (f.wall[1] + f.wall[2]) / 2
++			local walkMid = (f.walk[1] + f.walk[2]) / 2
++			local inside = f.arcade + f.dirIn * 1.2
++			local out: { Point } = {}
++			for _, perp in { border, gateMid, walkMid, f.arcade, inside } do
++				local x, z = cellOf(f, along, perp)
++				table.insert(out, { x = x, z = z })
++			end
++			return out
++		end
++		local function roadThrough(entry: Side, entryAlong: number, exit: Side, exitAlong: number): { Point }
++			local a, b = crossing(entry, entryAlong), crossing(exit, exitAlong)
++			local out: { Point } = {}
++			for k = 1, #a do
++				table.insert(out, a[k])
++			end
++			local alpha = math.atan2(a[#a].z - cz, a[#a].x - cx)
++			local beta = math.atan2(b[#b].z - cz, b[#b].x - cx)
++			local delta = (beta - alpha + math.pi) % (2 * math.pi) - math.pi
++			for k = 1, 3 do
++				local angle = alpha + delta * k / 4
++				table.insert(out, { x = cx + math.cos(angle) * roadR, z = cz + math.sin(angle) * roadR })
++			end
++			table.insert(out, b[#b])
++			for k = #b - 1, 1, -1 do
++				table.insert(out, b[k])
++			end
++			return out
++		end
++		local function roadAlong(roadSide: Side, entry: Side, exit: Side): { Point }
++			local along = (roadSide.walk[1] + roadSide.walk[2]) / 2
++			local a, b = crossing(entry, along), crossing(exit, along)
++			local out: { Point } = { a[1], a[2], a[3] }
++			for k = 1, 3 do
++				local t = k / 4
++				table.insert(out, { x = a[3].x + (b[3].x - a[3].x) * t, z = a[3].z + (b[3].z - a[3].z) * t })
++			end
++			table.insert(out, b[3])
++			table.insert(out, b[2])
++			table.insert(out, b[1])
++			return out
++		end
++
++		local function bayAlong(f: Side, k: number): number
++			return f.span[1] + 1.5 + 3 * (k - 1)
++		end
++		local entrySide: Side
++		local exitSide: Side
++		local entryAlong, exitAlong: number
++		local road: { Point }
++		local gateSpots: { { side: Side, along: number } } = {}
++		if roadMode == "ambulatory" then
++			-- The road runs the widest walk among the sides whose arcade stands, in one
++			-- end of the outer wall and out the other.
++			local roadSide = sides.N
++			local widest = -1
++			for _, name in SIDE_ORDER do
++				local f = sides[name]
++				local width = f.walk[2] - f.walk[1] + 1
++				if f.built and width > widest then
++					roadSide, widest = f, width
++				end
++			end
++			local perps = if roadSide.axis == "x" then { sides.E, sides.W } else { sides.N, sides.S }
++			entrySide = perps[whole(rng, 1, 2)]
++			exitSide = if entrySide.name == perps[1].name then perps[2] else perps[1]
++			local along = (roadSide.walk[1] + roadSide.walk[2]) / 2
++			road = roadAlong(roadSide, entrySide, exitSide)
++			table.insert(gateSpots, { side = entrySide, along = along })
++			table.insert(gateSpots, { side = exitSide, along = along })
++		else
++			local entryName: string
++			if roadMode == "corner" then
++				entryName = SIDE_ORDER[whole(rng, 1, 4)]
++				entrySide = sides[entryName]
++				exitSide = sides[nextSide(entryName)]
++				local corner = CORNER_OF[entryName]
++				entryAlong = bayAlong(entrySide, CORNER_BAY[corner][entryName])
++				exitAlong = bayAlong(exitSide, CORNER_BAY[corner][exitSide.name])
++			else
++				entryName = SIDE_ORDER[whole(rng, 1, 4)]
++				entrySide = sides[entryName]
++				exitSide = sides[opposite(entryName)]
++				local entryBay = whole(rng, 1, 5)
++				local low = if entryBay <= 2 then true elseif entryBay >= 4 then false else rng:NextNumber() < 0.5
++				local exitBay = if low then whole(rng, 1, 2) else whole(rng, 4, 5)
++				entryAlong = bayAlong(entrySide, entryBay)
++				exitAlong = bayAlong(exitSide, exitBay)
++			end
++			road = roadThrough(entrySide, entryAlong, exitSide, exitAlong)
++			table.insert(gateSpots, { side = entrySide, along = entryAlong })
++			table.insert(gateSpots, { side = exitSide, along = exitAlong })
++		end
++
++		local function distanceToRoad(x: number, z: number): number
++			local best = math.huge
++			for k = 2, #road do
++				local a, b = road[k - 1], road[k]
++				local vx, vz = b.x - a.x, b.z - a.z
++				local len = vx * vx + vz * vz
++				local t = if len > 0 then math.clamp(((x - a.x) * vx + (z - a.z) * vz) / len, 0, 1) else 0
++				local dx, dz = x - (a.x + vx * t), z - (a.z + vz * t)
++				best = math.min(best, math.sqrt(dx * dx + dz * dz))
++			end
++			return best
++		end
++
++		-- 7. The gates: a two-cell opening through a standing outer wall, under an arch.
++		local marks: { Landmark } = {}
++		local function openGate(spot: { side: Side, along: number })
++			local f = spot.side
++			if not f.wallPresent then
++				return
++			end
++			local gateAlong = math.floor(spot.along - 0.5)
++			for a = gateAlong, gateAlong + 1 do
++				for p = f.wall[1], f.wall[2] do
++					local x, z = cellOf(f, a, p)
++					put(x, z, "gate", walkH, 0.2)
++				end
++			end
++			local gx, gz = cellOf(f, spot.along, (f.wall[1] + f.wall[2]) / 2)
++			table.insert(marks, {
++				sculpt = "domain_cloister_bay",
++				x = gx,
++				z = gz,
++				yaw = if f.axis == "x" then 0 else 90,
++				sink = -0.15,
++				solid = true,
++			})
++		end
++		for _, spot in gateSpots do
++			openGate(spot)
++		end
++
++		-- 8. The fallen side: its outer wall gone, two bays of its arcade down, its stones
++		-- heaped in the court.
++		local skipBays: { [number]: boolean } = {}
++		if plan == "ruin" and ruinSide then
++			local f = sides[ruinSide]
++			for a = f.wallSpan[1], f.wallSpan[2] do
++				for p = f.wall[1], f.wall[2] do
++					local x, z = cellOf(f, a, p)
++					put(x, z, "rubble", 0, 0.3)
++				end
++			end
++			local ruinBay = whole(rng, 1, 4)
++			skipBays[ruinBay] = true
++			skipBays[ruinBay + 1] = true
++			-- The pier between the two fallen bays is down too, opening the colonnade.
++			local px, pz = cellOf(f, f.span[1] + 3 * ruinBay, f.arcade)
++			put(px, pz, "rubble", thresholdH, 0.3)
++			local bx, bz = cellOf(f, f.wallSpan[1] + 2, (f.wall[1] + f.wall[2]) / 2)
++			table.insert(marks, {
++				sculpt = "domain_column_fallen",
++				x = bx,
++				z = bz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1, 1.3),
++				sink = 0,
++				solid = true,
++			})
++			table.insert(marks, {
++				sculpt = "domain_column_fallen",
++				x = px,
++				z = pz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.9, 1.2),
++				sink = 0,
++				solid = true,
++			})
++		end
++
++		-- 9. The garden's bosquets: nought to four hedge beds, dealt round the four
++		-- corners of the court and kept off the road, so every plan's garden differs.
++		local bedRects = {
++			{ x0 + 2, x0 + 3, z0 + 2, z0 + 4 },
++			{ x1 - 3, x1 - 2, z0 + 2, z0 + 4 },
++			{ x0 + 2, x0 + 3, z1 - 4, z1 - 2 },
++			{ x1 - 3, x1 - 2, z1 - 4, z1 - 2 },
++		}
++		local firstBed = whole(rng, 1, 4)
++		local bedStep = if rng:NextNumber() < 0.5 then 1 else -1
++		for k = 1, bosquets do
++			local r = bedRects[((firstBed - 1 + bedStep * (k - 1)) % 4) + 1]
++			for x = r[1], r[2] do
++				for z = r[3], r[4] do
++					local i = at(x, z)
++					if
++						walk[i]
++						and (kinds[i] == "courtA" or kinds[i] == "courtB" or kinds[i] == "lawn" or kinds[i] == "inlay")
++						and distanceToRoad(x, z) > 1.8
++					then
++						walk[i] = false
++						kinds[i] = "bed"
++						heights[i] = courtH
++						lifts[i] = nil
++					end
++				end
++			end
++		end
++
++		-- 10. The ruin's stones heaped inside the court, clear of the road (they count as
++		-- the obstruction a ruin leaves).
++		if plan == "ruin" and ruinSide then
++			local f = sides[ruinSide]
++			local placed = 0
++			for _, along0 in { f.span[1] + 2, f.span[2] - 4 } do
++				if placed < 2 then
++					local ok = true
++					for a = along0, along0 + 2 do
++						for p = f.arcade + f.dirIn, f.arcade + f.dirIn * 2 do
++							local x, z = cellOf(f, a, p)
++							if not walk[at(x, z)] or distanceToRoad(x, z) <= 2 then
++								ok = false
++							end
++						end
++					end
++					if ok then
++						for a = along0, along0 + 2 do
++							for p = f.arcade + f.dirIn, f.arcade + f.dirIn * 2 do
++								local x, z = cellOf(f, a, p)
++								local i = at(x, z)
++								walk[i] = false
++								kinds[i] = "rubbleBlock"
++								heights[i] = courtH
++								lifts[i] = nil
++							end
++						end
++						local mx, mz = cellOf(f, along0 + 1, f.arcade + f.dirIn * 1.5)
++						table.insert(marks, {
++							sculpt = "domain_column_fallen",
++							x = mx,
++							z = mz,
++							yaw = between(rng, 0, 360),
++							scale = between(rng, 1, 1.4),
++							sink = -1.2,
++							solid = true,
++						})
++						placed += 1
++					end
++				end
++			end
++		end
++
++		-- 11. The road's own band, two cells wide, laid over the court's stone.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] and kinds[i] ~= "band" and distanceToRoad(x, z) <= 1.05 then
++					kinds[i] = "band"
++					lifts[i] = 0.12
++				end
++			end
++		end
++
++		-- 12. The arcade's arches, standing on the piers between the gaps; on a ruined
++		-- side, the bays that fell are left open.
++		for _, name in SIDE_ORDER do
++			local f = sides[name]
++			if f.built then
++				for k = 1, 5 do
++					if not (name == ruinSide and skipBays[k]) then
++						local along = bayAlong(f, k)
++						local x, z = cellOf(f, along, f.arcade)
++						table.insert(marks, {
++							sculpt = "domain_cloister_bay",
++							x = x,
++							z = z,
++							yaw = if f.axis == "x" then 0 else 90,
++							sink = -0.1,
++							solid = true,
++						})
++					end
++				end
++			end
++		end
++
++		-- 13. The heart: the fountain, and the light that leaves it.
++		local fountain = if heart == "mirror"
++			then "domain_cloister_fountain_low"
++			elseif heart == "broken" then "domain_cloister_fountain_broken"
++			else "domain_cloister_fountain"
++		local fountainSink = if heart == "mirror" then -0.1 else -(daisLift - 0.05)
++		table.insert(marks, {
++			sculpt = fountain,
++			x = cx,
++			z = cz,
++			yaw = between(rng, 0, 360),
++			scale = between(rng, 0.95, 1.1),
++			sink = fountainSink,
++			solid = true,
++		})
++		local effects: { Effect } = {}
++		local fountLift = if heart == "tiered" then 12.8 elseif heart == "mirror" then 3.8 else 1.6
++		table.insert(effects, {
++			recipe = "domain_cloister_fount",
++			x = cx,
++			z = cz,
++			lift = fountLift,
++			seed = whole(rng, 1, 997),
++		})
++
++		-- 14. The four gold cypresses at the court's corners, kept clear of the road.
++		local cypressAt = {
++			{ x0 + 1.5, z0 + 1.5 },
++			{ x1 - 1.5, z0 + 1.5 },
++			{ x0 + 1.5, z1 - 1.5 },
++			{ x1 - 1.5, z1 - 1.5 },
++		}
++		for _, p in cypressAt do
++			if distanceToRoad(p[1], p[2]) > 2.2 then
++				table.insert(marks, {
++					sculpt = "domain_cloister_cypress",
++					x = p[1],
++					z = p[2],
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.9, 1.1),
++					sink = -0.05,
++					solid = true,
++				})
++			end
++		end
++
++		-- 15. The photographs: down the rill through the widest arcade, and from the
++		-- court's corner nearest where the road comes in, across the garden.
++		local photoSide = sides.N
++		local widest = -1
++		for _, name in SIDE_ORDER do
++			local f = sides[name]
++			local width = f.walk[2] - f.walk[1] + 1
++			if f.built and width > widest then
++				photoSide, widest = f, width
++			end
++		end
++		local axisAlong = if photoSide.axis == "x" then cx else cz
++		local downX, downZ = cellOf(photoSide, axisAlong, photoSide.arcade + photoSide.dirIn * 2)
++		local entry = road[1]
++		local camX = if entry.x < cx then x0 + 3.5 else x1 - 3.5
++		local camZ = if entry.z < cz then z0 + 3.5 else z1 - 3.5
++		local aim = if heart == "tiered" then 6.5 elseif heart == "mirror" then 3.2 else 2.5
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "down the rill",
++					from = { x = downX, z = downZ, lift = 8.5 },
++					to = { x = cx, z = cz, lift = aim },
++					fov = 62,
++				},
++				{
++					name = "across the cloister court",
++					from = { x = camX, z = camZ, lift = 8.5 },
++					to = { x = cx, z = cz, lift = aim },
++					fov = 62,
++				},
++			},
++		}
++	end,
++}
++
++return feature

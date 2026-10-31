@@ -1,0 +1,22 @@
+{
+  "letter": "N",
+  "generator": "g01",
+  "run": "domain-features-2",
+  "intent": "The throne of the absent god: a colossal empty throne of ivory and gold on a stepped dais at the heart of a cloud-girt terrace, approached over a bridge across a chasm of cloud, with kneeling statues, standing lamps and banners around it and a pillar of falling holy light on the empty seat.",
+  "critic": {
+    "idea": 7,
+    "photo": 6,
+    "topology": 6,
+    "look": 5,
+    "game_camera": 4,
+    "usable": 6,
+    "total": 6.05,
+    "reads_as_itself": "yes",
+    "inorganic": 9,
+    "figures": "partly",
+    "best_shot": "feature-shots-final: empty throne on its dais",
+    "why": "A clear audience court with good path variety; the kneeling god reads only half."
+  },
+  "role": "Side court: empty throne at a dead end, a boss or lore stop.",
+  "notes": "# N\n\nKeep: Keep the empty tall throne and the varied approach paths.\n\n1. Make the kneeling figure read: bowed head, bent knee, arms clear of the body.\n2. Show the chasm and bridge clearly; from above it reads as a path on flat ground.\n3. Bring the throne up to colossal scale against the post.\n"
+}

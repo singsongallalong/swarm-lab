@@ -1,0 +1,22 @@
+{
+  "letter": "R",
+  "generator": "g18",
+  "run": "domain-features-2",
+  "intent": "A monumental marble bell court for the Eternal Domain: a square of gold-inlaid ivory paving whose heart is an open four-pier campanile holding a colossal gold bell, and whose bell-light peals out over the court in falling gold motes and running waves -- the place where the gods gather to hear, which the Domain lacked.",
+  "critic": {
+    "idea": 6,
+    "photo": 7,
+    "topology": 5,
+    "look": 3,
+    "game_camera": 4,
+    "usable": 7,
+    "total": 5.67,
+    "reads_as_itself": "yes",
+    "inorganic": 10,
+    "figures": "yes",
+    "best_shot": "feature-shots-final: looking up into the belfry at the bell",
+    "why": "The bell tower reads at once; the court is bare and the peal set piece reads as a log."
+  },
+  "role": "Crossing: bell court at a road junction.",
+  "notes": "# R\n\nKeep: Keep the open campanile with the gold bell.\n\n1. Dress the court; scattered small pillars do not hold the eye.\n2. Rework the peal set piece; the straight beam reads as a log or rope.\n3. Vary the tower: stepped base, two towers, an off-centre position.\n"
+}

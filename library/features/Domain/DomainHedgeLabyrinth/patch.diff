@@ -1,0 +1,994 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..f3a12ea5 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainHedgeLabyrinth = require("../systems/features/DomainHedgeLabyrinth")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainHedgeLabyrinth = DomainHedgeLabyrinth,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..e5ad65cf 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,183 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain's hedge labyrinth (map feature DomainHedgeLabyrinth): the clipped
++-- hedge itself, a block the width of a cell so a line of them is one tall hedge wall.
++-- Gilt box: a dark sage foot, the clipped body, a paler clipped top, leaf tufts and a
++-- few gold tips. Merged, so a maze of three hundred of them costs a part apiece; the
++-- eight seeded variants vary the tufts, so a hedge line never repeats a block.
++Sculpts.domain_hedge = {
++	kind = "assembly",
++	size = { 5.6, 9.5, 5.6 },
++	material = "Grass",
++	-- Sage to gilded sage, the gold leaf tips as trim (saturation 0.53, value 0.83).
++	colors = { { 96, 104, 74 }, { 76, 82, 58 }, { 126, 136, 98 }, { 212, 178, 100 } },
++	materials = { [4] = "Foil" },
++	maxPrims = 14,
++	merge = 8,
++	parts = {
++		{ name = "foot", shape = "Block", size = { 5.0, 1.0, 5.0 }, at = { 0, 0.5, 0 }, color = 2 },
++		{ name = "body", shape = "Block", size = { 5.2, 7.0, 5.2 }, at = { 0, 4.5, 0 }, color = 1 },
++		{ name = "clip", shape = "Block", size = { 5.5, 1.4, 5.5 }, at = { 0, 8.4, 0 }, color = 3 },
++		{
++			name = "tufts",
++			shape = "Ball",
++			size = { 1.5, 1.1, 1.5 },
++			at = { 0, 8.9, 0 },
++			ring = { count = 5, radius = 2.0, start = 12 },
++			color = 3,
++			chance = 0.55,
++			jitter = { size = 0.25, rot = { 8, 12, 8 } },
++		},
++		{
++			name = "gilt tips",
++			shape = "Ball",
++			size = { 0.8, 0.8, 0.8 },
++			at = { 0, 9.25, 0 },
++			ring = { count = 3, radius = 1.5, start = 50 },
++			color = 4,
++			chance = 0.5,
++			jitter = { size = 0.2 },
++		},
++		{
++			name = "gilt crown",
++			shape = "Ball",
++			size = { 0.9, 0.9, 0.9 },
++			at = { 0, 9.3, 0 },
++			color = 4,
++			chance = 0.6,
++		},
++	} :: { Node },
++}
++
++-- The Eternal Domain's labyrinth gateway: a white marble garden arch over a lane, two
++-- ivory piers on shaded bases, gold bands at their caps, a gilt-keyed lintel under a
++-- stepped pediment, and gold orbs and a finial. Its passage is 7.8 studs wide and 12.5
++-- high, so a lane runs through it, and the hedge on either side stands at its piers.
++Sculpts.domain_hedge_gate = {
++	kind = "assembly",
++	size = { 12.2, 17.7, 3.6 },
++	material = "Marble",
++	-- Warm ivory and a shaded tone, then gold trim to saturation 0.52; the orbs and
++	-- finial take the accent gold at 0.74 (B12's accent limit).
++	colors = { { 231, 223, 205 }, { 207, 199, 183 }, { 231, 190, 112 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil" },
++	accent = { 234, 150, 60 },
++	maxPrims = 18,
++	parts = {
++		{ name = "bases", shape = "Block", size = { 2.6, 1.0, 3.6 }, at = { 4.8, 0.5, 0 }, color = 2, mirror = "x" },
++		{ name = "piers", shape = "Block", size = { 1.8, 11.6, 2.8 }, at = { 4.8, 6.8, 0 }, color = 1, mirror = "x" },
++		{
++			name = "capitals",
++			shape = "Block",
++			size = { 2.5, 0.9, 3.3 },
++			at = { 4.8, 13.05, 0 },
++			color = 2,
++			mirror = "x",
++		},
++		{
++			name = "cap gold",
++			shape = "Block",
++			size = { 2.7, 0.35, 3.5 },
++			at = { 4.8, 13.68, 0 },
++			color = 3,
++			mirror = "x",
++		},
++		{ name = "lintel", shape = "Block", size = { 11.8, 1.7, 3.0 }, at = { 0, 13.35, 0 }, color = 1 },
++		{ name = "lintel gold", shape = "Block", size = { 11.9, 0.4, 3.15 }, at = { 0, 12.75, 0 }, color = 3 },
++		{ name = "pediment", shape = "Block", size = { 4.2, 2.2, 2.6 }, at = { 0, 15.3, 0 }, color = 1 },
++		{ name = "pediment gold", shape = "Block", size = { 4.4, 0.4, 2.8 }, at = { 0, 16.55, 0 }, color = 3 },
++		{
++			name = "pediment step",
++			shape = "Block",
++			size = { 2.2, 1.2, 2.6 },
++			at = { 3.4, 14.8, 0 },
++			color = 2,
++			mirror = "x",
++		},
++		{
++			name = "orbs",
++			shape = "Ball",
++			size = { 1.1, 1.1, 1.1 },
++			at = { 4.8, 14.95, 0 },
++			color = "accent",
++			mirror = "x",
++		},
++		{ name = "finial", shape = "Ball", size = { 1.3, 1.3, 1.3 }, at = { 0, 17.05, 0 }, color = "accent" },
++	} :: { Node },
++}
++
++-- The Eternal Domain's idol at the heart of the labyrinth: a gilded winged figure on a
++-- white marble plinth, a halo disc behind its head, a seven-point crown, a spear in its
++-- hand; 31 studs over its base, six times a person, so it stands over the hedges from
++-- the game camera. The gold is trim and crown, the marble the ground it stands on.
++Sculpts.domain_gold_idol = {
++	kind = "assembly",
++	size = { 12, 38.4, 20 },
++	material = "Foil",
++	materials = { [1] = "Marble", [2] = "Foil", [3] = "Foil" },
++	colors = { { 226, 218, 202 }, { 220, 180, 100 }, { 232, 200, 128 } },
++	accent = { 234, 150, 60 },
++	maxPrims = 34,
++	parts = {
++		{ name = "plinth", shape = "Block", size = { 7.6, 2.4, 7.6 }, at = { 0, 1.2, 0 }, color = 1 },
++		{ name = "plinth gold", shape = "Block", size = { 8.4, 0.5, 8.4 }, at = { 0, 2.65, 0 }, color = 3 },
++		{ name = "hem", shape = "Block", size = { 6.4, 7.6, 4.8 }, at = { 0, 6.7, 0 }, color = 2 },
++		{ name = "waist", shape = "Block", size = { 4.6, 8.2, 3.6 }, at = { 0, 14.6, 0 }, color = 2 },
++		{ name = "chest", shape = "Block", size = { 5.8, 7.6, 3.8 }, at = { 0, 22.5, 0 }, color = 3 },
++		{ name = "shoulders", shape = "Block", size = { 8.0, 2.4, 3.6 }, at = { 0, 27.5, 0 }, color = 3 },
++		{ name = "neck", shape = "Block", size = { 1.6, 2.2, 1.6 }, at = { 0, 29.8, 0 }, color = 2 },
++		{ name = "head", shape = "Ball", size = { 3.2, 4.4, 3.2 }, at = { 0, 33.1, 0 }, color = 2 },
++		{
++			name = "halo",
++			shape = "Cylinder",
++			size = { 0.4, 9.6, 9.6 },
++			at = { -2.6, 32.6, 0 },
++			color = 3,
++		},
++		{
++			name = "crown",
++			shape = "Block",
++			size = { 0.6, 2.4, 0.6 },
++			at = { 0, 35.0, 0 },
++			ring = { count = 7, radius = 1.8, start = 0 },
++			color = "accent",
++		},
++		{
++			name = "wings",
++			mirror = "z",
++			children = {
++				{ shape = "Block", size = { 0.7, 12, 5.5 }, at = { -0.6, 30.0, 3.6 }, rot = { 20, 0, 0 }, color = 2 },
++				{ shape = "Block", size = { 0.6, 8.4, 4.0 }, at = { -1.4, 32.8, 6.2 }, rot = { 38, 0, 0 }, color = 3 },
++				{
++					shape = "Block",
++					size = { 0.5, 5.0, 2.5 },
++					at = { -2.2, 35.0, 8.2 },
++					rot = { 52, 0, 0 },
++					color = "accent",
++				},
++			} :: { Node },
++		},
++		{
++			name = "arms",
++			mirror = "z",
++			children = {
++				{ shape = "Block", size = { 1.4, 9.8, 1.4 }, at = { 0.4, 21.5, 4.0 }, rot = { 4, 0, -6 }, color = 2 },
++				{ shape = "Ball", size = { 1.4, 1.4, 1.4 }, at = { 0.6, 16.5, 4.3 }, color = 3 },
++			} :: { Node },
++		},
++		{
++			name = "spear",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 0.4, 32, 0.4 },
++			at = { 0.6, 19.0, 4.3 },
++			color = 3,
++		},
++		{ name = "spear head", shape = "Block", size = { 0.6, 2.8, 0.6 }, at = { 0.6, 36.4, 4.3 }, color = "accent" },
++	} :: { Node },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..7cce09d6 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,91 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's hedge labyrinth (map feature DomainHedgeLabyrinth): the gods'
++-- light as pollen in the lanes. Gold motes drift up out of a faint warm haze lying
++-- low on the paving, with a rare pale sky-blue glint among them and one soft light
++-- so the hedges take the gold. The path is a short wandering worm (bend 30), so a
++-- marker dusts a stretch of lane rather than a point, and the motes are small and
++-- few: this is the garden breathing, not a fire. Placed by the feature at the heart,
++-- half way in and inside the first gate.
++recipes.domain_hedge_pollen = {
++	about = "Golden pollen of the gods' light drifting up through the Eternal Domain's hedge labyrinth out of a faint warm haze, with rare pale sky-blue glints.",
++	theme = "domain",
++	path = { kind = "worm", length = 14, step = 3.5, bend = 35, climb = 3, round = 2 },
++	layers = {
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 2.5,
++				thick = 4,
++				lift = 1.5,
++				toward = "up",
++				rise = 1.6,
++				life = { 4, 6 },
++				rate = 3.5,
++				size = 0.7,
++				tall = 1.5,
++				transparency = 0.12,
++				color = "gold",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1.5, tilt = 8, span = 12, periods = { 5.3, 7.9 } },
++			priority = 1,
++		},
++		{
++			name = "glints",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 4,
++				lift = 2.2,
++				toward = "up",
++				rise = 2,
++				life = { 3, 5 },
++				rate = 1.2,
++				size = 0.35,
++				tall = 1.3,
++				transparency = 0.1,
++				color = "sky",
++				texture = "wisp",
++				lean = 20,
++				vary = 0.8,
++			},
++			motion = { kind = "sway", amplitude = 1.8, tilt = 10, span = 10, periods = { 4.1, 6.7 } },
++			priority = 2,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 7,
++				thick = 8,
++				lift = 0.4,
++				toward = "up",
++				rise = 0.4,
++				life = { 8, 11 },
++				rate = 0.8,
++				size = 7,
++				tall = 0.9,
++				transparency = 0.86,
++				color = "glow",
++				texture = "veil",
++				lean = 6,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2.2, tilt = 4, span = 18, periods = { 9, 13 } },
++			priority = 3,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 14, max = 1, range = 16, brightness = 0.8, color = "glow" },
++			motion = { kind = "pulse", period = 4.6, depth = 0.3 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..84e66393 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,19 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's hedge labyrinth (map feature DomainHedgeLabyrinth)
++	["sculpt:domain_hedge"] = row(
++		"A block of the Eternal Domain's gilt clipped hedge, one cell wide and taller than a person, its top tufted and tipped with gold leaf.",
++		MOOR
++	),
++	["sculpt:domain_hedge_gate"] = row(
++		"The Eternal Domain's labyrinth gateway: a white marble arch with gold bands, orbs and a gilded finial over a lane through the hedges.",
++		MOOR
++	),
++	["sculpt:domain_gold_idol"] = row(
++		"The Eternal Domain's gilded idol: a winged figure with a halo, a seven-point crown and a spear, standing on a white marble plinth at a labyrinth's heart.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainHedgeLabyrinth.luau b/src/shared/systems/features/DomainHedgeLabyrinth.luau
+new file mode 100644
+index 00000000..fc66a19f
+--- /dev/null
++++ b/src/shared/systems/features/DomainHedgeLabyrinth.luau
+@@ -0,0 +1,662 @@
++--!strict
++-- The Eternal Domain's hedge labyrinth (the direction: "a maze of tall clipped hedges
++-- with white stone gateways, a gold statue at its centre, paths that branch and
++-- dead-end"). A garden of gilt clipped hedges on ivory paving, entered through marble
++-- gateways, its walks dead-ending and branching around a stepped dais where a gilded
++-- idol stands. Gold pollen drifts in the lanes (domain_hedge_pollen), and the only way
++-- through the maze is the road that winds from gate to gate by the idol.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first, then
++-- look). The first draws choose the structure, the rest only dress it:
++--   1. the labyrinth's kind: a warren of dead ends, a braided maze whose dead ends are
++--      opened into loops, a cross of broad processional avenues through four quarter
++--      mazes, or concentric hedge rings with staggered gaps;
++--   2. its size (25 to 31 cells a side, oblong or square) and how many ways in (two,
++--      three or four, placed on the sides);
++--   3. the heart: a round or square plaza, and a dais of one to three steps;
++--   4. then the look: ivory or warm-gilt paving, a sage or gilded hedge, the hedge
++--      bank's height, and where the pollen drifts.
++--
++-- The hedging is the Domain's own kit made for this feature: domain_hedge blocks (one
++-- merged part each, a clipped gilt hedge the width of a cell), domain_hedge_gate (a
++-- marble gateway with a gold finial), and domain_gold_idol (the god at the heart).
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++-- A way through the border: its two cells, and the midpoint between them.
++type Gate = { side: string, ax: number, az: number, bx: number, bz: number, mx: number, mz: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++-- The four kinds of labyrinth a seed may draw.
++local STYLES = { "warren", "braid", "cross", "rings" }
++-- Its paving: pale ivory, or warmed with gold.
++local SCHEMES = { "ivory", "gilt" }
++
++-- The feature's own ground. Each material is one the Domain tileset leaves free, and
++-- every colour sits inside B12's domain surface limits (saturation 0.55, value 0.92);
++-- the plinth keeps the tileset's own Limestone colour, which a material may.
++local CELLS: { [string]: FeatureDress.CellLook } = {
++	-- The walks: fine ivory cobbles.
++	walk = { ground = { material = "Cobblestone", color = { 228, 222, 208 } }, clear = true },
++	-- The gold-washed scheme's walks: pale granite.
++	walk_gilt = { ground = { material = "Granite", color = { 231, 224, 203 } }, clear = true },
++	-- The plaza around the dais: warm ivory concrete, with a few clipped topiary dots.
++	plaza = {
++		ground = { material = "Concrete", color = { 226, 214, 186 } },
++		lift = 0.2,
++		clear = true,
++		props = { { sculpt = "domain_hedge", every = 24, scale = { 0.34, 0.44 }, sink = 0.1 } },
++	},
++	plaza_gilt = {
++		ground = { material = "Cobblestone", color = { 232, 220, 192 } },
++		lift = 0.2,
++		clear = true,
++		props = { { sculpt = "domain_hedge", every = 24, scale = { 0.34, 0.44 }, sink = 0.1 } },
++	},
++	-- The threshold under each gateway: a pale slab with a holy light on it.
++	gate = {
++		ground = { material = "Salt", color = { 234, 228, 214 } },
++		lift = 0.3,
++		clear = true,
++		glow = { color = { 255, 234, 186 }, range = 16, brightness = 1, every = 2, height = 1.6 },
++	},
++	-- The idol's plinth: the Domain's own limestone.
++	plinth = { ground = { material = "Limestone", color = { 202, 194, 178 } }, lift = 1.2, clear = true },
++	-- The hedges' beds: a hedge block stands on every one of these cells, laid by the
++	-- feature itself (a mark a cell, so blocks line up into one clipped wall; a prop
++	-- scatter's random offset and turn would break the line).
++	hedge = {
++		ground = { material = "Grass", color = { 96, 104, 74 } },
++		clear = true,
++	},
++	hedge_gold = {
++		ground = { material = "Ground", color = { 112, 106, 76 } },
++		clear = true,
++	},
++}
++
++-- The plaza's ground lift (see CELLS.plaza) and the plinth's, in studs.
++local PLAZA_LIFT = 0.2
++local PLINTH_LIFT = 1.2
++local GATE_LIFT = 0.3
++
++local feature: MapFeature.Feature = {
++	name = "DomainHedgeLabyrinth",
++	about = "A labyrinth of gilt clipped hedges on ivory paving, entered through white marble gateways and dead-ending around a stepped dais where a gold idol stands.",
++	tileset = "domain",
++	scale = "medium",
++	role = "crossing",
++	mood = { "garden", "maze", "gilded", "holy", "monumental" },
++	cells = CELLS,
++	generate = function(rng: Random): MapFeature.Footprint
++		-- ---- 1. The structure, first -------------------------------------------------
++		-- How big the garden is, then which kind of labyrinth fills it. A lattice of
++		-- two-cell courts joined by two-cell lanes, a cell of hedge between them:
++		-- three cells a court, so a footprint of 3n + 1 cells. The rings are square.
++		local nW = whole(rng, 8, 10)
++		local style = STYLES[whole(rng, 1, #STYLES)]
++		local nD = if style == "rings" then nW else whole(rng, 8, 10)
++		local W, D = 3 * nW + 1, 3 * nD + 1
++		local plazaR = whole(rng, 3, 4)
++		local plazaRound = rng:NextNumber() < 0.55
++		-- One, two or three two-stud steps up to the idol.
++		local daisTop = if plazaR >= 4 then whole(rng, 1, 3) * 2 else 2
++		-- The cross's two avenues run through the middle courts, so the ways in line
++		-- up across the heart and the garden is one broad cruciform walk.
++		local armC, armR = 0, 0
++		if style == "cross" then
++			armC = math.max(1, math.min(nW - 1, math.floor((nW + 1) / 2)))
++			armR = math.max(1, math.min(nD - 1, math.floor((nD + 1) / 2)))
++		end
++
++		local walk = table.create(W * D, false) :: { boolean }
++		local heights = table.create(W * D, 0) :: { number }
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local plaza: { [number]: boolean } = {}
++		local gate: { [number]: boolean } = {}
++		local plinth: { [number]: boolean } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * W + x
++		end
++		local function courtX(i: number): number
++			return 2 + 3 * (i - 1)
++		end
++
++		local centreX, centreZ = (W + 1) / 2, (D + 1) / 2
++		-- The plinth is the two-by-two block at the middle; its centre, in fractional
++		-- cells, is where the dais's rings and the idol are measured from.
++		local plinthX, plinthZ = math.floor(centreX), math.floor(centreZ)
++		local pcx, pcz = plinthX + 0.5, plinthZ + 0.5
++
++		-- ---- 2. Ways in, then the maze ----------------------------------------------
++		local gates: { Gate } = {}
++		local function addGate(side: string)
++			if style == "rings" then
++				if side == "north" or side == "south" then
++					local t = whole(rng, 2, W - 3)
++					table.insert(gates, {
++						side = side,
++						ax = t,
++						az = if side == "north" then 1 else D,
++						bx = t + 1,
++						bz = if side == "north" then 1 else D,
++						mx = t + 0.5,
++						mz = if side == "north" then 1 else D,
++					})
++				else
++					local t = whole(rng, 2, D - 3)
++					table.insert(gates, {
++						side = side,
++						ax = if side == "west" then 1 else W,
++						az = t,
++						bx = if side == "west" then 1 else W,
++						bz = t + 1,
++						mx = if side == "west" then 1 else W,
++						mz = t + 0.5,
++					})
++				end
++				return
++			end
++			if side == "north" or side == "south" then
++				local i = if style == "cross" then armC + whole(rng, 0, 1) else whole(rng, 1, nW)
++				local x = courtX(i)
++				table.insert(gates, {
++					side = side,
++					ax = x,
++					az = if side == "north" then 1 else D,
++					bx = x + 1,
++					bz = if side == "north" then 1 else D,
++					mx = x + 0.5,
++					mz = if side == "north" then 1 else D,
++				})
++			else
++				local j = if style == "cross" then armR + whole(rng, 0, 1) else whole(rng, 1, nD)
++				local z = courtX(j)
++				table.insert(gates, {
++					side = side,
++					ax = if side == "west" then 1 else W,
++					az = z,
++					bx = if side == "west" then 1 else W,
++					bz = z + 1,
++					mx = if side == "west" then 1 else W,
++					mz = z + 0.5,
++				})
++			end
++		end
++		-- The road's way in and out: a pair on opposite sides, then up to two more ways in.
++		local axis = whole(rng, 1, 2)
++		if axis == 1 then
++			addGate("north")
++			addGate("south")
++		else
++			addGate("west")
++			addGate("east")
++		end
++		local extra = whole(rng, 0, 2)
++		if extra > 0 then
++			local first, second = "west", "east"
++			if axis == 2 then
++				first, second = "north", "south"
++			end
++			if rng:NextNumber() < 0.5 then
++				first, second = second, first
++			end
++			addGate(first)
++			if extra > 1 then
++				addGate(second)
++			end
++		end
++		-- The road enters at the first gate and leaves at the second.
++		local gateA, gateB = gates[1], gates[2]
++
++		if style == "rings" then
++			-- Concentric bands from the border: hedge at distance 0, 3, 6 ..., walks
++			-- between, and a few gaps cut in each hedge ring so the way winds in.
++			local maxE = math.floor(math.min(W, D) / 2) - 1
++			for z = 1, D do
++				for x = 1, W do
++					local e = math.min(x - 1, z - 1, W - x, D - z)
++					if e % 3 ~= 0 then
++						walk[at(x, z)] = true
++					end
++				end
++			end
++			for e = 3, maxE, 3 do
++				local ring: { number } = {}
++				for z = 1, D do
++					for x = 1, W do
++						if math.min(x - 1, z - 1, W - x, D - z) == e then
++							table.insert(ring, at(x, z))
++						end
++					end
++				end
++				table.sort(ring, function(a: number, b: number): boolean
++					local ax, az = (a - 1) % W + 1 - centreX, (a - 1) // W + 1 - centreZ
++					local bx, bz = (b - 1) % W + 1 - centreX, (b - 1) // W + 1 - centreZ
++					return math.atan2(az, ax) < math.atan2(bz, bx)
++				end)
++				local gapCount = whole(rng, 2, 3)
++				local width = whole(rng, 1, 2)
++				local first = between(rng, 0, #ring)
++				for k = 0, gapCount - 1 do
++					local jitter = between(rng, -#ring / (gapCount * 6), #ring / (gapCount * 6))
++					local start = math.floor(first + k * #ring / gapCount + jitter)
++					for w = 0, width - 1 do
++						walk[ring[(start + w) % #ring + 1]] = true
++					end
++				end
++			end
++		else
++			-- Links between neighbouring courts: H[i][j] joins columns i and i+1 in row
++			-- j, V[i][j] joins rows j and j+1 in column i.
++			local H: { [number]: { [number]: boolean } } = {}
++			local V: { [number]: { [number]: boolean } } = {}
++			for i = 1, nW - 1 do
++				H[i] = {}
++			end
++			for i = 1, nW do
++				V[i] = {}
++			end
++			local visited = table.create(nW * nD, false) :: { boolean }
++			local function node(i: number, j: number): number
++				return (j - 1) * nW + i
++			end
++			local stack = { node(whole(rng, 1, nW), whole(rng, 1, nD)) }
++			visited[stack[1]] = true
++			while #stack > 0 do
++				local cur = stack[#stack]
++				local i, j = (cur - 1) % nW + 1, (cur - 1) // nW + 1
++				local options: { { number } } = {}
++				if i > 1 and not visited[node(i - 1, j)] then
++					table.insert(options, { i - 1, j })
++				end
++				if i < nW and not visited[node(i + 1, j)] then
++					table.insert(options, { i + 1, j })
++				end
++				if j > 1 and not visited[node(i, j - 1)] then
++					table.insert(options, { i, j - 1 })
++				end
++				if j < nD and not visited[node(i, j + 1)] then
++					table.insert(options, { i, j + 1 })
++				end
++				if #options == 0 then
++					table.remove(stack)
++				else
++					local pick = options[whole(rng, 1, #options)]
++					local ni, nj = pick[1], pick[2]
++					visited[node(ni, nj)] = true
++					if ni < i then
++						H[ni][j] = true
++					elseif ni > i then
++						H[i][j] = true
++					elseif nj < j then
++						V[i][nj] = true
++					else
++						V[i][j] = true
++					end
++					table.insert(stack, node(ni, nj))
++				end
++			end
++			-- Braid: a dead end is opened into a loop, so the maze has few false starts.
++			local braid = if style == "braid"
++				then between(rng, 0.75, 1)
++				elseif style == "cross" then between(rng, 0.1, 0.35)
++				else 0
++			if braid > 0 then
++				for i = 1, nW do
++					for j = 1, nD do
++						local degree = 0
++						if i > 1 and H[i - 1][j] then
++							degree += 1
++						end
++						if i < nW and H[i][j] then
++							degree += 1
++						end
++						if j > 1 and V[i][j - 1] then
++							degree += 1
++						end
++						if j < nD and V[i][j] then
++							degree += 1
++						end
++						if degree == 1 and rng:NextNumber() < braid then
++							local closed: { { number } } = {}
++							if i > 1 and not H[i - 1][j] then
++								table.insert(closed, { 1, i - 1, j })
++							end
++							if i < nW and not H[i][j] then
++								table.insert(closed, { 1, i, j })
++							end
++							if j > 1 and not V[i][j - 1] then
++								table.insert(closed, { 2, i, j - 1 })
++							end
++							if j < nD and not V[i][j] then
++								table.insert(closed, { 2, i, j })
++							end
++							if #closed > 0 then
++								local link = closed[whole(rng, 1, #closed)]
++								if link[1] == 1 then
++									H[link[2]][link[3]] = true
++								else
++									V[link[2]][link[3]] = true
++								end
++							end
++						end
++					end
++				end
++			end
++			-- The cross's avenues: two court columns and two court rows fully joined,
++			-- a processional way through the heart of the garden.
++			if style == "cross" then
++				for j = 1, nD do
++					H[armC][j] = true
++					if j < nD then
++						V[armC][j] = true
++						V[armC + 1][j] = true
++					end
++				end
++				for i = 1, nW do
++					if i < nW then
++						H[i][armR] = true
++						H[i][armR + 1] = true
++					end
++					if armR < nD then
++						V[i][armR] = true
++					end
++				end
++			end
++			-- Lay the courts and the open links out as walkable ground.
++			for i = 1, nW do
++				for j = 1, nD do
++					for dx = 0, 1 do
++						for dz = 0, 1 do
++							walk[at(courtX(i) + dx, courtX(j) + dz)] = true
++						end
++					end
++				end
++			end
++			for i = 1, nW - 1 do
++				for j = 1, nD do
++					if H[i][j] then
++						walk[at(courtX(i) + 2, courtX(j))] = true
++						walk[at(courtX(i) + 2, courtX(j) + 1)] = true
++					end
++				end
++			end
++			for i = 1, nW do
++				for j = 1, nD - 1 do
++					if V[i][j] then
++						walk[at(courtX(i), courtX(j) + 2)] = true
++						walk[at(courtX(i) + 1, courtX(j) + 2)] = true
++					end
++				end
++			end
++		end
++
++		-- The plaza at the heart: a round or square clearing, then the plinth's block.
++		for z = 1, D do
++			for x = 1, W do
++				local dx, dz = x - pcx, z - pcz
++				local d = if plazaRound then math.sqrt(dx * dx + dz * dz) else math.max(math.abs(dx), math.abs(dz))
++				if d <= plazaR + 0.001 then
++					walk[at(x, z)] = true
++					plaza[at(x, z)] = true
++				end
++			end
++		end
++		for dx = 0, 1 do
++			for dz = 0, 1 do
++				local x, z = plinthX + dx, plinthZ + dz
++				walk[at(x, z)] = false
++				plaza[at(x, z)] = nil
++				plinth[at(x, z)] = true
++			end
++		end
++
++		-- The gates cut through the border into the walk just inside it.
++		for _, g in gates do
++			for _, c in { { g.ax, g.az }, { g.bx, g.bz } } do
++				walk[at(c[1], c[2])] = true
++				gate[at(c[1], c[2])] = true
++			end
++		end
++
++		-- ---- 3. The look -------------------------------------------------------------
++		local scheme = SCHEMES[whole(rng, 1, #SCHEMES)]
++		local walkKind = if scheme == "ivory" then "walk" else "walk_gilt"
++		local plazaKind = if scheme == "ivory" then "plaza" else "plaza_gilt"
++		local hedgeKind = if rng:NextNumber() < 0.5 then "hedge" else "hedge_gold"
++		-- Half the seeds stand their hedges on the paving itself; the rest on a bank of
++		-- up to three studs, so the hedge line's height is its own per-seed note.
++		local hedgeLift = whole(rng, 0, 3) * (if rng:NextNumber() < 0.7 then 1 else 0)
++
++		for i = 1, W * D do
++			if gate[i] then
++				kinds[i] = "gate"
++			elseif plinth[i] then
++				kinds[i] = "plinth"
++			elseif walk[i] then
++				kinds[i] = if plaza[i] then plazaKind else walkKind
++			else
++				kinds[i] = hedgeKind
++			end
++		end
++		-- The dais: a two-stud step per ring in from the plaza's edge, up to the top,
++		-- so its outermost ring is level with the maze and the climb is walkable.
++		for i, ok in walk do
++			if ok and plaza[i] then
++				local x, z = (i - 1) % W + 1, (i - 1) // W + 1
++				local dx, dz = x - pcx, z - pcz
++				local d = if plazaRound then math.sqrt(dx * dx + dz * dz) else math.max(math.abs(dx), math.abs(dz))
++				local step = math.max(0, math.floor(plazaR - d + 0.5))
++				heights[i] = math.min(daisTop, 2 * step)
++			end
++		end
++		for i in plinth do
++			heights[i] = daisTop
++		end
++		if hedgeLift > 0 then
++			for i = 1, W * D do
++				if not walk[i] and not plinth[i] then
++					lifts[i] = hedgeLift
++				end
++			end
++		end
++
++		-- ---- 4. Its landmarks and its light -----------------------------------------
++		local marks: { FeatureDress.Landmark } = {}
++		-- One clipped hedge block per wall cell, laid straight on its cell so a run of
++		-- them is one tall clipped wall; each a hair different in size.
++		for i = 1, W * D do
++			if not walk[i] and not plinth[i] then
++				local x, z = (i - 1) % W + 1, (i - 1) // W + 1
++				table.insert(marks, {
++					sculpt = "domain_hedge",
++					x = x,
++					z = z,
++					yaw = whole(rng, 0, 3) * 90,
++					scale = between(rng, 0.96, 1.06),
++					sink = 0.05 - hedgeLift,
++					solid = false,
++				})
++			end
++		end
++		-- The idol faces the road's way in, so a visitor under the first gateway meets
++		-- it face on and its wings spread across the view.
++		local fdx, fdz = gateA.mx - pcx, gateA.mz - pcz
++		local flen = math.max(math.sqrt(fdx * fdx + fdz * fdz), 1)
++		local ux, uz = fdx / flen, fdz / flen
++		local idolYaw = math.deg(math.atan2(-uz, ux))
++		table.insert(marks, {
++			sculpt = "domain_gold_idol",
++			x = pcx,
++			z = pcz,
++			yaw = idolYaw,
++			sink = -PLINTH_LIFT,
++			solid = true,
++		})
++		for _, g in gates do
++			table.insert(marks, {
++				sculpt = "domain_hedge_gate",
++				x = g.mx,
++				z = g.mz,
++				yaw = if g.side == "west" or g.side == "east" then 90 else 0,
++				sink = -GATE_LIFT,
++				solid = true,
++			})
++		end
++		-- Clipped topiary dots at the dais's four diagonals, on the plaza.
++		local turn = between(rng, 0, 90)
++		for _, d in { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } } do
++			table.insert(marks, {
++				sculpt = "domain_hedge",
++				x = pcx + d[1] * 2,
++				z = pcz + d[2] * 2,
++				yaw = turn,
++				scale = between(rng, 0.34, 0.42),
++				sink = -PLAZA_LIFT,
++				solid = false,
++			})
++		end
++
++		-- ---- 5. The road: in at the first gate, by the idol, out at the second -------
++		local function findPath(sx: number, sz: number, tx: number, tz: number): { number }
++			local start, target = at(sx, sz), at(tx, tz)
++			local prev: { [number]: number } = { [start] = -1 }
++			local queue = { start }
++			local head = 1
++			while head <= #queue do
++				local cur = queue[head]
++				head += 1
++				if cur == target then
++					break
++				end
++				local x, z = (cur - 1) % W + 1, (cur - 1) // W + 1
++				for _, d in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
++					local nx, nz = x + d[1], z + d[2]
++					if nx >= 1 and nx <= W and nz >= 1 and nz <= D then
++						local n = at(nx, nz)
++						if walk[n] and prev[n] == nil then
++							prev[n] = cur
++							table.insert(queue, n)
++						end
++					end
++				end
++			end
++			local out: { number } = {}
++			if prev[target] == nil then
++				return out
++			end
++			local cur = target
++			while cur ~= -1 do
++				table.insert(out, 1, cur)
++				cur = prev[cur]
++			end
++			return out
++		end
++		local function plazaEntryToward(g: Gate): Point
++			local best, bx, bz = math.huge, math.floor(pcx), math.floor(pcz)
++			for i, ok in plaza do
++				if ok and walk[i] then
++					local x, z = (i - 1) % W + 1, (i - 1) // W + 1
++					local d = (x - g.mx) ^ 2 + (z - g.mz) ^ 2
++					if d < best then
++						best, bx, bz = d, x, z
++					end
++				end
++			end
++			return { x = bx, z = bz }
++		end
++		local entryA = plazaEntryToward(gateA)
++		local entryB = plazaEntryToward(gateB)
++		local pathA = findPath(gateA.ax, gateA.az, entryA.x, entryA.z)
++		local pathB = findPath(entryA.x, entryA.z, entryB.x, entryB.z)
++		local pathC = findPath(entryB.x, entryB.z, gateB.ax, gateB.az)
++		local road: { Point } = {}
++		local function append(segment: { number }, skipFirst: boolean)
++			local first = if skipFirst then 2 else 1
++			for k = first, #segment do
++				local i = segment[k]
++				table.insert(road, { x = (i - 1) % W + 1, z = (i - 1) // W + 1 })
++			end
++		end
++		if #pathA > 0 and #pathB > 0 and #pathC > 0 then
++			append(pathA, false)
++			append(pathB, true)
++			append(pathC, true)
++		else
++			append(findPath(gateA.ax, gateA.az, gateB.ax, gateB.az), false)
++		end
++
++		-- Gold pollen in the lanes: at the heart's edge, half way in, and inside the
++		-- first gate. One marker a spot, each with its own seeded drift.
++		local effects: { FeatureDress.Effect } = {}
++		local spots: { Point } = {}
++		if #road > 0 then
++			table.insert(spots, road[math.max(1, math.floor(#road / 2))])
++		end
++		if #pathA > 0 then
++			table.insert(spots, road[#pathA])
++		end
++		if #road >= 3 then
++			table.insert(spots, road[3])
++		end
++		local placed: { [number]: boolean } = {}
++		for _, p in spots do
++			local i = at(math.floor(p.x + 0.5), math.floor(p.z + 0.5))
++			if not placed[i] then
++				placed[i] = true
++				table.insert(effects, {
++					recipe = "domain_hedge_pollen",
++					x = p.x,
++					z = p.z,
++					lift = 0.5,
++					seed = #effects + 1,
++				})
++			end
++		end
++
++		-- ---- 6. Its photograph ------------------------------------------------------
++		-- The first stands on the line the idol and the first gate make, back outside
++		-- the gate and high enough to see over the hedges, so the white gateway frames
++		-- the gold idol down the broad way in.
++		local cameras: { MapFeature.Shot } = {
++			{
++				name = "through the gateway to the idol",
++				from = { x = gateA.mx + ux * 10, z = gateA.mz + uz * 10, lift = 18 },
++				to = { x = pcx, z = pcz, lift = daisTop + 26 },
++				fov = 62,
++			},
++			{
++				name = "over the labyrinth",
++				from = { x = -6, z = -6, lift = 48 },
++				to = { x = pcx, z = pcz, lift = 4 },
++				fov = 70,
++			},
++		}
++
++		return {
++			width = W,
++			depth = D,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

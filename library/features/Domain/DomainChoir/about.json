@@ -1,0 +1,22 @@
+{
+  "letter": "C",
+  "generator": "g23",
+  "run": "domain-features-2",
+  "intent": "A curving terrace of ivory singing statues in ranks around a gold-veined orchestra, their song made visible as a pillar of light at its centre; new because the game has no terraced choir of assembly-built figures, no song-ray floor and no gilded colonnade-crowned bank.",
+  "critic": {
+    "idea": 8,
+    "photo": 7,
+    "topology": 6,
+    "look": 5,
+    "game_camera": 5,
+    "usable": 6,
+    "total": 6.67,
+    "reads_as_itself": "partly",
+    "inorganic": 8,
+    "figures": "partly",
+    "best_shot": "feature-shots-final: ranks of figures round the gold pillar",
+    "why": "Strong ring silhouette and a great light-pillar set piece; the singers read as raised hands, not choristers."
+  },
+  "role": "Side court: choir ring with its light pillar as a mid-map beacon.",
+  "notes": "# C\n\nKeep: Keep the ring of ranked figures round a single gold pillar and the song-light beam.\n\n1. Give the choristers heads and open mouths or robes so they read as singers, not hands on posts.\n2. Clean the bank: the ring of jagged fragments reads ruined; the Domain wants whole terraces.\n3. Vary the arc more per seed (two facing banks, a horseshoe) so seeds differ in route.\n"
+}

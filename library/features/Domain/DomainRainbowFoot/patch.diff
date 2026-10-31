@@ -1,0 +1,1405 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..369df3dd 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainRainbowFoot = require("../systems/features/DomainRainbowFoot")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainRainbowFoot = DomainRainbowFoot,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..22893593 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,635 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (the rainbow bridge's foot, 2026-10-30): the deck of the
++-- gods' bridge where it touches the world. Seven pale prismatic ribbons lie
++-- side by side up the deck, a broad body of white light under them and a gold
++-- kerb rail down either edge: a bridge you could walk on, a rainbow of light
++-- that leaves its ringed foot gently, lies almost flat for its first few
++-- studs, and then sweeps up and out of sight. The ribbons are Neon, and their
++-- colours stay inside B12's stone limit (rose, peach, gold, white, green, sky,
++-- violet), because a bridge of light still has to sit in the Domain's pale
++-- palette. At the foot, a low heptagonal ring of the same seven lights is inlaid
++-- in the paving, and two prism posts mark where the deck begins. Ten segments
++-- carry the climb, laid on y = t^3 so the foot is a road before it is a stair.
++Sculpts.domain_rainbow_bridge = {
++	kind = "assembly",
++	size = { 78, 100, 30 },
++	material = "Marble",
++	colors = {
++		{ 232, 226, 212 }, -- 1 ivory stone
++		{ 234, 232, 226 }, -- 2 white core
++		{ 234, 182, 174 }, -- 3 rose
++		{ 234, 200, 168 }, -- 4 peach
++		{ 232, 196, 120 }, -- 5 gold
++		{ 178, 224, 176 }, -- 6 green
++		{ 168, 200, 234 }, -- 7 sky
++		{ 200, 176, 234 }, -- 8 violet
++	},
++	accent = { 234, 178, 84 },
++	maxPrims = 130,
++	parts = {
++		{
++			at = { 3.20, 0.05, 0 },
++			rot = { 0, 0, 0.90 },
++			children = {
++				{
++					name = "body",
++					shape = "Block",
++					size = { 7.17, 3.6, 28.4 },
++					at = { 0, -2.20, 0 },
++					color = 2,
++					material = "Neon",
++				},
++				{ shape = "Block", size = { 7.17, 0.8, 3.6 }, at = { 0, 0.00, -12 }, color = 3, material = "Neon" },
++				{ shape = "Block", size = { 7.17, 0.8, 3.6 }, at = { 0, 0.00, -8 }, color = 4, material = "Neon" },
++				{ shape = "Block", size = { 7.17, 0.8, 3.6 }, at = { 0, 0.00, -4 }, color = 5, material = "Neon" },
++				{ shape = "Block", size = { 7.17, 0.8, 3.6 }, at = { 0, 0.00, 0 }, color = 2, material = "Neon" },
++				{ shape = "Block", size = { 7.17, 0.8, 3.6 }, at = { 0, 0.00, 4 }, color = 6, material = "Neon" },
++				{ shape = "Block", size = { 7.17, 0.8, 3.6 }, at = { 0, 0.00, 8 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 7.17, 0.8, 3.6 }, at = { 0, 0.00, 12 }, color = 8, material = "Neon" },
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 7.17, 1.6, 0.7 },
++					at = { 0, 1.20, -14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 7.17, 1.6, 0.7 },
++					at = { 0, 1.20, 14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++			},
++		},
++		{
++			at = { 9.60, 0.45, 0 },
++			rot = { 0, 0, 6.24 },
++			children = {
++				{
++					name = "body",
++					shape = "Block",
++					size = { 7.21, 3.6, 28.4 },
++					at = { 0, -2.20, 0 },
++					color = 2,
++					material = "Neon",
++				},
++				{ shape = "Block", size = { 7.21, 0.8, 3.6 }, at = { 0, 0.00, -12 }, color = 3, material = "Neon" },
++				{ shape = "Block", size = { 7.21, 0.8, 3.6 }, at = { 0, 0.00, -8 }, color = 4, material = "Neon" },
++				{ shape = "Block", size = { 7.21, 0.8, 3.6 }, at = { 0, 0.00, -4 }, color = 5, material = "Neon" },
++				{ shape = "Block", size = { 7.21, 0.8, 3.6 }, at = { 0, 0.00, 0 }, color = 2, material = "Neon" },
++				{ shape = "Block", size = { 7.21, 0.8, 3.6 }, at = { 0, 0.00, 4 }, color = 6, material = "Neon" },
++				{ shape = "Block", size = { 7.21, 0.8, 3.6 }, at = { 0, 0.00, 8 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 7.21, 0.8, 3.6 }, at = { 0, 0.00, 12 }, color = 8, material = "Neon" },
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 7.21, 1.6, 0.7 },
++					at = { 0, 1.20, -14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 7.21, 1.6, 0.7 },
++					at = { 0, 1.20, 14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++			},
++		},
++		{
++			at = { 16.00, 1.75, 0 },
++			rot = { 0, 0, 16.53 },
++			children = {
++				{
++					name = "body",
++					shape = "Block",
++					size = { 7.48, 3.6, 28.4 },
++					at = { 0, -2.20, 0 },
++					color = 2,
++					material = "Neon",
++				},
++				{ shape = "Block", size = { 7.48, 0.8, 3.6 }, at = { 0, 0.00, -12 }, color = 3, material = "Neon" },
++				{ shape = "Block", size = { 7.48, 0.8, 3.6 }, at = { 0, 0.00, -8 }, color = 4, material = "Neon" },
++				{ shape = "Block", size = { 7.48, 0.8, 3.6 }, at = { 0, 0.00, -4 }, color = 5, material = "Neon" },
++				{ shape = "Block", size = { 7.48, 0.8, 3.6 }, at = { 0, 0.00, 0 }, color = 2, material = "Neon" },
++				{ shape = "Block", size = { 7.48, 0.8, 3.6 }, at = { 0, 0.00, 4 }, color = 6, material = "Neon" },
++				{ shape = "Block", size = { 7.48, 0.8, 3.6 }, at = { 0, 0.00, 8 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 7.48, 0.8, 3.6 }, at = { 0, 0.00, 12 }, color = 8, material = "Neon" },
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 7.48, 1.6, 0.7 },
++					at = { 0, 1.20, -14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 7.48, 1.6, 0.7 },
++					at = { 0, 1.20, 14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++			},
++		},
++		{
++			at = { 22.40, 4.55, 0 },
++			rot = { 0, 0, 30.03 },
++			children = {
++				{
++					name = "body",
++					shape = "Block",
++					size = { 8.28, 3.6, 28.4 },
++					at = { 0, -2.20, 0 },
++					color = 2,
++					material = "Neon",
++				},
++				{ shape = "Block", size = { 8.28, 0.8, 3.6 }, at = { 0, 0.00, -12 }, color = 3, material = "Neon" },
++				{ shape = "Block", size = { 8.28, 0.8, 3.6 }, at = { 0, 0.00, -8 }, color = 4, material = "Neon" },
++				{ shape = "Block", size = { 8.28, 0.8, 3.6 }, at = { 0, 0.00, -4 }, color = 5, material = "Neon" },
++				{ shape = "Block", size = { 8.28, 0.8, 3.6 }, at = { 0, 0.00, 0 }, color = 2, material = "Neon" },
++				{ shape = "Block", size = { 8.28, 0.8, 3.6 }, at = { 0, 0.00, 4 }, color = 6, material = "Neon" },
++				{ shape = "Block", size = { 8.28, 0.8, 3.6 }, at = { 0, 0.00, 8 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 8.28, 0.8, 3.6 }, at = { 0, 0.00, 12 }, color = 8, material = "Neon" },
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 8.28, 1.6, 0.7 },
++					at = { 0, 1.20, -14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 8.28, 1.6, 0.7 },
++					at = { 0, 1.20, 14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++			},
++		},
++		{
++			at = { 28.80, 9.45, 0 },
++			rot = { 0, 0, 43.63 },
++			children = {
++				{
++					name = "body",
++					shape = "Block",
++					size = { 9.90, 3.6, 28.4 },
++					at = { 0, -2.20, 0 },
++					color = 2,
++					material = "Neon",
++				},
++				{ shape = "Block", size = { 9.90, 0.8, 3.6 }, at = { 0, 0.00, -12 }, color = 3, material = "Neon" },
++				{ shape = "Block", size = { 9.90, 0.8, 3.6 }, at = { 0, 0.00, -8 }, color = 4, material = "Neon" },
++				{ shape = "Block", size = { 9.90, 0.8, 3.6 }, at = { 0, 0.00, -4 }, color = 5, material = "Neon" },
++				{ shape = "Block", size = { 9.90, 0.8, 3.6 }, at = { 0, 0.00, 0 }, color = 2, material = "Neon" },
++				{ shape = "Block", size = { 9.90, 0.8, 3.6 }, at = { 0, 0.00, 4 }, color = 6, material = "Neon" },
++				{ shape = "Block", size = { 9.90, 0.8, 3.6 }, at = { 0, 0.00, 8 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 9.90, 0.8, 3.6 }, at = { 0, 0.00, 12 }, color = 8, material = "Neon" },
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 9.90, 1.6, 0.7 },
++					at = { 0, 1.20, -14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 9.90, 1.6, 0.7 },
++					at = { 0, 1.20, 14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++			},
++		},
++		{
++			at = { 35.20, 17.05, 0 },
++			rot = { 0, 0, 54.88 },
++			children = {
++				{
++					name = "body",
++					shape = "Block",
++					size = { 12.46, 3.6, 28.4 },
++					at = { 0, -2.20, 0 },
++					color = 2,
++					material = "Neon",
++				},
++				{ shape = "Block", size = { 12.46, 0.8, 3.6 }, at = { 0, 0.00, -12 }, color = 3, material = "Neon" },
++				{ shape = "Block", size = { 12.46, 0.8, 3.6 }, at = { 0, 0.00, -8 }, color = 4, material = "Neon" },
++				{ shape = "Block", size = { 12.46, 0.8, 3.6 }, at = { 0, 0.00, -4 }, color = 5, material = "Neon" },
++				{ shape = "Block", size = { 12.46, 0.8, 3.6 }, at = { 0, 0.00, 0 }, color = 2, material = "Neon" },
++				{ shape = "Block", size = { 12.46, 0.8, 3.6 }, at = { 0, 0.00, 4 }, color = 6, material = "Neon" },
++				{ shape = "Block", size = { 12.46, 0.8, 3.6 }, at = { 0, 0.00, 8 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 12.46, 0.8, 3.6 }, at = { 0, 0.00, 12 }, color = 8, material = "Neon" },
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 12.46, 1.6, 0.7 },
++					at = { 0, 1.20, -14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 12.46, 1.6, 0.7 },
++					at = { 0, 1.20, 14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++			},
++		},
++		{
++			at = { 41.60, 27.95, 0 },
++			rot = { 0, 0, 63.25 },
++			children = {
++				{
++					name = "body",
++					shape = "Block",
++					size = { 15.93, 3.6, 28.4 },
++					at = { 0, -2.20, 0 },
++					color = 2,
++					material = "Neon",
++				},
++				{ shape = "Block", size = { 15.93, 0.8, 3.6 }, at = { 0, 0.00, -12 }, color = 3, material = "Neon" },
++				{ shape = "Block", size = { 15.93, 0.8, 3.6 }, at = { 0, 0.00, -8 }, color = 4, material = "Neon" },
++				{ shape = "Block", size = { 15.93, 0.8, 3.6 }, at = { 0, 0.00, -4 }, color = 5, material = "Neon" },
++				{ shape = "Block", size = { 15.93, 0.8, 3.6 }, at = { 0, 0.00, 0 }, color = 2, material = "Neon" },
++				{ shape = "Block", size = { 15.93, 0.8, 3.6 }, at = { 0, 0.00, 4 }, color = 6, material = "Neon" },
++				{ shape = "Block", size = { 15.93, 0.8, 3.6 }, at = { 0, 0.00, 8 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 15.93, 0.8, 3.6 }, at = { 0, 0.00, 12 }, color = 8, material = "Neon" },
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 15.93, 1.6, 0.7 },
++					at = { 0, 1.20, -14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 15.93, 1.6, 0.7 },
++					at = { 0, 1.20, 14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++			},
++		},
++		{
++			at = { 48.00, 42.75, 0 },
++			rot = { 0, 0, 69.26 },
++			children = {
++				{
++					name = "body",
++					shape = "Block",
++					size = { 20.24, 3.6, 28.4 },
++					at = { 0, -2.20, 0 },
++					color = 2,
++					material = "Neon",
++				},
++				{ shape = "Block", size = { 20.24, 0.8, 3.6 }, at = { 0, 0.00, -12 }, color = 3, material = "Neon" },
++				{ shape = "Block", size = { 20.24, 0.8, 3.6 }, at = { 0, 0.00, -8 }, color = 4, material = "Neon" },
++				{ shape = "Block", size = { 20.24, 0.8, 3.6 }, at = { 0, 0.00, -4 }, color = 5, material = "Neon" },
++				{ shape = "Block", size = { 20.24, 0.8, 3.6 }, at = { 0, 0.00, 0 }, color = 2, material = "Neon" },
++				{ shape = "Block", size = { 20.24, 0.8, 3.6 }, at = { 0, 0.00, 4 }, color = 6, material = "Neon" },
++				{ shape = "Block", size = { 20.24, 0.8, 3.6 }, at = { 0, 0.00, 8 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 20.24, 0.8, 3.6 }, at = { 0, 0.00, 12 }, color = 8, material = "Neon" },
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 20.24, 1.6, 0.7 },
++					at = { 0, 1.20, -14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 20.24, 1.6, 0.7 },
++					at = { 0, 1.20, 14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++			},
++		},
++		{
++			at = { 54.40, 62.05, 0 },
++			rot = { 0, 0, 73.57 },
++			children = {
++				{
++					name = "body",
++					shape = "Block",
++					size = { 25.34, 3.6, 28.4 },
++					at = { 0, -2.20, 0 },
++					color = 2,
++					material = "Neon",
++				},
++				{ shape = "Block", size = { 25.34, 0.8, 3.6 }, at = { 0, 0.00, -12 }, color = 3, material = "Neon" },
++				{ shape = "Block", size = { 25.34, 0.8, 3.6 }, at = { 0, 0.00, -8 }, color = 4, material = "Neon" },
++				{ shape = "Block", size = { 25.34, 0.8, 3.6 }, at = { 0, 0.00, -4 }, color = 5, material = "Neon" },
++				{ shape = "Block", size = { 25.34, 0.8, 3.6 }, at = { 0, 0.00, 0 }, color = 2, material = "Neon" },
++				{ shape = "Block", size = { 25.34, 0.8, 3.6 }, at = { 0, 0.00, 4 }, color = 6, material = "Neon" },
++				{ shape = "Block", size = { 25.34, 0.8, 3.6 }, at = { 0, 0.00, 8 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 25.34, 0.8, 3.6 }, at = { 0, 0.00, 12 }, color = 8, material = "Neon" },
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 25.34, 1.6, 0.7 },
++					at = { 0, 1.20, -14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 25.34, 1.6, 0.7 },
++					at = { 0, 1.20, 14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++			},
++		},
++		{
++			at = { 60.80, 86.45, 0 },
++			rot = { 0, 0, 76.71 },
++			children = {
++				{
++					name = "body",
++					shape = "Block",
++					size = { 31.19, 3.6, 28.4 },
++					at = { 0, -2.20, 0 },
++					color = 2,
++					material = "Neon",
++				},
++				{ shape = "Block", size = { 31.19, 0.8, 3.6 }, at = { 0, 0.00, -12 }, color = 3, material = "Neon" },
++				{ shape = "Block", size = { 31.19, 0.8, 3.6 }, at = { 0, 0.00, -8 }, color = 4, material = "Neon" },
++				{ shape = "Block", size = { 31.19, 0.8, 3.6 }, at = { 0, 0.00, -4 }, color = 5, material = "Neon" },
++				{ shape = "Block", size = { 31.19, 0.8, 3.6 }, at = { 0, 0.00, 0 }, color = 2, material = "Neon" },
++				{ shape = "Block", size = { 31.19, 0.8, 3.6 }, at = { 0, 0.00, 4 }, color = 6, material = "Neon" },
++				{ shape = "Block", size = { 31.19, 0.8, 3.6 }, at = { 0, 0.00, 8 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 31.19, 0.8, 3.6 }, at = { 0, 0.00, 12 }, color = 8, material = "Neon" },
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 31.19, 1.6, 0.7 },
++					at = { 0, 1.20, -14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "rail",
++					shape = "Block",
++					size = { 31.19, 1.6, 0.7 },
++					at = { 0, 1.20, 14.5 },
++					color = "accent",
++					material = "Foil",
++				},
++			},
++		},
++		-- The foot's ring: seven lights inlaid round the first step of the deck.
++		{
++			shape = "Block",
++			size = { 12.4, 0.6, 2.2 },
++			at = { 13.50, 0.30, -0.00 },
++			rot = { 0, 90.00, 0 },
++			color = 3,
++			material = "Neon",
++		},
++		{
++			shape = "Block",
++			size = { 12.4, 0.6, 2.2 },
++			at = { 8.42, 0.30, -10.55 },
++			rot = { 0, 141.43, 0 },
++			color = 4,
++			material = "Neon",
++		},
++		{
++			shape = "Block",
++			size = { 12.4, 0.6, 2.2 },
++			at = { -3.00, 0.30, -13.16 },
++			rot = { 0, -167.14, 0 },
++			color = 5,
++			material = "Neon",
++		},
++		{
++			shape = "Block",
++			size = { 12.4, 0.6, 2.2 },
++			at = { -12.16, 0.30, -5.86 },
++			rot = { 0, -115.71, 0 },
++			color = 2,
++			material = "Neon",
++		},
++		{
++			shape = "Block",
++			size = { 12.4, 0.6, 2.2 },
++			at = { -12.16, 0.30, 5.86 },
++			rot = { 0, -64.29, 0 },
++			color = 6,
++			material = "Neon",
++		},
++		{
++			shape = "Block",
++			size = { 12.4, 0.6, 2.2 },
++			at = { -3.00, 0.30, 13.16 },
++			rot = { 0, -12.86, 0 },
++			color = 7,
++			material = "Neon",
++		},
++		{
++			shape = "Block",
++			size = { 12.4, 0.6, 2.2 },
++			at = { 8.42, 0.30, 10.55 },
++			rot = { 0, 38.57, 0 },
++			color = 8,
++			material = "Neon",
++		},
++		-- The two posts that mark where the deck begins.
++		{
++			mirror = "z",
++			at = { 1.5, 0, 14.6 },
++			children = {
++				{ shape = "Block", size = { 2.8, 5.2, 2.4 }, at = { 0, 2.6, 0 }, color = 1 },
++				{ shape = "Block", size = { 2.3, 4.4, 2.0 }, at = { 0, 7.2, 0 }, color = 8, material = "Neon" },
++				{ shape = "Block", size = { 1.8, 3.4, 1.6 }, at = { 0, 11.0, 0 }, color = 7, material = "Neon" },
++				{ shape = "Block", size = { 2.4, 1.2, 2.1 }, at = { 0, 13.4, 0 }, color = "accent", material = "Foil" },
++			},
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain (the rainbow bridge's foot): the watchman's horn on its
++-- stand, the place's one human thing. A great curved signal horn of pale gold
++-- on a three-legged marble cradle, its bell flared up and out, a gold band
++-- round its middle and a pale sky-blue ribbon hanging from the knot. A person
++-- is 5 studs; the horn stands on its stand at shoulder height, a horn a
++-- watchman could not lift alone.
++Sculpts.domain_watch_horn = {
++	kind = "assembly",
++	size = { 7.2, 8.6, 4.6 },
++	material = "Marble",
++	colors = {
++		{ 232, 226, 212 }, -- 1 ivory
++		{ 214, 206, 190 }, -- 2 shaded marble
++		{ 234, 208, 150 }, -- 3 pale gold
++		{ 194, 214, 234 }, -- 4 sky (the ribbon)
++	},
++	accent = { 234, 178, 84 },
++	maxPrims = 24,
++	parts = {
++		{ name = "base", shape = "Block", size = { 3.8, 0.5, 3.8 }, at = { 0, 0.25, 0 }, color = 1 },
++		{
++			name = "legs",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 0.5, 3.6, 0.5 },
++			at = { 0, 1.7, 0 },
++			color = 2,
++			ring = { count = 3, radius = 1.15, start = 30, tilt = 12 },
++		},
++		{ name = "cradle", shape = "Cylinder", axis = "y", size = { 2.9, 0.5, 2.9 }, at = { 0, 3.6, 0 }, color = 2 },
++		{ name = "stem", shape = "Cylinder", axis = "y", size = { 0.7, 1.7, 0.7 }, at = { 0, 4.65, 0 }, color = 1 },
++		{ shape = "Cylinder", size = { 1.5, 0.6, 0.6 }, at = { -2.55, 5.75, 0 }, color = 3, material = "Metal" },
++		{
++			shape = "Cylinder",
++			size = { 1.5, 0.95, 0.95 },
++			at = { -1.2, 5.85, 0 },
++			rot = { 0, 0, 5 },
++			color = 3,
++			material = "Metal",
++		},
++		{
++			shape = "Cylinder",
++			size = { 1.5, 1.35, 1.35 },
++			at = { 0.2, 6.1, 0 },
++			rot = { 0, 0, 13 },
++			color = 3,
++			material = "Metal",
++		},
++		{
++			shape = "Cylinder",
++			size = { 1.5, 1.85, 1.85 },
++			at = { 1.55, 6.55, 0 },
++			rot = { 0, 0, 24 },
++			color = 3,
++			material = "Metal",
++		},
++		{
++			shape = "Cylinder",
++			size = { 1.3, 2.8, 2.8 },
++			at = { 2.75, 7.2, 0 },
++			rot = { 0, 0, 38 },
++			color = "accent",
++			material = "Metal",
++		},
++		{ shape = "Cylinder", size = { 0.6, 0.4, 0.4 }, at = { -3.4, 5.7, 0 }, color = 1 },
++		{ shape = "Cylinder", size = { 0.4, 1.7, 1.7 }, at = { -0.35, 5.95, 0 }, color = "accent", material = "Metal" },
++		{
++			name = "ribbon",
++			shape = "Block",
++			size = { 0.14, 2.6, 1.2 },
++			at = { 0.1, 4.35, 1.55 },
++			color = 4,
++			material = "Fabric",
++			jitter = { rot = { 2, 0, 3 } },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain (the rainbow bridge's foot): the guarded gatehouse that
++-- stands at the bridge's base and watches the way on. Two square towers of
++-- ivory marble flank a deep gate, their crowns gilded and finialed; between
++-- them a lintel carries five merlons and a gilded course, and two pale
++-- sky-blue banners hang into the passage. A glowing gold threshold runs
++-- through the gate along the floor: the road passes over it, so the gate is
++-- open, its guard the towers and the light.
++Sculpts.domain_bridge_gate = {
++	kind = "assembly",
++	size = { 12, 45.8, 46 },
++	material = "Marble",
++	colors = {
++		{ 232, 224, 208 }, -- 1 ivory
++		{ 214, 206, 190 }, -- 2 pale shaded stone
++		{ 198, 190, 174 }, -- 3 deep stone
++		{ 194, 214, 234 }, -- 4 sky (the banners)
++	},
++	accent = { 234, 178, 84 },
++	maxPrims = 40,
++	parts = {
++		{
++			name = "threshold",
++			shape = "Block",
++			size = { 9, 0.4, 26 },
++			at = { 0, 0.2, 0 },
++			color = "accent",
++			material = "Neon",
++		},
++		{ name = "plinth", shape = "Block", size = { 12, 1.8, 10 }, at = { 0, 0.9, 17.5 }, color = 2, mirror = "z" },
++		{ name = "pier", shape = "Block", size = { 9, 26, 7 }, at = { 0, 13, 10.5 }, color = 1, mirror = "z" },
++		{ name = "pierCap", shape = "Block", size = { 10, 1.4, 8 }, at = { 0, 26.7, 10.5 }, color = 2, mirror = "z" },
++		{ name = "tower", shape = "Block", size = { 10, 33, 10 }, at = { 0, 17.5, 18 }, color = 2, mirror = "z" },
++		{ name = "crown", shape = "Block", size = { 8.6, 6, 8.6 }, at = { 0, 37, 18 }, color = 1, mirror = "z" },
++		{
++			name = "cornice",
++			shape = "Block",
++			size = { 9.6, 1.3, 9.6 },
++			at = { 0, 40.6, 18 },
++			color = "accent",
++			material = "Foil",
++			mirror = "z",
++		},
++		{
++			name = "finial",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 1.4, 4.6, 1.4 },
++			at = { 0, 43.5, 18 },
++			color = "accent",
++			material = "Foil",
++			mirror = "z",
++		},
++		{ name = "lintel", shape = "Block", size = { 9, 6, 26 }, at = { 0, 29.5, 0 }, color = 1 },
++		{
++			name = "course",
++			shape = "Block",
++			size = { 9.4, 1.2, 15 },
++			at = { 0, 33.1, 0 },
++			color = "accent",
++			material = "Foil",
++		},
++		{
++			name = "merlon",
++			shape = "Block",
++			size = { 2.2, 3, 2.2 },
++			at = { 0, 35.2, 0 },
++			color = 2,
++			row = { count = 5, step = { 0, 0, 5.4 }, center = true },
++		},
++		{
++			name = "banner",
++			shape = "Block",
++			size = { 0.25, 6.4, 2.6 },
++			at = { 4.75, 23.6, 5.2 },
++			color = 4,
++			material = "Fabric",
++			mirror = "z",
++			jitter = { rot = { 0, 0, 1.5 } },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..d45dd4f7 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,93 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain (the rainbow bridge's foot, 2026-10-30): the light the
++-- bridge sheds. The fall begins ten studs over the marker and comes down on
++-- the landing, so it reads where the deck is flush with the ground and where
++-- a builder sets it over paving: gold motes with a rare pale sky glint,
++-- through a soft warm wash that widens as it drops. Three layers, each its
++-- own fall and sway, so the fall has depth from every side (EF8). One short
++-- worm and three layers keep it inside a phone's emitter share; the wash
++-- starts lowest, so the landing catches it, and one warm light pools on the
++-- stone under the fall.
++recipes.domain_prism_fall = {
++	about = "Light shed from the Eternal Domain's rainbow bridge: gold motes and pale sky glints falling ten studs onto the landing through a soft warm wash.",
++	theme = "domain",
++	path = { kind = "worm", length = 16, step = 4, bend = 14, climb = 1, round = 2 },
++	layers = {
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 14,
++				lift = 10,
++				toward = "down",
++				rise = 3.4,
++				life = { 4, 6 },
++				rate = 6,
++				size = 0.9,
++				tall = 2,
++				transparency = 0.18,
++				color = "gold",
++				texture = "wisp",
++				lean = 20,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 2.4, tilt = 12, span = 16, periods = { 7, 11 } },
++			priority = 1,
++		},
++		{
++			name = "glints",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 12,
++				lift = 11.5,
++				toward = "down",
++				rise = 4.4,
++				life = { 3, 5 },
++				rate = 2.5,
++				size = 0.5,
++				tall = 1.4,
++				transparency = 0.12,
++				color = "sky",
++				texture = "wisp",
++				lean = 28,
++				vary = 0.9,
++			},
++			motion = { kind = "sway", amplitude = 3, tilt = 16, span = 12, periods = { 5, 8 } },
++			priority = 2,
++		},
++		{
++			name = "wash",
++			look = {
++				kind = "stream",
++				every = 16,
++				thick = 12,
++				lift = 8,
++				toward = "down",
++				rise = 1.1,
++				life = { 8, 11 },
++				rate = 1.2,
++				size = 6.5,
++				tall = 1.2,
++				transparency = 0.86,
++				color = "glow",
++				texture = "veil",
++				lean = 8,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.8, tilt = 6, span = 20, periods = { 11, 7 } },
++			priority = 3,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 12, max = 2, range = 18, brightness = 0.9, color = "glow" },
++			motion = { kind = "pulse", period = 4.4, depth = 0.3 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..d0931146 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,19 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The rainbow bridge's foot (2026-10-30)
++	["sculpt:domain_rainbow_bridge"] = row(
++		"The Eternal Domain's rainbow bridge: seven pale prismatic ribbons of light laid side by side, climbing out of their ringed foot and into the sky.",
++		MOOR
++	),
++	["sculpt:domain_watch_horn"] = row(
++		"The watchman's horn on its stand at the rainbow bridge's foot: a great curved gold signal horn on a three-legged marble cradle, a sky-blue ribbon at its knot.",
++		MOOR
++	),
++	["sculpt:domain_bridge_gate"] = row(
++		"The rainbow bridge's gatehouse: twin ivory towers with gilded crowns flanking a deep gate, sky-blue banners and a gold threshold.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainRainbowFoot.luau b/src/shared/systems/features/DomainRainbowFoot.luau
+new file mode 100644
+index 00000000..b955e5ff
+--- /dev/null
++++ b/src/shared/systems/features/DomainRainbowFoot.luau
+@@ -0,0 +1,619 @@
++--!strict
++-- A map feature for the Eternal Domain (bible B12): the rainbow bridge's foot.
++-- The end of a bridge of pale prismatic light, rising out of sight; a guarded
++-- gatehouse at its base; a watchman's horn on its stand. The gods' realm is
++-- ivory stone and gold on a sea of cloud, so here the bridge's road leaves the
++-- land itself: broad marble courts, cloud bays cut into the terrace, a stone
++-- causeway balustraded over the cloud, then the gatehouse's twin towers, and
++-- beyond them the deck of seven lights climbing away.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure, the rest only dress
++-- it:
++--   1. which edge of the footprint the bridge leaves by (north, east, south or
++--      west), which turns the whole plan;
++--   2. the cloud that cuts the terrace: none, a band across it behind the gate
++--      (the road crossing on a balustraded causeway), two inlets from the sides,
++--      or one great bay on a flank;
++--   3. the levels: a flat terrace; a raised gate platform (+2); a two-step
++--      acropolis whose border is a low ledge and whose gate stands at +4; or a
++--      sunken way (-2);
++--   4. the gatehouse's walls: a full curtain wall with one gate; a barbican of
++--      two walls with staggered gates (a triumphal arch at the inner one); twin
++--      stubs that leave the flanks open; or a U of walls round the bridge's
++--      landing;
++--   5. the way the road comes in (opposite or either flank), the footprint's
++--      size, how far the gate stands from the brink, and the cloud's depth;
++--   6. then the towers' scale, the bridge's pitch, the horn's post (the open
++--      court cell nearest the middle) and the scatter of waystones.
++--
++-- Its own geometry: the prismatic bridge (domain_rainbow_bridge), the gatehouse
++-- (domain_bridge_gate) and the watchman's horn (domain_watch_horn); its light:
++-- the gate's glory and the prismatic fall in a new set piece, domain_prism_fall.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function clamp(v: number, lo: number, hi: number): number
++	return math.max(lo, math.min(hi, v))
++end
++
++-- The four edges, with the outward direction of each.
++local OUT = {
++	{ x = 0, z = -1 }, -- 1 north, z = 1
++	{ x = 1, z = 0 }, -- 2 east, x = width
++	{ x = 0, z = 1 }, -- 3 south, z = depth
++	{ x = -1, z = 0 }, -- 4 west, x = 1
++}
++
++local MOATS = { "none", "band", "inlets", "bay" }
++local TERRACES = { "flat", "raised", "acropolis", "sunk" }
++local PLANS = { "curtain", "barbican", "twin", "ring" }
++
++-- B12's ivory stone, three tones, and the gold trim (sat 0.64, under its 0.75).
++local IVORY = { material = "Cobblestone", color = { 218, 210, 194 } }
++local WAY_STONE = { material = "Concrete", color = { 226, 214, 186 } }
++local PLATFORM = { material = "Salt", color = { 230, 224, 210 } }
++local LANDING = { material = "Slate", color = { 206, 210, 226 } }
++local SUNK = { material = "Marble", color = { 214, 208, 194 } }
++local PARAPET = { material = "Basalt", color = { 206, 200, 186 } }
++local RAMPART = { material = "Rock", color = { 210, 204, 190 } }
++local CLOUD = { material = "Snow", color = { 232, 229, 222 } }
++
++-- Holy light (the domain's own warm white-gold) and the bridge's cold sky.
++local HOLY = { 255, 234, 186 }
++local SKY = { 226, 236, 255 }
++
++local CELLS: { [string]: FeatureDress.CellLook } = {
++	-- The open court: dressed marble flags, the fight ground.
++	court = { ground = IVORY, lift = 0.2, clear = true },
++	-- The processional way beside the road, with light in the stone.
++	way = {
++		ground = WAY_STONE,
++		lift = 0.3,
++		clear = true,
++		glow = { color = HOLY, range = 11, brightness = 0.55, every = 9, height = 0.4 },
++	},
++	-- The gate platform, a shade paler than the court.
++	terrace = { ground = PLATFORM, lift = 0.3, clear = true },
++	-- The bridge's landing: cool stone under the prismatic deck, lit from above.
++	landing = {
++		ground = LANDING,
++		lift = 0.4,
++		clear = true,
++		glow = { color = SKY, range = 13, brightness = 0.85, every = 6, height = 0.5 },
++	},
++	-- The sunken way: the area's own marble, lying in shadow.
++	sunk = { ground = SUNK, lift = 0.3, clear = true },
++	-- A low balustrade along the brinks and parapets, with waystones for posts.
++	parapet = {
++		ground = PARAPET,
++		lift = 2.4,
++		clear = true,
++		props = { { sculpt = "domain_waystone", every = 3, scale = { 0.14, 0.2 }, sink = 0 } },
++	},
++	-- A wall of the gatehouse's outworks: tall, ivory ashlar.
++	rampart = { ground = RAMPART, lift = 4.5, clear = true },
++	-- The gatehouse's own foot: flush paving, the towers stand here.
++	mass = { ground = IVORY, lift = 0.4, clear = true },
++	-- The watchman's plinth: the horn's cell, lit from below.
++	watch = {
++		ground = SUNK,
++		lift = 1.0,
++		clear = true,
++		glow = { color = HOLY, range = 10, brightness = 0.8, every = 1, height = 0.6 },
++	},
++	-- The sea of cloud, fallen below the terrace's brink.
++	cloud = { ground = CLOUD, lift = 0.2, clear = true },
++}
++
++-- The foot the bridge's origin stands on, cells in from the brink.
++local FOOT_IN = 4.5
++-- Cloud lies this many studs below the terrace.
++local CLOUD_DROP = -6
++
++local feature: MapFeature.Feature = {
++	name = "DomainRainbowFoot",
++	about = "The foot of the Eternal Domain's rainbow bridge: a marble court on the sea of cloud, a balustraded causeway over cloud bays, a twin-towered gatehouse, the prismatic deck climbing out of sight and the watchman's horn on its stand.",
++	tileset = "domain",
++	scale = "medium",
++	role = "crossing",
++	mood = { "holy", "colossal", "threshold", "cloud-brink", "prismatic" },
++	cells = CELLS :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-5: the structure, first.
++		local b = whole(rng, 1, 4)
++		local moat = MOATS[whole(rng, 1, #MOATS)]
++		local terrace = TERRACES[whole(rng, 1, #TERRACES)]
++		local plan = PLANS[whole(rng, 1, #PLANS)]
++		local entryPick = whole(rng, 1, 3)
++		local w, d = whole(rng, 28, 32), whole(rng, 28, 32)
++		local gd = whole(rng, 9, 12) -- the gate's distance in from the brink
++		local exitOff = whole(rng, -3, 3)
++		local moatDepth = whole(rng, 4, 6)
++		local bayDepth = whole(rng, 8, 12)
++		local baySide = if rng:NextNumber() < 0.5 then 1 else -1
++		local barbicanIn = whole(rng, 4, 5) -- the barbican's inner wall, cells in from the gate
++		local parapetCount = whole(rng, 0, 2)
++
++		local out = OUT[b]
++		local inn = { x = -out.x, z = -out.z }
++		local perp = { x = -out.z, z = out.x }
++		local exitLen = if b == 2 or b == 4 then d else w
++		local exitA = clamp(math.floor((exitLen + 1) / 2 + exitOff + 0.5), 4, exitLen - 3)
++		local exitP: Point
++		if b == 1 then
++			exitP = { x = exitA, z = 1 }
++		elseif b == 2 then
++			exitP = { x = w, z = exitA }
++		elseif b == 3 then
++			exitP = { x = exitA, z = d }
++		else
++			exitP = { x = 1, z = exitA }
++		end
++
++		-- The road comes in by the opposite edge or either flank.
++		local shift = if entryPick == 1 then 2 elseif entryPick == 2 then 1 else 3
++		local entrySide = ((b - 1 + shift) % 4) + 1
++		local entryIn = { x = -OUT[entrySide].x, z = -OUT[entrySide].z }
++		local entryLen = if entrySide == 2 or entrySide == 4 then d else w
++		local entryA = whole(rng, math.floor(entryLen * 0.3), math.ceil(entryLen * 0.7))
++		local entryP: Point
++		if entrySide == 1 then
++			entryP = { x = entryA, z = 1 }
++		elseif entrySide == 2 then
++			entryP = { x = w, z = entryA }
++		elseif entrySide == 3 then
++			entryP = { x = entryA, z = d }
++		else
++			entryP = { x = 1, z = entryA }
++		end
++
++		local function frame(x: number, z: number): (number, number)
++			local dx, dz = x - exitP.x, z - exitP.z
++			return dx * inn.x + dz * inn.z, dx * perp.x + dz * perp.z
++		end
++
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function isBorder(x: number, z: number): boolean
++			return x == 1 or z == 1 or x == w or z == d
++		end
++
++		local gateS = gd - 0.4
++		local gateP = { x = exitP.x + inn.x * gateS, z = exitP.z + inn.z * gateS }
++		local footP = { x = exitP.x + inn.x * FOOT_IN, z = exitP.z + inn.z * FOOT_IN }
++		local innerS = gateS + barbicanIn
++		local moatStart = gateS + (if plan == "barbican" then barbicanIn + 3.2 else 2.6)
++		local moatEnd = moatStart + moatDepth
++
++		-- 5: the way in, and the road.
++		local road: { Point } = { entryP }
++		local bend = { x = entryP.x + entryIn.x * 3.5, z = entryP.z + entryIn.z * 3.5 }
++		if bend.x > 0.5 and bend.z > 0.5 and bend.x < w + 0.5 and bend.z < d + 0.5 then
++			table.insert(road, bend)
++		end
++		local innerGate: Point? = nil
++		if plan == "barbican" then
++			local off = (if rng:NextNumber() < 0.5 then -1 else 1) * whole(rng, 3, 5)
++			innerGate = { x = exitP.x + inn.x * innerS + perp.x * off, z = exitP.z + inn.z * innerS + perp.z * off }
++			table.insert(road, innerGate)
++		end
++		table.insert(road, gateP)
++		table.insert(road, exitP)
++
++		local function distToRoad(x: number, z: number): number
++			local best = math.huge
++			for k = 2, #road do
++				local a, bb = road[k - 1], road[k]
++				local abx, abz = bb.x - a.x, bb.z - a.z
++				local len2 = abx * abx + abz * abz
++				local t = if len2 > 1e-9 then clamp(((x - a.x) * abx + (z - a.z) * abz) / len2, 0, 1) else 0
++				local px, pz = a.x + abx * t, a.z + abz * t
++				best = math.min(best, math.sqrt((x - px) ^ 2 + (z - pz) ^ 2))
++			end
++			return best
++		end
++
++		local n = w * d
++		local walk = table.create(n, true)
++		local heights = table.create(n, 0)
++		local roadCell = table.create(n, false)
++		for z = 1, d do
++			for x = 1, w do
++				roadCell[at(x, z)] = distToRoad(x, z) <= 1.7
++			end
++		end
++
++		-- 3: the levels.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				local s, l = frame(x, z)
++				if terrace == "raised" then
++					heights[i] = if s < gd then 2 else 0
++				elseif terrace == "acropolis" then
++					-- The border ledge and the first step of the climb both stand
++					-- at 2; the gate's own platform is the high ground at 4.
++					if isBorder(x, z) or (s >= gd and s < gd + 1.2) then
++						heights[i] = 2
++					elseif s < gd then
++						heights[i] = 4
++					else
++						heights[i] = 0
++					end
++				elseif terrace == "sunk" then
++					heights[i] = if s > moatEnd + 1 and math.abs(l) <= 4 then -2 else 0
++				end
++			end
++		end
++
++		-- The walls: cloud, the plan's walls, the gate's mass and the parapets.
++		local wallKind: { [number]: string } = {}
++		local function wall(x: number, z: number, name: string, h: number?)
++			if x < 1 or z < 1 or x > w or z > d then
++				return
++			end
++			local i = at(x, z)
++			if roadCell[i] then
++				return
++			end
++			wallKind[i] = name
++			if h ~= nil then
++				heights[i] = h
++			end
++		end
++
++		-- 2: the cloud that cuts the terrace.
++		local half = if b == 2 or b == 4 then d / 2 else w / 2
++		local function inMoat(x: number, z: number): boolean
++			-- Cloud never reaches a border: a walkable margin all round keeps the
++			-- courts joined however the bay falls (a causeway is a shortcut, not
++			-- the only way).
++			if x < 3 or z < 3 or x > w - 2 or z > d - 2 then
++				return false
++			end
++			local s, l = frame(x, z)
++			if s <= moatStart or s >= moatEnd then
++				return false
++			end
++			if moat == "band" then
++				return true
++			elseif moat == "inlets" then
++				return math.abs(l) > half - moatDepth
++			elseif moat == "bay" then
++				return s > moatStart and l * baySide > half - bayDepth
++			end
++			return false
++		end
++		local isCloud = table.create(n, false)
++		for z = 1, d do
++			for x = 1, w do
++				if inMoat(x, z) then
++					isCloud[at(x, z)] = true
++					wall(x, z, "cloud", CLOUD_DROP)
++				end
++			end
++		end
++		-- Its brink: a balustrade along every edge of the cloud the walkers stand on.
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if isCloud[i] then
++					for _, nb in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
++						local nx, nz = x + nb[1], z + nb[2]
++						if nx >= 1 and nz >= 1 and nx <= w and nz <= d then
++							local j = at(nx, nz)
++							if not isCloud[j] and walk[j] then
++								wall(x, z, "parapet", heights[j])
++								break
++							end
++						end
++					end
++				end
++			end
++		end
++
++		-- The gatehouse's foot, and 4: its walls.
++		for z = 1, d do
++			for x = 1, w do
++				local s, l = frame(x, z)
++				if math.abs(s - gateS) <= 1.6 and math.abs(l) >= 1.6 and math.abs(l) <= 6.2 then
++					wall(x, z, "mass", nil)
++				end
++			end
++		end
++		local function lineWall(s0: number, reach: number, name: string)
++			for z = 1, d do
++				for x = 1, w do
++					local s, l = frame(x, z)
++					if math.abs(s - s0) < 0.75 and math.abs(l) <= reach then
++						wall(x, z, name, nil)
++					end
++				end
++			end
++		end
++		if plan == "curtain" then
++			lineWall(gateS, 99, "rampart")
++		elseif plan == "barbican" then
++			lineWall(gateS, 99, "rampart")
++			lineWall(innerS, 99, "rampart")
++		elseif plan == "twin" then
++			lineWall(gateS, 10, "rampart")
++		else -- ring: a U of walls round the landing, open at the brink
++			lineWall(gateS, 9.5, "rampart")
++			for z = 1, d do
++				for x = 1, w do
++					local s, l = frame(x, z)
++					if math.abs(math.abs(l) - 9) <= 0.6 and s >= 2.5 and s <= gateS then
++						wall(x, z, "rampart", nil)
++					end
++				end
++			end
++		end
++
++		-- Parapets on some of the other edges.
++		local others = {}
++		for side = 1, 4 do
++			if side ~= b then
++				table.insert(others, side)
++			end
++		end
++		for _ = 1, parapetCount do
++			local pick = whole(rng, 1, #others)
++			local side = table.remove(others, pick) :: number
++			for k = 1, if side == 2 or side == 4 then d else w do
++				local x, z
++				if side == 1 then
++					x, z = k, 1
++				elseif side == 2 then
++					x, z = w, k
++				elseif side == 3 then
++					x, z = k, d
++				else
++					x, z = 1, k
++				end
++				local i = at(x, z)
++				wall(x, z, "parapet", heights[i])
++			end
++		end
++
++		for i in wallKind do
++			walk[i] = false
++		end
++
++		-- 6: paint the walkable ground.
++		local kinds: { [number]: string } = {}
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if walk[i] then
++					wallKind[i] = nil
++					if not roadCell[i] then
++						local s = frame(x, z)
++						local dFoot = math.sqrt((x - footP.x) ^ 2 + (z - footP.z) ^ 2)
++						if dFoot <= 3.6 then
++							kinds[i] = "landing"
++						elseif s < gd + 0.6 then
++							kinds[i] = "terrace"
++						elseif heights[i] < 0 then
++							kinds[i] = "sunk"
++						elseif distToRoad(x, z) <= 2.8 then
++							kinds[i] = "way"
++						else
++							kinds[i] = "court"
++						end
++					end
++				end
++			end
++		end
++		for i, name in wallKind do
++			kinds[i] = name
++		end
++
++		local function surface(x: number, z: number): number
++			local cx = clamp(math.floor(x + 0.5), 1, w)
++			local cz = clamp(math.floor(z + 0.5), 1, d)
++			local i = at(cx, cz)
++			local look = if kinds[i] then CELLS[kinds[i]] else nil
++			return heights[i] + (if look then look.lift or 0 else 0)
++		end
++
++		-- The watchman's post: an open cell in the middle of the court, where the
++		-- horn's note carries both to the gate and to the far rim. It is chosen
++		-- near the footprint's middle and clear of the road, so the game camera
++		-- over the middle always finds it, whichever way the bridge leaves.
++		local midX, midZ = (w + 1) / 2, (d + 1) / 2
++		local hornP: Point = { x = midX, z = midZ }
++		local best = math.huge
++		for z = 4, d - 3 do
++			for x = 4, w - 3 do
++				local i = at(x, z)
++				local kind = kinds[i]
++				if walk[i] and not roadCell[i] and (kind == "court" or kind == "terrace") then
++					local clear = true
++					for _, nb in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
++						local j = at(x + nb[1], z + nb[2])
++						if not walk[j] or roadCell[j] then
++							clear = false
++							break
++						end
++					end
++					if clear then
++						local score = (x - midX) ^ 2 + (z - midZ) ^ 2
++						if score < best then
++							best = score
++							hornP = { x = x, z = z }
++						end
++					end
++				end
++			end
++		end
++		if best < math.huge then
++			local i = at(hornP.x, hornP.z)
++			wall(hornP.x, hornP.z, "watch", heights[i])
++			walk[i] = false
++			kinds[i] = "watch"
++		else
++			-- A court too tight for a post: the horn waits by the gate's flank.
++			local fx = exitP.x + inn.x * (gateS - 1.2) + perp.x * 7.2
++			local fz = exitP.z + inn.z * (gateS - 1.2) + perp.z * 7.2
++			local hx = clamp(math.floor(fx + 0.5), 1, w)
++			local hz = clamp(math.floor(fz + 0.5), 1, d)
++			if not roadCell[at(hx, hz)] then
++				wall(hx, hz, "watch", heights[at(hx, hz)])
++				walk[at(hx, hz)] = false
++				kinds[at(hx, hz)] = "watch"
++				hornP = { x = hx, z = hz }
++			end
++		end
++
++		-- Landmarks.
++		local marks: { FeatureDress.Landmark } = {}
++		local gateScale = between(rng, 0.84, 1.0)
++		table.insert(marks, {
++			sculpt = "domain_bridge_gate",
++			x = gateP.x,
++			z = gateP.z,
++			yaw = math.deg(math.atan2(-inn.z, inn.x)),
++			scale = gateScale,
++			sink = -surface(gateP.x, gateP.z),
++			solid = false,
++		})
++		local bridgeScale = between(rng, 0.92, 1.04)
++		table.insert(marks, {
++			sculpt = "domain_rainbow_bridge",
++			x = footP.x,
++			z = footP.z,
++			yaw = math.deg(math.atan2(-out.z, out.x)),
++			scale = bridgeScale,
++			sink = -surface(footP.x, footP.z) + 0.35,
++			solid = false,
++		})
++		table.insert(marks, {
++			sculpt = "domain_watch_horn",
++			x = hornP.x,
++			z = hornP.z,
++			yaw = math.deg(math.atan2(-out.z, out.x)) + between(rng, -20, 20),
++			scale = between(rng, 0.9, 1.1),
++			sink = -surface(hornP.x, hornP.z),
++			solid = false,
++		})
++		-- Two god-columns framing the bridge's landing.
++		for _, side in { -1, 1 } do
++			local px = footP.x + perp.x * 6.3 * side + inn.x * 1.1
++			local pz = footP.z + perp.z * 6.3 * side + inn.z * 1.1
++			table.insert(marks, {
++				sculpt = "domain_column",
++				x = px,
++				z = pz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.46, 0.56),
++				sink = -surface(px, pz) + 0.3,
++				solid = true,
++			})
++		end
++		-- Braziers flanking the gate's inner face.
++		for _, side in { -1, 1 } do
++			local px = exitP.x + inn.x * (gateS - 1.0) + perp.x * 6.6 * side
++			local pz = exitP.z + inn.z * (gateS - 1.0) + perp.z * 6.6 * side
++			table.insert(marks, {
++				sculpt = "domain_brazier_high",
++				x = px,
++				z = pz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 0.8, 0.95),
++				sink = -surface(px, pz) + 0.1,
++				solid = false,
++			})
++		end
++		-- An outlying waystone where the road comes in, and one by the horn.
++		local wsp = { x = hornP.x + perp.x * 2.2, z = hornP.z + perp.z * 2.2 }
++		table.insert(marks, {
++			sculpt = "domain_waystone",
++			x = wsp.x,
++			z = wsp.z,
++			yaw = between(rng, 0, 360),
++			scale = between(rng, 0.3, 0.4),
++			sink = -surface(wsp.x, wsp.z) + 0.2,
++			solid = true,
++		})
++
++		-- The barbican's inner gate: the kit's triumphal arch.
++		if innerGate then
++			local dx, dz = gateP.x - bend.x, gateP.z - bend.z
++			table.insert(marks, {
++				sculpt = "domain_triumphal_arch",
++				x = innerGate.x,
++				z = innerGate.z,
++				yaw = math.deg(math.atan2(dx, dz)),
++				scale = between(rng, 0.9, 1.05),
++				sink = -surface(innerGate.x, innerGate.z),
++				solid = false,
++			})
++		end
++
++		-- The set pieces: the gate's glory, and the bridge shedding light.
++		local effects: { FeatureDress.Effect } = {
++			{
++				recipe = "domain_gate_glory",
++				x = gateP.x,
++				z = gateP.z,
++				lift = surface(gateP.x, gateP.z) + 1.2,
++				seed = whole(rng, 1, 999),
++			},
++			{
++				recipe = "domain_prism_fall",
++				x = footP.x - inn.x * 0.8,
++				z = footP.z - inn.z * 0.8,
++				lift = surface(footP.x, footP.z) + between(rng, 1, 3),
++				seed = whole(rng, 1, 999),
++			},
++		}
++
++		-- The photographs: through the gate up the bridge, and a low
++		-- three-quarter from the court along the bridge's flank.
++		local cameras: { MapFeature.Shot } = {
++			{
++				name = "the way to the rainbow",
++				from = { x = gateP.x + inn.x * 9, z = gateP.z + inn.z * 9, lift = 10 },
++				to = { x = footP.x + out.x * 1.5, z = footP.z + out.z * 1.5, lift = 24 },
++				fov = 62,
++			},
++			{
++				name = "the watchman's view",
++				from = {
++					x = footP.x + inn.x * 6.5 + perp.x * 10,
++					z = footP.z + inn.z * 6.5 + perp.z * 10,
++					lift = 11,
++				},
++				to = { x = footP.x + out.x * 2, z = footP.z + out.z * 2, lift = 26 },
++				fov = 66,
++			},
++		}
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

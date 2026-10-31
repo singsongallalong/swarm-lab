@@ -1,0 +1,839 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..209ea6d3 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainChoir = require("../systems/features/DomainChoir")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainChoir = DomainChoir,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..5913b45b 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,216 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain's choir: one singing figure of ivory marble, arms raised
++-- in a V and face turned up, a gold circlet at the brow and a gilded girdle.
++-- The mouth is a dark notch, the one shadow on an otherwise perfect statue.
++-- Seed to seed the figure tilts its head, raises its arms a little differently,
++-- and now and then a pair of stone wings opens behind the shoulders (drawn for
++-- the pair together, so a seed never grows one wing). Built as an assembly so
++-- the shape is data; front faces +X, so a placement's yaw turns it in to the
++-- choir's centre.
++Sculpts.domain_chorister = {
++	kind = "assembly",
++	size = { 4, 14, 5 },
++	material = "Marble",
++	colors = { { 232, 226, 210 }, { 212, 205, 190 }, { 230, 192, 116 }, { 96, 100, 118 } },
++	maxPrims = 24,
++	parts = {
++		{ name = "plinth", shape = "Block", size = { 3.2, 0.7, 3.2 }, at = { 0, 0.35, 0 }, color = 2 },
++		{ name = "hem", shape = "Block", size = { 2.9, 1.2, 2.7 }, at = { 0, 1.25, 0 }, color = 1 },
++		{ name = "robe", shape = "Block", size = { 2.1, 4.8, 1.9 }, at = { 0, 4.15, 0 }, color = 1 },
++		{ name = "girdle", shape = "Block", size = { 2.3, 0.35, 2.05 }, at = { 0, 6.5, 0 }, color = 3 },
++		{ name = "torso", shape = "Block", size = { 1.9, 2.4, 1.5 }, at = { 0, 7.8, 0 }, color = 1 },
++		{ name = "shoulders", shape = "Block", size = { 2.8, 0.6, 1.7 }, at = { 0, 9.1, 0 }, color = 2 },
++		{
++			name = "head",
++			at = { 0, 10.4, 0 },
++			rot = { 0, 0, 16 },
++			jitter = { rot = { 4, 6, 0 } },
++			children = {
++				{ name = "skull", shape = "Block", size = { 1.35, 1.7, 1.4 } },
++				{ name = "face", shape = "Block", size = { 0.25, 0.55, 0.62 }, at = { 0.7, 0.05, 0 }, color = 4 },
++				{
++					name = "circlet",
++					shape = "Cylinder",
++					axis = "y",
++					size = { 1.55, 0.24, 1.55 },
++					at = { 0, 0.82, 0 },
++					color = 3,
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "arms",
++			mirror = "z",
++			children = {
++				{
++					name = "upper arm",
++					shape = "Block",
++					size = { 0.7, 2.7, 0.7 },
++					at = { 0.05, 9.5, 1.25 },
++					rot = { 42, 0, 0 },
++					jitter = { rot = { 6, 0, 0 } },
++					color = 1,
++				},
++				{
++					name = "forearm",
++					shape = "Block",
++					size = { 0.62, 2.3, 0.62 },
++					at = { 0.05, 11.35, 2.35 },
++					rot = { 16, 0, 0 },
++					color = 1,
++				},
++				{ name = "hand", shape = "Ball", size = { 0.85, 0.85, 0.85 }, at = { 0.05, 12.55, 2.62 }, color = 2 },
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "wings",
++			chance = 0.4,
++			children = {
++				{
++					name = "wing pair",
++					mirror = "z",
++					children = {
++						{
++							name = "wing",
++							shape = "Wedge",
++							size = { 0.4, 3.4, 1.5 },
++							at = { -0.85, 8.4, 1.15 },
++							rot = { 0, -90, 0 },
++							color = 2,
++						},
++					} :: { SculptTypes.AssemblyNode },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The cantor: the choir's tallest voice, a head over the choristers. A longer
++-- robe, one arm straight up offering a ball of holy light (the recipe's Neon
++-- gold), the other folded across the breast. Placed on the outer rank, or at
++-- the ends of a rank, so the choir's silhouette lifts at its back.
++Sculpts.domain_cantor = {
++	kind = "assembly",
++	size = { 4.4, 18, 5 },
++	material = "Marble",
++	colors = { { 232, 226, 210 }, { 212, 205, 190 }, { 230, 192, 116 }, { 96, 100, 118 }, { 234, 206, 138 } },
++	materials = { [5] = "Neon" },
++	maxPrims = 26,
++	parts = {
++		{ name = "plinth", shape = "Block", size = { 3.4, 0.8, 3.4 }, at = { 0, 0.4, 0 }, color = 2 },
++		{ name = "hem", shape = "Block", size = { 3.0, 1.4, 2.8 }, at = { 0, 1.5, 0 }, color = 1 },
++		{ name = "robe", shape = "Block", size = { 2.2, 6.2, 2.0 }, at = { 0, 5.3, 0 }, color = 1 },
++		{ name = "girdle", shape = "Block", size = { 2.4, 0.35, 2.15 }, at = { 0, 8.55, 0 }, color = 3 },
++		{ name = "torso", shape = "Block", size = { 2.0, 2.8, 1.6 }, at = { 0, 10.05, 0 }, color = 1 },
++		{ name = "shoulders", shape = "Block", size = { 3.0, 0.7, 1.8 }, at = { 0, 11.7, 0 }, color = 2 },
++		{
++			name = "head",
++			at = { 0, 13.1, 0 },
++			rot = { 0, 0, 12 },
++			children = {
++				{ name = "skull", shape = "Block", size = { 1.4, 1.8, 1.45 } },
++				{ name = "face", shape = "Block", size = { 0.25, 0.52, 0.6 }, at = { 0.72, 0.02, 0 }, color = 4 },
++				{
++					name = "crown",
++					shape = "Cylinder",
++					axis = "y",
++					size = { 1.65, 0.26, 1.65 },
++					at = { 0, 0.9, 0 },
++					color = 3,
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "raised arm",
++			children = {
++				{
++					name = "upper arm",
++					shape = "Block",
++					size = { 0.72, 2.9, 0.72 },
++					at = { 0.05, 12.1, 1.3 },
++					rot = { 26, 0, 0 },
++					color = 1,
++				},
++				{
++					name = "forearm",
++					shape = "Block",
++					size = { 0.6, 2.7, 0.6 },
++					at = { 0.05, 14.4, 1.85 },
++					rot = { 6, 0, 0 },
++					color = 1,
++				},
++				{ name = "hand", shape = "Ball", size = { 0.85, 0.85, 0.85 }, at = { 0.05, 15.8, 1.95 }, color = 2 },
++				{ name = "light", shape = "Ball", size = { 1.1, 1.1, 1.1 }, at = { 0.05, 16.75, 1.95 }, color = 5 },
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "folded arm",
++			children = {
++				{
++					name = "upper arm",
++					shape = "Block",
++					size = { 0.7, 2.5, 0.7 },
++					at = { 0.05, 11.7, -1.2 },
++					rot = { -12, 0, 0 },
++					color = 1,
++				},
++				{
++					name = "forearm",
++					shape = "Block",
++					size = { 0.65, 0.65, 1.9 },
++					at = { 0.8, 10.95, -0.35 },
++					color = 1,
++				},
++				{ name = "hand", shape = "Ball", size = { 0.8, 0.8, 0.8 }, at = { 0.8, 10.95, 0.62 }, color = 2 },
++			} :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The pillar of light where the choir's song meets: a stepped marble drum with
++-- a gold collar, a slender shaft of Neon gold climbing 40 studs out of it, gold
++-- rings rising round the shaft and a crown of gold rays about a white-gold
++-- finial. Placed at the centre of the choir's floor; its living motes, haze and
++-- lights are the set piece domain_song_light placed at its foot.
++Sculpts.domain_song_pillar = {
++	kind = "assembly",
++	size = { 6.4, 40, 6.4 },
++	material = "Marble",
++	colors = { { 232, 226, 210 }, { 210, 203, 188 }, { 230, 192, 116 }, { 234, 206, 138 } },
++	materials = { [4] = "Neon" },
++	maxPrims = 24,
++	parts = {
++		{ name = "plinth", shape = "Cylinder", axis = "y", size = { 6.2, 0.9, 6.2 }, at = { 0, 0.45, 0 }, color = 2 },
++		{ name = "step", shape = "Cylinder", axis = "y", size = { 4.8, 1.0, 4.8 }, at = { 0, 1.4, 0 }, color = 1 },
++		{ name = "drum", shape = "Cylinder", axis = "y", size = { 3.4, 2.4, 3.4 }, at = { 0, 3.1, 0 }, color = 1 },
++		{ name = "collar", shape = "Cylinder", axis = "y", size = { 3.9, 0.55, 3.9 }, at = { 0, 4.6, 0 }, color = 3 },
++		{ name = "shaft", shape = "Cylinder", axis = "y", size = { 2.3, 27, 2.3 }, at = { 0, 18.3, 0 }, color = 4 },
++		{
++			name = "rings",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 3.5, 0.4, 3.5 },
++			at = { 0, 9, 0 },
++			color = 3,
++			stack = { count = 4, step = 6 },
++		},
++		{ name = "crown", shape = "Cylinder", axis = "y", size = { 3.1, 0.45, 3.1 }, at = { 0, 32.35, 0 }, color = 3 },
++		{ name = "finial", shape = "Ball", size = { 2.0, 2.0, 2.0 }, at = { 0, 33.9, 0 }, color = 4 },
++		{
++			name = "rays",
++			shape = "Block",
++			size = { 0.4, 2.8, 0.4 },
++			-- A ring copy's +X points out, so leaning the ray back about Z
++			-- tips it out from the shaft; a ring `tilt` would swing the whole
++			-- 35-stud offset out with it.
++			at = { 0, 35.1, 0 },
++			rot = { 0, 0, -24 },
++			ring = { count = 8, radius = 1.8, start = 0 },
++			color = 3,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..d6ac19bd 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,85 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's choir (map feature DomainChoir): the song of the singing
++-- statues meeting at the pillar at the choir's heart. Placed at the foot of the
++-- pillar sculpt, it climbs it: a white-gold core runs up the shaft, gold motes
++-- stream upward around it, a pale sky-blue haze hangs about the light (the
++-- domain's cool note, sparing) and a few breathing lights set the dais aglow.
++-- The path is short and steep, so the emitters stack up the pillar rather than
++-- trailing across the floor; the layers' particle streams rise the height of
++-- the shaft in their life, and the emitters are few enough to fit a phone
++-- (EF3). Gold is the domain's crown, so the motes are narrow and the haze faint:
++-- the light shines, it does not burn.
++recipes.domain_song_light = {
++	about = "The song of the Eternal Domain's choir meeting at its pillar of light: gold motes streaming up a white-gold core through a pale sky-blue haze.",
++	theme = "domain",
++	radius = 500,
++	path = { kind = "worm", length = 38, step = 4, bend = 0, climb = 85, start = 85, round = 0 },
++	layers = {
++		{
++			name = "core",
++			look = { kind = "neon", width = 0.8, segment = 4, transparency = 0.18, color = "core" },
++			motion = {
++				kind = "flow",
++				wavelength = 18,
++				speed = 6,
++				depth = 0.45,
++				swell = { wavelength = 48, speed = 2.4, depth = 0.35 },
++			},
++			priority = 1,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 3.4,
++				lift = 0.2,
++				toward = "up",
++				rise = 3.2,
++				life = { 5, 8 },
++				rate = 5,
++				size = 0.55,
++				tall = 1.8,
++				transparency = 0.2,
++				color = "gold",
++				texture = "wisp",
++				lean = 9,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 0.7, tilt = 8, span = 10, periods = { 6.1, 4.3 } },
++			priority = 2,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 19,
++				thick = 5,
++				lift = 0.4,
++				toward = "up",
++				rise = 1.4,
++				life = { 7, 10 },
++				rate = 0.8,
++				size = 7,
++				tall = 2.6,
++				transparency = 0.9,
++				color = "sky",
++				texture = "veil",
++				lean = 10,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.6, tilt = 6, span = 16, periods = { 9, 13 } },
++			priority = 4,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 10, max = 3, range = 22, brightness = 1.1, color = "glow" },
++			motion = { kind = "pulse", period = 4.2, depth = 0.3 },
++			priority = 3,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..b00e775e 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,19 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's choir of statues (map feature DomainChoir)
++	["sculpt:domain_chorister"] = row(
++		"A singing figure of the Eternal Domain's choir: an ivory marble statue, arms raised in a V, face turned up and a gold circlet at its brow.",
++		MOOR
++	),
++	["sculpt:domain_cantor"] = row(
++		"The tallest voice of the Eternal Domain's choir: a marble cantor holding a ball of holy light above its head, the other arm folded.",
++		MOOR
++	),
++	["sculpt:domain_song_pillar"] = row(
++		"The Eternal Domain's pillar of light: a gold-ringed shaft of holy light climbing forty studs out of a stepped marble drum, a crown of rays at its top.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainChoir.luau b/src/shared/systems/features/DomainChoir.luau
+new file mode 100644
+index 00000000..4b034010
+--- /dev/null
++++ b/src/shared/systems/features/DomainChoir.luau
+@@ -0,0 +1,480 @@
++--!strict
++-- The choir of statues, a map feature for the Eternal Domain (the gods' realm of
++-- ivory and gold on a sea of cloud; bible B12): a curving terrace of pale stone
++-- rising in rows out of a bright paved orchestra, every row lined with singing
++-- figures in ivory marble, arms raised. At the centre of the floor stands the
++-- pillar of light where their song meets, and gold-veined song lines run out of
++-- it through the paving to the choir's foot. The road crosses the orchestra and
++-- leaves through a cut in the ranks, or the choir's open mouth.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure, the rest dress it:
++--   1. the form: a crescent (a shallow open bank), a deep bank, a horseshoe
++--      nearly closed, or twin banks facing each other across the road (the
++--      choir answering itself);
++--   2. the ranks' number (2 to 4) and depth (2 or 3 cells), and so the terrace's
++--      reach and the wall's;
++--   3. the orchestra's level: flush with the cloud-side paving or sunk 2 studs
++--      into a bowl;
++--   4. the cuts: 0 to 2 aisles through the ranks besides the road's own way out
++--      (each splits the retaining wall into another piece and branches the ways
++--      up);
++--   5. the axis: which way the mouth (and so the road) faces, and which side of
++--      the pillar the road passes on;
++--   6. then the look: the song lines' number and turn, the gold ring round the
++--      dais, and which rank carries the tall cantors.
++-- The ground is the Domain's own marble for the ranks; the free Slate for the
++-- court; the free Salt for the song's gold, since the road's own paving is too
++-- pale a cream to read as gold; and the wall in the tileset's sandstone (all in
++-- materials the tileset leaves free or in its own colours, so Roblox's
++-- one-colour-per-material rule holds). The bank's outer ring carries a broken
++-- colonnade of the kit's columns, the choir's skyline.
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++type Interval = { s: number, e: number, len: number }
++type Corridor = { a: number, half: number, wall: number }
++
++local TAU = 2 * math.pi
++local DEG = math.pi / 180
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local function normal(a: number): number
++	return (a % TAU + TAU) % TAU
++end
++
++local function apart(a: number, b: number): number
++	return math.abs((a - b + math.pi) % TAU - math.pi)
++end
++
++local FORMS = { "crescent", "deep", "horseshoe", "twin" }
++-- A cut through the ranks is two cells of floor and a cell of wall each side.
++local WALL_T = 1.0
++-- The retaining wall round a bank's back: wider than one cell so the ring of
++-- cells is unbroken at every angle (a one-cell band can fall between the cell
++-- centres at a diagonal).
++local BAND = 1.6
++local CAP = 1.1
++
++-- The holy light of the Domain, for the glow at the pillar's foot (B12: lights
++-- may be bright; surfaces may not).
++local HOLY = { 255, 234, 186 }
++
++-- Grounds. Marble, Pavement and Sandstone are the tileset's own (its paving,
++-- its road, its plateau body), so their colours must be its colours; Slate is
++-- one the Domain leaves free, which gives the choir a paving of its own.
++local COURT = { material = "Slate", color = { 226, 220, 206 } }
++local GOLD_STONE = { material = "Pavement", color = { 226, 212, 184 } }
++local TREAD = { material = "Marble", color = { 214, 208, 194 } }
++local WALL_STONE = { material = "Sandstone", color = { 196, 186, 166 } }
++-- The song's gold: the road's own paving is too pale a cream to read as gold
++-- from the game camera, so the veins, the lips and the gilded heart take Salt,
++-- one of the materials the Domain leaves free, at gold saturation 0.42 and
++-- value 0.84 (B12 allows gold to 0.55 and 0.92).
++local GILT = { material = "Salt", color = { 214, 188, 124 } }
++
++local feature: MapFeature.Feature = {
++	name = "DomainChoir",
++	about = "A curving terrace of ivory singing statues in ranks about a bright orchestra, with a pillar of light where their song meets.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "centrepiece",
++	mood = { "monumental", "holy", "song", "terraced", "golden" },
++	cells = {
++		-- The choir's own paving: pale Slate, a colder white than the marbles.
++		court = { ground = COURT, lift = 0.2, clear = true },
++		-- The song's gold-veined lines and rings.
++		ray = { ground = GILT, lift = 0.24, clear = true },
++		-- The gold band at the foot of each rank.
++		lip = { ground = GILT, lift = 0.24, clear = true },
++		-- The ranks themselves, in the Domain's own marble.
++		tread = { ground = TREAD, lift = 0.24, clear = true },
++		-- The round dais, and the gilded disc at its heart, which glows.
++		dais = { ground = TREAD, lift = 0.26, clear = true },
++		gild = {
++			ground = GILT,
++			lift = 0.28,
++			clear = true,
++			glow = { color = HOLY, range = 15, brightness = 1, every = 4, height = 0.5 },
++		},
++		-- The cuts through the ranks, floored in the road's warm stone.
++		passage = { ground = GOLD_STONE, lift = 0.24, clear = true },
++		-- The retaining wall; its height is per cell.
++		wall = { ground = WALL_STONE, clear = true },
++		-- The wall's outer ring, crowned with the kit's columns: a broken
++		-- colonnade standing along the bank's edge, the choir's skyline.
++		parapet = {
++			ground = WALL_STONE,
++			clear = true,
++			props = { { sculpt = "domain_column", every = 7, scale = { 0.42, 0.54 }, sink = 0 } },
++		},
++		-- The apron between the wall and the map's ground: kept clear of the
++		-- tileset's quiet props so the choir stands alone, its paving the
++		-- tileset's own.
++		apron = { clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-2: the form, the ranks, the bowl. These choose the layout.
++		local form = FORMS[whole(rng, 1, #FORMS)]
++		local tiers = whole(rng, 2, 4)
++		local tw = whole(rng, 2, 3) -- cells in a rank
++		local R0 = whole(rng, 6, 10) -- the orchestra's radius, cells
++		local baseH = if rng:NextNumber() < 0.45 then -2 else 0
++		local mouth = between(rng, 0, TAU)
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++		local wallRise = between(rng, 2, 5)
++		local R_out = R0 + tiers * tw
++		local margin = whole(rng, 2, 4)
++		local w = 2 * math.ceil(R_out + BAND + margin)
++		local d = w
++		-- The choir need not stand square on its pad: it may sit off the middle,
++		-- so its apron opens wider on one side than another.
++		local slip = math.max(0, margin - 1)
++		local cx = (w + 1) / 2 + math.clamp(whole(rng, -2, 2), -slip, slip)
++		local cz = (d + 1) / 2 + math.clamp(whole(rng, -2, 2), -slip, slip)
++
++		-- The bank: one arc for the crescent, deep bank and horseshoe; two for
++		-- the twin banks, which face each other across the road.
++		local intervals: { Interval } = {}
++		local function span(centre: number, sweep: number): Interval
++			return { s = normal(centre - sweep / 2), e = normal(centre + sweep / 2), len = sweep }
++		end
++		if form == "twin" then
++			local sweep = between(rng, 92, 124) * DEG
++			table.insert(intervals, span(mouth + math.pi / 2, sweep))
++			table.insert(intervals, span(mouth - math.pi / 2, sweep))
++		else
++			local sweep = if form == "crescent"
++				then between(rng, 175, 215) * DEG
++				elseif form == "deep" then between(rng, 235, 275) * DEG
++				else between(rng, 292, 325) * DEG
++			table.insert(intervals, span(mouth + math.pi, sweep))
++		end
++
++		local function inArc(a: number): boolean
++			for _, iv in intervals do
++				if normal(a - iv.s) <= iv.len then
++					return true
++				end
++			end
++			return false
++		end
++
++		-- 4: the cuts. The road needs a way out through the ranks on the far side
++		-- for the closed forms; aisles are extra ways up through the choir.
++		local corridors: { Corridor } = {}
++		if form == "deep" or form == "horseshoe" then
++			table.insert(corridors, { a = normal(mouth + math.pi), half = 1.0, wall = WALL_T })
++		end
++		for _ = 1, whole(rng, 0, 2) do
++			for _attempt = 1, 12 do
++				local iv = intervals[whole(rng, 1, #intervals)]
++				local a = normal(iv.s + iv.len * between(rng, 0.34, 0.66))
++				local ok = true
++				for _, c in corridors do
++					-- Two cuts whose walls meet leave a sliver of rank sealed
++					-- between them; keep a rank's width of terrace clear.
++					if apart(a, c.a) < math.max(0.5, 6.5 / R0) then
++						ok = false
++						break
++					end
++				end
++				if ok then
++					table.insert(corridors, { a = a, half = between(rng, 0.9, 1.15), wall = WALL_T })
++					break
++				end
++			end
++		end
++
++		-- A straight radial cut, two cells of floor and a wall each side; only
++		-- forward of the centre.
++		local function corridorAt(dx: number, dz: number): (boolean, boolean)
++			for _, c in corridors do
++				if dx * math.cos(c.a) + dz * math.sin(c.a) > 0 then
++					local off = math.abs(-dx * math.sin(c.a) + dz * math.cos(c.a))
++					if off <= c.half then
++						return true, false
++					elseif off <= c.half + c.wall then
++						return false, true
++					end
++				end
++			end
++			return false, false
++		end
++
++		-- The end walls of each bank: straight walls along the arc's ends. Wide
++		-- enough that no rank can touch the apron across one.
++		local function capAt(dx: number, dz: number): boolean
++			for _, iv in intervals do
++				for _, a in { iv.s, iv.e } do
++					if
++						dx * math.cos(a) + dz * math.sin(a) > 0
++						and math.abs(-dx * math.sin(a) + dz * math.cos(a)) <= CAP
++					then
++						return true
++					end
++				end
++			end
++			return false
++		end
++
++		-- 6: the look's own draws, before the ground is laid.
++		local rayCount = whole(rng, 6, 12)
++		local rayPhase = between(rng, 0, TAU)
++		local ringOn = rng:NextNumber() < 0.55
++		local ringR = between(rng, 0.52, 0.78) * R0
++		local daisR = between(rng, 2.6, 3.4)
++
++		local n = w * d
++		local walk, heights = table.create(n, true), table.create(n, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function tierAt(r: number): number
++			return math.clamp(math.floor((r - R0) / tw) + 1, 1, tiers)
++		end
++		for z = 1, d do
++			for x = 1, w do
++				local i = (z - 1) * w + x
++				local dx, dz = x - cx, z - cz
++				local r = math.sqrt(dx * dx + dz * dz)
++				local a = normal(math.atan2(dz, dx))
++				if r < R0 then
++					-- The orchestra, the dais and the glow at its heart.
++					if r <= 1.7 then
++						kinds[i] = "gild"
++						heights[i] = baseH + 2
++					elseif r <= daisR then
++						kinds[i] = "dais"
++						heights[i] = baseH + 2
++					else
++						heights[i] = baseH
++						local onRay = false
++						if r >= daisR + 0.6 then
++							for k = 0, rayCount - 1 do
++								local th = rayPhase + k * TAU / rayCount
++								if math.abs(-dx * math.sin(th) + dz * math.cos(th)) <= 0.45 then
++									onRay = true
++									break
++								end
++							end
++						end
++						kinds[i] = if onRay or (ringOn and math.abs(r - ringR) <= 0.6) then "ray" else "court"
++					end
++				elseif r <= R_out + BAND then
++					local inCut, cutWall = corridorAt(dx, dz)
++					if inCut then
++						kinds[i] = "passage"
++						heights[i] = baseH
++					elseif cutWall then
++						walk[i] = false
++						kinds[i] = "wall"
++						lifts[i] = if r <= R_out then baseH + tierAt(r) * 2 + 1 else baseH + tiers * 2 + wallRise
++					elseif r >= R0 - 0.4 and capAt(dx, dz) then
++						walk[i] = false
++						kinds[i] = "wall"
++						lifts[i] = baseH + tierAt(r) * 2 + 1
++					elseif inArc(a) and r >= R_out then
++						walk[i] = false
++						kinds[i] = if r > R_out + BAND - 0.9 then "parapet" else "wall"
++						lifts[i] = baseH + tiers * 2 + wallRise
++					elseif inArc(a) then
++						local t = tierAt(r)
++						heights[i] = baseH + t * 2
++						local localR = r - (R0 + (t - 1) * tw)
++						kinds[i] = if localR < 1.0 then "lip" else "tread"
++					else
++						kinds[i] = "apron"
++					end
++				else
++					kinds[i] = "apron"
++				end
++			end
++		end
++		-- Two cuts may still pinch a sliver of rank shut between their walls, and
++		-- a feature's walkable ground must be one piece. Fill any ground the
++		-- border cannot reach with wall: a stray block among the ranks reads as
++		-- broken masonry, never as a hole in the choir.
++		local g = Grid.new(w, d, Grid.WALL)
++		for i, ok in walk do
++			g.cells[i] = if ok then Grid.FLOOR else Grid.WALL
++		end
++		local main: { number }? = nil
++		local reachable: { [number]: boolean } = {}
++		for _, region in Grid.regions(g) do
++			if table.find(region, 1) then
++				main = region
++			end
++		end
++		for _, i in main or {} do
++			reachable[i] = true
++		end
++		for i, ok in walk do
++			if ok and not reachable[i] then
++				walk[i] = false
++				kinds[i] = "wall"
++				heights[i] = 0
++				local x, z = Grid.coords(g, i)
++				local r = math.sqrt((x - cx) ^ 2 + (z - cz) ^ 2)
++				lifts[i] = baseH + tierAt(r) * 2 + 1
++			end
++		end
++
++		-- The choir: ranks of figures on the outer cell of every terrace, all
++		-- facing the pillar. The same angular slots on every rank, so the rows
++		-- fan from the centre like a choir in stalls.
++		local marks: { FeatureDress.Landmark } = {}
++		local used: { [number]: boolean } = {}
++		local spacing = between(rng, 3.2, 4.2)
++		local midR = R0 + tiers * tw / 2
++		local counts: { number } = {}
++		local slots = 0
++		for k, iv in intervals do
++			counts[k] = math.max(2, math.floor(iv.len * midR / spacing))
++			slots += counts[k]
++		end
++		if slots * tiers > 64 then
++			local share = 64 / (slots * tiers)
++			for k in counts do
++				counts[k] = math.max(2, math.floor(counts[k] * share))
++			end
++		end
++		-- Which rank carries the tall cantors, and where: 1 no one (all
++		-- choristers), 2 the outer rank, 3 only the outer rank's ends.
++		local cantorStyle = whole(rng, 1, 3)
++		local vacancy = between(rng, 0, 0.1)
++		for ki, iv in intervals do
++			local count = counts[ki]
++			for slot = 0, count - 1 do
++				local a = iv.s + iv.len * (slot + 0.5) / count
++				for t = 1, tiers do
++					local rStat = R0 + (t - 1) * tw + tw - 0.5
++					local px, pz = cx + math.cos(a) * rStat, cz + math.sin(a) * rStat
++					local bx, bz = math.floor(px + 0.5), math.floor(pz + 0.5)
++					local best, bestD = nil, math.huge
++					for oz = -1, 1 do
++						for ox = -1, 1 do
++							local qx, qz = bx + ox, bz + oz
++							if qx >= 1 and qx <= w and qz >= 1 and qz <= d then
++								local qi = (qz - 1) * w + qx
++								if not used[qi] and kinds[qi] == "tread" and heights[qi] == baseH + t * 2 then
++									local ddx, ddz = qx - px, qz - pz
++									local dist = ddx * ddx + ddz * ddz
++									if dist < bestD then
++										best, bestD = qi, dist
++									end
++								end
++							end
++						end
++					end
++					local vacant = rng:NextNumber() < vacancy
++					if best and not vacant then
++						used[best] = true
++						local qx, qz = (best - 1) % w + 1, (best - 1) // w + 1
++						local tall = t == tiers
++							and cantorStyle ~= 1
++							and (cantorStyle == 2 or slot == 0 or slot == count - 1)
++						table.insert(marks, {
++							sculpt = if tall then "domain_cantor" else "domain_chorister",
++							x = qx,
++							z = qz,
++							yaw = math.deg(math.atan2(qz - cz, cx - qx)),
++							scale = if tall then between(rng, 0.95, 1.1) else between(rng, 1.0, 1.15),
++							sink = 0,
++							solid = true,
++						})
++					end
++				end
++			end
++		end
++
++		-- The pillar of light where the song meets, on the dais.
++		table.insert(marks, { sculpt = "domain_song_pillar", x = cx, z = cz, sink = 0, solid = true })
++		local effects: { FeatureDress.Effect } = {
++			{ recipe = "domain_song_light", x = cx, z = cz, lift = 4.6 },
++		}
++
++		-- 5: the road. In at the mouth; through the orchestra about the pillar on
++		-- one side; out through the cut on the far side, or back through the
++		-- crescent's open mouth.
++		local inAt = mouth
++		local outAt = if form == "crescent"
++			then normal(mouth + side * between(rng, 55, 68) * DEG)
++			else normal(mouth + math.pi)
++		local routeR = math.min(R0 - 1.5, math.max(daisR + 2, R0 * 0.6))
++		local delta = if form == "crescent" then side * apart(inAt, outAt) else side * math.pi
++		local steps = math.max(3, math.ceil(math.abs(delta) / 0.4))
++		local function border(a: number): Point
++			local c, s = math.cos(a), math.sin(a)
++			local tx = if c > 1e-6 then (w - cx) / c elseif c < -1e-6 then (1 - cx) / c else math.huge
++			local tz = if s > 1e-6 then (d - cz) / s elseif s < -1e-6 then (1 - cz) / s else math.huge
++			local t = math.min(tx, tz)
++			local x = math.clamp(math.floor(cx + c * t + 0.5), 1, w)
++			local z = math.clamp(math.floor(cz + s * t + 0.5), 1, d)
++			if tx <= tz then
++				x = if c > 0 then w else 1
++			else
++				z = if s > 0 then d else 1
++			end
++			return { x = x, z = z }
++		end
++		local road: { Point } = { border(inAt) }
++		table.insert(road, { x = cx + math.cos(inAt) * routeR, z = cz + math.sin(inAt) * routeR })
++		for k = 1, steps - 1 do
++			local a = inAt + delta * k / steps
++			table.insert(road, { x = cx + math.cos(a) * routeR, z = cz + math.sin(a) * routeR })
++		end
++		table.insert(road, { x = cx + math.cos(outAt) * routeR, z = cz + math.sin(outAt) * routeR })
++		table.insert(road, border(outAt))
++
++		-- Two photographs: in at the mouth, over the open bowl to the pillar and
++		-- the ranks climbing round it; and from above one shoulder, over the
++		-- fan of ranks.
++		local wallTop = baseH + tiers * 2 + wallRise
++		local cameras: { MapFeature.Shot } = {
++			{
++				name = "through the choir's mouth",
++				from = {
++					x = cx + math.cos(mouth) * (R_out + 2),
++					z = cz + math.sin(mouth) * (R_out + 2),
++					lift = wallTop + 6,
++				},
++				to = { x = cx, z = cz, lift = 10 },
++				fov = 68,
++			},
++			{
++				name = "over the ranks",
++				from = {
++					x = cx + math.cos(mouth + side * 0.9) * (R_out + 8),
++					z = cz + math.sin(mouth + side * 0.9) * (R_out + 8),
++					lift = 30,
++				},
++				to = { x = cx, z = cz, lift = 6 },
++				fov = 66,
++			},
++		}
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

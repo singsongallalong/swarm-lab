@@ -1,0 +1,22 @@
+{
+  "letter": "T",
+  "generator": "g02",
+  "run": "domain-features-2",
+  "intent": "The gods' mead hall: long marble tables with benches and gold vessels between trenches of holy fire, shields hung on the colonnade, a tall head wall behind a gold high seat, and the road crossing the hall between the fires.",
+  "critic": {
+    "idea": 7,
+    "photo": 7,
+    "topology": 6,
+    "look": 5,
+    "game_camera": 5,
+    "usable": 7,
+    "total": 6.45,
+    "reads_as_itself": "yes",
+    "inorganic": 10,
+    "figures": "partly",
+    "best_shot": "feature-shots-final: tables and fire trenches toward the high seat",
+    "why": "A clear mead hall with good long axis; the flames read as gold bullets."
+  },
+  "role": "Main-route platform: road crossing the mead hall between fires.",
+  "notes": "# T\n\nKeep: Keep the long tables, the high seat and the central fire trenches.\n\n1. Reshape the flame sculpts; they read as gold bullets or missiles.\n2. Hang the shields on the colonnade so it reads Valhalla.\n3. Vary seeds with cross tables or a horseshoe.\n"
+}

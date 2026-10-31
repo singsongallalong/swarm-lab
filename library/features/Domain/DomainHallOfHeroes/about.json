@@ -1,0 +1,22 @@
+{
+  "letter": "F",
+  "generator": "g05",
+  "run": "domain-features-2",
+  "intent": "A hall of heroes: an avenue of colossal armoured heroes of the gods' host, each on a lifted marble plinth with spear and shield toward the processional way, under gold light gathered at their feet: a new colossal-figure assembly nobody has made, its own hero-light set piece, and avenue plans (straight, dogleg, cross, fork), edges, stances and way levels that make every seed a different place to fight through.",
+  "critic": {
+    "idea": 9,
+    "photo": 8,
+    "topology": 8,
+    "look": 6,
+    "game_camera": 5,
+    "usable": 7,
+    "total": 7.8,
+    "reads_as_itself": "yes",
+    "inorganic": 9,
+    "figures": "yes",
+    "best_shot": "feature-shots-final: colossal hero with shield over the avenue",
+    "why": "The best figure work in the run and real layout variety; a strong hall to fight through."
+  },
+  "role": "Main-route platform: the hero avenue is the Domain's processional spine to fight down.",
+  "notes": "# F\n\nKeep: Keep the colossal spear-and-shield heroes and the varied avenue plans.\n\n1. Drop the bare dead trees in the shots; they pull it toward the moor.\n2. Gild the heroes more (helms, shield bosses) so they read as divine, not grey stone.\n3. Add a toppled hero as a cover piece on more seeds.\n"
+}

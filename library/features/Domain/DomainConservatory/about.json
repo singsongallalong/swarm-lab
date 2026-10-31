@@ -1,0 +1,22 @@
+{
+  "letter": "G",
+  "generator": "g22",
+  "run": "domain-features-2",
+  "intent": "A crystal conservatory: a glasshouse of pale blue panes on gold frames, beds of exotic gold-leaved palms, and a fountain of holy water at its heart, the Domain's first building made to keep something alive.",
+  "critic": {
+    "idea": 7,
+    "photo": 6,
+    "topology": 7,
+    "look": 6,
+    "game_camera": 5,
+    "usable": 6,
+    "total": 6.42,
+    "reads_as_itself": "yes",
+    "inorganic": 8,
+    "figures": "partly",
+    "best_shot": "feature-shots-r4b: gold fronds round the fountain under glass",
+    "why": "A fresh building type with varied plans; the gold palms read more as gold flowers."
+  },
+  "role": "Garden side court: conservatory as a cultivated break from stone.",
+  "notes": "# G\n\nKeep: Keep the gold-framed blue glass bays and the varied plans.\n\n1. Give the fronds trunks and drooping leaves so they read as palms.\n2. Add glass roof bays over more of the beds so it reads as a house, not walls.\n3. Lower the clutter round the fountain so the centre reads from the game camera.\n"
+}

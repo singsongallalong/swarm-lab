@@ -1,0 +1,921 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..94b2215b 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainThrone = require("../systems/features/DomainThrone")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainThrone = DomainThrone,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..842f18b5 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,252 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (feature DomainThrone): the throne of the absent god. A
++-- colossal empty throne in ivory marble and gold — a stepped plinth, a broad
++-- cold seat, a towering leaning back with gold ribs, arms ending in gold
++-- spheres, a footstool before it and a halo of gold above the crest. Its front
++-- faces +X. Seeds choose a whole or a broken halo, so the crown is never quite
++-- the same; a person is 5 studs, and the seat is seven people's height over the
++-- ground, so the throne overawes the dais it stands on.
++Sculpts.domain_throne_absent = {
++	kind = "assembly",
++	size = { 12, 36, 20 },
++	material = "Marble",
++	colors = { { 232, 226, 210 }, { 219, 213, 199 }, { 201, 195, 183 }, { 230, 190, 110 }, { 234, 214, 172 } },
++	materials = { [4] = "Foil", [5] = "Neon" },
++	maxPrims = 80,
++	parts = {
++		{ name = "plinth", shape = "Block", size = { 15, 1, 19 }, at = { 0, 0.5, 0 }, color = 2 },
++		{ name = "plinth step", shape = "Block", size = { 12.5, 1, 16 }, at = { 0, 1.5, 0 }, color = 1 },
++		{ name = "plinth top", shape = "Block", size = { 10.5, 1, 13 }, at = { 0, 2.5, 0 }, color = 3 },
++		{ name = "seat block", shape = "Block", size = { 6, 6, 8 }, at = { 0, 6, 0 }, color = 2 },
++		{ name = "seat", shape = "Block", size = { 7.4, 1.2, 10 }, at = { 0.2, 9.6, 0 }, color = 1 },
++		{ name = "seat edge", shape = "Block", size = { 0.6, 0.3, 10 }, at = { 3.8, 9.8, 0 }, color = 5 },
++		{
++			name = "back",
++			at = { -2.6, 10, 0 },
++			rot = { 0, 0, 4 },
++			children = {
++				{ name = "back slab", shape = "Block", size = { 1.8, 20, 8 }, at = { 0, 10, 0 }, color = 2 },
++				{
++					name = "ribs",
++					shape = "Block",
++					size = { 0.3, 13, 1.1 },
++					at = { 1, 8.5, 0 },
++					row = { count = 5, step = { 0, 0, 1.45 }, center = true },
++					color = 4,
++				},
++				{ name = "crest", shape = "Block", size = { 2.4, 1.8, 9.4 }, at = { 0, 20.8, 0 }, color = 3 },
++				{
++					name = "finials",
++					shape = "Ball",
++					size = { 1.2, 1.2, 1.2 },
++					at = { 0, 22.3, 4.4 },
++					mirror = "z",
++					color = 4,
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			-- A halo of gold, stood on edge behind the crest: a ring turned into the
++			-- vertical plane by the group's quarter turn about Z.
++			name = "halo",
++			at = { -2.6, 32, 0 },
++			rot = { 0, 0, 90 },
++			children = {
++				{
++					name = "ring",
++					oneOf = {
++						{
++							name = "whole",
++							shape = "Block",
++							size = { 0.8, 0.8, 0.8 },
++							ring = { count = 14, radius = 3.2 },
++							color = 5,
++						},
++						{
++							name = "broken",
++							shape = "Block",
++							size = { 0.8, 0.8, 0.8 },
++							ring = { count = 9, radius = 3.2, start = 30, arc = 250 },
++							color = 5,
++						},
++					} :: { SculptTypes.AssemblyNode },
++					weights = { 3, 1 },
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "arms",
++			at = { 0, 0, 4.8 },
++			mirror = "z",
++			children = {
++				{ name = "arm post", shape = "Block", size = { 1.4, 5, 1.4 }, at = { 2, 11.5, 0 } },
++				{ name = "armrest", shape = "Block", size = { 5.8, 1, 1.6 }, at = { 0.6, 14.5, 0 }, color = 1 },
++				{ name = "scroll", shape = "Ball", size = { 1.4, 1.4, 1.4 }, at = { 3.4, 14.8, 0 }, color = 4 },
++				{
++					name = "arm panel",
++					shape = "Block",
++					size = { 3.6, 1.6, 0.7 },
++					at = { 0.4, 10.3, -0.15 },
++					color = 3,
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{ name = "footstool", shape = "Block", size = { 4.6, 1.8, 9 }, at = { 6.2, 3.9, 0 }, color = 2 },
++		{ name = "footstool edge", shape = "Block", size = { 4, 0.3, 8.6 }, at = { 6.2, 4.85, 0 }, color = 4 },
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain (feature DomainThrone): a god kneeling before the throne.
++-- A robed figure on a stepped plinth, both hands on a planted sword, head bowed
++-- under a gold circlet and a small gold halo; the front faces +X. Seeds bow the
++-- head and set the halo a little differently. Eleven studs tall, twice a person,
++-- so four of them line the dais steps without matching the throne.
++Sculpts.domain_kneeling_god = {
++	kind = "assembly",
++	size = { 8, 11, 7 },
++	material = "Marble",
++	colors = { { 232, 226, 210 }, { 219, 213, 199 }, { 201, 195, 183 }, { 230, 190, 110 }, { 234, 214, 172 } },
++	materials = { [4] = "Foil", [5] = "Neon" },
++	maxPrims = 50,
++	parts = {
++		{ name = "step", shape = "Block", size = { 8, 0.35, 7 }, at = { 0, 0.175, 0 }, color = 3 },
++		{ name = "plinth", shape = "Block", size = { 7, 0.7, 6 }, at = { 0, 0.7, 0 }, color = 2 },
++		{ name = "knees", shape = "Block", size = { 4.4, 1.5, 4.6 }, at = { 0.2, 1.8, 0 }, color = 1 },
++		{ name = "robe", shape = "Block", size = { 3.4, 2.2, 3.8 }, at = { 0, 3.6, 0 }, color = 2 },
++		{
++			name = "torso",
++			shape = "Block",
++			size = { 2.4, 3.4, 3 },
++			at = { 0.2, 6, 0 },
++			rot = { 0, 0, -6 },
++			color = 1,
++			jitter = { rot = { 0, 0, 3 } },
++		},
++		{ name = "shoulders", shape = "Block", size = { 1.8, 0.9, 4 }, at = { 0.1, 7.7, 0 }, color = 2 },
++		{
++			name = "arms",
++			mirror = "z",
++			children = {
++				{ name = "upper arm", shape = "Block", size = { 1, 2, 1 }, at = { 1, 6.8, 1.5 }, rot = { 0, 0, 45 } },
++				{ name = "forearm", shape = "Block", size = { 1, 2.4, 1 }, at = { 2.2, 5.7, 0.9 }, rot = { 0, 0, 55 } },
++				{ name = "hand", shape = "Block", size = { 0.9, 0.9, 0.9 }, at = { 3.1, 4.9, 0.5 }, color = 2 },
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "head",
++			shape = "Block",
++			size = { 1.7, 1.7, 1.7 },
++			at = { 0.8, 8.9, 0 },
++			rot = { 0, 0, -20 },
++			color = 1,
++			jitter = { rot = { 0, 0, 8 } },
++		},
++		{ name = "circlet", shape = "Block", size = { 1.9, 0.3, 1.9 }, at = { 0.7, 9.6, 0 }, color = 4 },
++		{ name = "grip", shape = "Block", size = { 0.35, 1.5, 0.35 }, at = { 3.3, 5.7, 0 }, color = 4 },
++		{ name = "crossguard", shape = "Block", size = { 0.5, 0.4, 2.2 }, at = { 3.3, 4.9, 0 }, color = 4 },
++		{ name = "blade", shape = "Block", size = { 0.3, 4.2, 0.8 }, at = { 3.3, 2.7, 0 }, color = 3 },
++		{
++			name = "halo",
++			at = { -0.4, 9.1, 0 },
++			rot = { 0, 0, 90 },
++			children = {
++				{
++					shape = "Block",
++					size = { 0.6, 0.6, 0.6 },
++					at = { 0, 0, 0 },
++					ring = { count = 8, radius = 1.5 },
++					color = 5,
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain (feature DomainThrone): a lamp for the throne terrace. A
++-- stepped marble foot, a tapering fluted shaft of four drums, a gold collar and
++-- a wide gold bowl with a bed of pale light in it; the front faces +X and the
++-- bowl's fire is the domain_brazier_fire set piece. Twelve studs tall, above a
++-- person's head, so the lamps line the bridge like heralds.
++Sculpts.domain_throne_lamp = {
++	kind = "assembly",
++	size = { 5, 12.4, 5 },
++	material = "Marble",
++	colors = { { 232, 226, 210 }, { 219, 213, 199 }, { 201, 195, 183 }, { 230, 190, 110 }, { 234, 214, 170 } },
++	materials = { [4] = "Foil", [5] = "Neon" },
++	maxPrims = 30,
++	parts = {
++		{ name = "step", shape = "Block", size = { 5, 0.6, 5 }, at = { 0, 0.3, 0 }, color = 3 },
++		{ name = "foot", shape = "Block", size = { 3.8, 0.8, 3.8 }, at = { 0, 1, 0 }, color = 2 },
++		{
++			name = "shaft",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 1.8, 2.4, 1.8 },
++			at = { 0, 2.6, 0 },
++			stack = { count = 4, step = 2.4, shrink = 0.95 },
++			color = 1,
++		},
++		{ name = "collar", shape = "Cylinder", axis = "y", size = { 2.6, 0.6, 2.6 }, at = { 0, 10.3, 0 }, color = 4 },
++		{ name = "bowl", shape = "Cylinder", axis = "y", size = { 4.6, 1.4, 4.6 }, at = { 0, 11, 0 }, color = 4 },
++		{
++			name = "fire bed",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 3.5, 0.35, 3.5 },
++			at = { 0, 11.5, 0 },
++			color = 5,
++		},
++		{
++			name = "rim",
++			shape = "Block",
++			size = { 0.8, 0.8, 0.8 },
++			at = { 0, 11.9, 0 },
++			ring = { count = 6, radius = 2.2 },
++			color = 4,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
++-- The Eternal Domain (feature DomainThrone): a banner on a gold pole, for the
++-- throne's processional. A marble foot, a tall gold pole with a crossbar, a
++-- gold ball finial and a long ivory cloth with a gold hem and a gold disc,
++-- every seed setting the cloth a little askew. Front faces +X; eighteen studs
++-- tall, so a pair of them frames the way to the dais.
++Sculpts.domain_throne_banner = {
++	kind = "assembly",
++	size = { 4, 18, 6 },
++	material = "Marble",
++	colors = { { 232, 226, 210 }, { 219, 213, 199 }, { 201, 195, 183 }, { 230, 190, 110 }, { 224, 205, 168 } },
++	materials = { [4] = "Foil", [5] = "Fabric" },
++	maxPrims = 25,
++	parts = {
++		{ name = "step", shape = "Block", size = { 3.6, 0.5, 3.6 }, at = { 0, 0.25, 0 }, color = 3 },
++		{ name = "foot", shape = "Block", size = { 2.6, 0.6, 2.6 }, at = { 0, 0.8, 0 }, color = 2 },
++		{ name = "pole", shape = "Cylinder", axis = "y", size = { 0.5, 16, 0.5 }, at = { 0, 9.1, 0 }, color = 4 },
++		{ name = "finial", shape = "Ball", size = { 0.9, 0.9, 0.9 }, at = { 0, 17.4, 0 }, color = 4 },
++		{ name = "crossbar", shape = "Block", size = { 0.4, 0.4, 5.6 }, at = { 0, 16.2, 0 }, color = 4 },
++		{
++			name = "cloth",
++			shape = "Block",
++			size = { 0.18, 8.6, 4.8 },
++			at = { 0.16, 11.9, 0 },
++			color = 5,
++			jitter = { rot = { 0, 2, 3 } },
++		},
++		{ name = "hem", shape = "Block", size = { 0.22, 0.5, 4.9 }, at = { 0.17, 7.5, 0 }, color = 4 },
++		{
++			name = "emblem",
++			shape = "Cylinder",
++			axis = "x",
++			size = { 0.25, 1.7, 1.7 },
++			at = { 0.3, 12.6, 0 },
++			color = 4,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..16025e1e 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,114 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain (feature DomainThrone, 2026-10-30): the light of the absent
++-- god falling on the empty throne. A broad, faint shaft of gold rays stands over
++-- the seat, gold motes drift down through it and settle on the stone, a warm glow
++-- breathes round the seat and a few pale sky-blue glints keep the place's cold
++-- (the area's one cool note). Placed at the seat, so the motes fall about 25 studs
++-- to it; a phone keeps the motes and the light, its six emitters and two lights.
++recipes.domain_throne_glory = {
++	about = "The absent god's light falling on an empty throne: a shaft of gold rays with gold motes drifting down through it and a warm glow breathing on the seat.",
++	theme = "domain",
++	radius = 600,
++	-- Short and gently bent, so the falling shaft covers the seat, not a line.
++	path = { kind = "worm", length = 8, step = 3, bend = 30, climb = 2, round = 2 },
++	layers = {
++		{
++			name = "shaft",
++			look = {
++				kind = "stream",
++				every = 4,
++				thick = 9,
++				lift = 26,
++				toward = "down",
++				rise = 3.2,
++				life = { 7, 9 },
++				rate = 1.6,
++				size = 7,
++				tall = 3.2,
++				transparency = 0.9,
++				color = "gold",
++				texture = "rays",
++				lean = 4,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 3, span = 16, periods = { 9, 13 } },
++			priority = 2,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 4,
++				lift = 24,
++				toward = "down",
++				rise = 2.6,
++				life = { 8, 10 },
++				rate = 5,
++				size = 0.55,
++				tall = 2.2,
++				transparency = 0.2,
++				color = "gold",
++				texture = "wisp",
++				lean = 14,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 8, span = 12, periods = { 7, 11 } },
++			priority = 1,
++		},
++		{
++			name = "glow",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 6,
++				lift = 10,
++				toward = "down",
++				rise = 1.2,
++				life = { 6, 8 },
++				rate = 1,
++				size = 5,
++				tall = 1.3,
++				transparency = 0.84,
++				color = "glow",
++				texture = "veil",
++				lean = 8,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.5, tilt = 5, span = 14, periods = { 9, 6 } },
++			priority = 3,
++		},
++		{
++			name = "cold",
++			look = {
++				kind = "stream",
++				every = 9,
++				thick = 5,
++				lift = 22,
++				toward = "down",
++				rise = 2.4,
++				life = { 8, 10 },
++				rate = 1,
++				size = 0.4,
++				tall = 1.6,
++				transparency = 0.22,
++				color = "sky",
++				texture = "wisp",
++				lean = 20,
++				vary = 0.8,
++			},
++			motion = { kind = "sway", amplitude = 1.2, tilt = 10, span = 10, periods = { 5, 8 } },
++			priority = 4,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 4, max = 2, range = 26, brightness = 1.2, color = "glow" },
++			motion = { kind = "pulse", period = 4.2, depth = 0.3 },
++			priority = 1,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..fdfcd239 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,23 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The throne of the absent god (map feature DomainThrone)
++	["sculpt:domain_throne_absent"] = row(
++		"The Eternal Domain's empty throne: a colossal ivory and gold seat on a stepped plinth, its tall back ribbed in gold under a hovering gold halo.",
++		MOOR
++	),
++	["sculpt:domain_kneeling_god"] = row(
++		"A god kneeling before the Eternal Domain's throne, both hands on a planted sword, head bowed under a gold circlet and a small gold halo.",
++		MOOR
++	),
++	["sculpt:domain_throne_lamp"] = row(
++		"A lamp of the Eternal Domain's throne terrace: a fluted marble shaft under a wide gold bowl of holy fire.",
++		MOOR
++	),
++	["sculpt:domain_throne_banner"] = row(
++		"A tall gold pole hung with an ivory and gold banner for the Eternal Domain's throne processional.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainThrone.luau b/src/shared/systems/features/DomainThrone.luau
+new file mode 100644
+index 00000000..08606921
+--- /dev/null
++++ b/src/shared/systems/features/DomainThrone.luau
+@@ -0,0 +1,493 @@
++--!strict
++-- The throne of the absent god (map feature, docs/guides/map-features.md): a raised
++-- terrace of ivory stone on the Eternal Domain's cloud, cut by a chasm of cloud. A
++-- bridge crosses the chasm to a throne island; on it a colossal empty throne stands on
++-- a stepped dais, flanked by kneeling statues, gold lamps and banners. The god is gone;
++-- the light is not: a pillar of gold light falls on the empty seat (domain_throne_glory).
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology first,
++-- then look). The first draws choose the structure, the rest only dress it:
++--   1. the plan: a straight chasm, a crescent chasm (the island bulges into the
++--      forecourt), cloud wings that cut the island free on three sides, or a cloud bay
++--      eaten out of the island's flank;
++--   2. the crossing: one, two or three causeways over the cloud, the road on the first;
++--   3. the dais: round, square, long or two-level;
++--   4. the footprint's size, the terrace's height and the chasm's depth;
++--   5. then the setting: the court's stone, the kneeling statues (2 or 4), the banners
++--      and the lamps, and the light on the seat.
++-- Everything stands on the domain's own kit and the new domain_ sculpts of this run.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local PLANS = { "straight", "crescent", "wings", "bay" }
++local DAISES = { "round", "square", "long", "split" }
++
++-- The ground the feature paints, inside B12's stone limits and the area's own
++-- materials, so Roblox's one colour per terrain material holds: the cloud is the
++-- Domain's own bank colour (Domain.luau CLOUD), the dais its paving, the rim its
++-- flags, the curb its body — and the court a cool pale slate the area leaves free.
++local CLOUD = { material = "Snow", color = { 232, 229, 222 } }
++local COURT = { material = "Slate", color = { 200, 196, 190 } }
++local DAIS = { material = "Marble", color = { 214, 208, 194 } }
++local RIM = { material = "Limestone", color = { 202, 194, 178 } }
++local CURB = { material = "Sandstone", color = { 196, 186, 166 } }
++
++-- The throne's seat height over its ground, for the light's marker and the cameras.
++local SEAT = 10
++
++local feature: MapFeature.Feature = {
++	name = "DomainThrone",
++	about = "A raised ivory terrace on a chasm of cloud: a bridge to a throne island where a colossal empty throne stands on a stepped dais under falling gold light, flanked by kneeling statues, lamps and banners.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "centrepiece",
++	mood = { "monumental", "holy", "empty", "cloud-wrapped" },
++	cells = {
++		-- A lift of 0.2 on every painted kind, so no painted surface is coplanar with
++		-- the tileset's ground beneath it.
++		cloud = { ground = CLOUD, lift = 0.2, clear = true },
++		court = { ground = COURT, lift = 0.2, clear = true },
++		dais = { ground = DAIS, lift = 0.2, clear = true },
++		rim = { ground = RIM, lift = 0.2, clear = true },
++		curb = { ground = CURB, lift = 0.2, clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, first.
++		local plan = PLANS[whole(rng, 1, #PLANS)]
++		local daisShape = DAISES[whole(rng, 1, #DAISES)]
++		local crossings = whole(rng, 1, 3)
++		-- 4: the whole's size, the terrace's height and the chasm's depth.
++		local w = whole(rng, 40, 48)
++		local d = whole(rng, 50, 56)
++		local level = 2 * whole(rng, 4, 6)
++		local steps = level // 2
++		local chasm = -2 * whole(rng, 6, 8)
++		local moatWidth = whole(rng, 5, 7)
++		local bow = if plan == "crescent" then whole(rng, 2, 4) else 0
++		local inset = whole(rng, 4, 7)
++		local wingLeft, wingRight = inset, w - inset + 1
++		local cx = (w + 1) / 2
++		-- The game camera's own ground row over the feature's middle (FeaturePad's
++		-- shot, pitch 50, 35 studs back): the island reaches it, so the camera stands
++		-- on the throne terrace and looks at the dais, never into the cloud.
++		local camZ = math.floor(d / 2 + 5.625) + 1
++		-- The island's south edge: at the camera, leaving the forecourt and its stair
++		-- the rest of the depth.
++		local most = math.min(camZ + 2, d - steps - 6 - moatWidth)
++		local islandSouth = whole(rng, math.min(camZ, most), most)
++		local frontZ = islandSouth + moatWidth
++
++		local n = w * d
++		local walk: { boolean } = table.create(n, true)
++		local heights: { number } = table.create(n, level)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inside(x: number, z: number): boolean
++			return x >= 2 and x <= w - 1 and z >= 2 and z <= d - 1
++		end
++
++		-- The plateau's rim: a curb of stone two studs over the terrace, so the
++		-- walkable border is only ever the stairs' mouths.
++		for z = 1, d do
++			for x = 1, w do
++				if x == 1 or z == 1 or x == w or z == d then
++					walk[at(x, z)] = false
++					heights[at(x, z)] = level + 2
++				end
++			end
++		end
++
++		-- The chasm's edge at x: the crescent bows the island out into the forecourt.
++		local function moatFrontAt(x: number): number
++			if plan == "crescent" then
++				local t = (x - cx) / (w * 0.5)
++				return frontZ + math.floor(bow * (1 - t * t) + 0.5)
++			end
++			return frontZ
++		end
++		local function islandSouthAt(x: number): number
++			return moatFrontAt(x) - moatWidth
++		end
++
++		-- The island's bounds, the dais on it, and the flank the road turns around.
++		local il, ir = 2, w - 1
++		if plan == "wings" then
++			il, ir = wingLeft + 1, wingRight - 1
++		end
++		-- The throne stands on the middle line, so the game camera over the feature
++		-- looks straight up the steps at it; a cell either way keeps it from stamped.
++		local camX = math.floor(w / 2) + 1
++		local ix = math.clamp(camX + whole(rng, -1, 1), il + 3, ir - 3)
++		local isle = islandSouthAt(ix)
++		local R = math.min(whole(rng, 6, 9), math.max(5, (isle - 8) // 2))
++		-- The dais's front sits just north of the feature's middle, so the fixed game
++		-- camera looks across the court at its steps, never into its flank.
++		local iz = math.clamp(math.floor(d / 2) - 2 - R + whole(rng, -1, 1), R + 3, math.max(R + 3, isle - R - 1))
++		local top = whole(rng, 7, 10)
++		local mid = math.floor(top * 0.62 * 2 + 0.5) / 2
++		local base = math.floor(top * 0.3 * 2 + 0.5) / 2
++		local throneZ = if daisShape == "split" then iz - 1 else iz
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++
++		-- The grand stairs, cut through the rim at the front and the back. The back
++		-- one keeps clear of the dais, so the island's floor meets it all round.
++		local sx = whole(rng, 5, w - 5)
++		local exitSide = side
++		local xe = math.clamp(ix + exitSide * (R + 4) + whole(rng, -2, 2), il + 2, ir - 2)
++		if math.abs(xe - ix) <= R + 2 then
++			xe = math.clamp(ix - exitSide * (R + 4), il + 2, ir - 2)
++		end
++
++		-- A cloud bay eaten out of the island's flank, opposite the road's turn.
++		local baySide = -side
++		local bayIn = ix + baySide * (R + 2)
++		local bayZ = iz + whole(rng, -1, 1)
++		local bayHalf = whole(rng, 2, 3)
++
++		-- The crossing: the first causeway leads to the dais, the others flank it,
++		-- and one always joins the back stair to the island.
++		local causeWidth = whole(rng, 3, 5)
++		local centres: { number } = { ix }
++		local offsetSide = side
++		for k = 2, crossings do
++			local c = math.clamp(ix + offsetSide * (k - 1) * whole(rng, 8, 13), il + 2, ir - 2)
++			table.insert(centres, c)
++			offsetSide = -offsetSide
++		end
++		table.insert(centres, xe)
++
++		-- Whether a cell is cloud: the main chasm, the wings' arms, the bay.
++		local function inMoat(x: number, z: number): boolean
++			local f = moatFrontAt(x)
++			if z >= f - moatWidth + 1 and z <= f then
++				return true
++			end
++			if plan == "wings" and z < f - moatWidth + 1 and (x < wingLeft or x > wingRight) then
++				return true
++			end
++			if plan == "bay" and z >= bayZ - bayHalf and z <= bayZ + bayHalf then
++				if baySide > 0 and x > bayIn then
++					return true
++				elseif baySide < 0 and x < bayIn then
++					return true
++				end
++			end
++			return false
++		end
++
++		-- Lay the chasm, then carve the causeways across it.
++		local moat = table.create(n, false)
++		for z = 2, d - 1 do
++			for x = 2, w - 1 do
++				local i = at(x, z)
++				if inMoat(x, z) then
++					moat[i] = true
++					walk[i] = false
++					heights[i] = chasm
++				end
++			end
++		end
++		for _, c in centres do
++			local half = math.floor(causeWidth / 2)
++			for z = 2, d - 1 do
++				for x = c - half, c + (causeWidth - 1 - half) do
++					if x >= 2 and x <= w - 1 then
++						local i = at(x, z)
++						moat[i] = false
++						walk[i] = true
++						heights[i] = level
++					end
++				end
++			end
++		end
++
++		-- The dais: a stepped island of stone with the throne at its heart.
++		local function metric(x: number, z: number): number
++			local dx, dz = x - ix, z - iz
++			if daisShape == "round" then
++				return math.sqrt((dx / R) ^ 2 + (dz / (R * 0.92)) ^ 2)
++			elseif daisShape == "square" then
++				return math.max(math.abs(dx), math.abs(dz)) / R
++			elseif daisShape == "long" then
++				return math.sqrt((dx / (R * 0.7)) ^ 2 + (dz / (R * 1.15)) ^ 2)
++			end
++			return math.sqrt((dx / (R * 0.85)) ^ 2 + (dz / R) ^ 2)
++		end
++		local function tierAt(x: number, z: number): number
++			local m = metric(x, z)
++			local lift = if m <= 0.42 then top elseif m <= 0.72 then mid else base
++			if daisShape == "split" and z < iz then
++				lift += 2.5
++			end
++			return lift
++		end
++		for z = 2, d - 1 do
++			for x = 2, w - 1 do
++				local m = metric(x, z)
++				if m <= 1 then
++					local i = at(x, z)
++					walk[i] = false
++					heights[i] = level
++					kinds[i] = if m <= 0.72 then "dais" else "rim"
++					lifts[i] = tierAt(x, z) + 0.2
++				end
++			end
++		end
++		local throneSink = tierAt(ix, throneZ) + 0.2
++
++		local function stair(atX: number, front: boolean)
++			local z0 = if front then d else 1
++			local dz = if front then -1 else 1
++			for k = 0, steps - 1 do
++				local z = z0 + dz * k
++				for x = atX - 1, atX + 1 do
++					local i = at(x, z)
++					walk[i] = true
++					heights[i] = 2 * (k + 1)
++					moat[i] = false
++					kinds[i] = nil
++				end
++				for _, x in { atX - 2, atX + 2 } do
++					if x >= 1 and x <= w then
++						local i = at(x, z)
++						walk[i] = false
++						heights[i] = level + 2
++						moat[i] = false
++						kinds[i] = nil
++					end
++				end
++			end
++		end
++		stair(sx, true)
++		stair(xe, false)
++
++		-- The road: in from the front border, up the stair, over the causeway, round
++		-- the dais and out across the back border.
++		local road: { Point } = {
++			{ x = sx, z = d },
++			{ x = sx, z = d - steps + 1 },
++			{ x = sx, z = math.max(2, d - steps - 1) },
++			{ x = sx, z = moatFrontAt(sx) + 3 },
++			{ x = ix, z = moatFrontAt(ix) + 2 },
++			{ x = ix, z = isle - 2 },
++			{ x = ix + side * (R + 2), z = iz + R + 1 },
++			{ x = ix + side * (R + 2), z = iz - R - 1 },
++			{ x = xe, z = math.max(steps + 1, iz - R - 3) },
++			{ x = xe, z = steps },
++			{ x = xe, z = 1 },
++		}
++		-- Keep every road point on walkable ground (the layout is sound by
++		-- construction; this is the belt to its braces).
++		for k = 2, #road - 1 do
++			local p = road[k]
++			local cxr, czr = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			if not walk[at(math.clamp(cxr, 1, w), math.clamp(czr, 1, d))] then
++				for radius = 1, 6 do
++					local best: Point? = nil
++					for oz = -radius, radius do
++						for ox = -radius, radius do
++							local x, z = cxr + ox, czr + oz
++							if inside(x, z) and walk[at(x, z)] then
++								best = best or { x = x, z = z }
++							end
++						end
++					end
++					if best then
++						p.x, p.z = best.x, best.z
++						break
++					end
++				end
++			end
++		end
++		-- The cells a road band covers, so no painted kind hides the way.
++		local onRoad = table.create(n, false)
++		for k = 2, #road do
++			local a, b = road[k - 1], road[k]
++			local samples = math.max(1, math.ceil(math.max(math.abs(b.x - a.x), math.abs(b.z - a.z)) * 3))
++			for s = 0, samples do
++				local t = s / samples
++				local cxr = math.floor(a.x + (b.x - a.x) * t + 0.5)
++				local czr = math.floor(a.z + (b.z - a.z) * t + 0.5)
++				for _, o in { { 0, 0 }, { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
++					local x, z = cxr + o[1], czr + o[2]
++					if x >= 1 and x <= w and z >= 1 and z <= d then
++						onRoad[at(x, z)] = true
++					end
++				end
++			end
++		end
++
++		-- Paint every cell but the road: the court over the terrace, a warm limestone
++		-- skirt round the dais, the curb over the rim and the stairs' cheeks, the cloud
++		-- in the chasm (the dais was painted above).
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if kinds[i] == nil then
++					if walk[i] then
++						if not onRoad[i] then
++							kinds[i] = if metric(x, z) <= 1.36 then "rim" else "court"
++						end
++					elseif moat[i] then
++						kinds[i] = "cloud"
++					else
++						kinds[i] = "curb"
++					end
++				end
++			end
++		end
++
++		-- 5: the setting. The throne first, on the dais's crown.
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local function facing(fx: number, fz: number, tx: number, tz: number): number
++			return -math.deg(math.atan2(tz - fz, tx - fx))
++		end
++		table.insert(marks, {
++			sculpt = "domain_throne_absent",
++			x = ix,
++			z = throneZ,
++			yaw = -90,
++			sink = -throneSink,
++			solid = true,
++		})
++		table.insert(effects, { recipe = "domain_throne_glory", x = ix, z = throneZ, lift = throneSink + SEAT })
++
++		-- Kneeling gods: a pair on the dais's lower step, a second pair nearer the seat.
++		local statues = if rng:NextNumber() < 0.6 then 4 else 2
++		local function statue(offX: number, offZ: number)
++			local x, z = ix + offX, iz + offZ
++			local cxr, czr = math.floor(x + 0.5), math.floor(z + 0.5)
++			local i = at(cxr, czr)
++			if not inside(cxr, czr) or lifts[i] == nil then
++				return
++			end
++			table.insert(marks, {
++				sculpt = "domain_kneeling_god",
++				x = x,
++				z = z,
++				yaw = facing(x, z, ix, iz),
++				sink = -lifts[i],
++				scale = between(rng, 1.1, 1.3),
++				solid = true,
++			})
++		end
++		statue(-0.62 * R, 0.62 * R)
++		statue(0.62 * R, 0.62 * R)
++		if statues == 4 then
++			statue(-0.5 * R, 0.5 * R)
++			statue(0.5 * R, 0.5 * R)
++		end
++
++		-- Lamps and banners on the open stone: candidates filtered by the road.
++		local function free(x: number, z: number): boolean
++			local cxr, czr = math.floor(x + 0.5), math.floor(z + 0.5)
++			return inside(cxr, czr) and walk[at(cxr, czr)] and not onRoad[at(cxr, czr)]
++		end
++		local lampSpots: { Point } = {
++			{ x = sx - 3.2, z = d - steps - 1.5 },
++			{ x = sx + 3.2, z = d - steps - 1.5 },
++			{ x = ix - 3.6, z = isle - 2 },
++			{ x = ix + 3.6, z = isle - 2 },
++			{ x = ix - 3.6, z = moatFrontAt(ix) + 4 },
++			{ x = ix + 3.6, z = moatFrontAt(ix) + 4 },
++		}
++		local lamps = whole(rng, 3, 5)
++		local placedLamps: { Point } = {}
++		for _, p in lampSpots do
++			if #placedLamps >= lamps then
++				break
++			end
++			if free(p.x, p.z) then
++				table.insert(placedLamps, p)
++				table.insert(marks, {
++					sculpt = "domain_throne_lamp",
++					x = p.x,
++					z = p.z,
++					yaw = 0,
++					solid = true,
++				})
++			end
++		end
++		-- Fire in the first lamps, under a phone's emitter share.
++		for k = 1, math.min(3, #placedLamps) do
++			local p = placedLamps[k]
++			table.insert(effects, { recipe = "domain_brazier_fire", x = p.x, z = p.z, lift = 11.2 })
++		end
++
++		local bannerSpots: { Point } = {
++			{ x = sx - 4.8, z = d - steps - 2 },
++			{ x = sx + 4.8, z = d - steps - 2 },
++			{ x = ix - side * 5, z = isle - 2 },
++			{ x = ix - side * 5, z = moatFrontAt(ix) + 4 },
++			{ x = ix - side * 0.7 * R, z = iz - R - 3 },
++			{ x = ix + side * 0.7 * R, z = iz - R - 3 },
++			{ x = 3.5, z = frontZ + 2 },
++			{ x = w - 2.5, z = frontZ + 2 },
++		}
++		local banners = whole(rng, 4, 6)
++		local setBanners = 0
++		for _, p in bannerSpots do
++			if setBanners >= banners then
++				break
++			end
++			if free(p.x, p.z) then
++				setBanners += 1
++				table.insert(marks, {
++					sculpt = "domain_throne_banner",
++					x = p.x,
++					z = p.z,
++					yaw = facing(p.x, p.z, ix, iz),
++					scale = between(rng, 0.9, 1.05),
++				})
++			end
++		end
++
++		-- Up the cloud bridge from the forecourt's landing; and from the island's
++		-- flank, across the dais's steps to the seat.
++		local foreZ = math.max(frontZ + 2, math.min(frontZ + 4, d - steps - 1))
++		local flankX = math.clamp(ix + side * (R + 6), il + 2, ir - 2)
++		local cameras: { MapFeature.Shot } = {
++			{
++				name = "up the cloud bridge",
++				from = { x = ix, z = foreZ, lift = 9 },
++				to = { x = ix, z = throneZ, lift = throneSink + SEAT },
++				fov = 60,
++			},
++			{
++				name = "the empty seat",
++				from = { x = flankX, z = math.clamp(iz + R + 5, steps + 2, isle - 2), lift = 8 },
++				to = { x = ix, z = throneZ, lift = throneSink + SEAT - 2 },
++				fov = 64,
++			},
++		}
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

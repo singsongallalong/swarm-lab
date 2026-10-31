@@ -1,0 +1,22 @@
+{
+  "letter": "H",
+  "generator": "g16",
+  "run": "domain-features-2",
+  "intent": "A god's mausoleum: a colossal sarcophagus sealed behind a gold door ajar on a dark sanctum, inside a white pedimented cella on an ivory stepped plinth with a gilded processional stair, guardian colossi, a colonnade and its own seal-of-light effect.",
+  "critic": {
+    "idea": 7,
+    "photo": 6,
+    "topology": 4,
+    "look": 5,
+    "game_camera": 3,
+    "usable": 5,
+    "total": 5.5,
+    "reads_as_itself": "yes",
+    "inorganic": 10,
+    "figures": "yes",
+    "best_shot": "feature-shots-final: pedimented cella with guardians on the stair",
+    "why": "An unmistakable temple tomb; the game camera sits inside it and plans repeat."
+  },
+  "role": "Landmark: mausoleum as a dungeon mouth or quest end.",
+  "notes": "# H\n\nKeep: Keep the pedimented cella, the stepped plinth and the sarcophagus.\n\n1. Shrink or offset the cella so the game camera frames it rather than standing inside.\n2. Vary plans: dome on some seeds, colonnade wings, stair on a different side.\n3. Make the guardians larger and paired at the stair so they read as colossi.\n"
+}

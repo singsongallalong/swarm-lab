@@ -1,0 +1,22 @@
+{
+  "letter": "O",
+  "generator": "g20",
+  "run": "domain-features-2",
+  "intent": "The rainbow bridge's foot: the gods' bridge of seven prismatic light leaves a marble court through a twin-towered gatehouse and climbs out of sight over the cloud, with a watchman's horn on its lit plinth at the court's middle and a fall of gold light where the deck touches the world.",
+  "critic": {
+    "idea": 9,
+    "photo": 6,
+    "topology": 5,
+    "look": 5,
+    "game_camera": 4,
+    "usable": 5,
+    "total": 6.38,
+    "reads_as_itself": "yes",
+    "inorganic": 9,
+    "figures": "yes",
+    "best_shot": "feature-whole-final: rainbow ribbon rising past the gatehouse",
+    "why": "The run's boldest landmark; a rainbow bridge everyone will recognise. Court around it is thin."
+  },
+  "role": "Edge landmark: the rainbow bridge foot as the area's exit or entrance.",
+  "notes": "# O\n\nKeep: Keep the prismatic ribbon and the watch horn.\n\n1. Dress the court around the gate; it is bare paving and slabs.\n2. Let the ribbon climb higher and further so it reads from the game camera.\n3. Make the gatehouse ivory and gold, not grey towers.\n"
+}

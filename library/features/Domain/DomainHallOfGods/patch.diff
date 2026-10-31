@@ -1,0 +1,785 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..542ab745 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,12 +2,14 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainHallOfGods = require("../systems/features/DomainHallOfGods")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	DomainHallOfGods = DomainHallOfGods,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..82128863 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1220,6 +1220,133 @@ Sculpts.domain_spire_lesser = {
+ 	accent = { 234, 150, 60 },
+ 	maxPrims = 36,
+ }
++-- The Eternal Domain's empty throne, at the head of its great hall: the gods'
++-- seat, colossal (a person is 5 studs), on a stepped ivory plinth. Its back
++-- rises into a gilded crown of rays, gold ribs run up the spine and finials
++-- cap the corners; the seat itself is bare. Ivory marble in a light and a
++-- shaded tone and a warm gold, inside B12's limits. Seeds shift the gilding
++-- and the stones; a finial is sometimes down, and the tall centre ray is
++-- sometimes broken off. The throne is whole, flawless and empty: the hall's
++-- cold perfection, and the thing that makes it a little terrible.
++Sculpts.domain_throne = {
++	kind = "assembly",
++	size = { 16, 17.4, 13 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 206, 190 }, { 228, 186, 104 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil" },
++	maxPrims = 24,
++	parts = {
++		{ name = "plinth", shape = "Block", size = { 16, 0.9, 13 }, at = { 0, 0.45, 0 }, color = 2 },
++		{ name = "plinth", shape = "Block", size = { 13, 0.9, 10.6 }, at = { 0, 1.35, 0 }, color = 1 },
++		{ name = "plinth", shape = "Block", size = { 10.4, 1, 8.6 }, at = { 0, 2.3, 0 }, color = 2 },
++		{
++			name = "seat",
++			shape = "Block",
++			size = { 8.6, 1.2, 7.2 },
++			at = { 0, 3.4, 0 },
++			color = 1,
++			jitter = { size = 0.02 },
++		},
++		{
++			name = "back",
++			shape = "Block",
++			size = { 1.5, 9.5, 7.4 },
++			at = { -3.6, 8.75, 0 },
++			color = 1,
++			jitter = { rot = { 0, 0, 0.8 } },
++		},
++		{ name = "spine", shape = "Block", size = { 0.7, 9, 1 }, at = { -2.8, 8.7, 0 }, color = 3 },
++		{
++			name = "armrest",
++			shape = "Block",
++			size = { 7.2, 0.8, 1.3 },
++			at = { 0.9, 4.8, 3.9 },
++			color = 2,
++			mirror = "z",
++		},
++		{
++			name = "arm post",
++			shape = "Block",
++			size = { 1.1, 2.1, 1.3 },
++			at = { 3.9, 3.75, 3.9 },
++			color = 1,
++			mirror = "z",
++		},
++		{ name = "crown", shape = "Block", size = { 2, 1.3, 8.2 }, at = { -3.6, 14.15, 0 }, color = 3 },
++		{
++			name = "finial",
++			shape = "Ball",
++			size = { 1.1, 1.1, 1.1 },
++			at = { -3.6, 15.1, 4.3 },
++			color = 3,
++			mirror = "z",
++			fallen = 0.12,
++		},
++		{ name = "ray", shape = "Block", size = { 0.6, 1.8, 0.6 }, at = { -3.6, 15.55, 1.9 }, color = 3, mirror = "z" },
++		{ name = "ray", shape = "Block", size = { 0.5, 1.2, 0.5 }, at = { -3.6, 15.25, 3.3 }, color = 3, mirror = "z" },
++		{
++			name = "crest",
++			oneOf = {
++				{ shape = "Block", size = { 0.7, 2.6, 0.7 }, at = { -3.6, 16.1, 0 }, color = 3 },
++				{ shape = "Block", size = { 0.7, 1.2, 0.7 }, at = { -3.6, 15.4, 0 }, color = 3 },
++			},
++			weights = { 3, 1 },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The Eternal Domain's hall lamp: a slender ivory pedestal under a wide gold
++-- bowl of white light, for the rows down a god-hall's aisle. The kit's own
++-- brazier is a tripod that reads as a stool (domain-features-1 critic); this
++-- is the lamp a procession deserves: a stem, a gold collar and a shallow
++-- bowl with four studs round its rim. A person is 5 studs, so the bowl rides
++-- above the head. Seeds settle the bowl and drop a rim stud or two.
++Sculpts.domain_hall_lamp = {
++	kind = "assembly",
++	size = { 4.2, 12.4, 4.2 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 214, 206, 190 }, { 228, 186, 104 }, { 234, 228, 214 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Neon" },
++	maxPrims = 14,
++	parts = {
++		{ name = "base", shape = "Block", size = { 3, 0.7, 3 }, at = { 0, 0.35, 0 }, color = 2 },
++		{ name = "plinth", shape = "Block", size = { 2.3, 0.6, 2.3 }, at = { 0, 1, 0 }, color = 1 },
++		{ name = "stem", shape = "Cylinder", axis = "y", size = { 1.1, 9.2, 1.1 }, at = { 0, 5.9, 0 }, color = 1 },
++		{
++			name = "collar",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 1.6, 0.5, 1.6 },
++			at = { 0, 10.75, 0 },
++			color = 3,
++		},
++		{
++			name = "bowl",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 4, 1.1, 4 },
++			at = { 0, 11.55, 0 },
++			color = 3,
++			jitter = { rot = { 0.8, 0, 0.8 } },
++		},
++		{
++			name = "light",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 3, 0.25, 3 },
++			at = { 0, 12.2, 0 },
++			color = 4,
++		},
++		{
++			name = "stud",
++			shape = "Ball",
++			size = { 0.5, 0.5, 0.5 },
++			at = { 1.7, 12.05, 0 },
++			color = 3,
++			ring = { count = 4, radius = 1.7, start = 45 },
++			chance = 0.9,
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
+ 
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..6d55b3c6 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,94 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain (roadmap areas/eternal-domain.md): the gods' light
++-- falling through the open roof of their hall onto the empty throne. A narrow
++-- shower of gold motes rains down from the height of the columns into a soft
++-- warm glow, a cold pale sky-blue haze lies at the dais's foot, and two
++-- breathing lights pool on the marble. Gold is the domain's crown, so the
++-- shower is narrow and the glow faint (EF8): the throne is lit from above,
++-- the hall around it stays cold. The path is short and nearly straight
++-- (bend 4), so the shaft stays over the dais rather than trailing across the
++-- hall; the emitters hang high but their motes fall through the game camera's
++-- view (SE10).
++recipes.domain_hall_glory = {
++	about = "The gods' light falling into their roofless hall: gold motes raining down onto the empty throne through a warm glow and a cold sky-blue haze.",
++	theme = "domain",
++	path = { kind = "worm", length = 14, step = 2, bend = 4, climb = 0, round = 2 },
++	layers = {
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 3,
++				thick = 12,
++				lift = 24,
++				toward = "down",
++				rise = 2.2,
++				life = { 8, 11 },
++				rate = 2.5,
++				size = 0.8,
++				tall = 2.6,
++				transparency = 0.2,
++				color = "gold",
++				texture = "wisp",
++				lean = 5,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1, tilt = 3, span = 10, periods = { 5.3, 7.9 } },
++			priority = 1,
++		},
++		{
++			name = "glow",
++			look = {
++				kind = "stream",
++				every = 5,
++				thick = 12,
++				lift = 22,
++				toward = "down",
++				rise = 1.2,
++				life = { 9, 12 },
++				rate = 1,
++				size = 5.5,
++				tall = 1.5,
++				transparency = 0.9,
++				color = "glow",
++				texture = "veil",
++				lean = 6,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 1.6, tilt = 6, span = 16, periods = { 8.4, 12.1 } },
++			priority = 2,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 7,
++				thick = 16,
++				lift = 0.5,
++				toward = "up",
++				rise = 0.4,
++				life = { 8, 11 },
++				rate = 0.5,
++				size = 7,
++				tall = 0.6,
++				transparency = 0.94,
++				color = "sky",
++				texture = "veil",
++				lean = 8,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 4, span = 20, periods = { 11, 15 } },
++			priority = 4,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 5, max = 2, range = 18, brightness = 1, color = "glow" },
++			motion = { kind = "pulse", period = 4.2, depth = 0.3 },
++			priority = 3,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..33ef212f 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,14 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	["sculpt:domain_throne"] = row(
++		"The Eternal Domain's empty throne: a colossal ivory seat on a stepped plinth, its back, crown and finials gilded.",
++		MOOR
++	),
++	["sculpt:domain_hall_lamp"] = row(
++		"The Eternal Domain's hall lamp: a slender ivory pedestal under a wide gold bowl of white light, with studs round the rim.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainHallOfGods.luau b/src/shared/systems/features/DomainHallOfGods.luau
+new file mode 100644
+index 00000000..4282ae21
+--- /dev/null
++++ b/src/shared/systems/features/DomainHallOfGods.luau
+@@ -0,0 +1,504 @@
++--!strict
++-- The great hall of the gods (docs/guides/map-features.md): a long roofless
++-- hall on the Eternal Domain's podium. A gold-inlaid aisle runs its length
++-- between two rows of colossal ivory columns, crossed by open arches; side
++-- aisles flank the nave out to a pale brink over the cloud; at the head stands
++-- a stepped dais, and on it an empty throne under a shaft of falling light.
++-- The hall is the domain's opposite to the game's dark ruins: cold-perfect,
++-- monumental, a little terrible because nobody is on the throne.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure, the rest only dress
++-- it:
++--   1. the plan: a straight nave, a double-aisled basilica (four colonnades),
++--      a cross-shaped hall with a wide transept at its head, or a hall whose
++--      far end rounds into an apse;
++--   2. the dais: one at the far end, one at the hall's middle (the road climbs
++--      over it), or twin daises at both ends facing each other;
++--   3. the levels: the hall floor on a two-stud podium; the gold aisle sunken
++--      two studs below the side aisles or flush with them; the dais raised
++--      four, six or eight studs on its stepped apron;
++--   4. the colonnade and its ruin: bays four to five cells apart, transverse
++--      arches every one to three bays, doors and collapsed bays, and ruin
++--      heaps of fallen drums out in the aisles;
++--   5. the footprint: width by plan, 17 to 45 cells, and length 46 to 56.
++-- Everything stands on the Domain's own kit (columns, triumphal arches, gold
++-- trees) but three rows of its own: the gods' empty throne (domain_throne),
++-- its hall lamp (domain_hall_lamp) and the light falling into the hall
++-- (domain_hall_glory).
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local PLANS = { "straight", "double", "crossed", "round" }
++local DAISES = { "far", "centre", "twin" }
++
++-- The Domain's surfaces (B12): pale ivory and a gold-inlaid aisle. Each kind
++-- takes a terrain material the tileset leaves free, except where it matches
++-- the tileset's own colour exactly (Marble paving, Limestone flags, Snow
++-- cloud), since Roblox colours a material once for the whole place.
++local IVORY: FeatureDress.CellLook = {
++	ground = { material = "Concrete", color = { 232, 226, 212 } },
++	lift = 0.2,
++	clear = true,
++}
++local GOLD_INLAY: FeatureDress.CellLook = {
++	-- A warm gold-leaning stone, inside B12's surface limit (s 0.42, v 0.88),
++	-- lit at intervals by small studs of holy light.
++	ground = { material = "Slate", color = { 224, 196, 130 } },
++	lift = 0.2,
++	clear = true,
++	glow = { color = { 255, 226, 160 }, range = 12, brightness = 1.1, every = 20, height = 0.35 },
++}
++local MARBLE_FLOOR: FeatureDress.CellLook = {
++	-- The tileset's own paving colour, so the shared Marble may be used.
++	ground = { material = "Marble", color = { 214, 208, 194 } },
++	lift = 0.2,
++	clear = true,
++}
++local LIMESTONE_FLOOR: FeatureDress.CellLook = {
++	-- The tileset's dressed-limestone flags, the dais steps and the ruin.
++	ground = { material = "Limestone", color = { 202, 194, 178 } },
++	lift = 0.2,
++	clear = true,
++}
++local PLINTH_STONE: FeatureDress.CellLook = {
++	ground = { material = "Rock", color = { 210, 202, 186 } },
++	lift = 0.5,
++	clear = true,
++}
++local CLOUD_FLOOR: FeatureDress.CellLook = {
++	ground = { material = "Snow", color = { 232, 229, 222 } },
++	clear = true,
++}
++
++local PLINTH_LIFT = 0.5
++-- How far the arch's piers stand from its middle, at scale 1 (size 30, span 16).
++local ARCH_PIER = 11.5
++
++local feature: MapFeature.Feature = {
++	name = "DomainHallOfGods",
++	about = "The roofless great hall of the gods: a gold-inlaid aisle between colossal ivory columns, open arches overhead, and an empty throne on a stepped dais at its head.",
++	tileset = "domain",
++	scale = "centrepiece",
++	role = "crossing",
++	mood = { "monumental", "holy", "roofless", "empty", "cold-perfect" },
++	cells = {
++		aisle = IVORY,
++		nave = GOLD_INLAY,
++		dais = MARBLE_FLOOR,
++		step = LIMESTONE_FLOOR,
++		plinth = PLINTH_STONE,
++		-- A bay whose column has come down: the drums lie on the walk.
++		rubble = {
++			ground = LIMESTONE_FLOOR.ground,
++			lift = 0.2,
++			clear = true,
++			props = { { sculpt = "domain_column_fallen", every = 1, scale = { 0.55, 0.8 }, sink = 0.2 } },
++		},
++		-- A heap of fallen drums in the aisle: a low wall of ruin.
++		ruin = {
++			ground = LIMESTONE_FLOOR.ground,
++			lift = 0.2,
++			clear = true,
++			props = { { sculpt = "domain_column_fallen", every = 2, scale = { 0.7, 1 }, sink = 0.3 } },
++		},
++		causeway = MARBLE_FLOOR,
++		cloud = CLOUD_FLOOR,
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-3: the structure, first: plan, dais, colonnade, levels, size.
++		local plan = PLANS[whole(rng, 1, #PLANS)]
++		local where = DAISES[whole(rng, 1, #DAISES)]
++		local naveHalf = whole(rng, 3, 4)
++		local k = naveHalf + 1 -- the colonnade line, cells out from the middle
++		local aisle = whole(rng, 4, 7)
++		local mx = whole(rng, 1, 3) -- the cloud band at the sides
++		local mz = whole(rng, 1, 2) -- and at the ends
++		local aisle2 = if plan == "double" then whole(rng, 3, 5) else 0
++		local outerK = if plan == "double" then k + aisle + 1 else 0
++		local halfW = k + aisle + (if plan == "double" then 1 + aisle2 else 0)
++		local armExtra = if plan == "crossed" then whole(rng, 4, 7) else 0
++		local armHalf = halfW + armExtra
++		local w = 2 * (if plan == "crossed" then armHalf else halfW) + 2 * mx + 1
++		local d = whole(rng, 46, 56)
++		local cx = (w + 1) / 2
++		local pz0, pz1 = mz + 1, d - mz
++		local roundR = if plan == "round" then whole(rng, 6, 9) else 0
++		local tz0 = if plan == "crossed" then pz1 - whole(rng, 6, 9) else pz1 + 1
++		local sunken = rng:NextNumber() < 0.5
++		local daisD = 2 * whole(rng, 2, 4) -- four, six or eight studs up
++		local daisDepth = whole(rng, 4, 5)
++		local side = if rng:NextNumber() < 0.5 then 1 else -1
++		local daisOff = math.min(whole(rng, 1, 2), math.max(1, naveHalf - 2))
++		local bay = whole(rng, 4, 5)
++		local archEvery = whole(rng, 2, 3)
++		local heapCount = whole(rng, 0, 4)
++		local treeCount = whole(rng, 1, 2)
++
++		local floorH = 2
++		local naveH = if sunken then 0 else floorH
++		local daisTop = floorH + daisD
++
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++
++		-- 1: the platform's plan. The hall stands on its podium with a band of
++		-- cloud round it, so each plan's walkable shape is its own.
++		local function halfWidthAt(z: number): number
++			if plan == "crossed" and z >= tz0 then
++				return armHalf
++			elseif plan == "round" and z > pz1 - roundR then
++				local t = (z - (pz1 - roundR)) / roundR
++				return halfW * (1 - 0.6 * t * t)
++			end
++			return halfW
++		end
++		local function onPlatform(x: number, z: number): boolean
++			return z >= pz0 and z <= pz1 and math.abs(x - cx) <= halfWidthAt(z) + 1e-6
++		end
++		local function onCauseway(x: number, z: number): boolean
++			return math.abs(x - cx) <= 1 and (z < pz0 or z > pz1)
++		end
++
++		local walk = table.create(w * d, false)
++		local heights = table.create(w * d, 0)
++		local kinds: { [number]: string } = {}
++		local function set(x: number, z: number, ok: boolean, h: number, kind: string)
++			local i = at(x, z)
++			walk[i] = ok
++			heights[i] = h
++			kinds[i] = kind
++		end
++
++		for z = 1, d do
++			for x = 1, w do
++				if onPlatform(x, z) then
++					set(x, z, true, floorH, "aisle")
++				elseif onCauseway(x, z) then
++					set(x, z, true, 0, "causeway")
++				else
++					set(x, z, false, 0, "cloud")
++				end
++			end
++		end
++		-- The gold inlay runs the nave's middle three cells, with ivory
++		-- margins either side: an aisle laid into the hall's paving, not a
++		-- gold carpet. The side aisles stay at the podium level.
++		for z = pz0, pz1 do
++			for x = cx - naveHalf, cx + naveHalf do
++				local i = at(x, z)
++				if kinds[i] == "aisle" and math.abs(x - cx) <= 1 then
++					heights[i] = naveH
++					kinds[i] = "nave"
++				end
++			end
++		end
++
++		-- 2-3: the daises and their steps. Each spans the nave, so the road
++		-- climbs over it and passes the empty throne on one side.
++		local daises: { { dz0: number, dz1: number } } = {}
++		local farBack = if plan == "round" then roundR + 1 else 1
++		if where == "far" or where == "twin" then
++			local dz1 = pz1 - farBack - daisD / 2
++			table.insert(daises, { dz0 = dz1 - daisDepth + 1, dz1 = dz1 })
++		end
++		if where == "centre" then
++			local mid = math.floor((pz0 + pz1) / 2) + whole(rng, -2, 2)
++			local dz1 = math.min(mid + math.floor((daisDepth - 1) / 2), pz1 - 1 - daisD / 2)
++			table.insert(daises, { dz0 = dz1 - daisDepth + 1, dz1 = dz1 })
++		end
++		if where == "twin" then
++			local dz0 = pz0 + 1 + daisD / 2
++			table.insert(daises, { dz0 = dz0, dz1 = dz0 + daisDepth - 1 })
++		end
++		for _, r in daises do
++			for z = r.dz0, r.dz1 do
++				for x = cx - naveHalf, cx + naveHalf do
++					if onPlatform(x, z) then
++						set(x, z, true, daisTop, "dais")
++					end
++				end
++			end
++			for s = 1, daisD / 2 do
++				for _, z in { r.dz0 - s, r.dz1 + s } do
++					if z >= pz0 and z <= pz1 then
++						for x = cx - naveHalf, cx + naveHalf do
++							if onPlatform(x, z) then
++								set(x, z, true, daisTop - 2 * s, "step")
++							end
++						end
++					end
++				end
++			end
++		end
++		local function nearDais(z: number, margin: number): boolean
++			for _, r in daises do
++				if z >= r.dz0 - daisD / 2 - margin and z <= r.dz1 + daisD / 2 + margin then
++					return true
++				end
++			end
++			return false
++		end
++
++		-- 4: the colonnades, their arches, and the ruin among them.
++		local positions: { number } = {}
++		local bayZ = pz0 + 2
++		while bayZ <= pz1 - 2 do
++			table.insert(positions, bayZ)
++			bayZ += bay
++		end
++		local archScale = 4 * k / ARCH_PIER
++		local colScale = 0.98 + (k - 4) * 0.1
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local lamps: { { x: number, z: number, scale: number } } = {}
++		local firstColumn: Point? = nil
++
++		local function placeColumns(x: number, z: number)
++			table.insert(marks, {
++				sculpt = "domain_column",
++				x = x,
++				z = z,
++				yaw = between(rng, -5, 5),
++				scale = colScale * between(rng, 0.96, 1.04),
++				sink = -PLINTH_LIFT,
++				solid = true,
++			})
++		end
++		local function colonnadeRow(x: number, z: number, state: string)
++			if state == "intact" then
++				set(x, z, false, floorH, "plinth")
++			elseif state == "fallen" then
++				set(x, z, true, floorH, "rubble")
++			else
++				set(x, z, true, floorH, "aisle")
++			end
++		end
++		for idx, zAt in positions do
++			local roll = rng:NextNumber()
++			-- Alongside a dais the colonnade stays solid: an open bay there
++			-- would leave the raised apron beside walkable ground four or six
++			-- studs below it.
++			local state = if nearDais(zAt, 0)
++				then "intact"
++				elseif roll < 0.08 then "door"
++				elseif roll < 0.16 then "fallen"
++				else "intact"
++			for _, sx in { -1, 1 } do
++				colonnadeRow(cx + sx * k, zAt, state)
++			end
++			if state == "intact" then
++				if idx % archEvery == 0 and not nearDais(zAt, 2) then
++					-- One open arch spans the nave, its piers on the colonnade.
++					table.insert(marks, {
++						sculpt = "domain_triumphal_arch",
++						x = cx,
++						z = zAt,
++						yaw = 0,
++						scale = archScale,
++						sink = naveH - floorH - PLINTH_LIFT,
++						solid = false,
++					})
++				else
++					for _, sx in { -1, 1 } do
++						placeColumns(cx + sx * k, zAt)
++					end
++					firstColumn = firstColumn or { x = cx - k, z = zAt }
++				end
++			end
++			if outerK > 0 then
++				local roll2 = rng:NextNumber()
++				local state2 = if roll2 < 0.07 then "door" elseif roll2 < 0.14 then "fallen" else "intact"
++				for _, sx in { -1, 1 } do
++					colonnadeRow(cx + sx * outerK, zAt, state2)
++				end
++				if state2 == "intact" then
++					for _, sx in { -1, 1 } do
++						placeColumns(cx + sx * outerK, zAt)
++					end
++				end
++			end
++			-- Lamps line the aisle on the throne's side, off the road's lane.
++			if idx % 2 == 0 and not nearDais(zAt, 2) then
++				local scale = between(rng, 0.95, 1.1)
++				table.insert(marks, {
++					sculpt = "domain_hall_lamp",
++					x = cx + side * (naveHalf - 1),
++					z = zAt,
++					yaw = between(rng, -8, 8),
++					scale = scale,
++					sink = -0.2,
++				})
++				table.insert(lamps, { x = cx + side * (naveHalf - 1), z = zAt, scale = scale })
++			end
++		end
++		-- The dais's apron stands a step above the nave, so the colonnade line
++		-- beside it is made a solid wall for the whole dais, not just at the
++		-- bays: otherwise the apron's edge would drop four to eight studs to
++		-- the walk beside it. The wall leaves the side aisle open outside it.
++		for _, r in daises do
++			for z = math.max(pz0, r.dz0 - daisD / 2), math.min(pz1, r.dz1 + daisD / 2) do
++				for _, sx in { -1, 1 } do
++					if onPlatform(cx + sx * k, z) then
++						set(cx + sx * k, z, false, floorH, "plinth")
++					end
++				end
++			end
++		end
++
++		-- Ruin heaps out in the aisles: wall islands that break the fighting
++		-- floor and give the high camera something to read.
++		local heaps: { number } = {}
++		for _ = 1, heapCount do
++			for _ = 1, 8 do
++				local sx = if rng:NextNumber() < 0.5 then -1 else 1
++				local outer = outerK > 0 and rng:NextNumber() < 0.5
++				local x0 = cx + sx * ((if outer then outerK else k) + 2)
++				local z0 = pz0 + whole(rng, 2, math.max(3, pz1 - pz0 - 6))
++				local free = true
++				for _, prev in heaps do
++					free = free and math.abs(z0 - prev) >= 6
++				end
++				local fits = not nearDais(z0, 2) and not nearDais(z0 + 2, 2)
++				for dz = 0, 2 do
++					for dx = 0, 1 do
++						fits = fits and onPlatform(x0 + dx * sx, z0 + dz)
++					end
++				end
++				if free and fits then
++					for dz = 0, 2 do
++						for dx = 0, 1 do
++							set(x0 + dx * sx, z0 + dz, false, floorH, "ruin")
++						end
++					end
++					table.insert(heaps, z0)
++					break
++				end
++			end
++		end
++
++		-- Gold trees on the cloud band, framing the hall's brink.
++		for t = 1, treeCount do
++			local sx = if t == 1 then -1 else 1
++			local tx = cx + sx * (halfW + mx)
++			local tz = pz0 + whole(rng, 4, math.max(5, math.floor((pz1 - pz0) / 3)))
++			if not onPlatform(tx, tz) and not onCauseway(tx, tz) then
++				table.insert(marks, {
++					sculpt = "domain_gold_tree_low",
++					x = tx,
++					z = tz,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.85, 1.05),
++					sink = 0.3,
++					solid = true,
++				})
++			end
++		end
++
++		-- The thrones: empty seats of the gods, facing the hall's middle.
++		local mainDais = daises[1]
++		local throneZ = (mainDais.dz0 + mainDais.dz1) / 2
++		local throneX = cx + side * daisOff
++		for _, r in daises do
++			local tz = (r.dz0 + r.dz1) / 2
++			table.insert(marks, {
++				sculpt = "domain_throne",
++				x = cx + side * daisOff,
++				z = tz,
++				yaw = if #daises > 1 and r.dz0 < (pz0 + pz1) / 2 then -90 else 90,
++				sink = -0.2,
++				solid = true,
++			})
++		end
++
++		-- The effects: the gods' light on the throne, the lamps' fire, the light
++		-- climbing one column. Four markers, all on the footprint.
++		table.insert(effects, { recipe = "domain_hall_glory", x = throneX, z = throneZ, lift = 2 })
++		for b = 1, math.min(2, #lamps) do
++			local spot = lamps[b]
++			table.insert(effects, {
++				recipe = "domain_brazier_fire",
++				x = spot.x,
++				z = spot.z,
++				lift = 12.2 * spot.scale,
++			})
++		end
++		if firstColumn then
++			table.insert(effects, {
++				recipe = "domain_column_glory",
++				x = firstColumn.x,
++				z = firstColumn.z,
++				lift = 0.5,
++			})
++		end
++
++		-- 5: the road, in at one end, the length of the gold aisle, up over
++		-- every dais on the throne's far side, and out at the other end.
++		local pass = cx - side * naveHalf
++		local road: { Point } = { { x = cx, z = 1 } }
++		table.insert(road, { x = cx, z = pz0 })
++		local ordered = table.clone(daises)
++		table.sort(ordered, function(a, b)
++			return a.dz0 < b.dz0
++		end)
++		for _, r in ordered do
++			table.insert(road, { x = pass, z = math.max(pz0, r.dz0 - daisD / 2 - 1) })
++			table.insert(road, { x = pass, z = r.dz0 })
++			table.insert(road, { x = pass, z = r.dz1 })
++			table.insert(road, { x = pass, z = r.dz1 + daisD / 2 })
++			table.insert(road, { x = cx, z = math.min(pz1, r.dz1 + daisD / 2 + 2) })
++		end
++		table.insert(road, { x = cx, z = pz1 })
++		table.insert(road, { x = cx, z = d })
++
++		-- The photographer's two cameras: down the aisle from the door, and
++		-- close before the empty throne.
++		-- On a twin hall the near dais's throne stands in the doorway's view,
++		-- so the long shot steps past it into the nave.
++		local longZ = math.max(0.5, pz0 - 5)
++		if #ordered > 1 then
++			longZ = math.min(pz1 - 4, ordered[1].dz1 + daisD / 2 + 3)
++		end
++		local cameras: { MapFeature.Shot } = {
++			{
++				-- Off the throne's side, so the far throne is seen past the
++				-- near side's lamps.
++				name = "down the gold aisle",
++				from = { x = cx - side * 2.5, z = longZ, lift = 12 },
++				to = { x = throneX, z = throneZ, lift = 6 },
++				fov = 62,
++			},
++			{
++				name = "the empty throne",
++				from = { x = cx - side * 1.5, z = math.max(pz0 + 2, throneZ - daisDepth - 4), lift = 6 },
++				to = { x = throneX, z = throneZ, lift = 6 },
++				fov = 54,
++			},
++		}
++
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = cameras,
++		}
++	end,
++}
++
++return feature

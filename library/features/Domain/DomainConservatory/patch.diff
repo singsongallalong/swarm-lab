@@ -1,0 +1,1045 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..61bd05db 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,11 +2,13 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainConservatory = require("../systems/features/DomainConservatory")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
++	DomainConservatory = DomainConservatory,
+ 	MoorBarrowRing = MoorBarrowRing,
+ }
+ 
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..f6ad3688 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,153 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain's crystal conservatory (a map feature, DomainConservatory): the
++-- parts of a glasshouse of pale blue glass on a gold frame. A wall bay: an ivory plinth
++-- and head, gold posts, sill and glazing bars, and one great pale pane between them,
++-- split into three lights by two mullions (a person is 5 studs; the bay is four and a
++-- half people tall). Gold is trim and frame, the glass the only cool blue in the house.
++Sculpts.domain_crystal_bay = {
++	kind = "assembly",
++	size = { 12, 23, 5 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 210, 201, 182 }, { 230, 190, 110 }, { 176, 202, 232 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Glass" },
++	maxPrims = 14,
++	parts = {
++		{ shape = "Block", size = { 12, 1.2, 4.6 }, at = { 0, 0.6, 0 }, color = 1 },
++		{ shape = "Block", size = { 11.2, 0.5, 1.6 }, at = { 0, 1.65, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 1, 18.6, 1 }, at = { -5.5, 10.9, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 1, 18.6, 1 }, at = { 5.5, 10.9, 0 }, color = 3 },
++		{ shape = "Block", size = { 10.2, 18.4, 0.3 }, at = { 0, 11.2, 0 }, color = 4 },
++		{ shape = "Block", size = { 0.4, 18.4, 0.6 }, at = { -1.8, 11.2, 0 }, color = 3 },
++		{ shape = "Block", size = { 0.4, 18.4, 0.6 }, at = { 1.8, 11.2, 0 }, color = 3 },
++		{ shape = "Block", size = { 10.6, 0.4, 0.6 }, at = { 0, 15.9, 0 }, color = 3 },
++		{ shape = "Block", size = { 12, 1, 3.4 }, at = { 0, 20.7, 0 }, color = 1 },
++		{ shape = "Block", size = { 12, 0.6, 2.2 }, at = { 0, 21.5, 0 }, color = 3 },
++		{ shape = "Ball", size = { 1, 1, 1 }, at = { 0, 22.5, 0 }, color = 3 },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The glass roof: one bay of a gabled vault 40 studs across (the feature scales it to
++-- the walk it covers), two pale panes on three gold ribs a side, a ridge beam and a gold
++-- finial. Its lowest beams sit on the wall bays' crowns.
++Sculpts.domain_glass_vault = {
++	kind = "assembly",
++	size = { 12, 11.55, 42 },
++	material = "Marble",
++	colors = { { 230, 190, 110 }, { 176, 202, 232 } },
++	materials = { [1] = "Foil", [2] = "Glass" },
++	maxPrims = 14,
++	parts = {
++		{ shape = "Block", size = { 12, 0.6, 1 }, at = { 0, 0.3, 20.3 }, color = 1 },
++		{ shape = "Block", size = { 12, 0.6, 1 }, at = { 0, 0.3, -20.3 }, color = 1 },
++		{ shape = "Block", size = { 12, 0.3, 22.6 }, at = { 0, 5.05, 10.05 }, rot = { 26.6, 0, 0 }, color = 2 },
++		{ shape = "Block", size = { 12, 0.3, 22.6 }, at = { 0, 5.05, -10.05 }, rot = { -26.6, 0, 0 }, color = 2 },
++		{
++			shape = "Block",
++			size = { 0.5, 0.45, 22.6 },
++			at = { 0, 5.5, 10.05 },
++			rot = { 26.6, 0, 0 },
++			color = 1,
++			row = { count = 3, step = { 4.5, 0, 0 }, center = true },
++		},
++		{
++			shape = "Block",
++			size = { 0.5, 0.45, 22.6 },
++			at = { 0, 5.5, -10.05 },
++			rot = { -26.6, 0, 0 },
++			color = 1,
++			row = { count = 3, step = { 4.5, 0, 0 }, center = true },
++		},
++		{ shape = "Block", size = { 12, 0.8, 1.1 }, at = { 0, 10.2, 0 }, color = 1 },
++		{ shape = "Ball", size = { 0.9, 0.9, 0.9 }, at = { 0, 11.1, 0 }, color = 1 },
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The heart of the house: a tiered fountain. An ivory base and bowl, still pale water
++-- glowing in the bowl, a gold pedestal and upper bowl with water of its own, a gold
++-- crown ball, a drop of light over it and eight gold studs round the lower rim.
++Sculpts.domain_crystal_fountain = {
++	kind = "assembly",
++	size = { 15, 17.1, 15 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 210, 201, 182 }, { 230, 190, 110 }, { 178, 202, 232 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Neon" },
++	maxPrims = 22,
++	parts = {
++		{ shape = "Cylinder", axis = "y", size = { 14, 1, 14 }, at = { 0, 0.5, 0 }, color = 1 },
++		{ shape = "Cylinder", axis = "y", size = { 13, 1.8, 13 }, at = { 0, 2, 0 }, color = 2 },
++		{ shape = "Cylinder", axis = "y", size = { 11.6, 0.3, 11.6 }, at = { 0, 3, 0 }, color = 4 },
++		{ shape = "Cylinder", axis = "y", size = { 2.4, 5, 2.4 }, at = { 0, 6.4, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 7, 1.3, 7 }, at = { 0, 9.5, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 5.8, 0.3, 5.8 }, at = { 0, 10.3, 0 }, color = 4 },
++		{ shape = "Cylinder", axis = "y", size = { 1.2, 3.6, 1.2 }, at = { 0, 12.3, 0 }, color = 3 },
++		{ shape = "Ball", size = { 2, 2, 2 }, at = { 0, 15.1, 0 }, color = 3 },
++		{ shape = "Ball", size = { 1, 1, 1 }, at = { 0, 16.6, 0 }, color = 4 },
++		{
++			shape = "Ball",
++			size = { 0.5, 0.5, 0.5 },
++			at = { 6.2, 3.1, 0 },
++			color = 3,
++			ring = { count = 8, radius = 0 },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++-- The house's planting: an exotic gold-leaved plant in an ivory planter with a gold rim.
++-- A pale trunk under a palm crown of seven broad gold fronds that rise from the heart and
++-- droop at their tips, with five young leaves standing inside them and a gold heart. The
++-- leaves are wide blades two to three studs long each segment, so a row of them along the
++-- beds reads as a hothouse in leaf, not a fan of spokes (critic 1: the first cut's thin
++-- blades read as a windmill).
++Sculpts.domain_gold_frond = {
++	kind = "assembly",
++	size = { 10, 9.1, 10 },
++	material = "Marble",
++	colors = { { 232, 224, 206 }, { 210, 201, 182 }, { 230, 190, 110 }, { 214, 174, 104 } },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Foil" },
++	maxPrims = 26,
++	parts = {
++		{ shape = "Cylinder", axis = "y", size = { 3.6, 2.2, 3.6 }, at = { 0, 1.1, 0 }, color = 1 },
++		{ shape = "Cylinder", axis = "y", size = { 4, 0.45, 4 }, at = { 0, 2.35, 0 }, color = 3 },
++		{ shape = "Cylinder", axis = "y", size = { 3, 0.2, 3 }, at = { 0, 2.5, 0 }, color = 2 },
++		{ shape = "Cylinder", axis = "y", size = { 0.7, 4.2, 0.7 }, at = { 0, 4.6, 0 }, color = 2 },
++		{ shape = "Cylinder", axis = "y", size = { 1.1, 0.5, 1.1 }, at = { 0, 6.9, 0 }, color = 3 },
++		{
++			at = { 0, 7, 0 },
++			ring = { count = 7, radius = 0.5, start = 0 },
++			children = {
++				{
++					shape = "Block",
++					size = { 2.6, 0.24, 1.5 },
++					at = { 1.3, 0.35, 0 },
++					rot = { 0, 0, 18 },
++					color = 3,
++					jitter = { rot = { 0, 0, 4 } },
++				},
++				{
++					shape = "Block",
++					size = { 2.2, 0.2, 1.25 },
++					at = { 3.5, 0.23, 0 },
++					rot = { 0, 0, -28 },
++					color = 4,
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			at = { 0, 7.2, 0 },
++			ring = { count = 5, radius = 0.4, start = 36 },
++			children = {
++				{
++					shape = "Block",
++					size = { 2.4, 0.22, 1.3 },
++					at = { 1.2, 0.9, 0 },
++					rot = { 0, 0, 42 },
++					color = 4,
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{ shape = "Ball", size = { 1, 0.9, 1 }, at = { 0, 7.6, 0 }, color = 3 },
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..c5a8b14b 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,92 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's crystal conservatory (a map feature, DomainConservatory): the
++-- fountain at its heart, water and holy light together. A pale sky-blue jet climbs out
++-- of the upper bowl and breaks into a wide, slower fall, white glints catching in it,
++-- and one warm breathing light pools on the water. Cold water, warm light: the first
++-- cut's wide gold haze layer tinted the whole plume beige and it read as smoke (critic
++-- 1), so the glow is now light only and the spray carries the colour. Short and low, so
++-- the plume stands under the glass roof and the game camera (SE10), and few enough
++-- emitters for a phone's share (EF3).
++recipes.domain_crystal_spray = {
++	about = "The Eternal Domain's crystal fountain: a pale sky-blue jet breaking into a wide fall, with white glints and one warm light on the water.",
++	theme = "domain",
++	path = { kind = "worm", length = 5, step = 2, bend = 10, climb = 80, start = 80, round = 1 },
++	layers = {
++		{
++			name = "jet",
++			look = {
++				kind = "stream",
++				every = 1.4,
++				thick = 2.6,
++				lift = 0.2,
++				toward = "up",
++				rise = 9.5,
++				life = { 1, 1.5 },
++				rate = 14,
++				size = 0.85,
++				tall = 2.4,
++				transparency = 0.22,
++				color = "sky",
++				texture = "wisp",
++				lean = 22,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 0.4, tilt = 5, span = 7, periods = { 2.3, 3.4 } },
++			priority = 1,
++		},
++		{
++			name = "fall",
++			look = {
++				kind = "stream",
++				every = 2.5,
++				thick = 6,
++				lift = 0.1,
++				toward = "up",
++				rise = 7.5,
++				life = { 1.8, 2.6 },
++				rate = 5,
++				size = 1.7,
++				tall = 2,
++				transparency = 0.72,
++				color = "sky",
++				texture = "veil",
++				lean = 40,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 0.7, tilt = 8, span = 10, periods = { 3.1, 4.7 } },
++			priority = 3,
++		},
++		{
++			name = "glints",
++			look = {
++				kind = "stream",
++				every = 3.2,
++				thick = 3,
++				lift = 0.3,
++				toward = "up",
++				rise = 10,
++				life = { 0.8, 1.2 },
++				rate = 5,
++				size = 0.28,
++				tall = 2.8,
++				transparency = 0.08,
++				color = "core",
++				texture = "wisp",
++				lean = 26,
++				vary = 0.7,
++			},
++			motion = { kind = "sway", amplitude = 0.6, tilt = 8, span = 6, periods = { 1.9, 2.8 } },
++			priority = 2,
++		},
++		{
++			name = "light",
++			look = { kind = "light", every = 5, max = 1, range = 20, brightness = 1.1, color = "glow" },
++			motion = { kind = "pulse", period = 3.4, depth = 0.25 },
++			priority = 4,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..9e2d9ee2 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,23 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	-- The Eternal Domain's crystal conservatory (DomainConservatory)
++	["sculpt:domain_crystal_bay"] = row(
++		"A bay of the Eternal Domain's crystal conservatory: an ivory plinth and head, gold posts and glazing bars, and a great pale blue pane between them.",
++		MOOR
++	),
++	["sculpt:domain_glass_vault"] = row(
++		"A bay of the conservatory's glass roof: two pale panes on gold ribs, a ridge beam and a gold finial.",
++		MOOR
++	),
++	["sculpt:domain_crystal_fountain"] = row(
++		"The tiered fountain at the conservatory's heart: an ivory bowl and a gold upper bowl, pale glowing water and a gold crown.",
++		MOOR
++	),
++	["sculpt:domain_gold_frond"] = row(
++		"An exotic gold-leaved plant in an ivory planter, its fronds fanned out, for the conservatory's beds.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainConservatory.luau b/src/shared/systems/features/DomainConservatory.luau
+new file mode 100644
+index 00000000..047abec4
+--- /dev/null
++++ b/src/shared/systems/features/DomainConservatory.luau
+@@ -0,0 +1,738 @@
++--!strict
++-- The crystal conservatory of the Eternal Domain: a glasshouse of pale blue glass panes
++-- on a gold frame, beds of gold-leaved exotics inside it, and a fountain of holy light at
++-- its heart. The Domain has colonnades, gold trees, gates and waystone rings out on its
++-- paving; it has no place built to keep anything alive.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30). The first draws
++-- choose the structure; the rest only dress it:
++--   1. the plan: a long nave, a cross with a transept, or twin glasshouses flanking an
++--      open court;
++--   2. the long axis: along the road or across it;
++--   3. the heart: a tiered fountain, a still mirror pool under a gold tree, or a grove of
++--      gold trees round a small fountain;
++--   4. the glass: whole, broken in a bay or two, or a fallen stretch of wall (more ways in);
++--   5. then the footprint's size, the hall's width, the beds' depth, the doors' placement
++--      and the planting.
++-- The house stands on the kit's own stone (domain_bay, domain_glass_vault,
++-- domain_crystal_fountain and domain_gold_frond are its own sculpts), and its fountain
++-- light is its own set piece, domain_crystal_spray.
++local DistanceField = require("../DistanceField")
++local FeatureDress = require("../FeatureDress")
++local Grid = require("../Grid")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local PLANS = { "nave", "cross", "twin" }
++local HEARTS = { "fountain", "mirror", "grove" }
++local STATES = { "whole", "broken", "ruined" }
++
++-- The Domain's own marble and paving, in the colours outdoorTilesets/Domain gives them
++-- (Roblox colours a terrain material once for the whole place), and the pale sky blue of
++-- its glass, kept under B12's surface limit (value 0.92).
++local FLOOR = { material = "Marble", color = { 214, 208, 194 } }
++local COURT = { material = "Pavement", color = { 226, 212, 184 } }
++local BED = { material = "Cobblestone", color = { 172, 160, 134 } }
++local GLASS = { material = "Slate", color = { 190, 198, 214 } }
++local WATER = { material = "Ice", color = { 178, 198, 226 } }
++local PLINTH = { material = "Sandstone", color = { 196, 186, 166 } }
++-- The domain theme's glow: the light the glass holds.
++local HOLY = { 255, 226, 160 }
++-- The domain theme's pale sky blue: the water's own cold light.
++local SKY = { 190, 214, 255 }
++-- The wall bays stand 23 studs over the floor; the vaults spring from their tops.
++local WALL_TOP = 23
++
++local feature: MapFeature.Feature = {
++	name = "DomainConservatory",
++	about = "A crystal conservatory: a glasshouse of pale blue glass on a gold frame, its beds of gold-leaved plants round a fountain of light.",
++	tileset = "domain",
++	scale = "medium",
++	role = "crossing",
++	mood = { "glazed", "holy", "hothouse", "gilded", "monumental" },
++	cells = {
++		paving = { ground = FLOOR, lift = 0.4, clear = true },
++		-- The open court between twin houses, the warm gold-leaning paving of the road.
++		court = { ground = COURT, lift = 0.25, clear = true },
++		-- The road's runner through the house: the area's warmer road paving, so the way
++		-- in at the door is the way on across the floor (the road through it is a promise
++		-- the inside keeps too).
++		walk = { ground = COURT, lift = 0.4, clear = true },
++		-- Planting beds: warm gravel, a little raised, with a gold-leaved exotic each.
++		-- Wide gold leaves want room: one plant every six cells, not a thicket.
++		bed = {
++			ground = BED,
++			lift = 1.2,
++			clear = true,
++			props = { { sculpt = "domain_gold_frond", every = 6, scale = { 0.62, 0.85 } } },
++		},
++		-- The glass wall's footing, and the small lamps set along it.
++		glass = {
++			ground = GLASS,
++			lift = 0.6,
++			clear = true,
++			glow = { color = HOLY, range = 11, brightness = 0.7, every = 30, height = 1.4 },
++		},
++		-- Still pale water: the fountain's basin and the mirror pool, lit from within so
++		-- a pool shows cold blue across a pale hall.
++		water = {
++			ground = WATER,
++			lift = 0.25,
++			clear = true,
++			glow = { color = SKY, range = 10, brightness = 0.7, every = 14, height = 0.5 },
++		},
++		-- The fountain's dais and the pool's rim.
++		plinth = { ground = PLINTH, lift = 1.6, clear = true },
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-4: the structure, first.
++		local plan = PLANS[whole(rng, 1, #PLANS)]
++		local crosswise = rng:NextNumber() < 0.5
++		local heart = HEARTS[whole(rng, 1, #HEARTS)]
++		local state = STATES[whole(rng, 1, #STATES)]
++		-- 5: size and dressing.
++		local W, D
++		if plan == "nave" then
++			W, D = whole(rng, 28, 32), whole(rng, 24, 30)
++		elseif plan == "twin" then
++			W, D = whole(rng, 29, 32), whole(rng, 31, 32)
++		else
++			W, D = whole(rng, 28, 32), whole(rng, 28, 32)
++		end
++		local ri = 0 -- the hall's interior half-width across, cells (nave and cross)
++		local hallDepth = 0 -- each twin house's outside depth, cells
++		if plan == "nave" then
++			ri = whole(rng, 4, 9)
++		elseif plan == "cross" then
++			ri = whole(rng, 4, 8)
++		else
++			-- Two houses make a court between them: a narrow glass alley or a broad
++			-- plaza, so two twin seeds read as different places from the air.
++			hallDepth = whole(rng, 6, 10)
++		end
++		-- The court's depth round the house: a glasshouse filling its site, or one set
++		-- back in a broad apron behind its arcades.
++		local m = if plan == "twin" then whole(rng, 2, 3) else whole(rng, 2, 4)
++		-- Beds run deep in a broad hall and shallow in a narrow one, so there is always
++		-- an open floor of at least three cells round the heart for the road to walk.
++		local bedDepth = if plan == "twin" then whole(rng, 1, 2) else math.min(whole(rng, 1, 3), ri - 3)
++		local phase = whole(rng, 0, 2)
++		local doorHalf = 1 -- a door is three cells, twelve studs, wide
++		local cx, cz = (W + 1) / 2, (D + 1) / 2
++		local xcI, zcI = math.floor(cx + 0.5), math.floor(cz + 0.5)
++		local xLo, xHi = m + 1, W - m -- the house's outer wall cells along the walk
++		local zLo, zHi = m + 1, D - m -- and across it (the cross's transept ends)
++
++		local walk = table.create(W * D, true)
++		local heights = table.create(W * D, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local inside = table.create(W * D, false)
++
++		local function at(x: number, z: number): number
++			return (z - 1) * W + x
++		end
++		local function isIn(x: number, z: number): boolean
++			return x >= 1 and z >= 1 and x <= W and z <= D and inside[at(x, z)]
++		end
++
++		-- The house's outer footprint, walls included: a rectangle, a cross of two, or
++		-- two parallel houses with an open court between.
++		local topZ0, topZ1, botZ0, botZ1 = 0, 0, 0, 0
++		if plan == "nave" then
++			for z = 1, D do
++				for x = xLo, xHi do
++					if math.abs(z - cz) < ri + 1 then
++						inside[at(x, z)] = true
++					end
++				end
++			end
++		elseif plan == "cross" then
++			for z = 1, D do
++				for x = xLo, xHi do
++					if math.abs(z - cz) < ri + 1 then
++						inside[at(x, z)] = true
++					end
++				end
++			end
++			for z = zLo, zHi do
++				for x = 1, W do
++					if math.abs(x - cx) < ri + 1 then
++						inside[at(x, z)] = true
++					end
++				end
++			end
++		else
++			topZ0, topZ1 = zLo, zLo + hallDepth - 1
++			botZ1, botZ0 = zHi, zHi - hallDepth + 1
++			for z = topZ0, topZ1 do
++				for x = xLo, xHi do
++					inside[at(x, z)] = true
++				end
++			end
++			for z = botZ0, botZ1 do
++				for x = xLo, xHi do
++					inside[at(x, z)] = true
++				end
++			end
++		end
++
++		-- The wall line: one cell of the house's edge all round.
++		local edge = table.create(W * D, false)
++		for z = 1, D do
++			for x = 1, W do
++				local i = at(x, z)
++				if
++					inside[i]
++					and (not isIn(x - 1, z) or not isIn(x + 1, z) or not isIn(x, z - 1) or not isIn(x, z + 1))
++				then
++					edge[i] = true
++				end
++			end
++		end
++
++		-- The doors: ways through the glass at the ends the road comes in by.
++		local doors: { { x: number, z: number, dx: number, dz: number } } = {}
++		local function addDoor(x: number, z: number, dx: number, dz: number)
++			if x >= 1 and z >= 1 and x <= W and z <= D then
++				table.insert(doors, { x = x, z = z, dx = dx, dz = dz })
++			end
++		end
++		if plan == "nave" or plan == "cross" then
++			for k = -doorHalf, doorHalf do
++				addDoor(xLo, zcI + k, 1, 0)
++				addDoor(xHi, zcI + k, -1, 0)
++			end
++		end
++		if plan == "cross" then
++			for k = -doorHalf, doorHalf do
++				addDoor(xcI + k, zLo, 0, 1)
++				addDoor(xcI + k, zHi, 0, -1)
++			end
++		end
++		if plan == "twin" then
++			for k = -doorHalf, doorHalf do
++				addDoor(xcI + k, topZ1, 0, -1)
++				addDoor(xcI + k, botZ0, 0, 1)
++			end
++		end
++
++		-- Fallen glass: a stretch of a long wall gone, its beds with it, so the house has
++		-- more ways in than its doors.
++		local gaps: { { x0: number, x1: number, z: number, dz: number } } = {}
++		if state ~= "whole" then
++			local sides: { { z: number, dz: number } } = {}
++			if plan == "nave" or plan == "cross" then
++				table.insert(sides, { z = math.floor(cz - ri), dz = 1 })
++				table.insert(sides, { z = math.ceil(cz + ri), dz = -1 })
++			else
++				table.insert(sides, { z = topZ0, dz = 1 })
++				table.insert(sides, { z = botZ1, dz = -1 })
++			end
++			local count = if state == "broken" then whole(rng, 1, 2) else 1
++			local length = if state == "broken" then whole(rng, 2, 4) else whole(rng, 4, 6)
++			for _ = 1, count do
++				local side = sides[whole(rng, 1, #sides)]
++				local x0 = whole(rng, xLo + 3, xHi - 3 - length)
++				local clear = true
++				for _, other in gaps do
++					if math.abs(other.x0 - x0) < length + 3 then
++						clear = false
++					end
++				end
++				if clear then
++					table.insert(gaps, { x0 = x0, x1 = x0 + length - 1, z = side.z, dz = side.dz })
++				end
++			end
++		end
++
++		-- Cells the walls give way at: the doors and their approach through the beds.
++		local forced = table.create(W * D, false)
++		local function force(x: number, z: number)
++			if x >= 1 and z >= 1 and x <= W and z <= D then
++				forced[at(x, z)] = true
++			end
++		end
++		for _, d in doors do
++			for k = 0, bedDepth + 3 do
++				force(d.x + d.dx * k, d.z + d.dz * k)
++			end
++		end
++		for _, g in gaps do
++			for x = g.x0, g.x1 do
++				for k = 0, bedDepth + 2 do
++					force(x, g.z + g.dz * k)
++				end
++			end
++		end
++
++		-- How deep into the house the walls of glass stand, and the beds behind them.
++		local g = Grid.new(W, D, Grid.WALL)
++		for z = 1, D do
++			for x = 1, W do
++				local i = at(x, z)
++				if inside[i] and not edge[i] then
++					g.cells[i] = Grid.FLOOR
++				end
++			end
++		end
++		local field = DistanceField.fromWalls(g)
++
++		for z = 1, D do
++			for x = 1, W do
++				local i = at(x, z)
++				if inside[i] then
++					heights[i] = 1
++					if edge[i] then
++						if forced[i] then
++							walk[i] = true
++							kinds[i] = "paving"
++						else
++							walk[i] = false
++							kinds[i] = "glass"
++						end
++					else
++						local depth = DistanceField.at(field, x, z)
++						if depth <= bedDepth and not forced[i] then
++							walk[i] = false
++							kinds[i] = "bed"
++						else
++							walk[i] = true
++							kinds[i] = "paving"
++						end
++					end
++				end
++			end
++		end
++
++		-- The open court between twin houses: the same floor level, its own warm paving.
++		if plan == "twin" then
++			for z = topZ1 + 1, botZ0 - 1 do
++				for x = 1, W do
++					local i = at(x, z)
++					if not inside[i] then
++						walk[i] = true
++						heights[i] = 1
++						kinds[i] = "court"
++					end
++				end
++			end
++		end
++
++		-- The heart: in the nave or the crossing, or the middle of the twin court.
++		local hx, hz = cx, cz
++		if plan == "twin" then
++			hz = (topZ1 + 1 + botZ0 - 1) / 2
++		end
++		-- The open floor round the heart, from its centre to the planting beds; the house
++		-- shaped so the road always has a way round it and the heart never reaches a bed.
++		local openHalf
++		if plan == "twin" then
++			openHalf = (botZ0 - topZ1 - 1) / 2
++		else
++			openHalf = ri - bedDepth
++		end
++		local roadOff = math.min(math.max(2, openHalf - 0.8), 4.6)
++		-- A pool with a walking ring left round it: the pool stops 1.6 cells short of the
++		-- beds, so the road has a clear way about the heart on every plan (a wider pool
++		-- cut the walkable ground in two on seed 21).
++		local waterR = math.min(3.2, math.max(1.4, openHalf - 1.6))
++		-- The fountain is the heart of the house, not an ornament in a pond: half again
++		-- the size the first cut gave it, and standing in the water (critic 1: it sat
++		-- sunk to its rim in the pool).
++		local heartScale = math.clamp(waterR / 2.6, 0.55, 1.05)
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++
++		local function heartRing(inner: number, outer: number, kind: string)
++			for z = 1, D do
++				for x = 1, W do
++					local i = at(x, z)
++					if inside[i] and not edge[i] then
++						local d2 = (x - hx) ^ 2 + (z - hz) ^ 2
++						if d2 <= outer * outer and (inner <= 0 or d2 > inner * inner) then
++							walk[i] = false
++							kinds[i] = kind
++						end
++					end
++				end
++			end
++		end
++
++		-- Every heart is a pool with a raised marble coping at its lip; the fountain
++		-- stands in the water, so its basin rises out of the pool rather than sitting on
++		-- a dais island with odd squares of water at the corners (critic 2). The coping
++		-- lies inside the pool's radius, so the walkable ring round it stays whole.
++		local waterTop = 0.25
++		local function pool()
++			heartRing(0, waterR - 0.4, "water")
++			heartRing(waterR - 0.4, waterR, "plinth")
++		end
++		if heart == "fountain" then
++			pool()
++			table.insert(marks, {
++				sculpt = "domain_crystal_fountain",
++				x = hx,
++				z = hz,
++				yaw = between(rng, 0, 360),
++				scale = heartScale,
++				sink = -waterTop,
++				solid = true,
++			})
++			table.insert(
++				effects,
++				{ recipe = "domain_crystal_spray", x = hx, z = hz, lift = waterTop + 10.3 * heartScale }
++			)
++		elseif heart == "mirror" then
++			pool()
++			-- A specimen of the house's own planting, grown tall in the middle of the
++			-- still pool: the kit's bare gold tree read as a grey starburst on pale
++			-- stone (critic 2), so the heart is the conservatory's gold palm at full size.
++			table.insert(marks, {
++				sculpt = "domain_gold_frond",
++				x = hx,
++				z = hz,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, 1.45, 1.65),
++				sink = -waterTop,
++				solid = true,
++			})
++			table.insert(effects, { recipe = "domain_gold_leaves", x = hx, z = hz, lift = 0 })
++		else
++			-- A flooded grove: two or three great gold palms standing in the still pool
++			-- round a small fountain, the hothouse's specimen bed. Growing them out of the
++			-- water keeps their planters off the road's ring and the walkable floor whole
++			-- however tight the hall (a grove of beds on the floor cut seed 21's floor).
++			pool()
++			local groveR = math.max(0.8, waterR * 0.55)
++			local trees = whole(rng, 2, 3)
++			for k = 0, trees - 1 do
++				local a = k * 2 * math.pi / trees + between(rng, -0.15, 0.15)
++				table.insert(marks, {
++					sculpt = "domain_gold_frond",
++					x = hx + math.cos(a) * groveR,
++					z = hz + math.sin(a) * groveR,
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.9, 1.1),
++					sink = -waterTop,
++					solid = true,
++				})
++			end
++			table.insert(marks, {
++				sculpt = "domain_crystal_fountain",
++				x = hx,
++				z = hz,
++				yaw = between(rng, 0, 360),
++				scale = 0.6,
++				sink = -waterTop,
++				solid = true,
++			})
++			table.insert(effects, { recipe = "domain_crystal_spray", x = hx, z = hz, lift = waterTop + 10.3 * 0.6 })
++		end
++
++		-- The glass walls: a bay of gold and pale panes every third cell of the wall line,
++		-- kept clear of the doors and the fallen stretches.
++		local function nearForced(x: number, z: number, reach: number): boolean
++			for dz = -reach, reach do
++				for dx = -reach, reach do
++					local nx, nz = x + dx, z + dz
++					if nx >= 1 and nz >= 1 and nx <= W and nz <= D and forced[at(nx, nz)] then
++						return true
++					end
++				end
++			end
++			return false
++		end
++		for z = 1, D do
++			for x = 1, W do
++				local i = at(x, z)
++				if edge[i] and not forced[i] and not nearForced(x, z, 1) then
++					local outX = not isIn(x - 1, z) or not isIn(x + 1, z)
++					local outZ = not isIn(x, z - 1) or not isIn(x, z + 1)
++					if outZ and not outX and (x + phase) % 3 == 0 then
++						table.insert(marks, { sculpt = "domain_crystal_bay", x = x, z = z, yaw = 0, solid = true })
++					elseif outX and not outZ and (z + phase) % 3 == 0 then
++						table.insert(marks, { sculpt = "domain_crystal_bay", x = x, z = z, yaw = 90, solid = true })
++					end
++				end
++			end
++		end
++
++		-- The gold arches over the doors, and the glass vaults over the walks between them.
++		local archAt: { { x: number, z: number, yaw: number } } = {}
++		if plan == "nave" or plan == "cross" then
++			table.insert(archAt, { x = xLo, z = zcI, yaw = 90 })
++			table.insert(archAt, { x = xHi, z = zcI, yaw = 90 })
++		end
++		if plan == "cross" then
++			table.insert(archAt, { x = xcI, z = zLo, yaw = 0 })
++			table.insert(archAt, { x = xcI, z = zHi, yaw = 0 })
++		end
++		if plan == "twin" then
++			table.insert(archAt, { x = xcI, z = topZ1, yaw = 0 })
++			table.insert(archAt, { x = xcI, z = botZ0, yaw = 0 })
++		end
++		for _, a in archAt do
++			table.insert(marks, {
++				sculpt = "domain_triumphal_arch_high",
++				x = a.x,
++				z = a.z,
++				yaw = a.yaw,
++				solid = true,
++			})
++		end
++
++		local function nearHeart(x: number, z: number, reach: number): boolean
++			return (x - hx) ^ 2 + (z - hz) ^ 2 < reach * reach
++		end
++		local function layRoof(from: number, to: number, across: number, along: string, spanCells: number)
++			local s = spanCells * 4 / 40
++			local step = math.max(2, math.ceil(12 * s / 4))
++			for k = from, to, step do
++				local px, pz = (if along == "x" then k else across), (if along == "x" then across else k)
++				if not nearForced(px, pz, 2) and not nearHeart(px, pz, 3.4) then
++					table.insert(marks, {
++						sculpt = "domain_glass_vault",
++						x = px,
++						z = pz,
++						yaw = if along == "x" then 0 else 90,
++						scale = s,
++						sink = -WALL_TOP,
++						solid = true,
++					})
++				end
++			end
++		end
++		if plan == "nave" then
++			layRoof(xLo + 1, xHi - 1, cz, "x", 2 * ri)
++		elseif plan == "cross" then
++			layRoof(xLo + 1, xHi - 1, cz, "x", 2 * ri)
++			layRoof(zLo + 1, zHi - 1, cx, "z", 2 * ri)
++		else
++			layRoof(xLo + 1, xHi - 1, (topZ0 + topZ1) / 2, "x", hallDepth - 2)
++			layRoof(xLo + 1, xHi - 1, (botZ0 + botZ1) / 2, "x", hallDepth - 2)
++		end
++
++		-- Fallen stones heaped where the glass came down.
++		for _, gap in gaps do
++			for _ = 1, whole(rng, 1, 2) do
++				table.insert(marks, {
++					sculpt = "domain_column_fallen",
++					x = math.clamp(between(rng, gap.x0 - 0.4, gap.x1 + 0.4), 1, W),
++					z = math.clamp(gap.z + gap.dz * between(rng, 1.2, 2), 1, D),
++					yaw = between(rng, 0, 360),
++					scale = between(rng, 0.8, 1.15),
++					solid = true,
++				})
++			end
++		end
++
++		-- The road: in at the border, through the doors, round the heart and out.
++		local road: { Point } = {}
++		if plan == "nave" then
++			local side = if rng:NextNumber() < 0.5 then 1 else -1
++			local zo = math.clamp(hz + side * roadOff, 2, D - 1)
++			road = {
++				{ x = 1, z = zcI },
++				{ x = xLo, z = zcI },
++				{ x = hx - roadOff, z = zcI },
++				{ x = hx - roadOff, z = zo },
++				{ x = hx + roadOff, z = zo },
++				{ x = hx + roadOff, z = zcI },
++				{ x = xHi, z = zcI },
++				{ x = W, z = zcI },
++			}
++		elseif plan == "cross" then
++			local south = rng:NextNumber() < 0.5
++			local dir = if south then 1 else -1
++			road = {
++				{ x = 1, z = zcI },
++				{ x = xLo, z = zcI },
++				{ x = hx - roadOff, z = zcI },
++				{ x = hx, z = hz + dir * roadOff },
++				{ x = xcI, z = if south then zHi else zLo },
++				{ x = xcI, z = if south then D else 1 },
++			}
++		else
++			local side = if rng:NextNumber() < 0.5 then 1 else -1
++			local zo = math.clamp(hz + side * roadOff * 0.7, 2, D - 1)
++			road = {
++				{ x = 1, z = hz },
++				{ x = hx - roadOff, z = hz },
++				{ x = hx - roadOff * 0.5, z = zo },
++				{ x = hx + roadOff * 0.5, z = zo },
++				{ x = hx + roadOff, z = hz },
++				{ x = W, z = hz },
++			}
++		end
++		local function settle(p: Point)
++			local bx, bz = math.floor(p.x + 0.5), math.floor(p.z + 0.5)
++			local function ok(x: number, z: number): boolean
++				return x >= 1 and z >= 1 and x <= W and z <= D and walk[at(x, z)]
++			end
++			if ok(bx, bz) then
++				return
++			end
++			for r = 1, 6 do
++				for dz = -r, r do
++					for dx = -r, r do
++						if ok(bx + dx, bz + dz) then
++							p.x, p.z = bx + dx, bz + dz
++							return
++						end
++					end
++				end
++			end
++		end
++		for _, p in road do
++			settle(p)
++		end
++
++		-- The road's runner: the area's warm road paving laid three cells wide along the
++		-- road's own way, so the way from door to door reads on the house's floor and not
++		-- only at its border. Only plain floor takes it: the beds, the water and the
++		-- fountain's coping keep their own kinds.
++		local function runner(x: number, z: number)
++			if x >= 1 and z >= 1 and x <= W and z <= D then
++				local i = at(x, z)
++				local kind = kinds[i]
++				if walk[i] and (kind == "paving" or kind == "court") then
++					kinds[i] = "walk"
++				end
++			end
++		end
++		for k = 1, #road - 1 do
++			local a, b = road[k], road[k + 1]
++			local dx, dz = b.x - a.x, b.z - a.z
++			local len = math.sqrt(dx * dx + dz * dz)
++			if len > 1e-6 then
++				local px, pz = -dz / len, dx / len
++				local steps = math.max(1, math.ceil(len * 4))
++				for s = 0, steps do
++					local t = s / steps
++					local x, z = a.x + dx * t, a.z + dz * t
++					for off = -1, 1 do
++						runner(math.floor(x + px * off + 0.5), math.floor(z + pz * off + 0.5))
++					end
++				end
++			end
++		end
++
++		-- The photographs: down the length of the house from just inside its west end,
++		-- the gold palms and the lit fountain between the glass; and the whole glasshouse
++		-- from a high corner of the court, roof and plan in one. Both stand over the
++		-- feature's own cleared ground: a camera on the pad's road was swallowed by a
++		-- dressed brazier (critic 2), so neither stands where the tileset scatters.
++		local cameras: { MapFeature.Shot } = {
++			if plan == "twin"
++				then {
++					-- A court between two houses is a slot: stand above the walls, or the
++					-- near house fills half the picture.
++					name = "up the court",
++					from = { x = xLo + 2, z = hz, lift = 30 },
++					to = { x = hx, z = hz, lift = 4 },
++					fov = 58,
++				}
++				else {
++					name = "down the glasshouse",
++					from = { x = xLo + 2, z = hz, lift = 15 },
++					to = { x = hx, z = hz, lift = 6 },
++					fov = 62,
++				},
++			{
++				name = "the crystal house from the court",
++				from = { x = -6, z = -6, lift = 27 },
++				to = { x = hx, z = hz, lift = 7 },
++				fov = 56,
++			},
++		}
++
++		-- Across the road instead of along it: the whole house is turned a quarter.
++		if not crosswise then
++			return {
++				width = W,
++				depth = D,
++				walk = walk,
++				heights = heights,
++				kinds = kinds,
++				lifts = lifts,
++				marks = marks,
++				effects = effects,
++				road = road,
++				cameras = cameras,
++			}
++		end
++		local nw, nd = D, W
++		local nwalk = table.create(nw * nd, false)
++		local nheights = table.create(nw * nd, 0)
++		local nkinds: { [number]: string } = {}
++		local nlifts: { [number]: number } = {}
++		for z = 1, D do
++			for x = 1, W do
++				local ni = (x - 1) * nw + z
++				nwalk[ni] = walk[at(x, z)]
++				nheights[ni] = heights[at(x, z)]
++				local kind = kinds[at(x, z)]
++				if kind then
++					nkinds[ni] = kind
++				end
++				local lift = lifts[at(x, z)]
++				if lift then
++					nlifts[ni] = lift
++				end
++			end
++		end
++		local nmarks: { FeatureDress.Landmark } = {}
++		for _, mark in marks do
++			local q = table.clone(mark)
++			q.x, q.z = mark.z, mark.x
++			-- The turn is a transpose (a mirror across x = z), so a mark's facing goes
++			-- from yaw to 90 - yaw: the bays lie along their walls and the arches face
++			-- the doors, instead of standing across them (they blocked the camera before).
++			q.yaw = 90 - (mark.yaw or 0)
++			table.insert(nmarks, q)
++		end
++		local neffects: { FeatureDress.Effect } = {}
++		for _, e in effects do
++			local q = table.clone(e)
++			q.x, q.z = e.z, e.x
++			table.insert(neffects, q)
++		end
++		local nroad: { Point } = {}
++		for _, p in road do
++			table.insert(nroad, { x = p.z, z = p.x })
++		end
++		local ncameras: { MapFeature.Shot } = {}
++		for _, s in cameras do
++			table.insert(ncameras, {
++				name = s.name,
++				from = { x = s.from.z, z = s.from.x, lift = s.from.lift },
++				to = { x = s.to.z, z = s.to.x, lift = s.to.lift },
++				fov = s.fov,
++			})
++		end
++		return {
++			width = nw,
++			depth = nd,
++			walk = nwalk,
++			heights = nheights,
++			kinds = nkinds,
++			lifts = nlifts,
++			marks = nmarks,
++			effects = neffects,
++			road = nroad,
++			cameras = ncameras,
++		}
++	end,
++}
++
++return feature

@@ -1,0 +1,979 @@
+diff --git a/src/shared/data/MapFeatures.luau b/src/shared/data/MapFeatures.luau
+index 9cb50f31..a3251efe 100644
+--- a/src/shared/data/MapFeatures.luau
++++ b/src/shared/data/MapFeatures.luau
+@@ -2,12 +2,14 @@
+ -- Every map feature by name (systems/MapFeature, docs/guides/map-features.md): one
+ -- structure each, judged alone with `lune run scripts/dresspreview shots out.png 4 1
+ -- feature=<Name>` and stamped into maps by the generator (stream map-features, PR 2).
++local DomainBellCourt = require("../systems/features/DomainBellCourt")
+ local MapFeature = require("../systems/MapFeature")
+ local MoorBarrowRing = require("../systems/features/MoorBarrowRing")
+ 
+ local MapFeatures: { [string]: MapFeature.Feature } = {
+ 	-- One line per feature, `Name = Name,`, with its require above.
+ 	MoorBarrowRing = MoorBarrowRing,
++	DomainBellCourt = DomainBellCourt,
+ }
+ 
+ return table.freeze(MapFeatures)
+diff --git a/src/shared/data/Sculpts.luau b/src/shared/data/Sculpts.luau
+index e1c29de3..ddab6e1c 100644
+--- a/src/shared/data/Sculpts.luau
++++ b/src/shared/data/Sculpts.luau
+@@ -1221,6 +1221,248 @@ Sculpts.domain_spire_lesser = {
+ 	maxPrims = 36,
+ }
+ 
++-- The Eternal Domain (a trial, 2026-10-30): the bell court's belfry, an open
++-- campanile of four ivory piers carrying a colossal gold bell. Light, mid and
++-- shaded marble in three tones (bible §2: a surface this big loses its facets
++-- in one colour), gold only as trim, crown and the bell itself; the bell's
++-- mouth and a band at its waist are Neon, so the bell reads as the light it
++-- casts. The bell hangs clear in the open stage between the piers, its mouth
++-- at thirty studs: three people across, visible from every way in. A person
++-- is 5 studs; the finial is thirteen people over the court.
++Sculpts.domain_belfry_bell = {
++	kind = "assembly",
++	size = { 32, 68, 32 },
++	material = "Marble",
++	colors = { { 233, 226, 211 }, { 214, 207, 193 }, { 226, 178, 108 }, { 198, 160, 102 } },
++	accent = { 242, 186, 92 },
++	materials = { [1] = "Marble", [2] = "Marble", [3] = "Foil", [4] = "Foil" },
++	maxPrims = 90,
++	parts = {
++		{ name = "foot", shape = "Block", size = { 32, 1.2, 32 }, at = { 0, 0.6, 0 }, color = 2 },
++		{ name = "step", shape = "Block", size = { 28, 1.2, 28 }, at = { 0, 1.8, 0 }, color = 1 },
++		{ name = "dais", shape = "Block", size = { 24, 1.4, 24 }, at = { 0, 3.1, 0 }, color = 2 },
++		{
++			name = "dais band",
++			shape = "Block",
++			size = { 24.6, 0.6, 24.6 },
++			at = { 0, 3.4, 0 },
++			color = 3,
++			material = "Foil",
++		},
++		{
++			name = "pier",
++			mirror = "xz",
++			at = { 10, 3.8, 10 },
++			children = {
++				{ name = "pier foot", shape = "Block", size = { 5.6, 1.2, 5.6 }, at = { 0, 0.6, 0 }, color = 2 },
++				{ name = "shaft", shape = "Block", size = { 4.4, 39, 4.4 }, at = { 0, 20.7, 0 }, color = 1 },
++				{
++					name = "lower band",
++					shape = "Block",
++					size = { 5, 0.9, 5 },
++					at = { 0, 9.5, 0 },
++					color = 3,
++					material = "Foil",
++				},
++				{
++					name = "upper band",
++					shape = "Block",
++					size = { 5, 0.9, 5 },
++					at = { 0, 27, 0 },
++					color = 3,
++					material = "Foil",
++				},
++				{
++					name = "capital",
++					shape = "Block",
++					size = { 5.8, 1.4, 5.8 },
++					at = { 0, 40.9, 0 },
++					color = 3,
++					material = "Foil",
++				},
++			} :: { SculptTypes.AssemblyNode },
++		},
++		{
++			name = "lintel along z",
++			shape = "Block",
++			size = { 3.4, 2.4, 24 },
++			at = { 10, 46.6, 0 },
++			mirror = "x",
++			color = 3,
++			material = "Foil",
++		},
++		{
++			name = "lintel along x",
++			shape = "Block",
++			size = { 24, 2.4, 3.4 },
++			at = { 0, 46.6, 10 },
++			mirror = "z",
++			color = 3,
++			material = "Foil",
++		},
++		{
++			name = "keystone",
++			shape = "Block",
++			size = { 1.8, 1.8, 1.8 },
++			at = { 10, 45.5, 0 },
++			rot = { 0, 0, 45 },
++			mirror = "x",
++			color = "accent",
++			material = "Foil",
++		},
++		{
++			name = "keystone across",
++			shape = "Block",
++			size = { 1.8, 1.8, 1.8 },
++			at = { 0, 45.5, 10 },
++			rot = { 0, 0, 45 },
++			mirror = "z",
++			color = "accent",
++			material = "Foil",
++		},
++		{
++			name = "cornice along z",
++			shape = "Block",
++			size = { 4.6, 1, 25.5 },
++			at = { 10, 48.35, 0 },
++			mirror = "x",
++			color = 3,
++			material = "Foil",
++		},
++		{
++			name = "cornice along x",
++			shape = "Block",
++			size = { 25.5, 1, 4.6 },
++			at = { 0, 48.35, 10 },
++			mirror = "z",
++			color = 3,
++			material = "Foil",
++		},
++		{
++			name = "upper post",
++			shape = "Block",
++			size = { 2.8, 9, 2.8 },
++			at = { 10, 53.4, 10 },
++			mirror = "xz",
++			color = 1,
++		},
++		{
++			name = "post cap",
++			shape = "Block",
++			size = { 3.4, 1.2, 3.4 },
++			at = { 10, 58.5, 10 },
++			mirror = "xz",
++			color = 3,
++			material = "Foil",
++		},
++		{
++			name = "top beam along z",
++			shape = "Block",
++			size = { 2.8, 2, 23 },
++			at = { 10, 60, 0 },
++			mirror = "x",
++			color = 3,
++			material = "Foil",
++		},
++		{
++			name = "top beam along x",
++			shape = "Block",
++			size = { 23, 2, 2.8 },
++			at = { 0, 60, 10 },
++			mirror = "z",
++			color = 3,
++			material = "Foil",
++		},
++		{
++			name = "bell beam",
++			shape = "Block",
++			size = { 26, 2.2, 3.2 },
++			at = { 0, 46.6, 0 },
++			color = 3,
++			material = "Foil",
++		},
++		{ name = "orb", shape = "Ball", size = { 3.8, 3.8, 3.8 }, at = { 0, 62.5, 0 }, color = 3, material = "Foil" },
++		{
++			name = "spike",
++			shape = "Cylinder",
++			axis = "y",
++			size = { 1, 4, 1 },
++			at = { 0, 66, 0 },
++			color = 3,
++			material = "Foil",
++		},
++		{
++			name = "bell",
++			children = {
++				{
++					name = "lip",
++					shape = "Cylinder",
++					axis = "y",
++					size = { 13.6, 1, 13.6 },
++					at = { 0, 0.5, 0 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "body",
++					shape = "Cylinder",
++					axis = "y",
++					size = { 13, 2.3, 13 },
++					at = { 0, 1.15, 0 },
++					stack = { count = 8, step = 2.3, shrink = 0.9 },
++					color = 4,
++					material = "Foil",
++				},
++				{
++					name = "light band",
++					shape = "Cylinder",
++					axis = "y",
++					size = { 11, 0.5, 11 },
++					at = { 0, 5.6, 0 },
++					color = "accent",
++					material = "Neon",
++				},
++				{
++					name = "studs",
++					shape = "Ball",
++					size = { 0.9, 0.9, 0.9 },
++					at = { 0, 10.3, 0 },
++					ring = { count = 8, radius = 4, start = 0 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "crown",
++					shape = "Block",
++					size = { 6, 1.4, 5 },
++					at = { 0, 13.7, 0 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "hanger",
++					shape = "Cylinder",
++					axis = "y",
++					size = { 0.9, 1.4, 0.9 },
++					at = { 0, 14.9, 0 },
++					color = "accent",
++					material = "Foil",
++				},
++				{
++					name = "mouth light",
++					shape = "Cylinder",
++					axis = "y",
++					size = { 9.2, 0.5, 9.2 },
++					at = { 0, -0.15, 0 },
++					color = "accent",
++					material = "Neon",
++				},
++			} :: { SculptTypes.AssemblyNode },
++			at = { 0, 30, 0 },
++		},
++	} :: { SculptTypes.AssemblyNode },
++}
++
+ -- Assemblies, recipes that are their own shape, live by area in
+ -- data/assemblies (map-tools.md, "Writing an assembly").
+ for _, area in { MoorAssemblies } do
+diff --git a/src/shared/data/SetPieces.luau b/src/shared/data/SetPieces.luau
+index 2ea66518..ab0db7c2 100644
+--- a/src/shared/data/SetPieces.luau
++++ b/src/shared/data/SetPieces.luau
+@@ -2147,4 +2147,122 @@ recipes.domain_spire_flame = {
+ 	},
+ }
+ 
++-- The Eternal Domain's bell court (a trial, 2026-10-30): the bell's light
++-- making its peal. A builder sets the marker on the paving at the belfry's
++-- foot. Light runs out from the bell: a white-gold line on the marble with
++-- bright bands travelling away and long swells so it is never all there at
++-- once, a wide gold spill under it; over both, gold motes fall out of the
++-- bell's mouth (the fall's emitters hang 34 studs over the path, the mouth's
++-- height) and gold motes rise off the marble it reaches, a faint sky-blue
++-- haze at the rim, and the whole thing breathes. The fall's emitters travel
++-- with the path, so the peal pours down the line as it runs out; every
++-- stream's particles live long enough to cross to the next emitter
++-- (rise x life >= every), so neither the rain nor the motes break into
++-- clumps.
++recipes.domain_bell_peal = {
++	about = "The Eternal Domain's bell-light: gold light falling from the bell and running out across the court in waves, with motes rising from the marble.",
++	theme = "domain",
++	path = { kind = "worm", length = 40, step = 4, bend = 8, climb = 0, round = 3 },
++	layers = {
++		{
++			name = "core",
++			look = { kind = "neon", width = 0.8, segment = 3, transparency = 0.12, color = "core" },
++			motion = {
++				kind = "flow",
++				wavelength = 20,
++				speed = 8,
++				depth = 0.6,
++				swell = { wavelength = 60, speed = 5, depth = 0.7 },
++				wiggle = { amplitude = 0.3, span = 40, periods = { 4.3, 2.9 } },
++			},
++			priority = 1,
++		},
++		{
++			name = "spill",
++			look = { kind = "neon", width = 2.2, segment = 3, transparency = 0.5, color = "gold" },
++			motion = {
++				kind = "flow",
++				wavelength = 20,
++				speed = 8,
++				depth = 0.5,
++				swell = { wavelength = 60, speed = 5, depth = 0.7 },
++				wiggle = { amplitude = 0.3, span = 40, periods = { 4.3, 2.9 } },
++			},
++			priority = 2,
++		},
++		{
++			name = "fall",
++			look = {
++				kind = "stream",
++				every = 8,
++				thick = 9,
++				lift = 34,
++				toward = "down",
++				rise = 4.2,
++				life = { 8, 10 },
++				rate = 3,
++				size = 0.7,
++				tall = 2.4,
++				transparency = 0.25,
++				color = "gold",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.6,
++			},
++			motion = { kind = "sway", amplitude = 1.5, tilt = 8, span = 14, periods = { 7, 11 } },
++			priority = 3,
++		},
++		{
++			name = "motes",
++			look = {
++				kind = "stream",
++				every = 10,
++				thick = 2.5,
++				lift = 0.4,
++				toward = "up",
++				rise = 1.8,
++				life = { 2.5, 4 },
++				rate = 4,
++				size = 1.4,
++				tall = 2,
++				transparency = 0.35,
++				color = "gold",
++				texture = "wisp",
++				lean = 12,
++				vary = 0.5,
++			},
++			motion = { kind = "sway", amplitude = 0.8, tilt = 10, span = 18, periods = { 5.3, 7.9 } },
++			priority = 4,
++		},
++		{
++			name = "haze",
++			look = {
++				kind = "stream",
++				every = 22,
++				thick = 7,
++				lift = 1.4,
++				toward = "up",
++				rise = 0.7,
++				life = { 8, 11 },
++				rate = 0.8,
++				size = 9,
++				tall = 1.2,
++				transparency = 0.86,
++				color = "sky",
++				texture = "veil",
++				lean = 6,
++				vary = 0.4,
++			},
++			motion = { kind = "sway", amplitude = 2, tilt = 8, span = 30, periods = { 11, 17 } },
++			priority = 5,
++		},
++		{
++			name = "lights",
++			look = { kind = "light", every = 14, max = 3, range = 22, brightness = 1.05, color = "glow" },
++			motion = { kind = "pulse", period = 3.6, depth = 0.5 },
++			priority = 6,
++		},
++	},
++}
++
+ return table.freeze(recipes)
+diff --git a/src/shared/data/catalog/World.luau b/src/shared/data/catalog/World.luau
+index d331bd75..c065a654 100644
+--- a/src/shared/data/catalog/World.luau
++++ b/src/shared/data/catalog/World.luau
+@@ -439,6 +439,10 @@ local rows: { [string]: Row } = {
+ 		"A lesser spire of the Eternal Domain: the same ivory tiers and gold rings, at the height of a great hall's roof.",
+ 		MOOR
+ 	),
++	["sculpt:domain_belfry_bell"] = row(
++		"The Eternal Domain's bell court: an open campanile of four ivory piers in gold bands, a colossal gold bell hanging from its gold crown, its mouth alight.",
++		MOOR
++	),
+ }
+ 
+ return table.freeze(rows)
+diff --git a/src/shared/systems/features/DomainBellCourt.luau b/src/shared/systems/features/DomainBellCourt.luau
+new file mode 100644
+index 00000000..f21d89ec
+--- /dev/null
++++ b/src/shared/systems/features/DomainBellCourt.luau
+@@ -0,0 +1,559 @@
++--!strict
++-- The Eternal Domain's bell court (the direction, 2026-10-30): a square of pale
++-- marble paving around a colossal gold bell in an open belfry, the bell's light
++-- pulsing out over the court. The domain has halls, gates, spires and groves but
++-- no place where the gods gather to hear; this is the court a run crosses on its
++-- way in, the one open square under the tower.
++--
++-- Its seeds differ in kind, not only in detail (fafwa, 2026-10-30: topology
++-- first, then look). The first draws choose the structure, the rest dress it:
++--   1. where the belfry stands: at the court's heart, at its head, or off in a
++--      corner, so the square opens to a different side;
++--   2. the court's enclosure: a free ring of standing columns, a pair of long
++--      porticoes flanking the road, four corner bastions, or a walled cloister
++--      with gates -- each a different layout to fight and walk through;
++--   3. the court's relief: flush, sunk in steps like a forum, or raised on a
++--      dais, which changes the number of levels underfoot;
++--   4. the road's axis, the court's size and the podium's size; then the
++--      paving's pattern (the bell's rings and spokes), the podium's height and
++--      the bastions' crowns.
++-- The bell's light is its own set piece (domain_bell_peal): light falling out of
++-- the bell's mouth and running away over the marble in waves. The paving carries
++-- the same idea still: gold inlay rings pulse out from the belfry's foot.
++local FeatureDress = require("../FeatureDress")
++local MapFeature = require("../MapFeature")
++
++type Point = { x: number, z: number }
++
++local function between(rng: Random, lo: number, hi: number): number
++	return lo + (hi - lo) * rng:NextNumber()
++end
++
++local function whole(rng: Random, lo: number, hi: number): number
++	return math.floor(between(rng, lo, hi + 1))
++end
++
++local SEATS = { "centre", "head", "side" }
++local PLANS = { "colonnade", "portico", "bastions", "cloister" }
++local LEVELS = { "flush", "sunken", "raised" }
++local PATTERNS = { "rings", "spokes", "both" }
++
++-- Ground is a surface, so it stays inside B12: pale ivory and gold inlay, all
++-- under value 0.92. The materials are the ones the domain tileset leaves free
++-- (Slate, Concrete) or in the exact colours it already gives them (Pavement and
++-- Limestone are its road and flags), so no material is coloured twice.
++-- Holy light on the paving: the bell's own gold, a light so it may be bright.
++local HOLY = { 255, 214, 130 }
++
++local feature: MapFeature.Feature = {
++	name = "DomainBellCourt",
++	about = "A pale marble court around a colossal gold bell in an open belfry, its light running out over the inlaid paving.",
++	tileset = "domain",
++	scale = "medium",
++	role = "centrepiece",
++	mood = { "monumental", "holy", "gold", "belfry", "open" },
++	cells = {
++		court = { ground = { material = "Slate", color = { 206, 200, 188 } }, lift = 0.15, clear = true },
++		ring = { ground = { material = "Concrete", color = { 218, 198, 158 } }, lift = 0.2, clear = true },
++		-- The ring at the belfry's foot: the bell's light pooled in the marble.
++		glowring = {
++			ground = { material = "Concrete", color = { 218, 198, 158 } },
++			lift = 0.2,
++			clear = true,
++			glow = { color = HOLY, range = 13, brightness = 0.7, every = 6, height = 0.5 },
++		},
++		-- The tileset's own road and flags, in their own colours.
++		road = { ground = { material = "Pavement", color = { 226, 212, 184 } }, lift = 0.2, clear = true },
++		step = { ground = { material = "Limestone", color = { 202, 194, 178 } }, lift = 0.25, clear = true },
++		podium = { ground = { material = "Limestone", color = { 202, 194, 178 } }, lift = 3, clear = true },
++		base = { ground = { material = "Limestone", color = { 202, 194, 178 } }, lift = 2, clear = true },
++		-- The two cells either side of each way in, alight.
++		threshold = {
++			ground = { material = "Concrete", color = { 218, 198, 158 } },
++			lift = 0.25,
++			clear = true,
++			glow = { color = HOLY, range = 11, brightness = 0.6, every = 1, height = 0.8 },
++		},
++	} :: { [string]: FeatureDress.CellLook },
++	generate = function(rng: Random): MapFeature.Footprint
++		-- 1-4: the structure, first.
++		local seat = SEATS[whole(rng, 1, #SEATS)]
++		local plan = PLANS[whole(rng, 1, #PLANS)]
++		local level = LEVELS[whole(rng, 1, #LEVELS)]
++		local along = if rng:NextNumber() < 0.5 then "x" else "z"
++		-- 4: the court's size, the podium's size and height, the corner seat.
++		local w = whole(rng, 30, 32)
++		local d = whole(rng, 30, 32)
++		local ps = whole(rng, 7, 9)
++		local podiumLift = whole(rng, 2, 5)
++		local corner = whole(rng, 1, 4)
++		local bulk = whole(rng, 1, 2)
++
++		local n = w * d
++		local walk: { boolean } = table.create(n, true)
++		local heights: { number } = table.create(n, 0)
++		local kinds: { [number]: string } = {}
++		local lifts: { [number]: number } = {}
++		local marks: { FeatureDress.Landmark } = {}
++		local effects: { FeatureDress.Effect } = {}
++		local cx, cz = (w + 1) / 2, (d + 1) / 2
++		local function at(x: number, z: number): number
++			return (z - 1) * w + x
++		end
++		local function inside(x: number, z: number): boolean
++			return x >= 1 and x <= w and z >= 1 and z <= d
++		end
++
++		-- 3: the court's relief. The border stays level with the ground outside,
++		-- one step in, then the court's own level, so every climb is one step of
++		-- Terrain's maxStep and the road walks down into it.
++		for z = 1, d do
++			for x = 1, w do
++				local edge = math.min(x, z, w + 1 - x, d + 1 - z)
++				heights[at(x, z)] = if level == "flush"
++					then 0
++					elseif level == "sunken" then (if edge == 1 then 0 elseif edge == 2 then -1 else -2)
++					else (if edge == 1 then 0 elseif edge == 2 then 1 else 2)
++			end
++		end
++
++		-- 1: the belfry's podium, an eight-or-so cell block of stepped marble
++		-- under the tower. It is wall, so no road or court can run through it.
++		local px0, pz0
++		if seat == "centre" then
++			px0 = math.floor(cx - (ps - 1) / 2 + 0.5)
++			pz0 = math.floor(cz - (ps - 1) / 2 + 0.5)
++		elseif seat == "head" then
++			px0 = math.floor(cx - (ps - 1) / 2 + 0.5)
++			pz0 = 4
++		else
++			px0 = if corner == 1 or corner == 4 then 4 else w - ps - 3
++			pz0 = if corner <= 2 then 4 else d - ps - 3
++		end
++		px0 = math.clamp(px0, 4, w - ps - 3)
++		pz0 = math.clamp(pz0, 4, d - ps - 3)
++		local tcx, tcz = px0 + (ps - 1) / 2, pz0 + (ps - 1) / 2
++		local pxe, pze = px0 + ps - 1, pz0 + ps - 1
++		for z = pz0, pze do
++			for x = px0, pxe do
++				local i = at(x, z)
++				walk[i] = false
++				kinds[i] = "podium"
++				local rim = math.min(x - px0, pxe - x, z - pz0, pze - z)
++				lifts[i] = if rim == 0 then math.max(1, podiumLift - 2) else podiumLift
++			end
++		end
++
++		-- 4: the road's way. It enters one border, goes round the podium on the
++		-- open side (never through it) and leaves the far border.
++		local laneA: number, laneB: number, road: { Point }
++		if along == "x" then
++			laneA = whole(rng, 5, d - 4)
++			laneB = whole(rng, 5, d - 4)
++			local westX = math.max(2, px0 - 2)
++			local eastX = math.min(w - 1, pxe + 2)
++			local north = math.max(2, pz0 - 2)
++			local south = math.min(d - 1, pze + 2)
++			local detour = if pz0 - 2 >= d - 1 - pze then north else south
++			road = {
++				{ x = 1, z = laneA },
++				{ x = westX, z = laneA },
++				{ x = westX, z = detour },
++				{ x = eastX, z = detour },
++				{ x = eastX, z = laneB },
++				{ x = w, z = laneB },
++			}
++		else
++			laneA = whole(rng, 5, w - 4)
++			laneB = whole(rng, 5, w - 4)
++			local northZ = math.max(2, pz0 - 2)
++			local southZ = math.min(d - 1, pze + 2)
++			local west = math.max(2, px0 - 2)
++			local east = math.min(w - 1, pxe + 2)
++			local detour = if px0 - 2 >= w - 1 - pxe then west else east
++			road = {
++				{ x = laneA, z = 1 },
++				{ x = laneA, z = northZ },
++				{ x = detour, z = northZ },
++				{ x = detour, z = southZ },
++				{ x = laneB, z = southZ },
++				{ x = laneB, z = d },
++			}
++		end
++		-- The cells the road runs over, with a cell each side (a broad way).
++		-- Plans are painted after it and skip these cells, so every wall the
++		-- road meets opens into a gate or a doorway.
++		local onRoad: { [number]: boolean } = {}
++		local function markRoadCell(x: number, z: number)
++			if inside(x, z) and walk[at(x, z)] then
++				onRoad[at(x, z)] = true
++			end
++		end
++		for k = 2, #road do
++			local a, b = road[k - 1], road[k]
++			local steps = math.max(1, math.ceil(math.max(math.abs(b.x - a.x), math.abs(b.z - a.z)) * 2))
++			for s = 0, steps do
++				local t = s / steps
++				local x = math.floor(a.x + (b.x - a.x) * t + 0.5)
++				local z = math.floor(a.z + (b.z - a.z) * t + 0.5)
++				markRoadCell(x, z)
++				for _, o in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
++					markRoadCell(x + o[1], z + o[2])
++				end
++			end
++		end
++
++		-- 2: the court's enclosure, painted round the road and the podium.
++		local used: { [number]: boolean } = {}
++		local function paintBase(x: number, z: number, lift: number): boolean
++			if not inside(x, z) then
++				return false
++			end
++			local i = at(x, z)
++			if not walk[i] or onRoad[i] then
++				return false
++			end
++			walk[i] = false
++			kinds[i] = "base"
++			lifts[i] = lift
++			return true
++		end
++		local function isBase(x: number, z: number): boolean
++			return inside(x, z) and kinds[at(x, z)] == "base"
++		end
++		local function column(x: number, z: number, lift: number, lo: number, hi: number)
++			local i = at(x, z)
++			if not isBase(x, z) or used[i] then
++				return
++			end
++			used[i] = true
++			local broken = rng:NextNumber() < 0.28
++			table.insert(marks, {
++				sculpt = if broken then "domain_column_broken" else "domain_column",
++				x = x,
++				z = z,
++				yaw = between(rng, 0, 360),
++				scale = between(rng, lo, hi),
++				sink = -lift,
++				solid = true,
++			})
++		end
++
++		if plan == "colonnade" then
++			-- A free ring of standing columns, broken at the road by the skips.
++			local count = whole(rng, 8, 14) + bulk
++			local ringR = between(rng, 9.5, 12.5)
++			local lift = between(rng, 1, 2)
++			local first = between(rng, 0, 2 * math.pi)
++			for k = 1, count do
++				local a = first + (k - 1) * 2 * math.pi / count + between(rng, -0.1, 0.1)
++				local r = ringR * between(rng, 0.92, 1.08)
++				local x = math.floor(tcx + math.cos(a) * r + 0.5)
++				local z = math.floor(tcz + math.sin(a) * r + 0.5)
++				if paintBase(x, z, lift) then
++					column(x, z, lift, 0.5, 0.72)
++				end
++			end
++		elseif plan == "portico" then
++			-- Two long raised walks parallel to the road, their columns on top.
++			local thick = bulk
++			local inset = whole(rng, 3, 5)
++			local lift = between(rng, 2, 3)
++			if along == "x" then
++				for k = 0, thick - 1 do
++					for x = 3, w - 2 do
++						paintBase(x, inset + k, lift)
++						paintBase(x, d + 1 - inset - k, lift)
++					end
++				end
++				local nearZ, farZ = inset + thick - 1, d + 1 - inset - (thick - 1)
++				for x = 4, w - 3, 3 do
++					column(x, nearZ, lift, 0.5, 0.7)
++					column(x, farZ, lift, 0.5, 0.7)
++				end
++			else
++				for k = 0, thick - 1 do
++					for z = 3, d - 2 do
++						paintBase(inset + k, z, lift)
++						paintBase(w + 1 - inset - k, z, lift)
++					end
++				end
++				local nearX, farX = inset + thick - 1, w + 1 - inset - (thick - 1)
++				for z = 4, d - 3, 3 do
++					column(nearX, z, lift, 0.5, 0.7)
++					column(farX, z, lift, 0.5, 0.7)
++				end
++			end
++		elseif plan == "bastions" then
++			-- Four corner blocks, each crowned with a tree, a column or a stone.
++			local bs = bulk + 1
++			local lift = between(rng, 2, 3)
++			local crowns = { "tree", "column", "stone" }
++			local crown = whole(rng, 1, #crowns)
++			local corners = {
++				{ 4, 4 },
++				{ w - bs - 3, 4 },
++				{ 4, d - bs - 3 },
++				{ w - bs - 3, d - bs - 3 },
++			}
++			for k, c in corners do
++				for z = c[2], c[2] + bs - 1 do
++					for x = c[1], c[1] + bs - 1 do
++						paintBase(x, z, lift)
++					end
++				end
++				local mx, mz = c[1] + (bs - 1) / 2, c[2] + (bs - 1) / 2
++				local kind = crowns[(crown + k - 2) % #crowns + 1]
++				if kind == "tree" then
++					table.insert(marks, {
++						sculpt = "domain_gold_tree_low",
++						x = mx,
++						z = mz,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 0.85, 1.05),
++						sink = -lift,
++						solid = true,
++					})
++				elseif kind == "column" then
++					table.insert(marks, {
++						sculpt = "domain_column",
++						x = mx,
++						z = mz,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 0.55, 0.75),
++						sink = -lift,
++						solid = true,
++					})
++				else
++					table.insert(marks, {
++						sculpt = "domain_waystone",
++						x = mx,
++						z = mz,
++						yaw = between(rng, 0, 360),
++						scale = between(rng, 0.8, 0.95),
++						sink = -lift,
++						solid = true,
++					})
++				end
++			end
++		else
++			-- A walled cloister round the court, with a gate in the middle of
++			-- every side (and wherever the road crosses it), columns outside.
++			local thick = bulk
++			local inset = whole(rng, 3, 5)
++			local lift = between(rng, 2, 3)
++			local x0, x1 = inset, w + 1 - inset
++			local z0, z1 = inset, d + 1 - inset
++			local midX, midZ = math.floor((x0 + x1) / 2 + 0.5), math.floor((z0 + z1) / 2 + 0.5)
++			for z = z0, z1 do
++				for x = x0, x1 do
++					local rim = math.min(x - x0, x1 - x, z - z0, z1 - z)
++					local gate = (math.abs(x - midX) <= 1 and (z - z0 < thick or z1 - z < thick))
++						or (math.abs(z - midZ) <= 1 and (x - x0 < thick or x1 - x < thick))
++					if rim < thick and not gate then
++						paintBase(x, z, lift)
++					end
++				end
++			end
++			local zm = z0 + math.floor((thick - 1) / 2)
++			local xm = x0 + math.floor((thick - 1) / 2)
++			for x = x0 + 2, x1 - 2, 3 do
++				column(x, zm, lift, 0.5, 0.7)
++				column(x, z1 - (thick - 1), lift, 0.5, 0.7)
++			end
++			for z = z0 + 2, z1 - 2, 3 do
++				column(xm, z, lift, 0.5, 0.7)
++				column(x1 - (thick - 1), z, lift, 0.5, 0.7)
++			end
++		end
++
++		-- The court's own paving, the steps of the relief, then the gold.
++		for i = 1, n do
++			if walk[i] and kinds[i] == nil then
++				kinds[i] = "court"
++			end
++		end
++		if level ~= "flush" then
++			for z = 1, d do
++				for x = 1, w do
++					local edge = math.min(x, z, w + 1 - x, d + 1 - z)
++					local i = at(x, z)
++					if edge == 2 and walk[i] and kinds[i] == "court" then
++						kinds[i] = "step"
++					end
++				end
++			end
++		end
++
++		-- The gold inlay: a rim round the court, then the bell's rings and
++		-- spokes, the ring at the foot of the belfry alight.
++		local function cheb(x: number, z: number): number
++			return math.floor(math.max(math.abs(x - tcx), math.abs(z - tcz)) + 0.5)
++		end
++		-- The pattern is look, drawn after the structure (header 4): rings out
++		-- from the bell's foot, a spoke cross through it, or both.
++		local pattern = PATTERNS[whole(rng, 1, #PATTERNS)]
++		local firstRing = math.floor(ps / 2) + 1
++		local rings: { number } = { firstRing }
++		if pattern == "rings" or pattern == "both" then
++			local gap = whole(rng, 2, 3)
++			local count = whole(rng, 1, 3)
++			for k = 1, count do
++				table.insert(rings, firstRing + k * gap)
++			end
++		end
++		local spare = pattern == "spokes" or pattern == "both"
++		local spokes = if spare then whole(rng, 1, 2) * 4 else 0
++		for z = 1, d do
++			for x = 1, w do
++				local i = at(x, z)
++				if not walk[i] then
++					continue
++				end
++				local kind = kinds[i]
++				if kind ~= "court" and kind ~= "step" then
++					continue
++				end
++				local edge = math.min(x, z, w + 1 - x, d + 1 - z)
++				if edge == 1 then
++					kinds[i] = "ring"
++				end
++				local c = cheb(x, z)
++				for k, r in rings do
++					if c == r then
++						kinds[i] = if k == 1 then "glowring" else "ring"
++						break
++					end
++				end
++				if spare and c >= firstRing then
++					local adx, adz = math.abs(x - tcx), math.abs(z - tcz)
++					if math.abs(adx - adz) <= 0.9 or (spokes == 8 and (adx <= 0.6 or adz <= 0.6)) then
++						kinds[i] = "ring"
++					end
++				end
++			end
++		end
++
++		-- The road, laid over the inlay, and the lit cells either side of each
++		-- way in.
++		for i in onRoad do
++			if walk[i] then
++				kinds[i] = "road"
++			end
++		end
++		local entry = road[1]
++		local exit = road[#road]
++		-- `acrossZ`: the border runs along X (so the waystones stand either
++		-- side of it in Z); otherwise the border runs along Z.
++		local function gatePair(p: Point, acrossZ: boolean)
++			for _, o in { -2, 2 } do
++				local x = if acrossZ then p.x else p.x + o
++				local z = if acrossZ then p.z + o else p.z
++				if inside(x, z) and walk[at(x, z)] and kinds[at(x, z)] ~= "road" then
++					kinds[at(x, z)] = "threshold"
++					table.insert(marks, {
++						sculpt = "domain_waystone",
++						x = x,
++						z = z,
++						yaw = 0,
++						scale = between(rng, 0.8, 0.95),
++						sink = 0.2,
++						solid = true,
++					})
++				end
++			end
++		end
++		if along == "x" then
++			gatePair(entry, true)
++			gatePair(exit, true)
++		else
++			gatePair(entry, false)
++			gatePair(exit, false)
++		end
++
++		-- The belfry itself, on its podium.
++		table.insert(marks, {
++			sculpt = "domain_belfry_bell",
++			x = tcx,
++			z = tcz,
++			yaw = 0,
++			scale = 1,
++			sink = -podiumLift,
++			solid = true,
++		})
++
++		-- The bell's light spilling off the podium into the widest open side.
++		local reach = ps / 2 + 3
++		local bestScore, fx, fz = -1, tcx, tcz
++		for _, dir in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
++			local x = math.floor(tcx + dir[1] * reach + 0.5)
++			local z = math.floor(tcz + dir[2] * reach + 0.5)
++			if inside(x, z) and walk[at(x, z)] then
++				local score = 0
++				for dz = -3, 3 do
++					for dx = -3, 3 do
++						local nx, nz = x + dx, z + dz
++						if inside(nx, nz) and walk[at(nx, nz)] then
++							score += 1
++						end
++					end
++				end
++				if score > bestScore then
++					bestScore, fx, fz = score, x, z
++				end
++			end
++		end
++		table.insert(effects, {
++			recipe = "domain_bell_peal",
++			x = fx,
++			z = fz,
++			lift = 0.35,
++			seed = whole(rng, 1, 99999),
++		})
++
++		-- The photograph: from the court's own paving, along one of the
++		-- belfry's four open faces (its piers stand at the corners, so a
++		-- diagonal puts a pier in front of the bell), far enough that the whole
++		-- tower fits the frame and low enough that it rises.
++		local camX, camZ, bestView = road[2].x, road[2].z, -1
++		for _, dir in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
++			local px, pz = tcx + dir[1] * 11, tcz + dir[2] * 11
++			local gx, gz = math.floor(px + 0.5), math.floor(pz + 0.5)
++			if gx >= 2 and gx <= w - 1 and gz >= 2 and gz <= d - 1 and walk[at(gx, gz)] then
++				local score = 0
++				for s = 0, 20 do
++					local t = s / 20
++					local sx = math.floor(tcx + (px - tcx) * t + 0.5)
++					local sz = math.floor(tcz + (pz - tcz) * t + 0.5)
++					if inside(sx, sz) and walk[at(sx, sz)] then
++						score += 1
++					end
++				end
++				if score > bestView then
++					bestView, camX, camZ = score, px, pz
++				end
++			end
++		end
++		return {
++			width = w,
++			depth = d,
++			walk = walk,
++			heights = heights,
++			kinds = kinds,
++			lifts = lifts,
++			marks = marks,
++			effects = effects,
++			road = road,
++			cameras = {
++				{
++					name = "under the bell",
++					from = { x = camX, z = camZ, lift = 7.5 },
++					to = { x = tcx, z = tcz, lift = podiumLift + 23 },
++					fov = 70,
++				},
++			},
++		}
++	end,
++}
++
++return feature
