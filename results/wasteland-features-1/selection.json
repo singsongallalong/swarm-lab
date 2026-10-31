@@ -1,11 +1,17 @@
 {
-  "picked": "C",
-  "reasons": "Top of both critic passes (6.74, then 6.45): its own geometry (a fused glass bowl with splash spires thrown round the rim), its own effect (charge crawling over the glass), the zone's violet accent, and the round's best photograph (seed 1, the frozen splash).",
-  "fixes": [
-    "Mute the crater floor's violet toward the brief's muted accent (both critics: too much bright violet).",
-    "Keep the central core lower or off-centre so it doesn't block the game camera.",
-    "More variety across seeds (one round bowl each time): off-centre strikes, double strikes, a bowl broken by a dune.",
-    "Keep the giant-bones prop off its pad (quiet pad)."
+  "picked": [
+    "C"
   ],
+  "reasons": {
+    "C": "Top of both critic passes (6.74, then 6.45): its own geometry (a fused glass bowl with splash spires thrown round the rim), its own effect (charge crawling over the glass), the zone's violet accent, and the round's best photograph (seed 1, the frozen splash)."
+  },
+  "fixes": {
+    "C": [
+      "Mute the crater floor's violet toward the brief's muted accent (both critics: too much bright violet).",
+      "Keep the central core lower or off-centre so it doesn't block the game camera.",
+      "More variety across seeds (one round bowl each time): off-centre strikes, double strikes, a bowl broken by a dune.",
+      "Keep the giant-bones prop off its pad (quiet pad)."
+    ]
+  },
   "notes": "Runners-up: B (colossus hand, 5.8) reads as a hand from above but its fingers are violet towers up close; A (buried caravan, 5.63) has the best props but the dune is stacked blocks. Grammars don't place map features yet (MapWalk places them on the moor's reaches only), so bringing C into the Wasteland needs the dunes grammar to host features first."
 }

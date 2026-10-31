@@ -25,4 +25,4 @@ domain-kit-1,Domain,deepseek,deepseek-flash[1m],12,12,11,0,0,101819830,2.0101,46
 moor-features-1,Moor,deepseek,deepseek-flash[1m],12,10,8,0,0,401654428,5.7358,1484.8,no rendered image listed in the manifest exists,
 domain-features-1,Domain,deepseek,deepseek-flash[1m],12,12,11,0,0,391699679,5.9471,1495.5,spec lint failed,
 domain-features-2,Domain,deepseek,deepseek-flash[1m],24,23,23,0,0,706943797,10.5696,1534.3,src/shared/data/Sculpts.luau: changed text outside its rows,
-wasteland-features-1,Waste,deepseek,deepseek-flash[1m],3,2,3,0,0,138852004,1.8196,2413.0,,
+wasteland-features-1,Waste,deepseek,deepseek-flash[1m],3,2,3,0,1,138852004,1.8196,2413.0,,
