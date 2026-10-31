@@ -44,8 +44,9 @@ def main(argv=None) -> None:
 
     p = sub.add_parser("shelf", help="lay several kept candidates' added rows into the game repo's working tree")
     p.add_argument("run_dir", type=Path)
-    p.add_argument("letters", nargs="+")
+    p.add_argument("letters", nargs="*", help="the run's critic letters; or none, with --patches")
     p.add_argument("--into", type=Path, required=True, help="the game repo (its working tree is changed, not committed)")
+    p.add_argument("--patches", type=Path, nargs="+", help="committed patches (library/.../patch.diff) instead of a run's worker trees; run_dir is then ignored")
 
     p = sub.add_parser("resume", help="continue a run's stopped generators, then check, tile and report it")
     p.add_argument("run_dir", type=Path)
@@ -110,7 +111,8 @@ def main(argv=None) -> None:
             print(f"\nNext: the orchestrator reads {run_dir.relative_to(config.ROOT)}/select.md")
     elif a.cmd == "shelf":
         from . import shelf
-        for line in shelf.shelf(a.run_dir, a.letters, a.into):
+        lines = shelf.shelf_patches(a.patches, a.into) if a.patches else shelf.shelf(a.run_dir, a.letters, a.into)
+        for line in lines:
             print(line)
     elif a.cmd == "check":
         check_mod.check(a.run_dir, specs=not a.no_specs)

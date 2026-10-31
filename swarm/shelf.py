@@ -89,3 +89,96 @@ def shelf(run_dir: Path, letters: list[str], into: Path) -> list[str]:
             target.write_text("".join(lines), encoding="utf-8")
             report.append(f"{letter} {gid}: {sum(len(b) for _, b in inserts)} lines into {rel}")
     return report
+
+
+def _parse_patch(text: str) -> dict[str, dict]:
+    """A unified diff of add-only changes, as {path: {"new": [lines]} or {"hunks": [...]}}.
+    Each hunk is (old_start, [(anchor_before, [added lines])]): the context line right
+    before each run of added lines (None when the run opens the hunk) and the run."""
+    files: dict[str, dict] = {}
+    cur = None
+    lines = text.splitlines(keepends=True)
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.startswith("diff --git "):
+            cur = None
+        elif line.startswith("--- "):
+            old = line[4:].strip()
+            new = lines[i + 1][4:].strip()
+            path = new[2:] if new.startswith("b/") else new
+            cur = files.setdefault(path, {"new": [] if old == "/dev/null" else None, "hunks": []})
+            i += 1
+        elif line.startswith("@@") and cur is not None:
+            start = int(line.split()[1].split(",")[0].lstrip("-"))
+            runs, last_ctx, block = [], None, []
+            i += 1
+            while i < len(lines) and not lines[i].startswith(("@@", "diff --git ")):
+                body = lines[i]
+                if body.startswith("+"):
+                    block.append(body[1:])
+                elif body.startswith("-"):
+                    raise SystemExit(f"{path}: the patch removes a line; shelf takes add-only patches")
+                elif body.startswith("\\"):
+                    pass
+                else:
+                    if block:
+                        runs.append((last_ctx, block))
+                        block = []
+                    last_ctx = body[1:] if body.startswith(" ") else body
+                i += 1
+            if block:
+                runs.append((last_ctx, block))
+            if cur["new"] is not None:
+                for _, b in runs:
+                    cur["new"].extend(b)
+            else:
+                cur["hunks"].append((start, runs))
+            continue
+        i += 1
+    return files
+
+
+def shelf_patches(patches: list[Path], into: Path) -> list[str]:
+    """Like `shelf`, from committed patches (library/<kind>/<Area>/<Name>/patch.diff) when the
+    run's worker trees are gone: each added run of lines lands after the context line the
+    patch shows before it, searched from the hunk's position onward."""
+    report = []
+    for patch in patches:
+        files = _parse_patch(patch.read_text(encoding="utf-8"))
+        name = patch.parent.name
+        for rel, f in files.items():
+            target = into / rel
+            if f["new"] is not None:
+                if target.exists():
+                    raise SystemExit(f"{name}: {rel} is new in the patch but exists in {into}")
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("".join(f["new"]), encoding="utf-8")
+                report.append(f"{name}: new file {rel}")
+                continue
+            lines = target.read_text(encoding="utf-8").splitlines(keepends=True)
+            added = 0
+            # Bottom-up, so earlier positions hold.
+            for start, runs in sorted(f["hunks"], key=lambda h: -h[0]):
+                for anchor, block in reversed(runs):
+                    pos = None
+                    if anchor is None:
+                        pos = max(0, start - 1)
+                    else:
+                        lo = max(0, start - 1 - 50)
+                        for k in range(lo, len(lines)):
+                            if lines[k] == anchor:
+                                pos = k + 1
+                                break
+                        if pos is None:
+                            for k in range(len(lines)):
+                                if lines[k] == anchor:
+                                    pos = k + 1
+                                    break
+                    if pos is None:
+                        raise SystemExit(f"{name}: {rel}: anchor {anchor.strip()[:60]!r} not found in {into}")
+                    lines[pos:pos] = block
+                    added += len(block)
+            target.write_text("".join(lines), encoding="utf-8")
+            report.append(f"{name}: {added} lines into {rel}")
+    return report
