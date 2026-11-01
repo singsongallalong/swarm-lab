@@ -1,0 +1,16 @@
+# Ashfields buildings (arpg-game docs/roadmap/areas/ashfields.md): field 2.
+skill = "Ashen"
+family = "building"
+directions = "directions-ashen.txt"
+brief = """
+**The Ashfields** (field 2): fafwa's words, "a forest of zombies beside a darker forest with
+fires raging and dead giants". Ash-grey ground, charred stumps, embers, a violet zone accent.
+Its farmsteads and chapels burned and the dead walk among them.
+
+Buildings: **timber and plaster homes that burned**. Soot-black and charred beams, ash-grey or
+smoke-stained plaster panels between them, roofs scorched and gapped. Whole houses are the
+few the fire spared, sooted to the eaves; ruins are charred frames with plaster fallen out,
+blackened post stubs, ash heaps at the foot. The one accent is a faded, dark violet (cloth,
+a painted door) or a few dim embers (Neon, tiny, deep orange) in broken posts.
+Key `ashen`. Bible limits: surfaces saturation 0.2 / value 0.35, trim 0.5 / 0.4.
+"""

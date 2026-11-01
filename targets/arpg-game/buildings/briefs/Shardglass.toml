@@ -1,0 +1,16 @@
+# Violet Spires and Shardback Range buildings (violet-spires.md, shardback-range.md).
+skill = "Shardglass"
+family = "building"
+directions = "directions-shardglass.txt"
+brief = """
+**The Violet Spires** (a crowd of strange alien-looking spires with purple energy) and **the
+Shardback Range** (a ridge of jagged crystal spines). fafwa wants this half of the world
+"epic and exotic", "kinda out there and visually striking".
+
+Buildings: **made by someone who lived among the crystal**: dark obsidian or slate walls,
+faceted and angular, with crystal shards as posts, finials and window frames; roofs steep and
+spiky or capped by a crystal ridge. The accent is the spires' violet: crystal trim in muted
+violet, a few small Neon violet slivers as light (dim, never whole walls). Ruins shatter:
+jagged stumps, shards heaped at the foot, cracked crystal posts.
+Key `shardglass`. Surfaces saturation 0.2 / value 0.35, trim 0.5 / 0.4 (Neon light slivers free, but few).
+"""

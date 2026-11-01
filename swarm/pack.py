@@ -104,6 +104,20 @@ def render_commands(brief: dict) -> tuple[str, str]:
             "lune run scripts/setpiecepreview <SetPiece> .swarm/out/feature-setpiece-r1.png",
         ]
         return "\n".join(ref), "\n".join(mine)
+    if brief["family"] == "building":
+        # A building tileset (arpg-game data/tilesets): generated buildings painted in it,
+        # whole, ruined, and a manor. The references are the town's timber homes whole and
+        # the moor's stone ruined, the two tilesets the game has.
+        ref = [
+            "lune run scripts/buildingpreview house .swarm/out/ref-house-wooden_homes.png 1 1 7 5 tileset=wooden_homes ruin=0",
+            "lune run scripts/buildingpreview cottage .swarm/out/ref-ruin-stone_village.png 1 1 5 4 tileset=stone_village ruin=0.55",
+        ]
+        mine = [
+            "lune run scripts/buildingpreview house .swarm/out/building-house-r1.png 2 1 7 5 tileset=<Tileset> ruin=0",
+            "lune run scripts/buildingpreview cottage .swarm/out/building-ruin-r1.png 2 1 5 4 tileset=<Tileset> ruin=0.55",
+            "lune run scripts/buildingpreview manor .swarm/out/building-manor-r1.png 1 3 7 5 tileset=<Tileset> ruin=0.25",
+        ]
+        return "\n".join(ref), "\n".join(mine)
     if brief["family"] == "kit":
         # One piece of an area's kit (props and landmarks as sculpt rows, maybe a set piece),
         # for a builder to assemble maps from: the sculpts over three seeds, and the effect.

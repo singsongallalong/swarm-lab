@@ -1,0 +1,87 @@
+# The buildings job (2026-11-01): a building tileset per area. fafwa: "Right now we only have a
+# single tile-set for houses and structures, these stone-brick ones. We definitely need some
+# more." A generator writes one tileset for arpg-game's construction kit (data/tilesets: nine
+# slots of built-in material, colour and part trim), registers it and gives it a catalog row.
+# buildingpreview's tileset= paints PlanGen's buildings in it, whole and ruined. Built-in
+# materials only (no uploads), and renders show colour and shape, not materials: the material
+# is judged in a Studio lane after the pick (arpg-game docs/streams/building-tilesets.md).
+
+template = "pack.md"
+directions = "directions.txt"
+select = "select.md"
+# The spec, buildingpreview's tileset= and ruin= are on this branch until it merges.
+ref = "origin/claude/building-tilesets"
+# One data file, two one-line registrations, three renders and up to three revisions.
+max_turns = 70
+tools = ["tools/explain.luau"]
+rules = ["docs/guides/construction-manual.md"]
+
+[files."src/shared/data/tilesets/{skill}.luau"]
+mode = "new_file"
+
+[files."src/shared/data/Tilesets.luau"]
+mode = "add_lines"
+pattern = '(local {skill} = require\("\./tilesets/{skill}"\)|\t{skill_lower} = {skill},)'
+
+[files."src/shared/data/catalog/World.luau"]
+mode = "add_lines"
+pattern = '(\["tileset:{skill_lower}"\] = row\(("[^"]{1,160}", (MOOR|TOWN)\),)?|"[^"]{1,160}",|(MOOR|TOWN)|\),|--[^\n]{0,200})'
+
+[purity]
+first_line = "--!strict"
+max_lines = 260
+requires = ["../../ConstructionTypes"]
+forbid = [
+  '\bgame\b', '\bworkspace\b', '\bscript\b', '\bInstance\b', '\bEnum\b',
+  '\btask\.', '\bwait\s*\(', '\bspawn\s*\(', '\bdelay\s*\(', '\bcoroutine\.',
+  '\bos\.', '\bdebug\.', '\bgetfenv\b', '\bsetfenv\b', '\bloadstring\b', '\b_G\b', '\bshared\b',
+  '\bwhile\b', '\brepeat\b', 'rbxassetid', 'materialVariant',
+]
+
+[quotes.timber]
+file = "src/shared/data/tilesets/WoodenHomes.luau"
+note = "the town's timber homes: the worked example of part trim (beams, shutters, door posts) on built-in materials. Copy its shape"
+
+[quotes.stone]
+file = "src/shared/data/tilesets/StoneVillage.luau"
+note = "the moor's stone: ruin trim (broken tops, `broken` post caps), outdoor-only rubble and moss bands. Its painted stone uses MaterialVariants and meshes, which you may NOT use"
+
+[quotes.types]
+file = "src/shared/ConstructionTypes.luau"
+note = "the types; a tileset is `Tileset`, its variants `TilesetVariant`, its trim `TilesetTrim`"
+
+[quotes.contract]
+file = "src/shared/data/TilesetContract.luau"
+note = "the slots: fill every required one"
+
+[quotes.grid]
+file = "src/shared/data/BuildGrid.luau"
+note = "the grid sizes trim shares are measured against (door and window holes)"
+
+[quotes.spec]
+file = "tests/systems/BuildingTilesets.spec.luau"
+note = "the check your tileset must pass: colour limits and materials"
+
+[quotes.registry]
+file = "src/shared/data/Tilesets.luau"
+note = "the registry: add a require line and an entry under your key"
+
+[[specs]]
+name = "BuildingTilesets"
+cmd = "lune run tests BuildingTilesets"
+
+[[specs]]
+name = "Catalog"
+cmd = "lune run tests Catalog"
+
+[[specs]]
+name = "ContentCompleteness"
+cmd = "lune run tests ContentCompleteness"
+
+[[specs]]
+name = "lint"
+cmd = "selene src/shared/data/tilesets src/shared/data/Tilesets.luau src/shared/data/catalog/World.luau"
+
+[[specs]]
+name = "format"
+cmd = "stylua --check src/shared/data/tilesets src/shared/data/Tilesets.luau src/shared/data/catalog/World.luau"

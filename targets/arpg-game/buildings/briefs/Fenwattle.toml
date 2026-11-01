@@ -1,0 +1,16 @@
+# Fen and Drowned Parish buildings (docs/roadmap/areas/fen.md, drowned-parish.md).
+skill = "Fenwattle"
+family = "building"
+directions = "directions-fenwattle.txt"
+brief = """
+**The Fen** (field 3) and the **Drowned Parish**: black water, peat and moss, reeds, the great
+dead willow glowing with bioluminescence; a parish village half under black floodwater. The
+fen's accent is a cold marsh-light green; mist on the water.
+
+Buildings: **marsh dwellings of wattle, daub and reed**. Grey-brown daub or woven wattle walls
+on dark wet timber posts, thick reed thatch roofs (built-in Grass or Fabric in dark olive-brown,
+a ridge of bound reed), walls stained dark at the foot where the water rose, posts that look
+like stilts or piles. Ruins slump: daub crumbled from the wattle, thatch fallen in, rotten
+posts. One accent: a dim marsh-green (moss, a lantern, a few Neon specks of light).
+Key `fenwattle`. Surfaces saturation 0.2 / value 0.35, trim 0.5 / 0.4.
+"""

@@ -1,0 +1,17 @@
+# Aor'lan buildings (aorlan-cliffs.md, aorlan-mountain.md, aorlan-core.md).
+skill = "Basaltforge"
+family = "building"
+directions = "directions-basaltforge.txt"
+brief = """
+**Aor'lan**: high cliffs in clean cold daylight (the game's first day zone, bible B13: bright
+and airy, pale sandstone and pale blue haze) climbing into a cavernous mountain with more and
+more lava-like red cracks, down to the Aor'lan Core. Statues of an old mountain people.
+
+Buildings: **a mountain people's carved stone**: built from the mountain itself, squared and
+massive, thick sloping walls, deep-set doors under heavy lintels, flat or shallow stone roofs
+with stepped edges, bronze or iron bands as trim. Two tones: pale sandstone outside on the
+sunlit cliffs and dark basalt deeper in; the accent is the mountain's red, as a few thin Neon
+cracks or a glowing hearth slit (small), never whole walls. Ruins split along seams, slabs
+fallen, red showing in the breaks.
+Key `basaltforge`. Day limits: surfaces saturation 0.3 / value 0.7, trim 0.5 / 0.7.
+"""

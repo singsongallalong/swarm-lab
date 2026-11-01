@@ -1,0 +1,18 @@
+# Fetid Forest and Grashan Ruins buildings (fetid-forest.md, grashan-ruins.md).
+skill = "Paleivy"
+family = "building"
+directions = "directions-paleivy.txt"
+brief = """
+**The Fetid Forest** (field 4) and **the Grashan Ruins** (field 5): a lush, watery night forest
+of deep greens, teal mist and violet canopy around **overgrown pale-stone ruins**; then a lighter,
+sparser, plains-like forest with more and more ruined structure and overgrown, decaying statues
+of an old civilisation (the Grashan).
+
+Buildings: **an older people's pale stone, swallowed by growth**. Dressed limestone or marble
+blocks (pale for this game but still night-dark: grey-green and bone at value up to 0.35),
+heavy lintels and plinths, carved bands, flat or low stone roofs, and growth everywhere:
+ivy and moss bands climbing the walls, roots and leaf mats at the foot, teal or violet
+creepers as the accent. Ruins are what this area mostly has: tumbled blocks, broken columns
+as posts, stumps cloaked in ivy.
+Key `paleivy`. Surfaces saturation 0.2 / value 0.35, trim 0.5 / 0.4 (ivy may use the trim's saturation).
+"""

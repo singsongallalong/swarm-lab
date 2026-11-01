@@ -1,0 +1,17 @@
+# Eclipse Vale buildings (eclipse-vale.md, eclipse-temple.md).
+skill = "Eclipsemarble"
+family = "building"
+directions = "directions-eclipsemarble.txt"
+brief = """
+**Eclipse Vale** (levels 45-48): a valley narrowing toward a temple at its head, under an
+eclipsed sun; "epic and exotic", "visually striking" (fafwa). Its light is the eclipse: a dark
+disc ringed in pale fire, so the vale is dim gold and shadow.
+
+Buildings: **the temple people's dwellings and shrines**: grey-white marble gone dim in the
+eclipse light, dark bronze or dull gilt trim (bands, door frames, roof edges), colonnaded
+porches suggested by posts, flat or low roofs with a heavy cornice, sun-disc motifs as small
+discs of dull gold over doors. Ruins: fallen cornice blocks, snapped column-posts, gilt
+peeled to dark bronze.
+Key `eclipsemarble`. Limits: surfaces saturation 0.3 / value 0.7, trim 0.55 / 0.7 (dull
+gilt). Not the Eternal Domain's bright ivory and gold: dimmer, greyer, eclipse-dark.
+"""

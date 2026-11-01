@@ -1,0 +1,16 @@
+# Wasteland and Sunlit Plain buildings (wasteland.md, sunlit-plain.md).
+skill = "Mudbrick"
+family = "building"
+directions = "directions-mudbrick.txt"
+brief = """
+**The Wasteland** (a vast desert of dunes where the Labyrinth's gate will stand) and **the
+Sunlit Plain** (rolling grass under a warm sun, a great sundial on the skyline). Hot, dry, old.
+
+Buildings: **sun-dried mud brick and plaster**, desert homes and waystations: thick walls in
+dusty ochre and clay, rounded or battered corners, flat roofs with protruding timber beam ends
+(vigas) and a parapet, small deep windows, cloth awnings or shades in one faded accent
+(dull red-brown or indigo). Ruins erode rather than break: soft slumped stumps, half-buried
+in sand heaps at the foot, beam ends sticking out.
+Key `mudbrick`. Day limits: surfaces saturation 0.3 / value 0.7, trim 0.5 / 0.7. Keep it
+earthy and dusty, not orange: sun-bleached, not saturated.
+"""
