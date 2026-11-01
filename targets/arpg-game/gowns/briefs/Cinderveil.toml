@@ -1,0 +1,22 @@
+# Wardrobe wave 2 (Rhodri, 2026-11-01; arpg-game R039).
+skill = "Cinderveil"
+family = "armour"
+figure = "feminine"
+directions = "cinderveil-directions.txt"
+brief = """
+Zone: Aor'lan Mountain (levels 20-25): a cavernous field past the Grashan Ruins, decaying statues, red lava-like cracks and gas vents thickening toward the Core; the mountain may be a sleeping god. Make a mountain gown: basalt-dark and elegant, as if made by the mountain's devotees, with the red of the cracks running through it. Palette: basalt black, ash grey, magma red, a little sulphur yellow.
+
+The game's world is night-bound and muted (docs/art/bible.md). From the high ARPG camera the
+set must read as its own family, apart from iron, leather, studded, linen, fenscale, the
+courtly and classic gowns and the Drowned Marches gowns already made. Pretty and feminine
+first: this set exists so players who want a lovely dress have one, and it must still
+belong in its zone. Give the skirt a real flare or bell from the hip, and keep the sleeves
+slim: block sleeves the width of the shoulders read as broad and bulky from above, the
+flaw critics found in every earlier gown.
+
+Make all four slots: Helm (headpiece), Chest (bodice and upper skirt), Gloves (sleeves and
+hands), Boots (lower skirt, hem and shoes). Name them CinderveilHelm, CinderveilDress, CinderveilSleeves and CinderveilHem
+unless your idea calls for better names (keep the Cinderveil prefix). Aim for 80 parts or fewer for
+the whole set (the budget is 100; fewer, bolder parts read better from above). Looks only:
+no base, numbers or drop weight.
+"""

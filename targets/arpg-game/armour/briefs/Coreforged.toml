@@ -1,0 +1,22 @@
+# Wardrobe wave 2 (Rhodri, 2026-11-01; arpg-game R039).
+skill = "Coreforged"
+family = "armour"
+directions = "coreforged-directions.txt"
+brief = """
+Zone: the Aor'lan Core (map, levels 26-30): chambers spiralling down to the boss, red cracks and gas vents, the heart of a mountain god. Make an epic plate set forged in the Core: black plate split by glowing magma cracks, regal and dangerous. Palette: basalt black, molten orange-red, ember gold.
+
+The game's world is night-bound and muted (docs/art/bible.md). From the high ARPG camera the
+set must read as its own family, apart from iron (grey and broad), leather (brown and slim),
+studded (oxblood with brass), linen (pale oatmeal), fenscale (grey-green) and the six Reaver
+sets (hide, fur and bone), and still sit in the same gothic world. One strong silhouette
+idea (a helm shape, a pauldron line, a cape) beats many small details.
+
+Make all four slots: Helm, Chest, Gloves, Boots. Name them CoreforgedHelm, CoreforgedChest, CoreforgedGloves and
+CoreforgedBoots unless your idea calls for better names (keep the Coreforged prefix). The budget is 64
+parts for the whole set. Looks only: no base, numbers or drop weight.
+
+This is an EPIC set: a rare drop players should notice across the field. Later it will get
+a worn particle effect (an aura drawn by the game, not by you), so build places for light
+to live: glowing seams, gems, a crown or halo shape, cracks, using Neon sparingly on two or
+three small parts. No particles, lights or beams in the look itself.
+"""

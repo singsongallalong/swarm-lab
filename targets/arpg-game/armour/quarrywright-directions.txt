@@ -1,0 +1,7 @@
+# Quarrywright: six takes for wardrobe wave 2. Lines starting with # are ignored.
+Quarry overseer: a broad iron helm, a heavy leather apron-coat, a hammer-and-chisel badge, chains at the belt.
+Buried worker: linen burial wraps over a stone-dust tunic, a niche-shaped hood, tools still tied at the waist.
+Stone-cutter: thick padded shoulders for carrying blocks, a rope harness, a dust mask and goggles.
+Niche guardian: a death mask in pale stone, a mantle of grave linen, iron bands.
+Colossus carver: a climbing harness, wedges and chisels hung like trophies, a wide brimmed helm.
+Charnel warden: dark slate plate with carved niches in the pauldrons holding small skulls.

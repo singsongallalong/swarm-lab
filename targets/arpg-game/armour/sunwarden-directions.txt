@@ -1,0 +1,7 @@
+# Sunwarden: six takes for wardrobe wave 2. Lines starting with # are ignored.
+Colossus image: a tall crested bronze helm with a blank face, a broad round breastplate, huge round pauldrons.
+Sun sentinel: a helm with a gold sun-ray crest, banded bronze, a stone-pale kilt of hanging strips.
+Hoplite: a crested Grashan helm, a muscled bronze cuirass, greaves, a round shield shape on the back.
+Weathered: bronze gone green and cracked, lichen on the shoulders, one pauldron broken off.
+Stone-skin: plates carved like the statues' stone, simple and heavy, gold only at the brow.
+Plains rider: a lighter scale coat, a long gold-pale cloak, a winged helm.

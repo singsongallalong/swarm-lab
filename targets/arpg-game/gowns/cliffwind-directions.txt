@@ -1,0 +1,7 @@
+# Cliffwind: six takes for wardrobe wave 2. Lines starting with # are ignored.
+Cliff valkyrie: a winged steel helm, a steel cuirass, a long sky-blue skirt split for running, a white cape.
+Wind rider: layered pennant-like skirt panels, a light breastplate, a scarf streaming from the helm.
+Eyrie keeper: feathered pauldrons, a tan leather armoured skirt, a beaked half-helm.
+Ridge scout: a short pleated armoured skirt, tall boots, a hooded short cape, rock-tan and blue.
+Sky priestess: a white gown with steel bands, a halo crest, sky-blue sleeves.
+Storm sister: grey-blue plates over a cloud-white skirt, lightning-shaped trims.

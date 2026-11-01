@@ -1,0 +1,7 @@
+# Coreforged: six takes for wardrobe wave 2. Lines starting with # are ignored.
+Core king: a black crowned helm with a molten crack crown, plate split by glowing seams, a heavy cape.
+Magma heart: a chest plate with a glowing core at its centre and cracks running outward over every piece.
+Godforged: ornate gold-and-black plate with ember-gold trims, horns, a face plate with burning eyes.
+Cooling flow: plate shaped like lava frozen mid-flow, glowing only in the deepest cracks.
+Vent lord: a tall helm with vent chimneys on the pauldrons, molten seams down the arms.
+Ember knight: sleek black plate, a long gold-lined cape, one great glowing gem on the brow.

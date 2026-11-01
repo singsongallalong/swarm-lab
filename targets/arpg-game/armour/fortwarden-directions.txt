@@ -1,0 +1,7 @@
+# Fortwarden: six takes for wardrobe wave 2. Lines starting with # are ignored.
+Tower sergeant: a kettle hat, a blue-and-cream quartered surcoat over mail, plain steel gauntlets.
+Gatewarden: a great helm with a cream plume, a padded gambeson in blue, a big tower badge on the chest.
+Watch captain: a sallet with a visor, a brigandine studded in brass, a short blue cape.
+Militia: a quilted jack, a leather cap with a steel brim, a bright blue sash; the farmer turned soldier.
+Crossbowman: a pavise-like back plate, a padded coif, bracers and a quiver-belt across the chest.
+Tower knight: full plate with blue enamelled pauldrons and a tower-shaped crest on the helm.

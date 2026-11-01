@@ -1,0 +1,7 @@
+# Barrowguard: six takes for wardrobe wave 2. Lines starting with # are ignored.
+Barrow king: a tall bronze crowned helm with a face mask, a mail shirt with a bronze collar, a mouldering cloak.
+Grave guard: a rounded bronze helm with cheek guards, scale armour, a round shield shape on the back.
+Bone-wrapped: burial wrappings over corroded plate, bone charms, a hood with a bronze brow band.
+Mound warrior: a horned helm, a fur mantle gone grey with age, bronze arm rings and greaves.
+Grave-goods: overloaded with the treasures buried with the dead: torcs, brooches, a gilded belt over plain mail.
+Sunken jarl: a nasal helm, a long mail hauberk to the knee, a moss-grown fur cape.

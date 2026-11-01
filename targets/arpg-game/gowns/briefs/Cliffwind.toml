@@ -1,0 +1,22 @@
+# Wardrobe wave 2 (Rhodri, 2026-11-01; arpg-game R039).
+skill = "Cliffwind"
+family = "armour"
+figure = "feminine"
+directions = "cliffwind-directions.txt"
+brief = """
+Zone: the Aor'lan Cliffs (levels 25-30): narrow ridges off the side of the mountain in daylight (bible B13), spikes of rock towering above the field, drops on both sides, wind. Make an armoured skirt set for a ridge-runner or a cliff valkyrie: light armour over a flowing skirt that the wind catches. Palette: sky pale blue, cloud white, warm rock tan, steel.
+
+The game's world is night-bound and muted (docs/art/bible.md). From the high ARPG camera the
+set must read as its own family, apart from iron, leather, studded, linen, fenscale, the
+courtly and classic gowns and the Drowned Marches gowns already made. Pretty and feminine
+first: this set exists so players who want a lovely dress have one, and it must still
+belong in its zone. Give the skirt a real flare or bell from the hip, and keep the sleeves
+slim: block sleeves the width of the shoulders read as broad and bulky from above, the
+flaw critics found in every earlier gown.
+
+Make all four slots: Helm (headpiece), Chest (bodice and upper skirt), Gloves (sleeves and
+hands), Boots (lower skirt, hem and shoes). Name them CliffwindHelm, CliffwindDress, CliffwindSleeves and CliffwindHem
+unless your idea calls for better names (keep the Cliffwind prefix). Aim for 80 parts or fewer for
+the whole set (the budget is 100; fewer, bolder parts read better from above). Looks only:
+no base, numbers or drop weight.
+"""

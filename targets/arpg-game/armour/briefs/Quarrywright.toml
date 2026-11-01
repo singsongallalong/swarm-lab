@@ -1,0 +1,17 @@
+# Wardrobe wave 2 (Rhodri, 2026-11-01; arpg-game R039).
+skill = "Quarrywright"
+family = "armour"
+directions = "quarrywright-directions.txt"
+brief = """
+Zone: the Charnel Quarry (levels 18-22): a great stepped quarry cut down into pale-grey stone, a colossus abandoned half-carved in its far face, the quarrymen buried in niches cut into the terrace walls they worked. Make the gear of those dead quarrymen and the guards who drove them: dust-white, tool-hung, funerary. Palette: pale quarry grey, stone dust white, rusted iron, linen wraps, one cold dark slate.
+
+The game's world is night-bound and muted (docs/art/bible.md). From the high ARPG camera the
+set must read as its own family, apart from iron (grey and broad), leather (brown and slim),
+studded (oxblood with brass), linen (pale oatmeal), fenscale (grey-green) and the six Reaver
+sets (hide, fur and bone), and still sit in the same gothic world. One strong silhouette
+idea (a helm shape, a pauldron line, a cape) beats many small details.
+
+Make all four slots: Helm, Chest, Gloves, Boots. Name them QuarrywrightHelm, QuarrywrightChest, QuarrywrightGloves and
+QuarrywrightBoots unless your idea calls for better names (keep the Quarrywright prefix). The budget is 64
+parts for the whole set. Looks only: no base, numbers or drop weight.
+"""

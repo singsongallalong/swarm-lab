@@ -1,0 +1,7 @@
+# Basaltplate: six takes for wardrobe wave 2. Lines starting with # are ignored.
+Golem plate: blocky basalt slab plates, a squared helm with a slit, red seams between every plate.
+Forge-priest: black iron plate with hanging chains and censers, a hooded helm.
+Columnar: plates shaped like hexagonal basalt columns stacked on the shoulders.
+Vent-walker: a sealed helm with breathing vents, heavy gauntlets, sulphur-yellow straps.
+Mountain champion: a horned black helm, huge pauldrons like boulders, a red sash.
+Statue-breaker: black iron with pieces of broken statue stone bound on as trophies.

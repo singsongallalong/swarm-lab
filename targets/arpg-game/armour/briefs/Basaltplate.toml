@@ -1,0 +1,17 @@
+# Wardrobe wave 2 (Rhodri, 2026-11-01; arpg-game R039).
+skill = "Basaltplate"
+family = "armour"
+directions = "basaltplate-directions.txt"
+brief = """
+Zone: Aor'lan Mountain (levels 20-25), where basalt golems move with red seams: the mountain's own body. Make a heavy plate set cut from the mountain: basalt slabs and black iron, red seams between plates. Palette: basalt black, iron grey, magma red seams (colour, not Neon).
+
+The game's world is night-bound and muted (docs/art/bible.md). From the high ARPG camera the
+set must read as its own family, apart from iron (grey and broad), leather (brown and slim),
+studded (oxblood with brass), linen (pale oatmeal), fenscale (grey-green) and the six Reaver
+sets (hide, fur and bone), and still sit in the same gothic world. One strong silhouette
+idea (a helm shape, a pauldron line, a cape) beats many small details.
+
+Make all four slots: Helm, Chest, Gloves, Boots. Name them BasaltplateHelm, BasaltplateChest, BasaltplateGloves and
+BasaltplateBoots unless your idea calls for better names (keep the Basaltplate prefix). The budget is 64
+parts for the whole set. Looks only: no base, numbers or drop weight.
+"""
