@@ -1,0 +1,22 @@
+{
+  "run": "reaver-armour",
+  "letter": "B",
+  "set": "ReaverJawmask",
+  "looks": [
+    "ReaverJawmaskHelm",
+    "ReaverJawmaskChest",
+    "ReaverJawmaskGloves",
+    "ReaverJawmaskBoots"
+  ],
+  "original_looks": [
+    "ReaverHelm",
+    "ReaverChest",
+    "ReaverGloves",
+    "ReaverBoots"
+  ],
+  "pick_rank": null,
+  "intent": "A near-bare barbarian in smoke-cured hide and rawhide \u2014 a grey wolf-fur pauldron, a bone jaw mask with two horns and bold ash war-paint bands \u2014 so it reads from the high camera as a dark, striped, unplated fighter apart from the iron, leather, studded, linen and fenscale families.",
+  "reason": null,
+  "first_fix": null,
+  "parts": 59
+}

@@ -1,0 +1,22 @@
+{
+  "run": "classic-gowns",
+  "letter": "A",
+  "set": "ClassicFaithful",
+  "looks": [
+    "ClassicFaithfulHeaddress",
+    "ClassicFaithfulDress",
+    "ClassicFaithfulSleeves",
+    "ClassicFaithfulHem"
+  ],
+  "original_looks": [
+    "ClassicHeaddress",
+    "ClassicDress",
+    "ClassicSleeves",
+    "ClassicHem"
+  ],
+  "pick_rank": null,
+  "intent": "An old-catalogue gothic lolita gown: a black bodice laced in crimson with a big crimson bow at the back waist and a full tiered skirt edged in cream lace, which reads from the high camera as a narrow black top over a wide crimson-banded bell, crowned by a crimson lace band and side bow with a tiny brass clock.",
+  "reason": null,
+  "first_fix": null,
+  "parts": 97
+}

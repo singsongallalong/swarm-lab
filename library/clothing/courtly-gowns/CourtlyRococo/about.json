@@ -1,0 +1,22 @@
+{
+  "run": "courtly-gowns",
+  "letter": "C",
+  "set": "CourtlyRococo",
+  "looks": [
+    "CourtlyRococoHeaddress",
+    "CourtlyRococoGown",
+    "CourtlyRococoCuffs",
+    "CourtlyRococoHem"
+  ],
+  "original_looks": [
+    "CourtlyHeaddress",
+    "CourtlyGown",
+    "CourtlyCuffs",
+    "CourtlyHem"
+  ],
+  "pick_rank": 2,
+  "intent": "A rococo court gown in faded rose and dove grey, laced with black bows and bone lace, reading from the high camera as a fitted bodice over a wide tiered bell skirt beneath a small tilted cap.",
+  "reason": "The rococo gown is the most elegant: faded rose and dove grey under black bows, a tiered bell skirt whose fall shows in the side view, and a small tilted cap; its colour stands apart from every family.",
+  "first_fix": "The skirt's thigh and shin panels show seams from the front; widen the shin panels so the two tiers meet into one bell standing still.",
+  "parts": 98
+}

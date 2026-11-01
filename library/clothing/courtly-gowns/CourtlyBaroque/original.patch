@@ -1,0 +1,295 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..f134f9d 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -7,6 +7,10 @@ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+ local Chainmail = require("./armourLooks/Chainmail")
++local CourtlyCuffs = require("./armourLooks/CourtlyCuffs")
++local CourtlyGown = require("./armourLooks/CourtlyGown")
++local CourtlyHeaddress = require("./armourLooks/CourtlyHeaddress")
++local CourtlyHem = require("./armourLooks/CourtlyHem")
+ local EmberTalisman = require("./armourLooks/EmberTalisman")
+ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+@@ -36,6 +40,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
+ 	Chainmail = Chainmail,
++	CourtlyCuffs = CourtlyCuffs,
++	CourtlyGown = CourtlyGown,
++	CourtlyHeaddress = CourtlyHeaddress,
++	CourtlyHem = CourtlyHem,
+ 	EmberTalisman = EmberTalisman,
+ 	FenscaleGrips = FenscaleGrips,
+ 	FenscaleHood = FenscaleHood,
+diff --git a/src/shared/data/armourLooks/CourtlyCuffs.luau b/src/shared/data/armourLooks/CourtlyCuffs.luau
+new file mode 100644
+index 0000000..d197750
+--- /dev/null
++++ b/src/shared/data/armourLooks/CourtlyCuffs.luau
+@@ -0,0 +1,32 @@
++--!strict
++-- The courtly cuffs: the gown's wine sleeves carried down the forearms with a
++-- pale brocade strip, gathered into a black band and two banded layers of bone
++-- lace at the wrist, over close black gloves with a bone lace ruffle at their
++-- edge.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local wine = { 84, 44, 52 }
++local bowBlack = { 44, 39, 47 }
++local greyPrint = { 120, 116, 120 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CourtlyCuffs",
++	slot = "Gloves",
++	parts = {
++		-- The lower sleeve, with its pale brocade strip.
++		Kit.box("LowerArm", { 1.08, 1.8, 1.08 }, { 0, 0.08, 0 }, "Fabric", wine),
++		Kit.box("LowerArm", { 0.26, 0.9, 0.06 }, { 0, 0.16, -0.56 }, "Fabric", greyPrint),
++		-- The black band above the wrist and two banded lace cuffs below it.
++		Kit.box("LowerArm", { 1.14, 0.16, 1.14 }, { 0, -0.62, 0 }, "Fabric", bowBlack),
++		Kit.box("LowerArm", { 1.22, 0.16, 1.22 }, { 0, -0.78, 0 }, "Fabric", c.bone),
++		Kit.box("LowerArm", { 1.36, 0.14, 1.36 }, { 0, -0.92, 0 }, "Fabric", c.bone),
++		-- The glove, with a bone lace ruffle at its wrist edge.
++		Kit.box("Hand", { 1.06, 0.96, 1.06 }, { 0, 0, 0 }, "Leather", bowBlack),
++		Kit.box("Hand", { 1.12, 0.12, 1.12 }, { 0, 0.14, 0 }, "Fabric", c.bone),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CourtlyGown.luau b/src/shared/data/armourLooks/CourtlyGown.luau
+new file mode 100644
+index 0000000..752af87
+--- /dev/null
++++ b/src/shared/data/armourLooks/CourtlyGown.luau
+@@ -0,0 +1,129 @@
++--!strict
++-- The courtly gown's chest (baroque court dress): a deep wine brocade bodice
++-- over a pale grey stomacher, cinched at the waist and pointed, with a bone
++-- lace collar that fans up behind the neck, a big black bow at the chest and a
++-- smaller one at the throat, puffed sleeves, and the upper skirt on
++-- the thighs, flaring in two tiers. The skirt stops above the knee; the hem
++-- and petticoat carry on in the boots look.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local wine = { 84, 44, 52 }
++local wineDark = { 60, 34, 42 }
++local bowBlack = { 44, 39, 47 }
++local greyPrint = { 120, 116, 120 }
++
++-- The upper skirt's two tiers, hung from just below the top of each thigh.
++local TIER_ONE_TOP = 0.95
++local TIER_ONE_LENGTH = 0.9
++local TIER_ONE_Y = TIER_ONE_TOP - TIER_ONE_LENGTH / 2
++local TIER_TWO_LENGTH = 1.04
++local TIER_TWO_Y = TIER_ONE_TOP - TIER_ONE_LENGTH - TIER_TWO_LENGTH / 2 + 0.025
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CourtlyGown",
++	slot = "Chest",
++	parts = Kit.join({
++		{
++			-- The bodice, and the pale brocade panel printed down its front.
++			Kit.box("UpperTorso", { 2.08, 1.64, 1.08 }, { 0, 0, 0 }, "Fabric", wine),
++			Kit.box("UpperTorso", { 1.06, 1.46, 0.06 }, { 0, 0.02, -0.57 }, "Fabric", greyPrint),
++			-- Small dull gilt buttons down the panel, the lowest one missing.
++			Kit.box("UpperTorso", { 0.12, 0.12, 0.06 }, { 0, 0.52, -0.62 }, "Metal", c.brass),
++			Kit.box("UpperTorso", { 0.12, 0.12, 0.06 }, { 0, 0.28, -0.62 }, "Metal", c.brass),
++			Kit.box("UpperTorso", { 0.12, 0.12, 0.06 }, { 0, 0.04, -0.62 }, "Metal", c.brass),
++			-- The pale lace-ruffled collar, two layers at the throat.
++			Kit.box("UpperTorso", { 1.32, 0.14, 1.14 }, { 0, 0.74, 0 }, "Fabric", c.bone),
++			Kit.box("UpperTorso", { 1.4, 0.1, 1.2 }, { 0, 0.66, 0 }, "Fabric", c.bone),
++			-- The standing lace fan behind the neck, on a wine root band.
++			Kit.box("UpperTorso", { 1.5, 0.18, 0.1 }, { 0, 0.8, 0.6 }, "Fabric", wine),
++			Kit.box("UpperTorso", { 0.56, 0.62, 0.06 }, { 0, 1.02, 0.72 }, "Fabric", c.bone, { -14, 0, 0 }),
++			Kit.box("UpperTorso", { 0.44, 0.54, 0.06 }, { -0.52, 0.94, 0.68 }, "Fabric", c.bone, { -14, 0, 10 }),
++			Kit.box("UpperTorso", { 0.44, 0.54, 0.06 }, { 0.52, 0.94, 0.68 }, "Fabric", c.bone, { -14, 0, -10 }),
++			Kit.box("UpperTorso", { 0.36, 0.44, 0.06 }, { -0.95, 0.86, 0.62 }, "Fabric", c.bone, { -10, -10, 22 }),
++			Kit.box("UpperTorso", { 0.36, 0.44, 0.06 }, { 0.95, 0.86, 0.62 }, "Fabric", c.bone, { -10, 10, -22 }),
++			-- A small black bow at the throat, and the big one at the chest.
++			Kit.box("UpperTorso", { 0.24, 0.14, 0.09 }, { -0.13, 0.64, -0.6 }, "Fabric", bowBlack, { 0, 0, -12 }),
++			Kit.box("UpperTorso", { 0.24, 0.14, 0.09 }, { 0.13, 0.64, -0.6 }, "Fabric", bowBlack, { 0, 0, 12 }),
++			Kit.box("UpperTorso", { 0.12, 0.1, 0.1 }, { 0, 0.64, -0.62 }, "Fabric", bowBlack),
++			Kit.box("UpperTorso", { 0.6, 0.32, 0.18 }, { -0.34, 0.33, -0.62 }, "Fabric", bowBlack, { 0, 0, -18 }),
++			Kit.box("UpperTorso", { 0.6, 0.32, 0.18 }, { 0.34, 0.33, -0.62 }, "Fabric", bowBlack, { 0, 0, 18 }),
++			Kit.box("UpperTorso", { 0.24, 0.22, 0.2 }, { 0, 0.33, -0.65 }, "Fabric", bowBlack),
++			Kit.box("UpperTorso", { 0.16, 0.36, 0.05 }, { -0.11, 0.06, -0.63 }, "Fabric", bowBlack, { 0, 0, -5 }),
++			Kit.box("UpperTorso", { 0.16, 0.36, 0.05 }, { 0.11, 0.06, -0.63 }, "Fabric", bowBlack, { 0, 0, 5 }),
++			-- The stiff pointed stomacher, a pale diamond at the waist.
++			Kit.box("UpperTorso", { 0.55, 0.55, 0.07 }, { 0, -0.52, -0.58 }, "Fabric", greyPrint, { 0, 0, 45 }),
++			-- A full puffed sleeve to the elbow, gathered onto a fitted lower arm.
++			{
++				shape = "Cylinder",
++				on = "UpperArm",
++				size = { 1.5, 1.2, 1.5 },
++				at = { 0, 0.42, 0 },
++				material = "Fabric",
++				color = wine,
++			},
++			Kit.box("UpperArm", { 1.08, 0.82, 1.08 }, { 0, -0.58, 0 }, "Fabric", wine),
++			-- The waist: a black velvet band with an off-centre gilt buckle.
++			Kit.box("LowerTorso", { 2.08, 0.6, 1.08 }, { 0, 0, 0 }, "Fabric", wine),
++			Kit.box("LowerTorso", { 2.16, 0.3, 1.16 }, { 0, 0.16, 0 }, "Fabric", bowBlack),
++			Kit.box("LowerTorso", { 0.22, 0.2, 0.08 }, { 0.18, 0.16, -0.6 }, "Metal", c.brass),
++			-- A bustle at the back, its lower edge trimmed in bone lace.
++			Kit.box("LowerTorso", { 1.4, 0.34, 0.34 }, { 0, 0.02, 0.66 }, "Fabric", wineDark),
++			Kit.box("LowerTorso", { 1.46, 0.09, 0.36 }, { 0, -0.08, 0.67 }, "Fabric", c.bone),
++			-- The pale brocade motifs printed on the lower tier, front and back.
++			Kit.box("UpperLeg", { 0.66, 0.46, 0.06 }, { 0, TIER_TWO_Y, -0.77 }, "Fabric", greyPrint, { 8, 0, 0 }),
++			Kit.box("UpperLeg", { 0.66, 0.46, 0.06 }, { 0, TIER_TWO_Y, 0.77 }, "Fabric", greyPrint, { -8, 0, 0 }),
++		},
++		{
++			-- The upper skirt's first tier, front and back panels and an outer side.
++			Kit.box(
++				"UpperLeg",
++				{ 1.18, TIER_ONE_LENGTH, 0.08 },
++				{ 0.02, TIER_ONE_Y, -0.54 },
++				"Fabric",
++				wine,
++				{ 5, 0, 0 }
++			),
++			Kit.box(
++				"UpperLeg",
++				{ 1.18, TIER_ONE_LENGTH, 0.08 },
++				{ 0.02, TIER_ONE_Y, 0.54 },
++				"Fabric",
++				wine,
++				{ -5, 0, 0 }
++			),
++			Kit.box("UpperLeg", { 0.08, TIER_ONE_LENGTH, 1.12 }, { 0.6, TIER_ONE_Y, 0 }, "Fabric", wine, { 0, 0, 5 }),
++		},
++		{
++			-- The second tier, wider and set further out, down to above the knee.
++			Kit.box(
++				"UpperLeg",
++				{ 1.42, TIER_TWO_LENGTH, 0.08 },
++				{ 0.06, TIER_TWO_Y, -0.68 },
++				"Fabric",
++				wineDark,
++				{ 8, 0, 0 }
++			),
++			Kit.box(
++				"UpperLeg",
++				{ 1.42, TIER_TWO_LENGTH, 0.08 },
++				{ 0.06, TIER_TWO_Y, 0.68 },
++				"Fabric",
++				wineDark,
++				{ -8, 0, 0 }
++			),
++			Kit.box(
++				"UpperLeg",
++				{ 0.08, TIER_TWO_LENGTH, 1.46 },
++				{ 0.8, TIER_TWO_Y, 0 },
++				"Fabric",
++				wineDark,
++				{ 0, 0, 8 }
++			),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CourtlyHeaddress.luau b/src/shared/data/armourLooks/CourtlyHeaddress.luau
+new file mode 100644
+index 0000000..9586ea2
+--- /dev/null
++++ b/src/shared/data/armourLooks/CourtlyHeaddress.luau
+@@ -0,0 +1,34 @@
++--!strict
++-- The courtly headdress: a black ribbon band edged in bone lace round the
++-- crown, and above it a wide black bow with a dull gilt pin, its two tails
++-- falling down the back of the head to bone lace tips. Worn in the hair
++-- rather than over it, so the wearer's hair still shows.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local bowBlack = { 44, 39, 47 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CourtlyHeaddress",
++	slot = "Helm",
++	parts = {
++		-- The band: a black ribbon with a pale lace edge under it.
++		Kit.box("Head", { 1.34, 0.14, 1.34 }, { 0, 0.4, 0 }, "Fabric", bowBlack),
++		Kit.box("Head", { 1.38, 0.08, 1.38 }, { 0, 0.32, 0 }, "Fabric", c.bone),
++		-- The bow's two wide loops, rising either side of the crown.
++		Kit.box("Head", { 0.64, 0.32, 0.34 }, { -0.33, 0.82, 0.12 }, "Fabric", bowBlack, { 0, 0, -20 }),
++		Kit.box("Head", { 0.64, 0.32, 0.34 }, { 0.33, 0.82, 0.12 }, "Fabric", bowBlack, { 0, 0, 20 }),
++		-- The knot, with a dull gilt pin at its front.
++		Kit.box("Head", { 0.24, 0.24, 0.28 }, { 0, 0.84, 0.12 }, "Fabric", bowBlack),
++		Kit.box("Head", { 0.12, 0.12, 0.06 }, { 0, 0.84, -0.04 }, "Metal", c.brass),
++		-- The tails, down the back of the head, with bone lace at their ends.
++		Kit.box("Head", { 0.22, 0.62, 0.08 }, { -0.15, 0.45, 0.62 }, "Fabric", bowBlack, { -12, 0, 6 }),
++		Kit.box("Head", { 0.22, 0.62, 0.08 }, { 0.15, 0.45, 0.62 }, "Fabric", bowBlack, { -12, 0, -6 }),
++		Kit.box("Head", { 0.24, 0.12, 0.09 }, { -0.15, 0.16, 0.68 }, "Fabric", c.bone, { -12, 0, 6 }),
++		Kit.box("Head", { 0.24, 0.12, 0.09 }, { 0.15, 0.16, 0.68 }, "Fabric", c.bone, { -12, 0, -6 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CourtlyHem.luau b/src/shared/data/armourLooks/CourtlyHem.luau
+new file mode 100644
+index 0000000..8c28e64
+--- /dev/null
++++ b/src/shared/data/armourLooks/CourtlyHem.luau
+@@ -0,0 +1,35 @@
++--!strict
++-- The courtly hem: the gown's skirt carried down the shins in two more flared
++-- tiers, over a bone petticoat edge, then black boots and low court shoes
++-- below it.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local wine = { 84, 44, 52 }
++local wineDark = { 60, 34, 42 }
++local bowBlack = { 44, 39, 47 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CourtlyHem",
++	slot = "Boots",
++	parts = {
++		-- The upper shin tier, met by the chest's thigh tier at the knee.
++		Kit.box("LowerLeg", { 1.66, 0.94, 0.08 }, { 0.09, 0.61, -0.8 }, "Fabric", wineDark, { 10, 0, 0 }),
++		Kit.box("LowerLeg", { 1.66, 0.94, 0.08 }, { 0.09, 0.61, 0.8 }, "Fabric", wineDark, { -10, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 0.94, 1.64 }, { 0.94, 0.61, 0 }, "Fabric", wineDark, { 0, 0, 10 }),
++		-- The flared hem tier, wider again.
++		Kit.box("LowerLeg", { 1.9, 0.56, 0.08 }, { 0.12, -0.1, -0.94 }, "Fabric", wine, { 13, 0, 0 }),
++		Kit.box("LowerLeg", { 1.9, 0.56, 0.08 }, { 0.12, -0.1, 0.94 }, "Fabric", wine, { -13, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 0.56, 1.96 }, { 1.06, -0.1, 0 }, "Fabric", wine, { 0, 0, 13 }),
++		-- The bone petticoat edge below the overskirt, a little narrower.
++		Kit.box("LowerLeg", { 1.62, 0.4, 0.08 }, { 0.08, -0.55, -0.88 }, "Fabric", c.bone, { 13, 0, 0 }),
++		Kit.box("LowerLeg", { 1.62, 0.4, 0.08 }, { 0.08, -0.55, 0.88 }, "Fabric", c.bone, { -13, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 0.4, 1.7 }, { 0.94, -0.55, 0 }, "Fabric", c.bone, { 0, 0, 13 }),
++		-- Black boots below the petticoat.
++		Kit.box("Foot", { 1.06, 0.96, 1.1 }, { 0, 0.32, -0.05 }, "Leather", bowBlack),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..20283d5 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:CourtlyHeaddress"] = row("A black hair bow with a bone lace band and two long ribbon tails."),
++	["armour:CourtlyGown"] = row("A deep wine brocade gown with a pale stomacher, lace collar fan and black bow."),
++	["armour:CourtlyCuffs"] = row("Wine sleeves gathered into black bands and bone lace cuffs above black gloves."),
++	["armour:CourtlyHem"] = row("A flared wine skirt with a pale brocade band, bone petticoat edge and black shoes."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

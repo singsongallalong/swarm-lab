@@ -1,0 +1,22 @@
+{
+  "run": "classic-gowns",
+  "letter": "B",
+  "set": "ClassicSolemn",
+  "looks": [
+    "ClassicSolemnHeaddress",
+    "ClassicSolemnDress",
+    "ClassicSolemnSleeves",
+    "ClassicSolemnHem"
+  ],
+  "original_looks": [
+    "ClassicHeaddress",
+    "ClassicDress",
+    "ClassicSleeves",
+    "ClassicHem"
+  ],
+  "pick_rank": 2,
+  "intent": "A mourning gothic-lolita court gown for the classic blocky body, in deep black with blood crimson and bone lace: from the high camera a bowed, clock-pinned headdress and short black veil sit on a narrow-shouldered, red-banded bodice over a tiered black bell skirt to the ankles.",
+  "reason": "The best silhouette: a narrow laced bodice over an A-line that falls in tiers to the ankles, with a veiled bowed headdress, solemn and clearly a dress; first fix: almost all black from above, so give the skirt tiers a crimson or bone edge that reads at the ARPG camera.",
+  "first_fix": null,
+  "parts": 88
+}

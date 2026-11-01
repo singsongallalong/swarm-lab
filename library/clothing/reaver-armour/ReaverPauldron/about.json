@@ -1,0 +1,22 @@
+{
+  "run": "reaver-armour",
+  "letter": "E",
+  "set": "ReaverPauldron",
+  "looks": [
+    "ReaverPauldronHelm",
+    "ReaverPauldronChest",
+    "ReaverPauldronGloves",
+    "ReaverPauldronBoots"
+  ],
+  "original_looks": [
+    "ReaverHelm",
+    "ReaverChest",
+    "ReaverGloves",
+    "ReaverBoots"
+  ],
+  "pick_rank": 3,
+  "intent": "A smoke-black hide barbarian set with grizzled wolf fur and pale bone, its right shoulder a horned beast's skull and its left arm bare, so the high camera reads a dark lopsided outline apart from the grey iron, brown leather, oxblood studded, oatmeal linen and grey-green fenscale sets.",
+  "reason": "The asymmetric skull pauldron with one arm bare makes a lopsided outline no other family has, which is exactly the half-armoured fury in the brief.",
+  "first_fix": "Its bare left arm and the skull pauldron are the idea; the chest under them is plain dark hide and could carry a fur edge or a strap of bone.",
+  "parts": 61
+}

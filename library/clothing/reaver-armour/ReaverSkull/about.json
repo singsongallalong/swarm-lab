@@ -1,0 +1,22 @@
+{
+  "run": "reaver-armour",
+  "letter": "A",
+  "set": "ReaverSkull",
+  "looks": [
+    "ReaverSkullHelm",
+    "ReaverSkullChest",
+    "ReaverSkullGloves",
+    "ReaverSkullBoots"
+  ],
+  "original_looks": [
+    "ReaverHelm",
+    "ReaverChest",
+    "ReaverGloves",
+    "ReaverBoots"
+  ],
+  "pick_rank": 2,
+  "intent": "A barbarian trophy set: a horned beast-skull helm over smoked hide, a broad wolf-fur mantle and bleached bone trophies, reading from the high camera as pale skull and bone against dark furred hide.",
+  "reason": "A pale beast-skull helm with horns over dark hide and a wolf-fur mantle reads as 'trophy-taker' at a glance; the skull is the strongest single read on the sheet.",
+  "first_fix": "The arms read as bare body; check on real avatars that skin, not the dummy's blue, carries the set, and consider a hide bracer so the arm isn't empty.",
+  "parts": 59
+}

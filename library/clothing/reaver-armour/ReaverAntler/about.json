@@ -1,0 +1,22 @@
+{
+  "run": "reaver-armour",
+  "letter": "D",
+  "set": "ReaverAntler",
+  "looks": [
+    "ReaverAntlerHelm",
+    "ReaverAntlerChest",
+    "ReaverAntlerGloves",
+    "ReaverAntlerBoots"
+  ],
+  "original_looks": [
+    "ReaverHelm",
+    "ReaverChest",
+    "ReaverGloves",
+    "ReaverBoots"
+  ],
+  "pick_rank": 1,
+  "intent": "A dark smoke-cured hide set with ash-fur shoulders and cuffs, wide scuffed belts and scavenged iron and bone, whose two great bone antlers throw a pale horned outline above the shoulders at the high camera.",
+  "reason": "Two pale antlers spreading past the head over broad, dark smoke-cured hide give the clearest barbarian outline of the six from the ARPG camera, and nothing in the existing families has horns.",
+  "first_fix": "The grey shoulder plates and brow strip push it toward the iron family's grey at the ARPG camera; warm them toward hide or bone so the horns stay the only bright line.",
+  "parts": 61
+}

@@ -1,0 +1,22 @@
+{
+  "run": "classic-gowns",
+  "letter": "E",
+  "set": "ClassicStitched",
+  "looks": [
+    "ClassicStitchedHeaddress",
+    "ClassicStitchedDress",
+    "ClassicStitchedSleeves",
+    "ClassicStitchedHem"
+  ],
+  "original_looks": [
+    "ClassicHeaddress",
+    "ClassicDress",
+    "ClassicSleeves",
+    "ClassicHem"
+  ],
+  "pick_rank": null,
+  "intent": "A stitched-doll gothic lolita gown of deep black with blood-crimson bows, bone lace and cross-stitched patches, cut for the blocky toy body so it reads from the high camera as a narrow laced bodice over a full tiered skirt, with hanging bell sleeves and a lopsided crown bow.",
+  "reason": null,
+  "first_fix": null,
+  "parts": 94
+}

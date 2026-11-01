@@ -1,0 +1,22 @@
+{
+  "run": "classic-gowns",
+  "letter": "C",
+  "set": "ClassicCatalog",
+  "looks": [
+    "ClassicCatalogHeaddress",
+    "ClassicCatalogDress",
+    "ClassicCatalogSleeves",
+    "ClassicCatalogHem"
+  ],
+  "original_looks": [
+    "ClassicHeaddress",
+    "ClassicDress",
+    "ClassicSleeves",
+    "ClassicHem"
+  ],
+  "pick_rank": null,
+  "intent": "A 2008-catalog gothic lolita gown for the classic blocky body: a crimson-bowed black headdress, a crimson-laced black bodice with a waist sash and back bow, bell sleeves and crimson gloves over a black tiered skirt with a cream lace band and crimson ruffle, reading from the high camera as a narrow crimson-banded top over a wide, stepped black bell.",
+  "reason": null,
+  "first_fix": null,
+  "parts": 55
+}

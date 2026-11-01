@@ -1,0 +1,22 @@
+{
+  "run": "classic-gowns",
+  "letter": "D",
+  "set": "ClassicInverted",
+  "looks": [
+    "ClassicInvertedHeaddress",
+    "ClassicInvertedDress",
+    "ClassicInvertedSleeves",
+    "ClassicInvertedHem"
+  ],
+  "original_looks": [
+    "ClassicHeaddress",
+    "ClassicDress",
+    "ClassicSleeves",
+    "ClassicHem"
+  ],
+  "pick_rank": 1,
+  "intent": "A classic-catalog gothic lolita gown with the colours inverted: a deep crimson bodice laced in black and a bell-sleeved, tiered crimson skirt trimmed in black lace and bone, with black bows and a clock-pinned headdress, reading from the high camera as a narrow-shouldered crimson bell under a bowed head.",
+  "reason": "The only set that reads as gothic lolita from the high camera: crimson leads, the scalloped tiered skirt flares into a real bell, the bell sleeves show, and the black bow-on-band headdress is a crisp toy accent; first fix: the forearm bells sit at hip level and widen the waist, so lift or narrow them.",
+  "first_fix": null,
+  "parts": 72
+}

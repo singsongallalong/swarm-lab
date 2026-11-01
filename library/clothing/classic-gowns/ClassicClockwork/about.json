@@ -1,0 +1,22 @@
+{
+  "run": "classic-gowns",
+  "letter": "F",
+  "set": "ClassicClockwork",
+  "looks": [
+    "ClassicClockworkHeaddress",
+    "ClassicClockworkDress",
+    "ClassicClockworkSleeves",
+    "ClassicClockworkHem"
+  ],
+  "original_looks": [
+    "ClassicHeaddress",
+    "ClassicDress",
+    "ClassicSleeves",
+    "ClassicHem"
+  ],
+  "pick_rank": 3,
+  "intent": "A Victorian clockwork gothic-lolita gown for the classic blocky body: a deep black bodice and full tiered bell skirt trimmed in deep crimson and soft bone lace, with a clock-face waist bow, a brass key at the hip and a crowned bow with a tiny clock, which from the high camera reads as a narrow black top over a wide red-banded bell.",
+  "reason": "The richest classic-catalog details (clock-face waist bow, brass key, studded lace band, clock on the headdress) on a stepped bell; first fix: at 100 parts it is at the budget, and the stacked tiers read as a layered cake from above, so merge two tiers.",
+  "first_fix": null,
+  "parts": 100
+}

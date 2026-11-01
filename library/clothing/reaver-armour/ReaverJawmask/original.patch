@@ -1,0 +1,238 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..77efada 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -24,6 +24,10 @@ local LinenCowl = require("./armourLooks/LinenCowl")
+ local LinenRobe = require("./armourLooks/LinenRobe")
+ local LinenSlippers = require("./armourLooks/LinenSlippers")
+ local LinenWraps = require("./armourLooks/LinenWraps")
++local ReaverBoots = require("./armourLooks/ReaverBoots")
++local ReaverChest = require("./armourLooks/ReaverChest")
++local ReaverGloves = require("./armourLooks/ReaverGloves")
++local ReaverHelm = require("./armourLooks/ReaverHelm")
+ local SpellShield = require("./armourLooks/SpellShield")
+ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+@@ -53,6 +57,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	LinenRobe = LinenRobe,
+ 	LinenSlippers = LinenSlippers,
+ 	LinenWraps = LinenWraps,
++	ReaverBoots = ReaverBoots,
++	ReaverChest = ReaverChest,
++	ReaverGloves = ReaverGloves,
++	ReaverHelm = ReaverHelm,
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
+diff --git a/src/shared/data/armourLooks/ReaverBoots.luau b/src/shared/data/armourLooks/ReaverBoots.luau
+new file mode 100644
+index 0000000..2c23c74
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReaverBoots.luau
+@@ -0,0 +1,33 @@
++--!strict
++-- The Reaver's boots (the Reaver armour set): shins and feet bound in hide and
++-- rawhide, an ash band at each ankle and an ash stripe up the outside of each
++-- shin, with a bone splint strapped to the right shin only. Bound and bare
++-- rather than cased, so the set stays light at the high camera.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The Reaver's own palette: a hide darker and greyer than the leather family
++-- and the ash war paint that carries the set's read.
++local hide = { 64, 56, 46 }
++local ash = { 156, 150, 136 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReaverBoots",
++	slot = "Boots",
++	parts = {
++		-- Hide bound round the shin, tied at the knee.
++		Kit.box("LowerLeg", { 1.1, 0.94, 1.1 }, { 0, -0.12, 0 }, "Leather", hide),
++		Kit.box("LowerLeg", { 1.16, 0.16, 1.16 }, { 0, 0.26, 0 }, "Leather", c.leatherScuff),
++		-- An ash band at the ankle and a stripe up the outside of each shin.
++		Kit.box("LowerLeg", { 1.16, 0.16, 1.16 }, { 0, -0.46, 0 }, "Fabric", ash),
++		Kit.box("LowerLeg", { 0.1, 0.5, 0.18 }, { 0.56, -0.1, 0 }, "Fabric", ash),
++		-- The foot bound across the instep, toes free.
++		Kit.box("Foot", { 1.1, 0.34, 1.2 }, { 0, 0.02, -0.04 }, "Leather", c.leatherDark),
++		-- A bone splint on the right shin only.
++		Kit.box("LowerLeg", { 0.2, 0.56, 0.12 }, { 0, -0.1, -0.6 }, "Marble", c.bone, { -3, 0, 0 }, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ReaverChest.luau b/src/shared/data/armourLooks/ReaverChest.luau
+new file mode 100644
+index 0000000..8ce5822
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReaverChest.luau
+@@ -0,0 +1,63 @@
++--!strict
++-- The Reaver's chest (the Reaver armour set): a smoke-cured hide vest cut
++-- close and left dark, belted with rawhide, one grey wolf-fur pauldron on the
++-- left shoulder, and bold ash war paint: a yoke over the chest top, a band
++-- across chest and back and claw marks raked down the right side. A bone clasp
++-- holds the baldric and a band of ash rings each bare upper arm, so the set
++-- reads bare and painted at the high camera, never plated.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The Reaver's own palette: a hide darker and greyer than the leather family,
++-- the ash war paint that carries the set's read, grey wolf fur and old bone.
++local hide = { 64, 56, 46 }
++local ash = { 156, 150, 136 }
++local fur = { 92, 86, 76 }
++local oldBone = { 138, 128, 108 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReaverChest",
++	slot = "Chest",
++	parts = Kit.join({
++		-- Ragged hide tails on the thighs, so they swing with the legs (C81).
++		Kit.flaps(0.72, "Leather", hide),
++		{
++			-- The vest itself, cut close and left dark.
++			Kit.box("UpperTorso", { 2.08, 1.66, 1.08 }, { 0, 0, 0 }, "Leather", hide),
++			Kit.box("LowerTorso", { 2.1, 0.42, 1.1 }, { 0, 0, 0 }, "Leather", c.leatherDark),
++			-- A rawhide belt slung a little off level, its bone buckle off centre.
++			Kit.box("LowerTorso", { 2.16, 0.14, 1.16 }, { 0, 0.06, 0 }, "Leather", c.leatherScuff, { 0, 0, 3 }),
++			Kit.box("LowerTorso", { 0.26, 0.2, 0.1 }, { 0.36, 0.04, -0.62 }, "Marble", oldBone),
++			-- The rawhide baldric, right shoulder to left hip, with a bone clasp.
++			Kit.box("UpperTorso", { 0.26, 2.1, 0.1 }, { 0, 0, -0.58 }, "Leather", c.leatherScuff, { 0, 0, -30 }),
++			Kit.box("UpperTorso", { 0.3, 0.26, 0.14 }, { 0.16, 0.28, -0.63 }, "Marble", c.bone),
++			-- The ash yoke lying over the chest top, so it reads from above.
++			Kit.box("UpperTorso", { 1.9, 0.06, 0.3 }, { 0, 0.86, -0.32 }, "Fabric", ash),
++			-- An ash band across the chest and another across the back.
++			Kit.box("UpperTorso", { 1.7, 0.16, 0.07 }, { 0.02, 0.6, -0.57 }, "Fabric", ash, { 0, 0, -4 }),
++			Kit.box("UpperTorso", { 1.7, 0.16, 0.07 }, { 0.02, 0.6, 0.57 }, "Fabric", ash, { 0, 0, 4 }),
++			-- Ash claw marks raked down the right of the chest.
++			Kit.box("UpperTorso", { 0.18, 0.64, 0.07 }, { 0.52, 0.26, -0.57 }, "Fabric", ash, { 0, 0, 14 }),
++			Kit.box("UpperTorso", { 0.18, 0.64, 0.07 }, { 0.76, 0.18, -0.57 }, "Fabric", ash, { 0, 0, 14 }),
++			Kit.box("UpperTorso", { 0.16, 0.46, 0.07 }, { 0.3, 0.18, -0.57 }, "Fabric", ash, { 0, 0, 14 }),
++			-- Two long strokes across the back below the band.
++			Kit.box("UpperTorso", { 1.2, 0.12, 0.07 }, { 0.16, 0.1, 0.57 }, "Fabric", ash, { 0, 0, -8 }),
++			-- One grey wolf-fur pauldron, left shoulder only, ragged at the edge.
++			Kit.box("UpperArm", { 1.24, 0.34, 1.24 }, { 0, 0.52, 0 }, "Fabric", fur, { 0, 0, 6 }, "Left"),
++			Kit.box("UpperArm", { 1.12, 0.26, 1.12 }, { 0, 0.24, 0 }, "Fabric", fur, { 0, 0, -4 }, "Left"),
++			Kit.box("UpperArm", { 0.3, 0.32, 0.34 }, { 0.58, 0.4, 0 }, "Fabric", fur, { 0, 0, 20 }, "Left"),
++			-- A bone pin holding the pelt at the shoulder, its edge ragged below.
++			Kit.box("UpperArm", { 0.12, 0.34, 0.12 }, { 0.5, 0.56, -0.42 }, "Marble", c.bone, { 0, 0, -14 }, "Left"),
++			Kit.box("UpperArm", { 0.3, 0.28, 0.28 }, { 0.5, 0.04, 0.12 }, "Fabric", fur, { 0, 0, 14 }, "Left"),
++			-- A band of ash paint round each bare upper arm.
++			Kit.box("UpperArm", { 1.08, 0.14, 1.08 }, { 0, 0.02, 0 }, "Fabric", ash),
++			-- Two bone teeth off a kill, hung from the belt at the right hip.
++			Kit.box("LowerTorso", { 0.12, 0.28, 0.12 }, { 0.66, -0.04, -0.58 }, "Marble", c.bone, { 0, 0, 8 }),
++			Kit.box("LowerTorso", { 0.1, 0.2, 0.1 }, { 0.86, 0.0, -0.54 }, "Marble", oldBone, { 0, 0, -6 }),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ReaverGloves.luau b/src/shared/data/armourLooks/ReaverGloves.luau
+new file mode 100644
+index 0000000..ecc96ad
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReaverGloves.luau
+@@ -0,0 +1,33 @@
++--!strict
++-- The Reaver's gloves (the Reaver armour set): rawhide bracers over bare
++-- forearms, a band and a stripe of ash paint on each, a palm wrap on each hand
++-- and a bone splint lashed to the right forearm only. Narrow and strapped
++-- rather than cased, so the arms stay bare at the high camera.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The Reaver's own palette: a hide darker and greyer than the leather family
++-- and the ash war paint that carries the set's read.
++local hide = { 64, 56, 46 }
++local ash = { 156, 150, 136 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReaverGloves",
++	slot = "Gloves",
++	parts = {
++		-- The bracer, open at the hand.
++		Kit.box("LowerArm", { 1.1, 0.8, 1.1 }, { 0, -0.08, 0 }, "Leather", hide),
++		Kit.box("LowerArm", { 1.16, 0.18, 1.16 }, { 0, 0.32, 0 }, "Leather", c.leatherDark),
++		-- An ash band at the wrist and a stripe down the outside of each bracer.
++		Kit.box("LowerArm", { 1.18, 0.18, 1.18 }, { 0, -0.38, 0 }, "Fabric", ash),
++		Kit.box("LowerArm", { 0.1, 0.46, 0.18 }, { 0.56, -0.04, 0 }, "Fabric", ash),
++		-- The hand bound across the palm, fingers free.
++		Kit.box("Hand", { 1.06, 0.2, 1.06 }, { 0, 0.04, 0 }, "Leather", c.leatherDark),
++		-- A bone splint lashed to the right forearm only.
++		Kit.box("LowerArm", { 0.1, 0.58, 0.2 }, { 0.56, -0.02, -0.2 }, "Marble", c.bone, { 0, 0, -4 }, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ReaverHelm.luau b/src/shared/data/armourLooks/ReaverHelm.luau
+new file mode 100644
+index 0000000..c683579
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReaverHelm.luau
+@@ -0,0 +1,44 @@
++--!strict
++-- The Reaver's helm (the Reaver armour set): a low smoke-cured hide cap with a
++-- stripe of ash war paint struck over the crown, a band of it across the eyes
++-- and a bone jaw mask over the lower face, framed by hide cheeks and a neck
++-- curtain. Two bone horns off a kill break the head's outline at the high
++-- camera; there is no iron in it at all.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The Reaver's own palette: a hide darker and greyer than the leather family,
++-- the ash war paint that carries the set's read, and bone off a kill.
++local hide = { 64, 56, 46 }
++local ash = { 156, 150, 136 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReaverHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- A low cap over the crown, cut away at the brow.
++		Kit.box("Head", { 1.34, 0.36, 1.34 }, { 0, 0.44, 0 }, "Leather", hide),
++		-- The ash stripe over the crown, front to back, read from the high camera.
++		Kit.box("Head", { 0.42, 0.1, 1.05 }, { 0, 0.64, 0.03 }, "Fabric", ash),
++		-- The leather brow band.
++		Kit.box("Head", { 1.38, 0.18, 1.38 }, { 0, 0.26, 0 }, "Leather", c.leatherDark),
++		-- The bone jaw mask over the lower face, and the ash stripe over the eyes.
++		Kit.box("Head", { 1.06, 0.52, 0.16 }, { 0, -0.24, -0.62 }, "Marble", c.bone),
++		Kit.box("Head", { 1.12, 0.16, 0.08 }, { 0, 0.12, -0.64 }, "Fabric", ash),
++		-- A rawhide strap under the jaw.
++		Kit.box("Head", { 1, 0.09, 0.12 }, { 0, -0.54, -0.56 }, "Leather", c.leatherScuff),
++		-- A hide curtain down the back of the head, under the cap, and cheek
++		-- flaps that leave only the bone mask and the painted eyes showing.
++		Kit.box("Head", { 1.34, 0.8, 0.16 }, { 0, -0.22, 0.63 }, "Leather", hide),
++		Kit.box("Head", { 0.12, 0.48, 0.6 }, { 0.63, -0.14, -0.02 }, "Leather", hide, { 0, 0, -4 }),
++		Kit.box("Head", { 0.12, 0.48, 0.6 }, { -0.63, -0.14, -0.02 }, "Leather", hide, { 0, 0, 4 }),
++		-- Two horns, bone off a kill, angled out and up.
++		Kit.box("Head", { 0.22, 0.66, 0.22 }, { 0.68, 0.5, 0.02 }, "Marble", c.bone, { 0, 0, -16 }),
++		Kit.box("Head", { 0.22, 0.66, 0.22 }, { -0.68, 0.5, 0.02 }, "Marble", c.bone, { 0, 0, 16 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..5a9e09a 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:ReaverHelm"] = row("A hide cap, ash-struck eyes and a bone jaw mask, with two bone horns."),
++	["armour:ReaverChest"] = row("A smoke-cured hide vest, one fur pauldron and ash claw marks, rawhide-strapped."),
++	["armour:ReaverGloves"] = row("Rawhide bracers and palm wraps, a bone splint and a stripe of ash paint."),
++	["armour:ReaverBoots"] = row("Shins and feet bound in hide and rawhide, ash-striped, a bone splint on one shin."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

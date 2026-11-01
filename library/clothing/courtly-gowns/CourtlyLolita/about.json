@@ -1,0 +1,22 @@
+{
+  "run": "courtly-gowns",
+  "letter": "D",
+  "set": "CourtlyLolita",
+  "looks": [
+    "CourtlyLolitaHeaddress",
+    "CourtlyLolitaGown",
+    "CourtlyLolitaCuffs",
+    "CourtlyLolitaHem"
+  ],
+  "original_looks": [
+    "CourtlyHeaddress",
+    "CourtlyGown",
+    "CourtlyCuffs",
+    "CourtlyHem"
+  ],
+  "pick_rank": null,
+  "intent": "A gothic-lolita court gown in near-black cloth with bone and ivory lace: a fitted bodice under a pale collar and a great chest bow, puffed shoulders, and a wide bell skirt over a black flounce, a pale grey band and a bone petticoat edge, so from the high camera the widest black bell in the game, ringed in pale lace and crowned by a tall black hair bow, reads as a gown before any detail does.",
+  "reason": null,
+  "first_fix": null,
+  "parts": 93
+}

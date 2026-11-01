@@ -1,0 +1,22 @@
+{
+  "run": "reaver-armour",
+  "letter": "C",
+  "set": "ReaverWolfpelt",
+  "looks": [
+    "ReaverWolfpeltHelm",
+    "ReaverWolfpeltChest",
+    "ReaverWolfpeltGloves",
+    "ReaverWolfpeltBoots"
+  ],
+  "original_looks": [
+    "ReaverHelm",
+    "ReaverChest",
+    "ReaverGloves",
+    "ReaverBoots"
+  ],
+  "pick_rank": null,
+  "intent": "A grizzled grey-brown wolf pelt thrown over lean hide wraps: a big pale ragged fur mantle and wolf-pelt hood are the silhouette, reading apart from the iron, leather, studded, linen and fenscale sets from the high camera.",
+  "reason": null,
+  "first_fix": null,
+  "parts": 63
+}

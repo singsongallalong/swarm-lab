@@ -1,0 +1,241 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..a119d27 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -7,6 +7,10 @@ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+ local Chainmail = require("./armourLooks/Chainmail")
++local ClassicDress = require("./armourLooks/ClassicDress")
++local ClassicHeaddress = require("./armourLooks/ClassicHeaddress")
++local ClassicHem = require("./armourLooks/ClassicHem")
++local ClassicSleeves = require("./armourLooks/ClassicSleeves")
+ local EmberTalisman = require("./armourLooks/EmberTalisman")
+ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+@@ -36,6 +40,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
+ 	Chainmail = Chainmail,
++	ClassicDress = ClassicDress,
++	ClassicHeaddress = ClassicHeaddress,
++	ClassicHem = ClassicHem,
++	ClassicSleeves = ClassicSleeves,
+ 	EmberTalisman = EmberTalisman,
+ 	FenscaleGrips = FenscaleGrips,
+ 	FenscaleHood = FenscaleHood,
+diff --git a/src/shared/data/armourLooks/ClassicDress.luau b/src/shared/data/armourLooks/ClassicDress.luau
+new file mode 100644
+index 0000000..bd57018
+--- /dev/null
++++ b/src/shared/data/armourLooks/ClassicDress.luau
+@@ -0,0 +1,56 @@
++--!strict
++-- The black dress (the Classic gown's chest): a fitted bodice laced in crimson
++-- up the front, a high collar and a small bow at the throat, a crimson sash and
++-- a big crimson bow at the back of the waist, close black upper sleeves with a
++-- crimson band at the elbow, and the top of the skirt hung from the thighs: a
++-- crimson tier, a bone lace edge and the black outer tier down to the knee.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local black = { 26, 24, 30 }
++local crimson = { 104, 32, 38 }
++local cream = { 184, 172, 146 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ClassicDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice over the torso, raised in a black collar with a bone lace
++		-- edge under the chin.
++		Kit.box("UpperTorso", { 2.08, 1.66, 1.08 }, { 0, 0, 0 }, "Fabric", black),
++		Kit.box("UpperTorso", { 1.16, 0.24, 1.16 }, { 0, 0.74, 0 }, "Fabric", black),
++		Kit.box("UpperTorso", { 1.22, 0.06, 1.22 }, { 0, 0.8, 0 }, "Fabric", cream),
++		-- The small crimson bow at the throat.
++		Kit.box("UpperTorso", { 0.16, 0.16, 0.12 }, { 0, 0.7, -0.59 }, "Fabric", crimson),
++		Kit.box("UpperTorso", { 0.3, 0.18, 0.1 }, { -0.21, 0.74, -0.59 }, "Fabric", crimson, { 0, 0, 18 }),
++		Kit.box("UpperTorso", { 0.3, 0.18, 0.1 }, { 0.21, 0.74, -0.59 }, "Fabric", crimson, { 0, 0, -18 }),
++		-- Crimson lacing up the front of the bodice.
++		Kit.box("UpperTorso", { 0.62, 0.09, 0.06 }, { 0, 0.42, -0.57 }, "Fabric", crimson, { 0, 0, 12 }),
++		Kit.box("UpperTorso", { 0.62, 0.09, 0.06 }, { 0, 0.14, -0.57 }, "Fabric", crimson, { 0, 0, -12 }),
++		Kit.box("UpperTorso", { 0.62, 0.09, 0.06 }, { 0, -0.14, -0.57 }, "Fabric", crimson, { 0, 0, 12 }),
++		Kit.box("UpperTorso", { 0.62, 0.09, 0.06 }, { 0, -0.42, -0.57 }, "Fabric", crimson, { 0, 0, -12 }),
++		-- Close upper sleeves, banded in crimson and bone lace above the elbow.
++		Kit.box("UpperArm", { 1.08, 1.2, 1.08 }, { 0, 0, 0 }, "Fabric", black),
++		Kit.box("UpperArm", { 1.12, 0.16, 1.12 }, { 0, -0.49, 0 }, "Fabric", crimson),
++		Kit.box("UpperArm", { 1.14, 0.05, 1.14 }, { 0, -0.57, 0 }, "Fabric", cream),
++		-- The waist, drawn in by a crimson sash and a crimson front panel.
++		Kit.box("LowerTorso", { 2.04, 0.4, 1.04 }, { 0, 0, 0 }, "Fabric", black),
++		Kit.box("LowerTorso", { 2.08, 0.16, 1.08 }, { 0, 0.02, 0 }, "Fabric", crimson),
++		Kit.box("LowerTorso", { 0.5, 0.36, 0.05 }, { 0, 0, -0.57 }, "Fabric", crimson),
++		-- The big crimson bow at the back of the waist: two loops, a knot, tails.
++		Kit.box("LowerTorso", { 0.52, 0.34, 0.14 }, { -0.5, 0.14, 0.6 }, "Fabric", crimson, { 0, 0, 20 }),
++		Kit.box("LowerTorso", { 0.52, 0.34, 0.14 }, { 0.5, 0.14, 0.6 }, "Fabric", crimson, { 0, 0, -20 }),
++		Kit.box("LowerTorso", { 0.2, 0.2, 0.16 }, { 0, 0.14, 0.6 }, "Fabric", crimson),
++		Kit.box("LowerTorso", { 0.12, 0.28, 0.06 }, { -0.13, -0.03, 0.62 }, "Fabric", crimson, { 0, 0, -6 }),
++		Kit.box("LowerTorso", { 0.12, 0.24, 0.06 }, { 0.13, -0.05, 0.62 }, "Fabric", crimson, { 0, 0, 6 }),
++		-- The top of the skirt, from the thighs: crimson tier, bone lace, black
++		-- outer tier to just above the knee, where the shins' panels take over.
++		Kit.box("UpperLeg", { 1.06, 0.3, 1.06 }, { 0.03, 0.5, 0 }, "Fabric", crimson),
++		Kit.box("UpperLeg", { 1.16, 0.08, 1.22 }, { 0.05, 0.31, 0 }, "Fabric", cream),
++		Kit.box("UpperLeg", { 1.12, 0.91, 0.08 }, { 0.06, -0.15, -0.55 }, "Fabric", black, { 4, 0, 0 }),
++		Kit.box("UpperLeg", { 1.12, 0.91, 0.08 }, { 0.06, -0.15, 0.55 }, "Fabric", black, { -4, 0, 0 }),
++		Kit.box("UpperLeg", { 0.08, 0.91, 1.04 }, { 0.56, -0.15, 0 }, "Fabric", black, { 0, 0, 5 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ClassicHeaddress.luau b/src/shared/data/armourLooks/ClassicHeaddress.luau
+new file mode 100644
+index 0000000..0c6922a
+--- /dev/null
++++ b/src/shared/data/armourLooks/ClassicHeaddress.luau
+@@ -0,0 +1,49 @@
++--!strict
++-- The mourning headdress (the Classic gown's helm): a black crown cap under a
++-- crimson lace band, a large crimson bow at the left of the crown with two
++-- tails, a tiny brass clock pinned to the band's front, and a short black veil
++-- falling behind to the shoulders. The bow sits high on the crown, not wide at
++-- the ears, so the outline stays a headdress rather than a helm.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The set's three cloths (deep night black, blood crimson, soft bone lace) and
++-- the dull brass of the clock.
++local black = { 26, 24, 30 }
++local crimson = { 104, 32, 38 }
++local cream = { 184, 172, 146 }
++local brass = { 118, 100, 64 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ClassicHeaddress",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- A black cap over the crown, so no head shows above the band.
++		Kit.box("Head", { 1.24, 0.12, 1.24 }, { 0, 0.59, 0 }, "Fabric", black),
++		-- Bone lace under the crimson band, a pale lip all round.
++		Kit.box("Head", { 1.34, 0.05, 0.76 }, { 0, 0.665, 0.06 }, "Fabric", cream),
++		-- The crimson band across the top of the head.
++		Kit.box("Head", { 1.3, 0.16, 0.68 }, { 0, 0.76, 0.06 }, "Fabric", crimson),
++		-- The big bow at the left of the crown: knot, two loops, two tails.
++		Kit.box("Head", { 0.18, 0.2, 0.2 }, { -0.62, 0.68, 0.16 }, "Fabric", crimson),
++		Kit.box("Head", { 0.34, 0.24, 0.16 }, { -0.85, 0.81, 0.16 }, "Fabric", crimson, { 0, 0, 28 }),
++		Kit.box("Head", { 0.34, 0.24, 0.16 }, { -0.85, 0.55, 0.16 }, "Fabric", crimson, { 0, 0, -28 }),
++		Kit.box("Head", { 0.14, 0.62, 0.06 }, { -0.64, 0.36, 0.58 }, "Fabric", crimson, { -6, 0, 4 }),
++		Kit.box("Head", { 0.14, 0.54, 0.06 }, { -0.5, 0.39, 0.6 }, "Fabric", crimson, { -6, 0, -4 }),
++		-- The tiny clock on the band's front: brass case, bone face, black hands.
++		Kit.box("Head", { 0.16, 0.16, 0.07 }, { -0.28, 0.76, -0.27 }, "Metal", brass),
++		Kit.box("Head", { 0.11, 0.11, 0.03 }, { -0.28, 0.76, -0.31 }, "Metal", cream),
++		Kit.box("Head", { 0.015, 0.06, 0.015 }, { -0.28, 0.775, -0.33 }, "Metal", black),
++		Kit.box("Head", { 0.045, 0.015, 0.015 }, { -0.265, 0.76, -0.33 }, "Metal", black),
++		-- The short black veil: a gathered top under the cap, then two falling
++		-- panels that flare a little away from the nape.
++		Kit.box("Head", { 0.5, 0.16, 0.12 }, { 0, 0.55, 0.6 }, "Fabric", black),
++		Kit.box("Head", { 1.12, 1.02, 0.06 }, { 0, 0.0, 0.66 }, "Fabric", black, { -4, 0, 0 }),
++		Kit.box("Head", { 1.3, 0.34, 0.06 }, { 0, -0.62, 0.7 }, "Fabric", black, { -10, 0, 0 }),
++		-- A thin crimson edge at the veil's hem, so it reads against the dress.
++		Kit.box("Head", { 1.32, 0.06, 0.08 }, { 0, -0.8, 0.735 }, "Fabric", crimson, { -10, 0, 0 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ClassicHem.luau b/src/shared/data/armourLooks/ClassicHem.luau
+new file mode 100644
+index 0000000..d40db5b
+--- /dev/null
++++ b/src/shared/data/armourLooks/ClassicHem.luau
+@@ -0,0 +1,38 @@
++--!strict
++-- The hem (the Classic gown's boots): the black outer tier carried on from the
++-- thighs down each shin in two widening steps, a thin crimson stripe low on it,
++-- a crimson ruffle at the very bottom, a bone ankle ruffle peeking below, dark
++-- stockings behind and black shoes with a crimson buckle.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local black = { 26, 24, 30 }
++local crimson = { 104, 32, 38 }
++local cream = { 184, 172, 146 }
++local stocking = { 38, 36, 46 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ClassicHem",
++	slot = "Boots",
++	parts = {
++		-- Dark stockings under the skirt, so no leg shows between the panels.
++		Kit.box("LowerLeg", { 1.04, 1.18, 1.04 }, { 0, 0, 0 }, "Fabric", stocking),
++		-- The black outer tier, knee to mid-shin, then a wider step below it.
++		Kit.box("LowerLeg", { 1.3, 0.7, 0.08 }, { 0.15, 0.31, -0.58 }, "Fabric", black, { 4, 0, 0 }),
++		Kit.box("LowerLeg", { 1.3, 0.7, 0.08 }, { 0.15, 0.31, 0.58 }, "Fabric", black, { -4, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 0.7, 1.2 }, { 0.78, 0.31, 0 }, "Fabric", black, { 0, 0, 5 }),
++		Kit.box("LowerLeg", { 1.58, 0.66, 0.08 }, { 0.29, -0.34, -0.62 }, "Fabric", black, { 5, 0, 0 }),
++		Kit.box("LowerLeg", { 1.58, 0.66, 0.08 }, { 0.29, -0.34, 0.62 }, "Fabric", black, { -5, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 0.66, 1.34 }, { 1.04, -0.34, 0 }, "Fabric", black, { 0, 0, 7 }),
++		-- The thin crimson stripe, and the crimson ruffle at the hem.
++		Kit.box("LowerLeg", { 1.6, 0.12, 1.4 }, { 0.3, -0.5, 0 }, "Fabric", crimson),
++		Kit.box("LowerLeg", { 1.68, 0.2, 1.48 }, { 0.34, -0.63, 0 }, "Fabric", crimson),
++		-- A bone ruffle at the ankle, peeking under the crimson.
++		Kit.box("LowerLeg", { 1.1, 0.1, 1.22 }, { 0.05, -0.82, 0 }, "Fabric", cream),
++		-- Black shoes, a crimson buckle at the toe.
++		Kit.box("Foot", { 1.06, 0.32, 1.18 }, { 0, 0, -0.06 }, "Fabric", black),
++		Kit.box("Foot", { 0.16, 0.1, 0.06 }, { 0, 0.1, -0.67 }, "Fabric", crimson),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ClassicSleeves.luau b/src/shared/data/armourLooks/ClassicSleeves.luau
+new file mode 100644
+index 0000000..4ed41f6
+--- /dev/null
++++ b/src/shared/data/armourLooks/ClassicSleeves.luau
+@@ -0,0 +1,31 @@
++--!strict
++-- The bell sleeves and gloves (the Classic gown's gloves): black sleeves that
++-- widen step by step from the elbow to a hanging bell at the hand, a crimson
++-- cuff and a bone lace lining at the end, a long strip hanging to the
++-- fingertips behind, and close crimson gloves below.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local black = { 26, 24, 30 }
++local crimson = { 104, 32, 38 }
++local cream = { 184, 172, 146 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ClassicSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The bell, stepped wider from the elbow to the hand.
++		Kit.box("LowerArm", { 1.26, 0.44, 1.26 }, { 0, 0.34, 0 }, "Fabric", black),
++		Kit.box("LowerArm", { 1.44, 0.44, 1.44 }, { 0, -0.04, 0 }, "Fabric", black),
++		Kit.box("LowerArm", { 1.6, 0.4, 1.6 }, { 0, -0.42, 0 }, "Fabric", black),
++		-- Crimson cuff, then bone lace lining peeking below it.
++		Kit.box("LowerArm", { 1.66, 0.12, 1.66 }, { 0, -0.62, 0 }, "Fabric", crimson),
++		Kit.box("LowerArm", { 1.58, 0.06, 1.58 }, { 0, -0.69, 0 }, "Fabric", cream),
++		-- The sleeve's back hanging down to the fingertips.
++		Kit.box("LowerArm", { 1.0, 0.44, 0.06 }, { 0, -0.66, 0.8 }, "Fabric", black, { -6, 0, 0 }),
++		-- The crimson glove on the hand, showing below the bell.
++		Kit.box("Hand", { 1.08, 0.36, 1.08 }, { 0, 0, 0 }, "Fabric", crimson),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..45282dd 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,12 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:ClassicHeaddress"] = row(
++		"A crimson lace band and bow over a short black veil, with a tiny clock pinned on it."
++	),
++	["armour:ClassicDress"] = row("A black bodice laced in crimson, bows at throat and waist, over a tiered skirt."),
++	["armour:ClassicSleeves"] = row("Black bell sleeves widening from the elbow, with crimson cuffs and gloves."),
++	["armour:ClassicHem"] = row("The black lower skirt tiers, a crimson stripe and ruffle over pale ankle frills."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

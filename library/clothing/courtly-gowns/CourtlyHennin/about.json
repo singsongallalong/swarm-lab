@@ -1,0 +1,22 @@
+{
+  "run": "courtly-gowns",
+  "letter": "E",
+  "set": "CourtlyHennin",
+  "looks": [
+    "CourtlyHenninHeaddress",
+    "CourtlyHenninGown",
+    "CourtlyHenninCuffs",
+    "CourtlyHenninHem"
+  ],
+  "original_looks": [
+    "CourtlyHeaddress",
+    "CourtlyGown",
+    "CourtlyCuffs",
+    "CourtlyHem"
+  ],
+  "pick_rank": 1,
+  "intent": "A late-medieval court gown in deep plum with bone lace and black bows: a tall wimpled hennin, a high-belted velvet bodice with puffed sleeves trailing long drapes, and a full tiered skirt with a fur band and pale petticoat hem that reads as one bell around the legs from the high camera.",
+  "reason": "The medieval gown's tall wimpled hennin makes the most distinctive outline of the five from the ARPG camera, a spire no other look in the game has, over a deep plum bell with a fur band; it reads as noble at once.",
+  "first_fix": "The hennin is very tall for a helm: check in Studio that it clears doorways and the camera, and that the trailing sleeve drapes don't cut into a swinging arm.",
+  "parts": 99
+}

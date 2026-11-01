@@ -1,0 +1,22 @@
+{
+  "run": "reaver-armour",
+  "letter": "F",
+  "set": "ReaverScrap",
+  "looks": [
+    "ReaverScrapHelm",
+    "ReaverScrapChest",
+    "ReaverScrapGloves",
+    "ReaverScrapBoots"
+  ],
+  "original_looks": [
+    "ReaverHelm",
+    "ReaverChest",
+    "ReaverGloves",
+    "ReaverBoots"
+  ],
+  "pick_rank": null,
+  "intent": "Scavenged iron plates lashed with rawhide onto dark hide, with one big two-plate right pauldron, a scraped brow band, rust and a bone shard, so the high camera reads brown hide broken by mismatched grey plates and pale lashings.",
+  "reason": null,
+  "first_fix": null,
+  "parts": 60
+}
