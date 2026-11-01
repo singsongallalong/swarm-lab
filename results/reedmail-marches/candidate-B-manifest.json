@@ -1,0 +1,17 @@
+{
+  "skill": "Reedmail",
+  "look": "ReedmailHelm,ReedmailDress,ReedmailSleeves,ReedmailHem",
+  "rows_added": ["ReedmailHelm", "ReedmailDress", "ReedmailSleeves", "ReedmailHem"],
+  "intent": "A fen warden's long tiered battle gown: a fen-green cuirass banded in bog iron with a bone trim and a black belt, over a full reed-straw skirt that steps wider band by band to a bone hem, with a grey crested helm and a single bone-tipped reed spike; from the high camera it reads as a narrow green bodice over a broad, bright straw A-line.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered helm crown: the reference head's full width holds the bowl square below the crown, so the cap cannot narrow toward the top.",
+    "A hem that out-reaches the arms: the hanging forearms are the body's widest point, so the skirt's flare can never read wider than the shoulders.",
+    "A brighter reed for the skirt plates: the straw is held at about 118 of 255 to stay near the armour limits, so the large tiers read dimmer than a true reed gold."
+  ]
+}

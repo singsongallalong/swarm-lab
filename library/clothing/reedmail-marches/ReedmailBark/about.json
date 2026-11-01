@@ -1,0 +1,22 @@
+{
+  "run": "reedmail-marches",
+  "letter": "D",
+  "set": "ReedmailBark",
+  "looks": [
+    "ReedmailBarkDress",
+    "ReedmailBarkHelm",
+    "ReedmailBarkHem",
+    "ReedmailBarkSleeves"
+  ],
+  "original_looks": [
+    "ReedmailDress",
+    "ReedmailHelm",
+    "ReedmailHem",
+    "ReedmailSleeves"
+  ],
+  "pick_rank": 2,
+  "intent": "A fen warden's courtly gown of pale willow-bark lamellar banded in fen green over bog iron: from the high camera the wide bust tapers to a dark belt and bone sash, then a bone-trimmed bell of a skirt opens wider band by band to its hem.",
+  "reason": "Bark and bone: the fullest, best-flaring armoured skirt in the run, willow-bark lamellar opening band by band to a bone-trimmed hem; a real battle skirt (5.7, second).",
+  "first_fix": "Blocks on the shoulders stand out past the shoulder line and make it a broad warrior from above: flatten them, and alternate the muddy brown bands with fen green and straw.",
+  "parts": 88
+}

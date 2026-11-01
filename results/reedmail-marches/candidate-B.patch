@@ -1,0 +1,255 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..597ef68 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -24,6 +24,10 @@ local LinenCowl = require("./armourLooks/LinenCowl")
+ local LinenRobe = require("./armourLooks/LinenRobe")
+ local LinenSlippers = require("./armourLooks/LinenSlippers")
+ local LinenWraps = require("./armourLooks/LinenWraps")
++local ReedmailDress = require("./armourLooks/ReedmailDress")
++local ReedmailHelm = require("./armourLooks/ReedmailHelm")
++local ReedmailHem = require("./armourLooks/ReedmailHem")
++local ReedmailSleeves = require("./armourLooks/ReedmailSleeves")
+ local SpellShield = require("./armourLooks/SpellShield")
+ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+@@ -53,6 +57,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	LinenRobe = LinenRobe,
+ 	LinenSlippers = LinenSlippers,
+ 	LinenWraps = LinenWraps,
++	ReedmailDress = ReedmailDress,
++	ReedmailHelm = ReedmailHelm,
++	ReedmailHem = ReedmailHem,
++	ReedmailSleeves = ReedmailSleeves,
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
+diff --git a/src/shared/data/armourLooks/ReedmailDress.luau b/src/shared/data/armourLooks/ReedmailDress.luau
+new file mode 100644
+index 0000000..ff35044
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReedmailDress.luau
+@@ -0,0 +1,63 @@
++--!strict
++-- The reedmail dress (the Reedmail set's chest): a fitted fen-green cuirass
++-- banded in bog iron with a pale bone trim, cinched low by a black belt with a
++-- bone buckle. Below it a short green peplum opens into a full tiered battle
++-- skirt of reed-straw plates, band over band and swinging from the thighs; the
++-- skirt carries on down the shins in the boots to a bone hem. The waist is the
++-- narrowest line; the skirt is the widest.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's own palette: bog iron, fen green, reed straw, bone and black water.
++local IRON = { 80, 88, 94 }
++local IRON_DARK = { 46, 52, 58 }
++local REED = { 118, 106, 68 }
++local GREEN = { 60, 84, 62 }
++local GREEN_DEEP = { 48, 68, 50 }
++local BONE = { 166, 156, 130 }
++local BLACK_WATER = { 36, 38, 36 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReedmailDress",
++	slot = "Chest",
++	parts = {
++		-- The green cuirass under the iron: two laced bands, a bone cord between.
++		Kit.box("UpperTorso", { 2.05, 1.64, 1.05 }, { 0, 0, 0 }, "Fabric", GREEN),
++		Kit.box("UpperTorso", { 2.12, 0.36, 1.14 }, { 0, 0.52, 0 }, "Metal", IRON),
++		Kit.box("UpperTorso", { 2.07, 0.36, 1.1 }, { 0, 0.09, 0 }, "Metal", IRON_DARK),
++		Kit.box("UpperTorso", { 2.1, 0.08, 1.16 }, { 0, 0.305, 0 }, "Fabric", BONE),
++		-- A pale V at the neckline, and the collar edged in bone over the green.
++		Kit.box("UpperTorso", { 0.06, 0.3, 0.04 }, { -0.14, 0.58, -0.585 }, "Fabric", BONE, { 0, 0, 28 }),
++		Kit.box("UpperTorso", { 0.06, 0.3, 0.04 }, { 0.14, 0.58, -0.585 }, "Fabric", BONE, { 0, 0, -28 }),
++		Kit.box("UpperTorso", { 1.26, 0.18, 1.08 }, { 0, 0.76, 0 }, "Fabric", GREEN),
++		Kit.box("UpperTorso", { 1.28, 0.05, 1.1 }, { 0, 0.855, 0 }, "Fabric", BONE),
++		-- The waist: a black belt with a bone buckle, a reed cord above it.
++		Kit.box("LowerTorso", { 2.03, 0.4, 1.03 }, { 0, 0, 0 }, "Metal", IRON),
++		Kit.box("LowerTorso", { 2.04, 0.16, 1.04 }, { 0, 0.03, 0 }, "Leather", BLACK_WATER),
++		Kit.box("LowerTorso", { 2.06, 0.05, 1.06 }, { 0, 0.135, 0 }, "Fabric", REED),
++		Kit.box("LowerTorso", { 0.26, 0.24, 0.08 }, { 0.04, 0.03, -0.55 }, "Metal", BONE, { 0, 0, 45 }),
++		-- A reed bow at the small of the back, its two loops unevenly tied.
++		Kit.box("LowerTorso", { 0.42, 0.18, 0.09 }, { -0.22, 0.05, 0.57 }, "Fabric", REED, { 0, 0, -22 }),
++		Kit.box("LowerTorso", { 0.36, 0.2, 0.09 }, { 0.2, 0.03, 0.57 }, "Fabric", REED, { 0, 0, 16 }),
++		Kit.box("LowerTorso", { 0.16, 0.16, 0.12 }, { 0, 0.04, 0.59 }, "Metal", BONE),
++		-- The upper sleeve, close to the arm, a reed cord at the elbow.
++		Kit.box("UpperArm", { 1.02, 1.2, 1.02 }, { 0, 0, 0 }, "Fabric", GREEN_DEEP),
++		Kit.box("UpperArm", { 1.04, 0.06, 1.04 }, { 0, -0.5, 0 }, "Fabric", REED),
++		-- The green peplum, the under-skirt the reed plates hang over.
++		Kit.box("UpperLeg", { 0.96, 0.46, 0.08 }, { 0.03, 0.52, -0.6 }, "Fabric", GREEN, { 12, 0, 0 }),
++		Kit.box("UpperLeg", { 0.96, 0.46, 0.08 }, { 0.03, 0.52, 0.6 }, "Fabric", GREEN, { -12, 0, 0 }),
++		Kit.box("UpperLeg", { 0.08, 0.46, 1.18 }, { 0.61, 0.52, 0 }, "Fabric", GREEN, { 0, 0, 12 }),
++		-- The skirt's thigh tier: three bands of reed-straw plate, each wider and
++		-- deeper than the one above, written on each thigh so both move as one.
++		Kit.box("UpperLeg", { 1.35, 0.42, 1.2 }, { 0, 0.37, 0 }, "Fabric", REED, nil, "Right"),
++		Kit.box("UpperLeg", { 1.35, 0.42, 1.2 }, { 0, 0.35, -0.03 }, "Fabric", REED, nil, "Left"),
++		Kit.box("UpperLeg", { 1.7, 0.42, 1.55 }, { 0, 0.01, 0 }, "Fabric", REED, nil, "Right"),
++		Kit.box("UpperLeg", { 1.7, 0.42, 1.55 }, { 0, -0.01, -0.03 }, "Fabric", REED, nil, "Left"),
++		Kit.box("UpperLeg", { 2.05, 0.44, 1.9 }, { 0, -0.35, 0 }, "Fabric", REED, nil, "Right"),
++		Kit.box("UpperLeg", { 2.05, 0.44, 1.9 }, { 0, -0.37, -0.03 }, "Fabric", REED, nil, "Left"),
++		-- Fen water soaked dark into the left of the skirt, low down.
++		Kit.box("UpperLeg", { 0.5, 0.5, 0.03 }, { 0.35, -0.05, -0.82 }, "Fabric", GREEN_DEEP, nil, "Left"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ReedmailHelm.luau b/src/shared/data/armourLooks/ReedmailHelm.luau
+new file mode 100644
+index 0000000..53264e5
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReedmailHelm.luau
+@@ -0,0 +1,46 @@
++--!strict
++-- The reedmail helm (the Reedmail set's helm): a close grey bog-iron bowl over
++-- the brow with a low comb along its crown, its rim laced with reed cord and
++-- knocked with a pale scraped edge. A single reed spike rises from a bone
++-- socket and is capped in bone; a green veil falls at the nape and down either
++-- side of the face. Nothing wide at the ear; all its height above and behind.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's own palette: bog iron, fen green, reed straw, bone and black water.
++local IRON = { 80, 88, 94 }
++local IRON_DARK = { 46, 52, 58 }
++local IRON_EDGE = { 136, 146, 154 }
++local REED = { 118, 106, 68 }
++local GREEN = { 60, 84, 62 }
++local BONE = { 166, 156, 130 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReedmailHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The bowl, its dark rim, and the reed cord laced round the rim.
++		Kit.box("Head", { 1.3, 0.6, 1.3 }, { 0, 0.36, 0 }, "Metal", IRON),
++		Kit.box("Head", { 1.32, 0.1, 1.32 }, { 0, 0.075, 0 }, "Metal", IRON_DARK),
++		Kit.box("Head", { 1.34, 0.05, 1.34 }, { 0, 0.15, 0 }, "Fabric", REED),
++		-- A scraped edge along the front of the rim, and the brow knot set off centre.
++		Kit.box("Head", { 1.36, 0.04, 0.1 }, { 0, 0.155, -0.64 }, "Metal", IRON_EDGE),
++		Kit.box("Head", { 0.2, 0.2, 0.08 }, { 0.12, 0.01, -0.67 }, "Fabric", BONE, { 0, 0, 45 }),
++		-- The low comb along the crown, and the bone socket of the spike.
++		Kit.box("Head", { 0.12, 0.14, 1.05 }, { 0, 0.72, 0.02 }, "Metal", IRON),
++		Kit.box("Head", { 0.3, 0.14, 0.3 }, { 0, 0.68, 0.16 }, "Metal", BONE),
++		-- A green veil at the nape and down either side of the face.
++		Kit.box("Head", { 1.16, 0.62, 0.06 }, { 0, -0.16, 0.66 }, "Fabric", GREEN, { 6, 0, 0 }),
++		Kit.box("Head", { 0.06, 0.42, 0.62 }, { 0.6, -0.12, 0.04 }, "Fabric", GREEN),
++		Kit.box("Head", { 0.06, 0.42, 0.62 }, { -0.6, -0.12, 0.04 }, "Fabric", GREEN),
++		-- The single reed spike, its fall down the back and its bone tip.
++		Kit.box("Head", { 0.22, 0.95, 0.14 }, { 0, 0.95, 0.3 }, "Fabric", REED, { 16, 0, 0 }),
++		Kit.box("Head", { 0.18, 0.7, 0.1 }, { 0, 0.3, 0.82 }, "Fabric", REED, { -30, 0, 0 }),
++		Kit.box("Head", { 0.15, 0.16, 0.11 }, { 0, 1.44, 0.445 }, "Metal", BONE, { 16, 0, 0 }),
++		-- One reed tassel to one side.
++		Kit.box("Head", { 0.07, 0.36, 0.07 }, { 0.5, -0.08, 0.71 }, "Fabric", REED),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ReedmailHem.luau b/src/shared/data/armourLooks/ReedmailHem.luau
+new file mode 100644
+index 0000000..2e1c5f9
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReedmailHem.luau
+@@ -0,0 +1,45 @@
++--!strict
++-- The reedmail hem (the Reedmail set's boots): the reed-straw battle skirt's
++-- lower tier, band over band down the shins from under the thigh plates, each
++-- wider and deeper than the last, and ending in a fen-green under-line above a
++-- bone hem. Below it the tall bog-oak boots, soaked black to an uneven
++-- waterline, with a bone-capped toe.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's own palette: bog iron, fen green, reed straw, bone and black water.
++local REED = { 118, 106, 68 }
++local GREEN = { 60, 84, 62 }
++local BONE = { 166, 156, 130 }
++local BOOT_LEATHER = { 54, 52, 44 }
++local BOOT_BLACK = { 34, 36, 34 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReedmailHem",
++	slot = "Boots",
++	parts = {
++		-- The skirt's shin tier: four bands of reed-straw plate, written on each
++		-- shin, the first tucked up inside the thigh band above.
++		Kit.box("LowerLeg", { 2, 0.34, 1.84 }, { 0, 0.51, 0 }, "Fabric", REED, nil, "Right"),
++		Kit.box("LowerLeg", { 2, 0.34, 1.84 }, { 0, 0.49, -0.03 }, "Fabric", REED, nil, "Left"),
++		Kit.box("LowerLeg", { 2.18, 0.34, 2.02 }, { 0, 0.23, 0 }, "Fabric", REED, nil, "Right"),
++		Kit.box("LowerLeg", { 2.18, 0.34, 2.02 }, { 0, 0.21, -0.03 }, "Fabric", REED, nil, "Left"),
++		Kit.box("LowerLeg", { 2.36, 0.34, 2.18 }, { 0, -0.05, 0 }, "Fabric", REED, nil, "Right"),
++		Kit.box("LowerLeg", { 2.36, 0.34, 2.18 }, { 0, -0.07, -0.03 }, "Fabric", REED, nil, "Left"),
++		Kit.box("LowerLeg", { 2.52, 0.3, 2.32 }, { 0, -0.31, 0 }, "Fabric", REED, nil, "Right"),
++		Kit.box("LowerLeg", { 2.52, 0.3, 2.32 }, { 0, -0.33, -0.03 }, "Fabric", REED, nil, "Left"),
++		-- The fen-green under-line and the bone trim at the hem.
++		Kit.box("LowerLeg", { 2.46, 0.06, 2.26 }, { 0, -0.48, 0 }, "Fabric", GREEN, nil, "Right"),
++		Kit.box("LowerLeg", { 2.46, 0.06, 2.26 }, { 0, -0.5, -0.03 }, "Fabric", GREEN, nil, "Left"),
++		Kit.box("LowerLeg", { 2.4, 0.06, 2.2 }, { 0, -0.53, 0 }, "Fabric", BONE, nil, "Right"),
++		Kit.box("LowerLeg", { 2.4, 0.06, 2.2 }, { 0, -0.55, -0.03 }, "Fabric", BONE, nil, "Left"),
++		-- The tall boot, soaked black to an uneven waterline.
++		Kit.box("LowerLeg", { 1.08, 0.92, 1.08 }, { 0, -0.19, 0 }, "Leather", BOOT_LEATHER),
++		Kit.box("LowerLeg", { 1.1, 0.3, 1.1 }, { 0, -0.47, 0 }, "Leather", BOOT_BLACK, { 0, 0, 3 }),
++		-- The black-water shoe and its bone toe.
++		Kit.box("Foot", { 1.06, 0.36, 1.12 }, { 0, 0.02, -0.03 }, "Leather", BOOT_BLACK),
++		Kit.box("Foot", { 0.46, 0.12, 0.26 }, { 0, -0.02, -0.62 }, "Metal", BONE),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ReedmailSleeves.luau b/src/shared/data/armourLooks/ReedmailSleeves.luau
+new file mode 100644
+index 0000000..8bc529c
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReedmailSleeves.luau
+@@ -0,0 +1,34 @@
++--!strict
++-- The reedmail sleeves (the Reedmail set's gloves): a fen-green sleeve kept
++-- close to the arm and gathered at the elbow with reed cord, flaring only a
++-- little at the cuff, with a bog-iron vambrace strapped over the forearm. The
++-- hands are black-water gloves with a bone wrap at the wrist.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's own palette: bog iron, fen green, reed straw, bone and black water.
++local IRON = { 80, 88, 94 }
++local REED = { 118, 106, 68 }
++local GREEN = { 60, 84, 62 }
++local GREEN_DEEP = { 48, 68, 50 }
++local BONE = { 166, 156, 130 }
++local BLACK_WATER = { 36, 38, 36 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReedmailSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The sleeve, widest only at the small cuff.
++		Kit.box("LowerArm", { 1.1, 0.32, 1.06 }, { 0, 0.4, 0 }, "Fabric", GREEN),
++		Kit.box("LowerArm", { 1.04, 0.58, 1.02 }, { 0, -0.01, 0 }, "Fabric", GREEN_DEEP),
++		Kit.box("LowerArm", { 1.12, 0.28, 1.08 }, { 0, -0.42, 0 }, "Fabric", GREEN_DEEP),
++		Kit.box("LowerArm", { 1.12, 0.07, 1.08 }, { 0, 0.57, 0 }, "Fabric", REED),
++		-- A bog-iron vambrace over the outside of the forearm.
++		Kit.box("LowerArm", { 0.1, 0.44, 0.58 }, { 0.54, -0.01, 0 }, "Metal", IRON),
++		-- The glove and the bone wrap at the wrist.
++		Kit.box("Hand", { 1.05, 0.44, 1.05 }, { 0, 0, 0 }, "Leather", BLACK_WATER),
++		Kit.box("Hand", { 1.09, 0.07, 1.09 }, { 0, 0.18, 0 }, "Fabric", BONE),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..a81766e 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -74,6 +74,12 @@ local rows: { [string]: Row } = {
+ 	["armour:BoneTalisman"] = row("A carved bone charm with runes, hung from the left fist on a cord."),
+ 	["armour:EmberTalisman"] = row("A glowing ember stone in a small iron cage, hung on a chain."),
+ 	["armour:StormTalisman"] = row("A blue-white crystal shard bound in copper wire, hung on a cord."),
++	["armour:ReedmailHelm"] = row("A grey bog-iron helm with a green veil and a single reed spike tipped in bone."),
++	["armour:ReedmailDress"] = row(
++		"A green cuirass banded in bog iron, a black belt and a full tiered reed-straw skirt."
++	),
++	["armour:ReedmailSleeves"] = row("Fen-green sleeves tied with reed, iron vambraces and black-water gloves."),
++	["armour:ReedmailHem"] = row("A tiered reed-straw skirt over bog-oak boots soaked black, with a bone hem."),
+ }
+ 
+ return table.freeze(rows)

@@ -1,0 +1,17 @@
+{
+  "weights": {"gown": 3, "pretty": 2.5, "skirt": 2, "parts": 1.5, "invention": 1},
+  "A": {"gown": 6, "pretty": 6, "skirt": 6, "parts": 6, "invention": 6, "total": 6.0,
+        "why": "A clear tiered straw skirt of plates that flares, but wide cuffs square the shoulders and the shelf-like tiers stop short of the boots."},
+  "B": {"gown": 7, "pretty": 7, "skirt": 7, "parts": 6, "invention": 6, "total": 6.75,
+        "why": "The prettiest and most on-brief skirt (long A-line of reed panels) with a good reed headpiece, let down by a belt bar that widens the waist and a boxy bodice."},
+  "C": {"gown": 7, "pretty": 5, "skirt": 7, "parts": 6, "invention": 5, "total": 6.15,
+        "why": "The cleanest dress outline, a smooth cone skirt from a belted waist, but it reads as plain olive cloth with no armour and a crate-like coif."},
+  "D": {"gown": 5, "pretty": 5, "skirt": 6, "parts": 5, "invention": 6, "total": 5.3,
+        "why": "A literal lamellar skirt, but a straight brown barrel under wide pauldron blocks that reads leather-family, not fen gown."},
+  "E": {"gown": 4, "pretty": 3, "skirt": 5, "parts": 4, "invention": 4, "total": 3.95,
+        "why": "A stepped flare that ends in a floor-level plinth, all in one near-black green that loses every line at night."},
+  "F": {"gown": 3, "pretty": 4, "skirt": 3, "parts": 4, "invention": 4, "total": 3.5,
+        "why": "No skirt to speak of: thigh-length plates over visible legs read as a soldier's tunic."},
+  "ranking": ["B", "C", "A", "D", "E", "F"],
+  "notes": "Every set keeps wide square shoulder and sleeve blocks, so none reads as a narrow-shouldered woman from the high camera, and none combines a real flared skirt of plates with the fen palette and a pale trim; the best gown is still a step from store-page quality."
+}

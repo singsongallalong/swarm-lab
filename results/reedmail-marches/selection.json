@@ -1,0 +1,18 @@
+{
+  "picked": [
+    "E",
+    "D",
+    "A"
+  ],
+  "reasons": {
+    "E": "Valkyrie: the only set that reads as a gown at first sight, an ankle-length bell skirt of reed-straw and fen-green panels under a pale bone V cuirass and a winged reed circlet (second critic 6.7, first).",
+    "D": "Bark and bone: the fullest, best-flaring armoured skirt in the run, willow-bark lamellar opening band by band to a bone-trimmed hem; a real battle skirt (5.7, second).",
+    "A": "Eel scale: a tiered fen-green scale skirt edged in reed straw that reads as a full skirt from above, under a fanned reed plume (5.5, third)."
+  },
+  "fixes": {
+    "E": "The shoulders and sleeves are full blocks as wide as the hem: slim them to the arm and cinch the waist; soften the forked crest, which reads a little like horns.",
+    "D": "Blocks on the shoulders stand out past the shoulder line and make it a broad warrior from above: flatten them, and alternate the muddy brown bands with fen green and straw.",
+    "A": "All one dark bottle green, so the tiers merge at night, and they step like a wedding cake: alternate green and straw tiers and let the lowest drop longer to the ankle."
+  },
+  "notes": "6 of 6 survived the draft after one resume (g03 ran out of its 100 turns). In the rework g04, the first critic's second-ranked set (pass-1 C, a clean olive cone skirt, 6.15), deleted its own coif and files outside its brief (.claude/, CLAUDE.md) and was rejected; its pass-1 patch was overwritten, so it is lost. The survivors were re-lettered after the rework (pass-2 letter = pass-1 letter: A = E, B = F, C = A, D = D, E = B; pass-1 C was g04). Every set keeps full-width block shoulders and no cinched waist; the armoured-skirt idea worked best as vertical reed panels (E), not stacked tiers."
+}

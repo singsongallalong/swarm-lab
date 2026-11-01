@@ -1,0 +1,16 @@
+{
+  "skill": "Reedmail",
+  "look": "ReedmailHelm,ReedmailDress,ReedmailSleeves,ReedmailHem",
+  "rows_added": ["ReedmailHelm", "ReedmailDress", "ReedmailSleeves", "ReedmailHem"],
+  "intent": "A fen warden's banded reed gown, straw plates alternating with bog iron above a black-water hem edged in bone, over a laced green leather corset, reading from the high camera as a narrow-shouldered A-line bell under a straw reed hood.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A sloped or wedge skirt piece, so each tier's edge can fall rather than step at the high camera.",
+    "A woven-reed or straw material, so the pleated reed skirt reads as reed rather than plain cloth."
+  ]
+}

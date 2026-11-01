@@ -1,0 +1,15 @@
+{
+  "weights": {"gown": 3, "pretty": 2.5, "skirt": 2, "parts": 1.5, "invention": 1},
+  "A": {"gown": 6, "pretty": 5, "skirt": 6, "parts": 5, "invention": 5, "total": 5.5,
+        "why": "A clear tiered skirt that reads from above, but all one dark green, stiffly stepped like a cake, with a square top."},
+  "B": {"gown": 4.5, "pretty": 4, "skirt": 5, "parts": 4.5, "invention": 4, "total": 4.4,
+        "why": "Good green over straw contrast, but the short straight skirt reads as a kilt under a boxy coat and a soldier's cap."},
+  "C": {"gown": 5, "pretty": 4.5, "skirt": 5, "parts": 5, "invention": 5.5, "total": 4.9,
+        "why": "The laced bodice is a nice idea, but a broad square torso over a short stack of flat discs reads top-heavy and blocky."},
+  "D": {"gown": 6, "pretty": 5, "skirt": 6, "parts": 5.5, "invention": 6, "total": 5.7,
+        "why": "The fullest flaring plate skirt, spoiled by shoulder blocks that stand past the shoulder line and a muddy brown palette with no waist."},
+  "E": {"gown": 7, "pretty": 6.5, "skirt": 7, "parts": 6, "invention": 7, "total": 6.7,
+        "why": "The only set that reads as a gown at once: an ankle-length bell of vertical reed panels with a pale V neckline, held back by heavy blocky shoulders."},
+  "ranking": ["E", "D", "A", "C", "B"],
+  "notes": "Every set keeps full-width blocky shoulders and sleeves and no cinched waist, so none gets the narrow-top, wide-hem outline; the reed straw and pale bone trims that would make them read at night are used too timidly."
+}

@@ -1,0 +1,16 @@
+{
+  "skill": "Reedmail",
+  "look": "ReedmailHelm,ReedmailDress,ReedmailSleeves,ReedmailHem",
+  "rows_added": ["ReedmailHelm", "ReedmailDress", "ReedmailSleeves", "ReedmailHem"],
+  "intent": "A fen warden's courtly gown of pale willow-bark lamellar banded in fen green over bog iron: from the high camera the wide bust tapers to a dark belt and bone sash, then a bone-trimmed bell of a skirt opens wider band by band to its hem.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A soft, semi-transparent cloth for the veil; armour parts carry only an opaque colour, so the veil had to be a solid green slab.",
+    "A pale reed-straw bright enough for a whole skirt under the night preset without passing the bible's value limit; willow plates at oatmeal's value still read grey-brown from the ARPG camera."
+  ]
+}

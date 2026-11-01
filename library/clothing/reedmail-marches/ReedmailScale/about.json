@@ -1,0 +1,22 @@
+{
+  "run": "reedmail-marches",
+  "letter": "A",
+  "set": "ReedmailScale",
+  "looks": [
+    "ReedmailScaleDress",
+    "ReedmailScaleHelm",
+    "ReedmailScaleHem",
+    "ReedmailScaleSleeves"
+  ],
+  "original_looks": [
+    "ReedmailDress",
+    "ReedmailHelm",
+    "ReedmailHem",
+    "ReedmailSleeves"
+  ],
+  "pick_rank": 3,
+  "intent": "A fen warden's courtly gown of fen-green eel scale and reed straw: a dark laced cuirass under a low bog-iron circlet with a fanned reed plume, a pale straw sash, and a skirt of deep fen-green rows edged in straw that flares over a lifted hem and black wading boots, reading from the high camera as a narrow dark waist over a bright-banded green bell.",
+  "reason": "Eel scale: a tiered fen-green scale skirt edged in reed straw that reads as a full skirt from above, under a fanned reed plume (5.5, third).",
+  "first_fix": "All one dark bottle green, so the tiers merge at night, and they step like a wedding cake: alternate green and straw tiers and let the lowest drop longer to the ankle.",
+  "parts": 92
+}

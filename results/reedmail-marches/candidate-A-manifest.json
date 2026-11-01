@@ -1,0 +1,17 @@
+{
+  "skill": "Reedmail",
+  "look": "ReedmailHelm,ReedmailDress,ReedmailSleeves,ReedmailHem",
+  "rows_added": ["ReedmailHelm", "ReedmailDress", "ReedmailSleeves", "ReedmailHem"],
+  "intent": "A fen warden's courtly gown of fen-green eel scale and reed straw: a dark laced cuirass under a low bog-iron circlet with a fanned reed plume, a pale straw sash, and a skirt of deep fen-green rows edged in straw that flares over a lifted hem and black wading boots, reading from the high camera as a narrow dark waist over a bright-banded green bell.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered or conical panel shape (a box that widens along its length) so the bell skirt could curve instead of stepping in four scale rows.",
+    "A translucent cloth or net material for the nape veil and the sleeve points.",
+    "A scale-pattern material so the rows read at night without a geometry band on every tier."
+  ]
+}

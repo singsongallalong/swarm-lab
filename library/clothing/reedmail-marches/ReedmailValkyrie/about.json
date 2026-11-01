@@ -1,0 +1,22 @@
+{
+  "run": "reedmail-marches",
+  "letter": "E",
+  "set": "ReedmailValkyrie",
+  "looks": [
+    "ReedmailValkyrieDress",
+    "ReedmailValkyrieHelm",
+    "ReedmailValkyrieHem",
+    "ReedmailValkyrieSleeves"
+  ],
+  "original_looks": [
+    "ReedmailDress",
+    "ReedmailHelm",
+    "ReedmailHem",
+    "ReedmailSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A late-gothic marsh-court gown: a bone-V cuirass over a fen-green bodice and a narrow reed belt above a wide six-gored bell skirt lamed in reed straw all round and edged in bog iron, with a winged reed circlet, reading from the high camera as a narrow green top over a wide gold-striped bell.",
+  "reason": "Valkyrie: the only set that reads as a gown at first sight, an ankle-length bell skirt of reed-straw and fen-green panels under a pale bone V cuirass and a winged reed circlet (second critic 6.7, first).",
+  "first_fix": "The shoulders and sleeves are full blocks as wide as the hem: slim them to the arm and cinch the waist; soften the forked crest, which reads a little like horns.",
+  "parts": 98
+}

@@ -1,0 +1,263 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..597ef68 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -24,6 +24,10 @@ local LinenCowl = require("./armourLooks/LinenCowl")
+ local LinenRobe = require("./armourLooks/LinenRobe")
+ local LinenSlippers = require("./armourLooks/LinenSlippers")
+ local LinenWraps = require("./armourLooks/LinenWraps")
++local ReedmailDress = require("./armourLooks/ReedmailDress")
++local ReedmailHelm = require("./armourLooks/ReedmailHelm")
++local ReedmailHem = require("./armourLooks/ReedmailHem")
++local ReedmailSleeves = require("./armourLooks/ReedmailSleeves")
+ local SpellShield = require("./armourLooks/SpellShield")
+ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+@@ -53,6 +57,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	LinenRobe = LinenRobe,
+ 	LinenSlippers = LinenSlippers,
+ 	LinenWraps = LinenWraps,
++	ReedmailDress = ReedmailDress,
++	ReedmailHelm = ReedmailHelm,
++	ReedmailHem = ReedmailHem,
++	ReedmailSleeves = ReedmailSleeves,
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
+diff --git a/src/shared/data/armourLooks/ReedmailDress.luau b/src/shared/data/armourLooks/ReedmailDress.luau
+new file mode 100644
+index 0000000..ce3bf6e
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReedmailDress.luau
+@@ -0,0 +1,77 @@
++--!strict
++-- The reedmail gown's bodice and upper skirt (the Reedmail set's chest, the
++-- Fen): a fitted fen-green leather corset under a bog-iron stomacher laced
++-- with reed cord, a sweetheart neckline inside a short standing collar, and a
++-- black-water belt cinching the waist over a green bustle. The upper sleeves
++-- are no wider than the arm itself, so nothing stands past the shoulder line.
++-- Below the belt the skirt hangs from each thigh in banded tiers that step a
++-- little wider at each fall, straw alternating with bog iron, so the fen reads
++-- in the plates rather than in one haystack tone.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local fen = {
++	bogIron = { 100, 110, 110 },
++	bogIronWorn = { 162, 170, 160 },
++	green = { 78, 104, 76 },
++	greenDark = { 52, 72, 54 },
++	straw = { 164, 146, 94 },
++	blackWater = { 38, 46, 44 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReedmailDress",
++	slot = "Chest",
++	parts = Kit.join({
++		{
++			-- The corset, and the iron stomacher laced down the front.
++			Kit.box("UpperTorso", { 2.08, 1.62, 1.08 }, { 0, 0, 0 }, "Leather", fen.green),
++			Kit.box("UpperTorso", { 0.96, 1.48, 0.1 }, { 0, -0.02, -0.56 }, "Metal", fen.bogIron),
++			-- The collar, its scraped iron edge, and a sweetheart neckline below it.
++			Kit.box("UpperTorso", { 1.12, 0.22, 1.12 }, { 0, 0.76, 0 }, "Fabric", fen.greenDark),
++			Kit.box("UpperTorso", { 1.16, 0.05, 1.16 }, { 0, 0.89, 0 }, "Metal", fen.bogIronWorn),
++			Kit.box("UpperTorso", { 0.56, 0.08, 0.06 }, { -0.3, 0.56, -0.65 }, "Fabric", fen.straw, { 0, 0, 15 }),
++			Kit.box("UpperTorso", { 0.56, 0.08, 0.06 }, { 0.3, 0.56, -0.65 }, "Fabric", fen.straw, { 0, 0, -15 }),
++			-- The corset's point, dipping over the belt.
++			Kit.box("UpperTorso", { 0.44, 0.1, 0.1 }, { -0.1, -0.66, -0.62 }, "Leather", fen.green, { 0, 0, -18 }),
++			Kit.box("UpperTorso", { 0.44, 0.1, 0.1 }, { 0.1, -0.66, -0.62 }, "Leather", fen.green, { 0, 0, 18 }),
++		},
++		{
++			Kit.box("UpperTorso", { 0.74, 0.07, 0.06 }, { 0, 0.34, -0.63 }, "Fabric", fen.straw, { 0, 0, 24 }),
++			Kit.box("UpperTorso", { 0.74, 0.07, 0.06 }, { 0, 0.12, -0.63 }, "Fabric", fen.straw, { 0, 0, -24 }),
++			Kit.box("UpperTorso", { 0.74, 0.07, 0.06 }, { 0, -0.12, -0.63 }, "Fabric", fen.straw, { 0, 0, 24 }),
++			Kit.box("UpperTorso", { 0.74, 0.07, 0.06 }, { 0, -0.34, -0.63 }, "Fabric", fen.straw, { 0, 0, -24 }),
++		},
++		{
++			-- The waist: a black-water belt, a reed cord over it, an off-centre buckle.
++			Kit.box("LowerTorso", { 2.14, 0.4, 1.14 }, { 0, 0, 0 }, "Leather", fen.blackWater),
++			Kit.box("LowerTorso", { 2.18, 0.08, 1.18 }, { 0, -0.1, 0 }, "Fabric", fen.straw),
++			Kit.box("LowerTorso", { 0.22, 0.22, 0.1 }, { 0.4, -0.04, -0.62 }, "Metal", fen.bogIronWorn),
++			-- A small bustle behind, high on the hips, tied with reed cord.
++			Kit.box("LowerTorso", { 1.4, 0.3, 0.3 }, { 0, 0.02, 0.72 }, "Leather", fen.green),
++			Kit.box("LowerTorso", { 1.44, 0.06, 0.1 }, { 0, -0.04, 0.86 }, "Fabric", fen.straw),
++		},
++		{
++			-- The upper arm stays at the arm's own width; nothing stands past it.
++			Kit.box("UpperArm", { 1.04, 1.2, 1.04 }, { 0, 0, 0 }, "Leather", fen.green),
++		},
++		{
++			-- The upper skirt: four banded tiers hung from each thigh, stepping
++			-- out a little at each fall, straw and bog iron by turns.
++			Kit.box("UpperLeg", { 1.1, 0.3, 1.2 }, { 0.05, 0.48, 0 }, "Fabric", fen.straw),
++			Kit.box("UpperLeg", { 1.35, 0.3, 1.22 }, { 0.175, 0.18, 0 }, "Metal", fen.bogIron),
++			Kit.box("UpperLeg", { 1.6, 0.3, 1.24 }, { 0.3, -0.12, 0 }, "Fabric", fen.straw),
++			Kit.box("UpperLeg", { 1.85, 0.31, 1.26 }, { 0.425, -0.425, 0 }, "Metal", fen.bogIron),
++			-- The second and third tiers hang a little lower at the front and back
++			-- than at the sides, so their edges fall instead of step.
++			Kit.box("UpperLeg", { 1.35, 0.2, 0.06 }, { 0.175, -0.01, -0.63 }, "Metal", fen.bogIron, { 24, 0, 0 }),
++			Kit.box("UpperLeg", { 1.35, 0.2, 0.06 }, { 0.175, -0.01, 0.63 }, "Metal", fen.bogIron, { -24, 0, 0 }),
++			Kit.box("UpperLeg", { 1.6, 0.2, 0.06 }, { 0.3, -0.31, -0.64 }, "Fabric", fen.straw, { 24, 0, 0 }),
++			Kit.box("UpperLeg", { 1.6, 0.2, 0.06 }, { 0.3, -0.31, 0.64 }, "Fabric", fen.straw, { -24, 0, 0 }),
++		},
++		-- Iron studs along the lamellar tier.
++		Kit.studs("UpperLeg", { -0.25, 0.11, 0.47 }, { 0.18 }, -0.64, fen.bogIronWorn),
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ReedmailHelm.luau b/src/shared/data/armourLooks/ReedmailHelm.luau
+new file mode 100644
+index 0000000..3bc5264
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReedmailHelm.luau
+@@ -0,0 +1,45 @@
++--!strict
++-- The reedmail hood (the Reedmail set's helm, the Fen): a soft hood of woven
++-- reed straw drawn close to the head, bound at the brow with a fen-green
++-- fillet and lined in green at the face, its cheeks framed green. A spray of
++-- pale reed stalks rises from the crown and a willow-leaf brooch of scraped
++-- iron pins the hood at the jaw. Narrow at the ear and tall above it, so the
++-- headpiece reads from the high camera as a headdress, not a helmet.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local fen = {
++	bogIronWorn = { 162, 170, 160 },
++	green = { 78, 104, 76 },
++	greenDark = { 52, 72, 54 },
++	straw = { 164, 146, 94 },
++	strawPale = { 188, 170, 112 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReedmailHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The hood: a close straw crown over the brow, a longer fall down the back.
++		Kit.box("Head", { 1.3, 0.62, 1.3 }, { 0, 0.32, 0.02 }, "Fabric", fen.straw),
++		Kit.box("Head", { 1.22, 0.66, 0.5 }, { 0, -0.26, 0.4 }, "Fabric", fen.straw),
++		-- The green fillet at the brow, and the green lining of the face opening.
++		Kit.box("Head", { 1.36, 0.14, 1.36 }, { 0, 0.04, 0.02 }, "Fabric", fen.green),
++		Kit.box("Head", { 1.14, 0.1, 0.08 }, { 0, -0.02, -0.62 }, "Fabric", fen.greenDark),
++		-- The hood's cheeks, framing the face, a little off on the left.
++		Kit.box("Head", { 0.12, 0.7, 0.16 }, { -0.6, -0.24, -0.38 }, "Fabric", fen.green, { 0, 0, -6 }),
++		Kit.box("Head", { 0.12, 0.7, 0.16 }, { 0.6, -0.24, -0.38 }, "Fabric", fen.green, { 0, 0, 7 }),
++		-- The reed spray: a green knot and three pale stalks rising up and back.
++		Kit.box("Head", { 0.26, 0.16, 0.26 }, { 0, 0.64, 0.3 }, "Fabric", fen.greenDark),
++		Kit.box("Head", { 0.07, 0.75, 0.07 }, { -0.16, 1.0, 0.28 }, "Fabric", fen.strawPale, { -10, 0, -8 }),
++		Kit.box("Head", { 0.07, 0.88, 0.07 }, { 0.02, 1.06, 0.28 }, "Fabric", fen.strawPale, { -12, 0, 2 }),
++		Kit.box("Head", { 0.07, 0.64, 0.07 }, { 0.19, 0.94, 0.28 }, "Fabric", fen.strawPale, { -8, 0, 9 }),
++		-- The willow-leaf brooch, pinning the hood at the right jaw.
++		Kit.box("Head", { 0.09, 0.3, 0.06 }, { 0.64, -0.44, -0.5 }, "Metal", fen.bogIronWorn, { 0, 0, 26 }),
++		Kit.box("Head", { 0.07, 0.18, 0.05 }, { 0.58, -0.52, -0.5 }, "Metal", fen.bogIronWorn, { 0, 0, -30 }),
++		Kit.box("Head", { 0.06, 0.06, 0.09 }, { 0.62, -0.38, -0.52 }, "Fabric", fen.straw),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ReedmailHem.luau b/src/shared/data/armourLooks/ReedmailHem.luau
+new file mode 100644
+index 0000000..5f9b57c
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReedmailHem.luau
+@@ -0,0 +1,42 @@
++--!strict
++-- The reedmail gown's lower skirt and boots (the Reedmail set's boots, the
++-- Fen): the banded reed skirt carried on down each shin in a straw tier and a
++-- black-water hem tier, each stepping wider, then a front and back hem panel
++-- that hang lower than the sides over a pale bone trim, so the skirt falls
++-- rather than stops. Below it a bog-iron boot cuff shows over the black boot,
++-- with an iron-toed foot.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local fen = {
++	bogIron = { 100, 110, 110 },
++	straw = { 164, 146, 94 },
++	bone = { 152, 146, 130 },
++	blackWater = { 38, 46, 44 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReedmailHem",
++	slot = "Boots",
++	parts = {
++		-- The skirt's lower tiers on each shin: straw, then the wet hem.
++		Kit.box("LowerLeg", { 2.1, 0.6, 1.28 }, { 0.55, 0.32, 0 }, "Fabric", fen.straw),
++		Kit.box("LowerLeg", { 2.1, 0.2, 0.06 }, { 0.55, -0.02, -0.66 }, "Fabric", fen.straw, { 24, 0, 0 }),
++		Kit.box("LowerLeg", { 2.1, 0.2, 0.06 }, { 0.55, -0.02, 0.66 }, "Fabric", fen.straw, { -24, 0, 0 }),
++		Kit.box("LowerLeg", { 2.35, 0.42, 1.3 }, { 0.675, -0.19, 0 }, "Fabric", fen.blackWater),
++		-- The hem panels, longer at the front and back than at the sides, edged in
++		-- bone and hung clear of the boot below.
++		Kit.box("LowerLeg", { 2.35, 0.2, 0.1 }, { 0.675, -0.46, -0.66 }, "Fabric", fen.blackWater),
++		Kit.box("LowerLeg", { 2.35, 0.2, 0.1 }, { 0.675, -0.46, 0.66 }, "Fabric", fen.blackWater),
++		Kit.box("LowerLeg", { 2.35, 0.06, 0.04 }, { 0.675, -0.54, -0.72 }, "Fabric", fen.bone),
++		Kit.box("LowerLeg", { 2.35, 0.06, 0.04 }, { 0.675, -0.54, 0.72 }, "Fabric", fen.bone),
++		-- The boot below: an iron cuff over the black boot, to the ankle.
++		Kit.box("LowerLeg", { 1.12, 0.12, 1.16 }, { 0, -0.46, 0 }, "Metal", fen.bogIron),
++		Kit.box("LowerLeg", { 1.08, 0.16, 1.1 }, { 0, -0.56, 0 }, "Leather", fen.blackWater),
++		-- The foot, black water under a bog-iron toe.
++		Kit.box("Foot", { 1.1, 0.38, 1.16 }, { 0, 0, -0.02 }, "Leather", fen.blackWater),
++		Kit.box("Foot", { 0.92, 0.16, 0.3 }, { 0, 0.04, -0.64 }, "Metal", fen.bogIron),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/ReedmailSleeves.luau b/src/shared/data/armourLooks/ReedmailSleeves.luau
+new file mode 100644
+index 0000000..4ab333b
+--- /dev/null
++++ b/src/shared/data/armourLooks/ReedmailSleeves.luau
+@@ -0,0 +1,34 @@
++--!strict
++-- The reedmail gown's sleeves and hands (the Reedmail set's gloves, the Fen):
++-- a close fen-green sleeve down the forearm and a bog-iron bracer, both no
++-- wider than the arm, with the straw kept as a flared cuff at the wrist only.
++-- Black-water gloves with a scraped iron knuckle plate. Nothing stands past
++-- the shoulder or the arm.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local fen = {
++	bogIron = { 100, 110, 110 },
++	bogIronWorn = { 162, 170, 160 },
++	green = { 78, 104, 76 },
++	straw = { 164, 146, 94 },
++	blackWater = { 38, 46, 44 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "ReedmailSleeves",
++	slot = "Gloves",
++	parts = {
++		-- A close green sleeve from the elbow, the bracer below it, then the straw
++		-- cuff flaring at the wrist.
++		Kit.box("LowerArm", { 1.04, 0.64, 1.04 }, { 0, 0.28, 0 }, "Leather", fen.green),
++		Kit.box("LowerArm", { 1.06, 0.54, 1.06 }, { 0, -0.29, 0 }, "Metal", fen.bogIron),
++		Kit.box("LowerArm", { 1.12, 0.2, 1.12 }, { 0, -0.5, 0 }, "Fabric", fen.straw),
++		-- The glove, its cuff and the scraped knuckle plate.
++		Kit.box("Hand", { 1.06, 0.36, 1.06 }, { 0, 0, 0 }, "Leather", fen.blackWater),
++		Kit.box("Hand", { 1.08, 0.1, 1.08 }, { 0, 0.2, 0 }, "Leather", fen.green),
++		Kit.box("Hand", { 0.62, 0.12, 0.12 }, { 0, 0.12, -0.52 }, "Metal", fen.bogIronWorn),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..247517a 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:ReedmailHelm"] = row("A fen-green hood with a reed spray and a willow-leaf brooch at the jaw."),
++	["armour:ReedmailDress"] = row("A bog-iron cuirass over a green laced bodice, pleated reed skirt below."),
++	["armour:ReedmailSleeves"] = row("Reed-straw bell sleeves over iron bracers, with black-water gloves."),
++	["armour:ReedmailHem"] = row("The reed skirt's lower tiers soaked black at the hem, on iron-toed boots."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

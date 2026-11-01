@@ -1,0 +1,15 @@
+{
+  "skill": "Reedmail",
+  "look": "ReedmailHelm,ReedmailDress,ReedmailSleeves,ReedmailHem",
+  "rows_added": ["ReedmailHelm", "ReedmailDress", "ReedmailSleeves", "ReedmailHem"],
+  "intent": "A late-gothic marsh-court gown: a bone-V cuirass over a fen-green bodice and a narrow reed belt above a wide six-gored bell skirt lamed in reed straw all round and edged in bog iron, with a winged reed circlet, reading from the high camera as a narrow green top over a wide gold-striped bell.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A hollow cone or annulus skirt primitive: the bell is six flat gores a leg because a solid cylinder caps flat and a box cannot taper."
+  ]
+}
