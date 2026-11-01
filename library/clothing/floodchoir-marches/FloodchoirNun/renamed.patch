@@ -1,0 +1,274 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..c0ad799 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -12,6 +12,10 @@ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+ local FenscaleJack = require("./armourLooks/FenscaleJack")
+ local FenscaleWaders = require("./armourLooks/FenscaleWaders")
++local FloodchoirNunDress = require("./armourLooks/FloodchoirNunDress")
++local FloodchoirNunHelm = require("./armourLooks/FloodchoirNunHelm")
++local FloodchoirNunHem = require("./armourLooks/FloodchoirNunHem")
++local FloodchoirNunSleeves = require("./armourLooks/FloodchoirNunSleeves")
+ local IronCap = require("./armourLooks/IronCap")
+ local IronGauntlets = require("./armourLooks/IronGauntlets")
+ local IronGreaves = require("./armourLooks/IronGreaves")
+@@ -41,6 +45,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	FenscaleHood = FenscaleHood,
+ 	FenscaleJack = FenscaleJack,
+ 	FenscaleWaders = FenscaleWaders,
++	FloodchoirNunDress = FloodchoirNunDress,
++	FloodchoirNunHelm = FloodchoirNunHelm,
++	FloodchoirNunHem = FloodchoirNunHem,
++	FloodchoirNunSleeves = FloodchoirNunSleeves,
+ 	IronCap = IronCap,
+ 	IronGauntlets = IronGauntlets,
+ 	IronGreaves = IronGreaves,
+diff --git a/src/shared/data/armourLooks/FloodchoirNunDress.luau b/src/shared/data/armourLooks/FloodchoirNunDress.luau
+new file mode 100644
+index 0000000..932fbb2
+--- /dev/null
++++ b/src/shared/data/armourLooks/FloodchoirNunDress.luau
+@@ -0,0 +1,75 @@
++--!strict
++-- The Floodchoir dress (the Drowned Parish's gown set): a black habit cut as
++-- a fitted courtly bodice, laced at the waist over a stained-glass violet
++-- stomacher, with a pale wimple collar, a thin amber belt cord and a small
++-- lantern at the right hip. The skirt hangs from the thighs in wide panels
++-- that meet into one full skirt; the bustle bow and its ribbon tails carry the
++-- width below the waist.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- Black habit wool and its folds, slate, warm bone wimple linen, candle-gold
++-- lacing, dim amber, the one stained-glass violet, and the lantern's lit amber.
++local c = {
++	habit = { 26, 25, 30 },
++	habitFold = { 39, 38, 46 },
++	slate = { 58, 62, 72 },
++	wimple = { 184, 172, 144 },
++	lace = { 154, 124, 82 },
++	amber = { 132, 102, 62 },
++	candle = { 196, 150, 86 },
++	violet = { 100, 74, 124 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FloodchoirNunDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice, fitted to the upper torso and lapped 0.02 over the waist
++		-- and shoulders so the avatar's own blue never shows at the seams.
++		Kit.box("UpperTorso", { 2.06, 1.64, 1.08 }, { 0, 0, 0 }, "Fabric", c.habit),
++		-- A candle-amber collar at the neck, and the choir's standing collar
++		-- behind it, open at the face.
++		Kit.box("UpperTorso", { 1.18, 0.16, 1.12 }, { 0, 0.77, 0 }, "Fabric", c.candle),
++		Kit.box("UpperTorso", { 1.1, 0.5, 0.16 }, { 0, 0.88, 0.62 }, "Fabric", c.habitFold),
++		Kit.box("UpperTorso", { 1.1, 0.06, 0.17 }, { 0, 1.12, 0.62 }, "Metal", c.candle),
++		-- The violet V at the neckline, over a pale-bordered glass stomacher.
++		Kit.box("UpperTorso", { 0.12, 0.55, 0.06 }, { 0.17, 0.42, -0.58 }, "Fabric", c.violet, { 0, 0, -18 }),
++		Kit.box("UpperTorso", { 0.12, 0.55, 0.06 }, { -0.17, 0.42, -0.58 }, "Fabric", c.violet, { 0, 0, 18 }),
++		Kit.box("UpperTorso", { 0.62, 1.0, 0.05 }, { 0, -0.28, -0.565 }, "Fabric", c.lace),
++		Kit.box("UpperTorso", { 0.5, 0.44, 0.06 }, { 0, -0.02, -0.578 }, "Fabric", c.violet),
++		Kit.box("UpperTorso", { 0.36, 0.5, 0.06 }, { 0, -0.54, -0.578 }, "Fabric", c.violet),
++		Kit.box("UpperTorso", { 0.54, 0.06, 0.065 }, { 0, -0.265, -0.58 }, "Fabric", c.lace),
++		-- Lacing crossed over the stomacher at the waist, and again at the back.
++		Kit.box("UpperTorso", { 0.04, 0.45, 0.04 }, { 0.1, -0.5, -0.61 }, "Fabric", c.lace, { 0, 0, -22 }),
++		Kit.box("UpperTorso", { 0.04, 0.45, 0.04 }, { -0.1, -0.5, -0.61 }, "Fabric", c.lace, { 0, 0, 22 }),
++		Kit.box("UpperTorso", { 0.04, 0.5, 0.04 }, { 0.1, -0.3, 0.56 }, "Fabric", c.lace, { 0, 0, -20 }),
++		Kit.box("UpperTorso", { 0.04, 0.5, 0.04 }, { -0.1, -0.3, 0.56 }, "Fabric", c.lace, { 0, 0, 20 }),
++		-- The waist: a slate sash, a thin amber cord and a pale buckle with a
++		-- violet stone, the narrowest point of the gown.
++		Kit.box("LowerTorso", { 2.06, 0.32, 1.06 }, { 0, 0.04, 0 }, "Fabric", c.slate),
++		Kit.box("LowerTorso", { 2.1, 0.07, 1.1 }, { 0, -0.075, 0 }, "Metal", c.amber),
++		Kit.box("LowerTorso", { 0.22, 0.18, 0.1 }, { 0, -0.01, -0.56 }, "Metal", c.wimple),
++		Kit.box("LowerTorso", { 0.1, 0.1, 0.06 }, { 0, -0.01, -0.62 }, "Fabric", c.violet),
++		-- A violet bustle bow at the small of the back, its tails on the skirt.
++		Kit.box("LowerTorso", { 0.44, 0.32, 0.1 }, { 0.22, 0.02, 0.61 }, "Fabric", c.violet, { 0, 0, 12 }),
++		Kit.box("LowerTorso", { 0.44, 0.32, 0.1 }, { -0.22, 0.02, 0.61 }, "Fabric", c.violet, { 0, 0, -12 }),
++		Kit.box("LowerTorso", { 0.18, 0.2, 0.12 }, { 0, 0.02, 0.63 }, "Fabric", c.wimple),
++		Kit.box("UpperLeg", { 0.07, 0.9, 0.05 }, { -0.46, 0.18, 0.66 }, "Fabric", c.violet, { -6, 0, 0 }),
++		-- The skirt from the thighs: wide front and back panels that meet at
++		-- the centre, and an outer panel set past the hip.
++		Kit.box("UpperLeg", { 1.15, 1.25, 0.08 }, { 0.05, 0.125, -0.62 }, "Fabric", c.habit, { 8, 0, 0 }),
++		Kit.box("UpperLeg", { 1.15, 1.25, 0.08 }, { 0.05, 0.125, 0.62 }, "Fabric", c.habitFold, { -8, 0, 0 }),
++		Kit.box("UpperLeg", { 0.1, 1.25, 1.1 }, { 0.53, 0.125, 0 }, "Fabric", c.habit, { 0, 0, 5 }),
++		-- The lantern hung at the right hip: tilted chain, cap, amber glass, base.
++		Kit.box("UpperLeg", { 0.05, 0.34, 0.05 }, { 0.35, 0.42, -0.6 }, "Metal", c.amber, { 14, 0, 0 }, "Right"),
++		Kit.box("UpperLeg", { 0.24, 0.07, 0.2 }, { 0.35, 0.225, -0.66 }, "Metal", c.habitFold, nil, "Right"),
++		Kit.box("UpperLeg", { 0.2, 0.22, 0.16 }, { 0.35, 0.105, -0.66 }, "Metal", c.candle, nil, "Right"),
++		Kit.box("UpperLeg", { 0.26, 0.07, 0.22 }, { 0.35, -0.01, -0.66 }, "Metal", c.habitFold, nil, "Right"),
++		-- Sleeves stay close at the upper arm and lap its ends; the bell falls
++		-- from the elbow.
++		Kit.box("UpperArm", { 1.04, 1.24, 1.04 }, { 0, 0, 0 }, "Fabric", c.habitFold),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FloodchoirNunHelm.luau b/src/shared/data/armourLooks/FloodchoirNunHelm.luau
+new file mode 100644
+index 0000000..e85c91b
+--- /dev/null
++++ b/src/shared/data/armourLooks/FloodchoirNunHelm.luau
+@@ -0,0 +1,47 @@
++--!strict
++-- The Floodchoir helm (the Drowned Parish's gown set): a black choir veil
++-- stepped high at the back over a pale wet-stone wimple that frames the face,
++-- with a stained-glass violet drop at the brow and a thin candle-amber band.
++-- The pale wimple is what reads at the high camera; the veil goes up and back
++-- rather than out at the ears.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- Black habit wool and its moonlit folds, warm bone wimple linen, dim candle
++-- amber, the lit amber of the brow circlet and the one stained-glass violet.
++local c = {
++	habit = { 26, 25, 30 },
++	habitFold = { 39, 38, 46 },
++	wimple = { 184, 172, 144 },
++	amber = { 132, 102, 62 },
++	candle = { 196, 150, 86 },
++	violet = { 100, 74, 124 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FloodchoirNunHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The veil gathered over the crown and stepped up behind the head.
++		Kit.box("Head", { 1.36, 0.46, 1.36 }, { 0, 0.41, 0.04 }, "Fabric", c.habit),
++		Kit.box("Head", { 1.22, 1.15, 0.1 }, { 0, 0.25, 0.62 }, "Fabric", c.habitFold),
++		Kit.box("Head", { 1.02, 0.3, 0.14 }, { 0, 0.82, 0.6 }, "Fabric", c.habitFold),
++		Kit.box("Head", { 0.62, 0.3, 0.12 }, { 0, 1.08, 0.58 }, "Fabric", c.habitFold),
++		-- The side falls, and a candle-amber band under the veil at the nape.
++		Kit.box("Head", { 0.1, 1.0, 0.72 }, { 0.62, 0.05, 0.24 }, "Fabric", c.habitFold),
++		Kit.box("Head", { 1.2, 0.12, 0.1 }, { 0, -0.36, 0.71 }, "Fabric", c.candle),
++		-- The wimple: a pale brow, cheeks set forward and a band under the chin.
++		Kit.box("Head", { 1.04, 0.2, 0.12 }, { 0, 0.28, -0.63 }, "Fabric", c.wimple),
++		Kit.box("Head", { 0.22, 0.7, 0.24 }, { 0.46, 0.0, -0.52 }, "Fabric", c.wimple),
++		Kit.box("Head", { 0.9, 0.2, 0.5 }, { 0, -0.54, -0.35 }, "Fabric", c.wimple),
++		-- The stained-glass drop, and the candle-amber circlet on the crown
++		-- that separates the head from the shoulders from the high camera.
++		Kit.box("Head", { 0.16, 0.22, 0.06 }, { 0, 0.5, -0.68 }, "Fabric", c.violet),
++		Kit.box("Head", { 1.08, 0.06, 0.2 }, { 0, 0.65, -0.52 }, "Metal", c.candle),
++		-- A warm pin at the throat, where the wimple meets the collar.
++		Kit.box("Head", { 0.14, 0.16, 0.08 }, { 0, -0.44, -0.62 }, "Metal", c.amber),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FloodchoirNunHem.luau b/src/shared/data/armourLooks/FloodchoirNunHem.luau
+new file mode 100644
+index 0000000..996ef2f
+--- /dev/null
++++ b/src/shared/data/armourLooks/FloodchoirNunHem.luau
+@@ -0,0 +1,50 @@
++--!strict
++-- The Floodchoir hem (the Drowned Parish's gown set): the lower skirt carried
++-- on the shins in three long, overlapping tiers that fall in one flare to a
++-- broad bell, ending in a stained-glass violet border over a dark wet hem.
++-- The panels meet at the centre, so standing it reads as one skirt.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- Black habit wool and its folds, the violet underlayer, and the wet stone of
++-- the drowned hem.
++local c = {
++	habit = { 26, 25, 30 },
++	habitFold = { 39, 38, 46 },
++	violet = { 100, 74, 124 },
++	wet = { 40, 44, 52 },
++	wetDark = { 24, 26, 31 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FloodchoirNunHem",
++	slot = "Boots",
++	parts = {
++		-- The knee tier, meeting the dress's thigh panels.
++		Kit.box("LowerLeg", { 1.3, 0.6, 0.08 }, { 0.15, 0.48, -0.74 }, "Fabric", c.habit, { 9, 0, 0 }),
++		Kit.box("LowerLeg", { 1.3, 0.6, 0.08 }, { 0.15, 0.48, 0.74 }, "Fabric", c.habitFold, { -9, 0, 0 }),
++		Kit.box("LowerLeg", { 0.1, 0.6, 1.4 }, { 0.72, 0.48, 0 }, "Fabric", c.habit, { 0, 0, 5 }),
++		-- The mid-shin tier, set a little further out so the seam lies under it.
++		Kit.box("LowerLeg", { 1.55, 0.42, 0.08 }, { 0.275, -0.01, -0.83 }, "Fabric", c.habit, { 11, 0, 0 }),
++		Kit.box("LowerLeg", { 1.55, 0.42, 0.08 }, { 0.275, -0.01, 0.83 }, "Fabric", c.habitFold, { -11, 0, 0 }),
++		Kit.box("LowerLeg", { 0.12, 0.42, 1.65 }, { 0.96, -0.01, 0 }, "Fabric", c.habit, { 0, 0, 8 }),
++		-- The long hem tier, widest, falling to the floor.
++		Kit.box("LowerLeg", { 1.9, 0.35, 0.1 }, { 0.45, -0.375, -0.92 }, "Fabric", c.habit, { 13, 0, 0 }),
++		Kit.box("LowerLeg", { 1.9, 0.35, 0.1 }, { 0.45, -0.375, 0.92 }, "Fabric", c.habitFold, { -13, 0, 0 }),
++		Kit.box("LowerLeg", { 0.14, 0.35, 1.8 }, { 1.3, -0.375, 0 }, "Fabric", c.habit, { 0, 0, 10 }),
++		-- The stained-glass border on the bottom tier's edge.
++		Kit.box("LowerLeg", { 1.86, 0.16, 0.1 }, { 0.45, -0.6, -0.97 }, "Fabric", c.violet),
++		Kit.box("LowerLeg", { 1.86, 0.16, 0.1 }, { 0.45, -0.6, 0.97 }, "Fabric", c.violet),
++		Kit.box("LowerLeg", { 0.15, 0.16, 1.9 }, { 1.3, -0.6, 0 }, "Fabric", c.violet),
++		-- The hem soaked dark, hanging over the shoe tops.
++		Kit.box("LowerLeg", { 1.9, 0.13, 0.12 }, { 0.45, -0.73, -0.98 }, "Fabric", c.wet),
++		Kit.box("LowerLeg", { 1.9, 0.13, 0.12 }, { 0.45, -0.73, 0.98 }, "Fabric", c.wet),
++		Kit.box("LowerLeg", { 0.16, 0.13, 1.96 }, { 1.3, -0.73, 0 }, "Fabric", c.wet),
++		-- Black shoes, wet-soled, with a violet toe.
++		Kit.box("Foot", { 1.04, 0.34, 1.14 }, { 0, 0.0, -0.04 }, "Fabric", c.habitFold),
++		Kit.box("Foot", { 1.06, 0.08, 1.16 }, { 0, -0.16, -0.04 }, "Fabric", c.wetDark),
++		Kit.box("Foot", { 0.42, 0.12, 0.2 }, { 0, 0.03, -0.56 }, "Fabric", c.violet),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FloodchoirNunSleeves.luau b/src/shared/data/armourLooks/FloodchoirNunSleeves.luau
+new file mode 100644
+index 0000000..17a3dae
+--- /dev/null
++++ b/src/shared/data/armourLooks/FloodchoirNunSleeves.luau
+@@ -0,0 +1,37 @@
++--!strict
++-- The Floodchoir sleeves (the Drowned Parish's gown set): black bell sleeves
++-- gathered at the elbow under a pale band and falling in two modest steps to
++-- a violet-lined, pale lace cuff, with close black gloves. All the fullness is
++-- below the elbow, and kept close, so the shoulder line and waist stay narrow.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- Black habit wool and its folds, warm bone wimple linen and the stained-glass
++-- violet lining at the cuff.
++local c = {
++	habit = { 26, 25, 30 },
++	habitFold = { 39, 38, 46 },
++	wimple = { 184, 172, 144 },
++	violet = { 100, 74, 124 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FloodchoirNunSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The sleeve gathers at the elbow under a pale band.
++		Kit.box("LowerArm", { 1.02, 0.3, 1.02 }, { 0, 0.45, 0 }, "Fabric", c.habit),
++		Kit.box("LowerArm", { 1.04, 0.06, 1.04 }, { 0, 0.58, 0 }, "Fabric", c.wimple),
++		-- Then bells out in two modest steps to the wrist.
++		Kit.box("LowerArm", { 1.1, 0.4, 1.1 }, { 0, 0.16, 0 }, "Fabric", c.habitFold),
++		Kit.box("LowerArm", { 1.22, 0.5, 1.22 }, { 0, -0.25, 0 }, "Fabric", c.habit),
++		-- A violet lining peeks below the black, above the pale lace.
++		Kit.box("LowerArm", { 1.24, 0.08, 1.24 }, { 0, -0.41, 0 }, "Fabric", c.violet),
++		Kit.box("LowerArm", { 1.26, 0.1, 1.26 }, { 0, -0.49, 0 }, "Fabric", c.wimple),
++		-- Close gloves, with a violet stone on each hand.
++		Kit.box("Hand", { 1.06, 0.38, 1.06 }, { 0, 0, 0 }, "Fabric", c.habitFold),
++		Kit.box("Hand", { 0.14, 0.14, 0.06 }, { 0, 0.02, -0.53 }, "Fabric", c.violet),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..babadd4 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:FloodchoirNunHelm"] = row("A black choir veil over a pale wimple, with a violet glass drop at the brow."),
++	["armour:FloodchoirNunDress"] = row("A black gown bodice laced over a violet stomacher, with a hip lantern."),
++	["armour:FloodchoirNunSleeves"] = row("Black bell sleeves falling from the elbow to a violet-lined lace cuff."),
++	["armour:FloodchoirNunHem"] = row("The gown's wide lower skirt, its hem edged in violet glass over wet stone."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

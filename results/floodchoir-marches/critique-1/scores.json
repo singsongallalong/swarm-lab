@@ -1,0 +1,22 @@
+{
+  "A": {"reads": 6, "elegance": 6, "skirt": 7, "parts": 6, "total": 6.2,
+        "why": "Honest A-line gown with crimson waist and bone hem, but almost entirely black: from the ARPG camera it merges into one dark slab.",
+        "fix": "Add a lighter slate/stone wimple-capelet or an amber/crimson front stole so the gown reads at night from above."},
+  "B": {"reads": 7.5, "elegance": 6.5, "skirt": 7, "parts": 7, "total": 7.03,
+        "why": "Clearest gown silhouette: fitted violet sash and a stepped A-line skirt to the floor, plus a choir stole on the bodice; holds on the slim avatar.",
+        "fix": "Replace the off-palette cyan collar with amber/bone, and soften the staircase skirt tiers."},
+  "C": {"reads": 4, "elegance": 5, "skirt": 5, "parts": 5, "total": 4.65,
+        "why": "A straight column of horizontal bands plus gold studs reads as lamellar/studded armour; the cyan bands are off-palette.",
+        "fix": "Taper at the waist and flare the skirt; remove the studs and cyan."},
+  "D": {"reads": 5, "elegance": 7, "skirt": 5, "parts": 6, "total": 5.75,
+        "why": "Best theme: a spire headpiece like the church tower, and real stained-glass panes. But the skirt is a straight segmented tube, with no waist or flare.",
+        "fix": "Give it a crimson waist and a two-tier flare; gather the scattered panes into one lancet panel."},
+  "E": {"reads": 7, "elegance": 5, "skirt": 4, "parts": 5, "total": 5.5,
+        "why": "Biggest, most distinct skirt from above, with a nice wet-stone waterline idea, but the bottom tier is a hollow, gappy frame. It is squat, wide-shouldered, and the cap looks like a mortarboard.",
+        "fix": "Close the hollow hem ring into a solid sloped tier, and narrow and lengthen the skirt."},
+  "F": {"reads": 6, "elegance": 7.5, "skirt": 7, "parts": 7, "total": 6.8,
+        "why": "Most elegant palette (bone cuffs, violet panel, crimson jewel, slate hem), and the violet stripe reads at night. But the straight skirt reads as a cassock.",
+        "fix": "Flare the skirt from hip to shins and add a short low veil behind the cap."},
+  "ranking": ["B", "F", "A", "D", "E", "C"],
+  "notes": "No candidate fully lands. B has the gown silhouette, F the palette and elegance, D the theme (spire plus stained glass), and E's flood-line hem is a good idea. A merge would win: B's skirt shape, F's colours and violet panel, D's stained-glass panel as a bodice window, and E's slate waterline hem. Across the batch: sleeves are broad default blocks, thin pinstripe trims are invisible from above, and cyan appears in B and C although it is off-brief."
+}

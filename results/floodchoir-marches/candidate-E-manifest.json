@@ -1,0 +1,16 @@
+{
+  "skill": "Floodchoir",
+  "look": "FloodchoirHelm,FloodchoirDress,FloodchoirSleeves,FloodchoirHem",
+  "rows_added": ["FloodchoirHelm", "FloodchoirDress", "FloodchoirSleeves", "FloodchoirHem"],
+  "intent": "A Drowned Parish mourning gown in black with a pale wimple and veil, a violet laced corset, a crimson back ribbon and one crimson petticoat line under a solid wet-slate bell hem.",
+  "renders": [
+    ".swarm/out/armour-set-final.png",
+    ".swarm/out/armour-set-close-final.png",
+    ".swarm/out/armour-set-fit-final.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered skirt-cone part, so the stepped tiers could fall in one smooth cone.",
+    "A sheer or translucent fabric for a mourning veil; armour parts cannot be made see-through."
+  ]
+}

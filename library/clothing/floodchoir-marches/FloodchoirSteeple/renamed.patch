@@ -1,0 +1,240 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..c0ad799 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -12,6 +12,10 @@ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+ local FenscaleJack = require("./armourLooks/FenscaleJack")
+ local FenscaleWaders = require("./armourLooks/FenscaleWaders")
++local FloodchoirSteepleDress = require("./armourLooks/FloodchoirSteepleDress")
++local FloodchoirSteepleHelm = require("./armourLooks/FloodchoirSteepleHelm")
++local FloodchoirSteepleHem = require("./armourLooks/FloodchoirSteepleHem")
++local FloodchoirSteepleSleeves = require("./armourLooks/FloodchoirSteepleSleeves")
+ local IronCap = require("./armourLooks/IronCap")
+ local IronGauntlets = require("./armourLooks/IronGauntlets")
+ local IronGreaves = require("./armourLooks/IronGreaves")
+@@ -41,6 +45,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	FenscaleHood = FenscaleHood,
+ 	FenscaleJack = FenscaleJack,
+ 	FenscaleWaders = FenscaleWaders,
++	FloodchoirSteepleDress = FloodchoirSteepleDress,
++	FloodchoirSteepleHelm = FloodchoirSteepleHelm,
++	FloodchoirSteepleHem = FloodchoirSteepleHem,
++	FloodchoirSteepleSleeves = FloodchoirSteepleSleeves,
+ 	IronCap = IronCap,
+ 	IronGauntlets = IronGauntlets,
+ 	IronGreaves = IronGreaves,
+diff --git a/src/shared/data/armourLooks/FloodchoirSteepleDress.luau b/src/shared/data/armourLooks/FloodchoirSteepleDress.luau
+new file mode 100644
+index 0000000..2e67397
+--- /dev/null
++++ b/src/shared/data/armourLooks/FloodchoirSteepleDress.luau
+@@ -0,0 +1,69 @@
++--!strict
++-- The Floodchoir dress (the Drowned Parish's courtly gown): a fitted black
++-- bodice with a tall choir collar and one large stained-glass lancet down the
++-- front, four big panes under a lit point, framed in moonlit mullions. A
++-- crimson sash cinches the waist, and the skirt pulls in there before flaring
++-- over the thighs in a black panel on each leg.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The parish window: black wool, wet-slate edge, and three panes of glass.
++local CLOTH = { 38, 38, 45 }
++local CLOTH_DARK = { 26, 26, 32 }
++local SLATE = { 84, 88, 98 }
++local PALE = { 128, 134, 146 }
++local CRIMSON = { 120, 46, 52 }
++local VIOLET = { 88, 60, 122 }
++local AMBER = { 152, 104, 56 }
++
++-- The upper skirt's top, just above the thigh, and its hem above the knee.
++local SKIRT_TOP = 0.75
++local SKIRT_LOW = -0.58
++local SKIRT = SKIRT_TOP - SKIRT_LOW
++local SKIRT_Y = (SKIRT_TOP + SKIRT_LOW) / 2
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FloodchoirSteepleDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice, and the pale slate edge at the neckline.
++		Kit.box("UpperTorso", { 2.06, 1.63, 1.06 }, { 0, 0.005, 0 }, "Fabric", CLOTH),
++		Kit.box("UpperTorso", { 2.08, 0.06, 1.08 }, { 0, 0.79, 0 }, "Fabric", SLATE),
++		-- One large lancet: four panes in a cross of lead, under an amber point,
++		-- with pale mullions either side and a sill at the waist.
++		Kit.box("UpperTorso", { 0.4, 0.5, 0.06 }, { -0.22, 0.18, -0.56 }, "SmoothPlastic", CRIMSON),
++		Kit.box("UpperTorso", { 0.4, 0.5, 0.06 }, { 0.22, 0.18, -0.56 }, "SmoothPlastic", AMBER),
++		Kit.box("UpperTorso", { 0.4, 0.5, 0.06 }, { -0.22, -0.4, -0.56 }, "SmoothPlastic", VIOLET),
++		Kit.box("UpperTorso", { 0.4, 0.5, 0.06 }, { 0.22, -0.4, -0.56 }, "SmoothPlastic", CRIMSON),
++		Kit.box("UpperTorso", { 0.44, 0.28, 0.06 }, { 0, 0.58, -0.56 }, "SmoothPlastic", AMBER),
++		Kit.box("UpperTorso", { 0.05, 1.4, 0.05 }, { -0.49, 0.06, -0.565 }, "Fabric", PALE),
++		Kit.box("UpperTorso", { 0.05, 1.4, 0.05 }, { 0.49, 0.06, -0.565 }, "Fabric", PALE),
++		Kit.box("UpperTorso", { 0.9, 0.06, 0.05 }, { 0, -0.7, -0.565 }, "Fabric", PALE),
++		-- The high choir collar, open at the throat and rimmed in crimson.
++		Kit.box("UpperTorso", { 0.9, 0.46, 0.12 }, { 0, 0.98, 0.42 }, "Fabric", CLOTH),
++		Kit.box("UpperTorso", { 0.1, 0.36, 0.42 }, { -0.42, 0.92, 0.24 }, "Fabric", CLOTH),
++		Kit.box("UpperTorso", { 0.1, 0.36, 0.42 }, { 0.42, 0.92, 0.24 }, "Fabric", CLOTH),
++		Kit.box("UpperTorso", { 0.92, 0.06, 0.13 }, { 0, 1.23, 0.42 }, "SmoothPlastic", CRIMSON),
++		-- The upper sleeve stays close, with a pale seam at the elbow.
++		Kit.box("UpperArm", { 1.06, 1.2, 1.06 }, { 0, 0, 0 }, "Fabric", CLOTH),
++		Kit.box("UpperArm", { 1.08, 0.14, 1.08 }, { 0, -0.54, 0 }, "Fabric", SLATE),
++		-- The waist pulled in at a crimson sash and waistband, laced with pale
++		-- cord; the band covers the skirt's top edge.
++		Kit.box("LowerTorso", { 2.04, 0.44, 1.04 }, { 0, 0, 0 }, "Fabric", CLOTH_DARK),
++		Kit.box("LowerTorso", { 2.06, 0.2, 1.06 }, { 0, 0.02, 0 }, "Fabric", CRIMSON),
++		Kit.box("LowerTorso", { 2.2, 0.12, 1.28 }, { 0, -0.05, 0 }, "Fabric", CRIMSON),
++		Kit.box("LowerTorso", { 0.05, 0.3, 0.04 }, { -0.1, 0, -0.65 }, "Fabric", PALE, { 0, 0, -25 }),
++		Kit.box("LowerTorso", { 0.05, 0.3, 0.04 }, { 0.1, 0, -0.65 }, "Fabric", PALE, { 0, 0, 25 }),
++		-- A bustle at the back of the waist, tied with a crimson knot.
++		Kit.box("LowerTorso", { 1.24, 0.38, 0.22 }, { 0, 0, 0.61 }, "Fabric", CLOTH_DARK),
++		Kit.box("LowerTorso", { 0.18, 0.18, 0.08 }, { 0, 0, 0.74 }, "Fabric", CRIMSON),
++		-- The upper skirt: pulled in at the hip and flaring to the knee, a black
++		-- panel about each thigh meeting at the centre and a flared outer side.
++		Kit.box("UpperLeg", { 0.98, SKIRT, 1.14 }, { 0.02, SKIRT_Y, 0.02 }, "Fabric", CLOTH_DARK),
++		Kit.box("UpperLeg", { 1.06, SKIRT, 0.08 }, { 0.03, SKIRT_Y, -0.58 }, "Fabric", CLOTH),
++		Kit.box("UpperLeg", { 1.06, SKIRT, 0.08 }, { 0.03, SKIRT_Y, 0.58 }, "Fabric", CLOTH),
++		Kit.box("UpperLeg", { 0.1, SKIRT, 1.2 }, { 0.54, SKIRT_Y, 0.01 }, "Fabric", CLOTH, { 0, 0, 16 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FloodchoirSteepleHelm.luau b/src/shared/data/armourLooks/FloodchoirSteepleHelm.luau
+new file mode 100644
+index 0000000..f3e4a2c
+--- /dev/null
++++ b/src/shared/data/armourLooks/FloodchoirSteepleHelm.luau
+@@ -0,0 +1,40 @@
++--!strict
++-- The Floodchoir helm (the Drowned Parish's courtly gown): a black coif with
++-- a lead circlet at the brow and a tall, slender steeple leaning back from the
++-- crown, ending in a moonlit needle and an amber finial. A long black veil
++-- falls from the steeple past the shoulders, its hem edged in pale slate.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The parish window: black wool, wet-slate edge, and pale moonlit trim.
++local CLOTH = { 38, 38, 45 }
++local CLOTH_DARK = { 26, 26, 32 }
++local SLATE = { 84, 88, 98 }
++local PALE = { 128, 134, 146 }
++local AMBER = { 152, 104, 56 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FloodchoirSteepleHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The coif over the crown, and the lead circlet at the brow.
++		Kit.box("Head", { 1.26, 0.5, 1.26 }, { 0, 0.41, 0.02 }, "Fabric", CLOTH),
++		Kit.box("Head", { 1.32, 0.15, 1.32 }, { 0, 0.16, 0.02 }, "Metal", CLOTH_DARK),
++		-- The steeple, thinner than the coif: a black base and stage, a slate
++		-- needle and an amber finial.
++		Kit.box("Head", { 0.58, 0.46, 0.58 }, { 0, 0.86, 0.08 }, "SmoothPlastic", CLOTH, { 4, 0, 0 }),
++		Kit.box("Head", { 0.34, 0.42, 0.34 }, { 0, 1.17, 0.13 }, "SmoothPlastic", CLOTH, { 4, 0, 0 }),
++		Kit.box("Head", { 0.18, 0.56, 0.18 }, { 0, 1.6, 0.19 }, "SmoothPlastic", SLATE, { 4, 0, 0 }),
++		Kit.box("Head", { 0.1, 0.14, 0.1 }, { 0, 1.9, 0.22 }, "Metal", AMBER, { 4, 0, 0 }),
++		-- The long veil, falling from the steeple past the shoulders; its hem
++		-- catches the moon.
++		Kit.box("Head", { 1.28, 1.8, 0.06 }, { 0, 0.11, 0.68 }, "Fabric", CLOTH_DARK, { -5, 0, 0 }),
++		Kit.box("Head", { 1.3, 0.1, 0.07 }, { 0, -0.72, 0.79 }, "Fabric", PALE, { -5, 0, 0 }),
++		-- A pale lining framing the face, from the circlet to the chin.
++		Kit.box("Head", { 0.06, 0.5, 0.07 }, { -0.55, -0.22, -0.585 }, "Fabric", PALE),
++		Kit.box("Head", { 0.06, 0.5, 0.07 }, { 0.55, -0.22, -0.585 }, "Fabric", PALE),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FloodchoirSteepleHem.luau b/src/shared/data/armourLooks/FloodchoirSteepleHem.luau
+new file mode 100644
+index 0000000..5dffa10
+--- /dev/null
++++ b/src/shared/data/armourLooks/FloodchoirSteepleHem.luau
+@@ -0,0 +1,37 @@
++--!strict
++-- The Floodchoir hem (the Drowned Parish's courtly gown): the gown's lower
++-- skirt, carried on down each shin as a full second tier wider than the thigh
++-- tier above, with a border of stained-glass panes at the hem. A plain black
++-- shoe shows beneath it.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The parish window: black wool, wet-slate edge, and three panes of glass.
++local CLOTH = { 38, 38, 45 }
++local CLOTH_DARK = { 26, 26, 32 }
++local CRIMSON = { 120, 46, 52 }
++local VIOLET = { 88, 60, 122 }
++local AMBER = { 152, 104, 56 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FloodchoirSteepleHem",
++	slot = "Boots",
++	parts = {
++		-- The lower tier about each shin: a solid fall, a wide front and back
++		-- panel and a flared side, all black.
++		Kit.box("LowerLeg", { 1.36, 1.2, 1.36 }, { 0.18, 0.06, 0.01 }, "Fabric", CLOTH_DARK),
++		Kit.box("LowerLeg", { 1.4, 1.2, 0.08 }, { 0.2, 0.06, -0.68 }, "Fabric", CLOTH),
++		Kit.box("LowerLeg", { 1.4, 1.2, 0.08 }, { 0.2, 0.06, 0.68 }, "Fabric", CLOTH),
++		Kit.box("LowerLeg", { 0.1, 1.2, 1.44 }, { 0.92, 0.06, 0.01 }, "Fabric", CLOTH, { 0, 0, 18 }),
++		-- A border of big glass panes round the hem, crimson and amber at the
++		-- front, violet and crimson behind.
++		Kit.box("LowerLeg", { 0.64, 0.18, 0.05 }, { -0.16, -0.44, -0.75 }, "SmoothPlastic", CRIMSON),
++		Kit.box("LowerLeg", { 0.64, 0.18, 0.05 }, { 0.52, -0.44, -0.75 }, "SmoothPlastic", AMBER),
++		Kit.box("LowerLeg", { 0.64, 0.18, 0.05 }, { -0.16, -0.44, 0.75 }, "SmoothPlastic", VIOLET),
++		Kit.box("LowerLeg", { 0.64, 0.18, 0.05 }, { 0.52, -0.44, 0.75 }, "SmoothPlastic", CRIMSON),
++		-- A plain black shoe under the hem.
++		Kit.box("Foot", { 1.06, 0.32, 1.2 }, { 0, 0, -0.09 }, "Fabric", CLOTH_DARK),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FloodchoirSteepleSleeves.luau b/src/shared/data/armourLooks/FloodchoirSteepleSleeves.luau
+new file mode 100644
+index 0000000..eadf736
+--- /dev/null
++++ b/src/shared/data/armourLooks/FloodchoirSteepleSleeves.luau
+@@ -0,0 +1,29 @@
++--!strict
++-- The Floodchoir sleeves (the Drowned Parish's courtly gown): the gown's bell
++-- sleeves, slim at the elbow and opening to one wide black cuff, trimmed with
++-- a crimson band and a pale moonlit rim. The gloves themselves are plain black.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The parish window: black wool, wet-slate edge, and a crimson trim.
++local CLOTH = { 38, 38, 45 }
++local CLOTH_DARK = { 26, 26, 32 }
++local PALE = { 128, 134, 146 }
++local CRIMSON = { 120, 46, 52 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FloodchoirSteepleSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The sleeve's lower part, slim to the wrist.
++		Kit.box("LowerArm", { 1.04, 1.2, 1.04 }, { 0, 0, 0 }, "Fabric", CLOTH),
++		-- One bell cuff, a crimson band and a pale rim.
++		Kit.box("LowerArm", { 1.22, 0.55, 1.22 }, { 0, -0.31, 0 }, "Fabric", CLOTH),
++		Kit.box("LowerArm", { 1.24, 0.08, 1.24 }, { 0, -0.56, 0 }, "Fabric", CRIMSON),
++		Kit.box("LowerArm", { 1.26, 0.05, 1.26 }, { 0, -0.615, 0 }, "Fabric", PALE),
++		-- The glove.
++		Kit.box("Hand", { 1.06, 0.36, 1.06 }, { 0, 0, 0 }, "Fabric", CLOTH_DARK),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..77ddaad 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:FloodchoirSteepleHelm"] = row("A black steeple coif with a stained-glass circlet and a veil down the back."),
++	["armour:FloodchoirSteepleDress"] = row("A black choir bodice with a stained-glass window, cinched waist and full skirt."),
++	["armour:FloodchoirSteepleSleeves"] = row("Black bell sleeves with stained-glass cuffs and plain black gloves."),
++	["armour:FloodchoirSteepleHem"] = row("A full black skirt tiered to the ankle, glass-striped and pale-hemmed."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

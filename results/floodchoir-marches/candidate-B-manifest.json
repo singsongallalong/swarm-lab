@@ -1,0 +1,16 @@
+{
+  "skill": "Floodchoir",
+  "look": "FloodchoirHelm,FloodchoirDress,FloodchoirSleeves,FloodchoirHem",
+  "rows_added": ["FloodchoirHelm", "FloodchoirDress", "FloodchoirSleeves", "FloodchoirHem"],
+  "intent": "A drowned-parish choir gown in black habit wool with a bone wimple and candle-gold collar and lacing, its stained-glass violet stole and tiered bell skirt ending in a violet glass border; from the high camera the gold brow and collar, violet bodice and wide violet-edged hem read over black.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A translucent or faintly self-lit stained-glass material for the violet bodice panes and hem; armour looks only take flat colours.",
+    "A liturgical white beyond the 40% trim value so the wimple reads white, not grey, under the night mood preset."
+  ]
+}

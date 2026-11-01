@@ -1,0 +1,22 @@
+{
+  "run": "floodchoir-marches",
+  "letter": "F",
+  "set": "FloodchoirChorister",
+  "looks": [
+    "FloodchoirChoristerDress",
+    "FloodchoirChoristerHelm",
+    "FloodchoirChoristerHem",
+    "FloodchoirChoristerSleeves"
+  ],
+  "original_looks": [
+    "FloodchoirDress",
+    "FloodchoirHelm",
+    "FloodchoirHem",
+    "FloodchoirSleeves"
+  ],
+  "pick_rank": 2,
+  "intent": "A drowned-parish chorister's black court gown, a pale ruff and low shoulder veil over a laced slate stomacher with a crimson jewel, belled sleeves, a violet orphrey and sash, an amber belt lantern, and a wide two-tier bell skirt in wet slate over a crimson under-cassock, reading from the high camera as a narrow white-collared top over a broad flared bell.",
+  "reason": "Chorister: the best colour from above, a violet front panel and back bow on black with a bone collar and a crimson jewel; the brief's palette done best (6.83, second, both passes).",
+  "first_fix": "Reads as a priest's cassock: flare the skirt at the knee and swap the clerical cap for a veiled coif.",
+  "parts": 93
+}

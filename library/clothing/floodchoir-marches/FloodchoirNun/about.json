@@ -1,0 +1,22 @@
+{
+  "run": "floodchoir-marches",
+  "letter": "B",
+  "set": "FloodchoirNun",
+  "looks": [
+    "FloodchoirNunDress",
+    "FloodchoirNunHelm",
+    "FloodchoirNunHem",
+    "FloodchoirNunSleeves"
+  ],
+  "original_looks": [
+    "FloodchoirDress",
+    "FloodchoirHelm",
+    "FloodchoirHem",
+    "FloodchoirSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A drowned-parish choir gown in black habit wool with a bone wimple and candle-gold collar and lacing, its stained-glass violet stole and tiered bell skirt ending in a violet glass border; from the high camera the gold brow and collar, violet bodice and wide violet-edged hem read over black.",
+  "reason": "Wimpled choir nun: the clearest gown in the run, a fitted waist over a full A-line to the floor, a candle-amber band on the wimple that shows from the ARPG camera, a violet stole and a stained-glass pendant (second critic 7.0, first; first critic 7.03, first).",
+  "first_fix": "The skirt tiers step like a staircase and read as a pedestal: soften them into one fall.",
+  "parts": 99
+}

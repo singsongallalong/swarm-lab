@@ -1,0 +1,65 @@
+{
+  "A": {
+    "reads": 5,
+    "elegance": 6,
+    "skirt": 7,
+    "parts": 6,
+    "why": "Restrained charcoal/crimson/bone palette, clean fit, but from ARPG a flat dark robe block with no gown outline or headpiece.",
+    "fix": "Add a pale or amber hood band and widen the hem past the sleeve cuffs so the skirt and head read from above.",
+    "total": 5.85
+  },
+  "B": {
+    "reads": 7,
+    "elegance": 7,
+    "skirt": 7,
+    "parts": 7,
+    "why": "Clearest gown/habit silhouette (fitted waist, full A-line to floor); amber wimple band reads from above; violet stole and stained-glass pendant on theme.",
+    "fix": "Soften the ziggurat stair-step skirt tiers into fewer, taller flaring panels.",
+    "total": 7.0
+  },
+  "C": {
+    "reads": 6,
+    "elegance": 6,
+    "skirt": 5,
+    "parts": 7,
+    "why": "Candle-crown veil is the best invention of the run and reads from above, but the body is a stacked plinth with no waist; cyan accent off-palette.",
+    "fix": "Rebuild the lower body: narrow the waist, drop the hip shelf, one smooth skirt flare.",
+    "total": 5.95
+  },
+  "D": {
+    "reads": 6,
+    "elegance": 7,
+    "skirt": 6,
+    "parts": 6,
+    "why": "Stained-glass window bodice and steeple hat are beautiful and on theme, but the skirt is a column in profile and the glass is hidden from the top camera.",
+    "fix": "Flare the skirt front and back, and repeat stained-glass colour on top-facing surfaces.",
+    "total": 6.3
+  },
+  "E": {
+    "reads": 4,
+    "elegance": 4,
+    "skirt": 3,
+    "parts": 4,
+    "why": "Great-helm headpiece reads as iron armour; the skirt is a hollow slate box or tray, visible from above.",
+    "fix": "Replace the plinth with a closed flaring skirt and the bucket helm with a veil.",
+    "total": 3.8
+  },
+  "F": {
+    "reads": 6.5,
+    "elegance": 7,
+    "skirt": 7,
+    "parts": 7,
+    "why": "Best top-down colour read (violet front panel and back bow); ideal palette with a bone collar; but it reads as a priest's cassock with a near-column skirt.",
+    "fix": "Flare the skirt at the knee and swap the biretta for a veiled coif to feminise.",
+    "total": 6.83
+  },
+  "ranking": [
+    "B",
+    "F",
+    "D",
+    "C",
+    "A",
+    "E"
+  ],
+  "notes": "No candidate fully solves both brief demands: a feminine, full-skirted gown and a strong top-down read at night. B has the best gown silhouette, F the best colour read from above, D the best stained-glass motif, C the best headpiece (candle crown). Combining C's candle crown or D's glass panel with B's skirt would be strongest. Keep B, F, D."
+}

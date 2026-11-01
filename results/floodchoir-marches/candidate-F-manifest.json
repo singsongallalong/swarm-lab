@@ -1,0 +1,17 @@
+{
+  "skill": "Floodchoir",
+  "look": "FloodchoirHelm,FloodchoirDress,FloodchoirSleeves,FloodchoirHem",
+  "rows_added": ["FloodchoirHelm", "FloodchoirDress", "FloodchoirSleeves", "FloodchoirHem"],
+  "intent": "A drowned-parish chorister's black court gown, a pale ruff and low shoulder veil over a laced slate stomacher with a crimson jewel, belled sleeves, a violet orphrey and sash, an amber belt lantern, and a wide two-tier bell skirt in wet slate over a crimson under-cassock, reading from the high camera as a narrow white-collared top over a broad flared bell.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A warm ivory cloth that stays ivory under the silver-blue moon; pale top faces turn blue, so the wide flat ruff became a standing collar.",
+    "A translucent cloth for the veil; cloth is opaque here, so the veil is layered black panels with a bone hem.",
+    "A disc or cylinder builder in Kit for a true round rose-window jewel; the chest lozenge is a turned box."
+  ]
+}

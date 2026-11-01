@@ -1,0 +1,22 @@
+{
+  "run": "floodchoir-marches",
+  "letter": "D",
+  "set": "FloodchoirSteeple",
+  "looks": [
+    "FloodchoirSteepleDress",
+    "FloodchoirSteepleHelm",
+    "FloodchoirSteepleHem",
+    "FloodchoirSteepleSleeves"
+  ],
+  "original_looks": [
+    "FloodchoirDress",
+    "FloodchoirHelm",
+    "FloodchoirHem",
+    "FloodchoirSleeves"
+  ],
+  "pick_rank": 3,
+  "intent": "A gothic parish court gown in black wool with one large leaded lancet of crimson, violet and amber on the bodice, a crimson waist and a two-tier skirt ending in a stained-glass hem border, under a thin steeple coif and long veil; from the high camera it reads as a narrow crimson waist over a wide two-tier bell, with the glass gathered into one panel and one hem ring.",
+  "reason": "Steeple: a spire hat that echoes the leaning church tower over a real stained-glass window on the bodice, the run's best motifs (6.3, third).",
+  "first_fix": "The skirt is a column from the side and the glass is hidden from above: flare the skirt front and back, and repeat the glass colours on surfaces that face up.",
+  "parts": 71
+}

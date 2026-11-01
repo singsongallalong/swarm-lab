@@ -1,0 +1,16 @@
+{
+  "skill": "Floodchoir",
+  "look": "FloodchoirVeil,FloodchoirDress,FloodchoirSleeves,FloodchoirHem",
+  "rows_added": ["FloodchoirVeil", "FloodchoirDress", "FloodchoirSleeves", "FloodchoirHem"],
+  "intent": "A Victorian-gothic mourning gown in black broadcloth with a violet-framed stained-glass stomacher, a lace collar and bell sleeves, read from the high camera as a narrow lace waist over a wide tiered bell skirt beneath a steepled hat ringed with amber candle stubs and a black lace veil.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A translucent black lace veil: armour parts are opaque, so the veil is solid black with a lace and violet hem.",
+    "A true conical skirt: box panels can only step out in tiers, so the bell is two stepped tiers rather than one taper."
+  ]
+}

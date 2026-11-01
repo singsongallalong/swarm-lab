@@ -1,0 +1,16 @@
+{
+  "skill": "Floodchoir",
+  "look": "FloodchoirHelm,FloodchoirDress,FloodchoirSleeves,FloodchoirHem",
+  "rows_added": ["FloodchoirHelm", "FloodchoirDress", "FloodchoirSleeves", "FloodchoirHem"],
+  "intent": "A gothic parish court gown in black wool with one large leaded lancet of crimson, violet and amber on the bodice, a crimson waist and a two-tier skirt ending in a stained-glass hem border, under a thin steeple coif and long veil; from the high camera it reads as a narrow crimson waist over a wide two-tier bell, with the glass gathered into one panel and one hem ring.",
+  "renders": [
+    ".swarm/out/armour-set-r7.png",
+    ".swarm/out/armour-set-close-r7.png",
+    ".swarm/out/armour-set-fit-r7.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A glass material that keeps a pane's colour and stays opaque under the mood preset; SmoothPlastic was the closest.",
+    "A tapered or trapezoid panel, so a skirt can flare along its length instead of stepping in boxes."
+  ]
+}

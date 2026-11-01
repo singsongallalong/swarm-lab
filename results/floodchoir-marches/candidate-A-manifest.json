@@ -1,0 +1,16 @@
+{
+  "skill": "Floodchoir",
+  "look": "FloodchoirHelm,FloodchoirDress,FloodchoirSleeves,FloodchoirHem",
+  "rows_added": ["FloodchoirHelm", "FloodchoirDress", "FloodchoirSleeves", "FloodchoirHem"],
+  "intent": "A gothic church mourning gown in near-black cloth with a pale slate hood-veil and shoulder cape, rope trim, crimson and violet glass hints and bronze bells at the hem; from the high camera the grey cape and veil break up the black over a cinched waist and a wide bell.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A sideways-tapering panel (or a sideways wedge) for the skirt's side faces: boxes cannot follow the bell's depth flare and stay joined at the corners.",
+    "A stained-glass material with a faint glow for the collar, brooch and sleeve linings; armour has none, so the candle and glass hints are colour only."
+  ]
+}
