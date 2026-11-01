@@ -49,11 +49,11 @@ shoulder check). The **Courtly** sets were made for the standard body.
 
 ## Drowned Marches pilot (2026-11-01)
 
-Nine more gown sets from the Drowned Marches wardrobe pilot (Rhodri, arpg-game R039), three
-picks from each of three runs, all on the `feminine` figure. Each run had two render-only
+Eighteen more gown sets from the Drowned Marches wardrobe pilot (Rhodri, arpg-game R039), three
+picks from each of six runs (two cloud sessions, three runs each), all on the `feminine` figure. Each run had two render-only
 critic passes with one rework between them; run evidence is in `results/<run>/`. Same files
 per set as above (`renamed.patch`, `original.patch`, `sheet.png`, `about.json`). Part counts
-were measured with `ArmourLook.partCount` on arpg-game main `a2b439d`. All nine apply there
+were measured with `ArmourLook.partCount` on arpg-game main `a2b439d`. All eighteen apply there
 together (each also applies alone), and `Catalog`, `ContentCompleteness` and `DressBudget` pass.
 
 | Set | Run | Zone | Pick | Parts | In short |
@@ -67,9 +67,18 @@ together (each also applies alone), and `Catalog`, `ContentCompleteness` and `Dr
 | MossveilFungal | mossveil-marches (D) | Fetid Forest | 1 | 85 | toadstool-cap bonnet, tiered skirt of lichen-yellow gill ruffles |
 | MossveilFern | mossveil-marches (C) | Fetid Forest | 2 | 76 | the cleanest A-line: light moss front panel, stepped bone-and-lichen hem |
 | MossveilOrchid | mossveil-marches (B) | Fetid Forest | 3 | 76 | flared moss bell under a black laced bodice, bone hem, orchid crown |
+| RuinplateQueen | ruinplate-marches (F) | Fetid Forest | 1 | 80 | pale-stone tiered bell with bronze lips and moss bands, cinched waist, prong crown |
+| RuinplateZiggurat | ruinplate-marches (C) | Fetid Forest | 2 | 89 | stepped skirt like a ruin's terraces; the most carved-from-the-ruins outline |
+| RuinplateStatue | ruinplate-marches (D) | Fetid Forest | 3 | 96 | courtly statue knight: V-neck cuirass, hooped tassets corded in bronze, moss hem |
+| TidewrackCorsair | tidewrack-marches (A) | Sunken Shelf | 1 | 92 | driftwood bodice over an ivory sailcloth A-line, shell-fan crest, teal only at the sash |
+| TidewrackShell | tidewrack-marches (E) | Sunken Shelf | 2 | 86 | ivory bell skirt, dark stomacher at the waist, thin teal trims; best on the slim avatar |
+| TidewrackSailcloth | tidewrack-marches (C) | Sunken Shelf | 3 | 88 | laced bodice and torn sailcloth drapes, all salt and ivory |
+| FloodchoirNun | floodchoir-marches (B) | Drowned Parish | 1 | 99 | wimpled choir nun: full A-line to the floor, candle-amber wimple band, violet stole |
+| FloodchoirChorister | floodchoir-marches (F) | Drowned Parish | 2 | 93 | black with a violet front panel and back bow, bone collar, crimson jewel |
+| FloodchoirSteeple | floodchoir-marches (D) | Drowned Parish | 3 | 71 | a spire hat like the leaning church tower over a stained-glass bodice window |
 
 All are under the raised gown budget of about 100 (Rhodri, 2026-11-01) and over the old 64.
-The shared flaw in all nine is full-width block sleeves: the shoulder check passes them, but
+The shared flaw in all eighteen is full-width block sleeves: the shoulder check passes them, but
 critics read the top as broad. Narrowing the sleeves is the first fix for most of them
 (`first_fix` in each `about.json`).
 
