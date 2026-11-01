@@ -1,0 +1,7 @@
+# Ruinplate: six takes for the Drowned Marches wardrobe pilot. Lines starting with # are ignored.
+Statue knight: plates like carved pale stone, a bell-shaped plate skirt in rings, a crested helm; she could be a statue come down from its plinth.
+Bronze sentinel: old green-bronze plates, a skirt of long hanging tassets over a moss underskirt, a crown-like helm.
+Moss-grown: elegant plate half swallowed by moss and fern, the skirt's lower plates green with it.
+Ancient priestess-guard: a pleated stone-grey skirt under a short plate fauld, a breastplate with a carved sun, a veil under a circlet.
+Battle gown: a gown with plate laid over it: small pauldrons, a plated bodice, the skirt fabric showing between long steel strips.
+Ruin queen: a tall crown, a cape, a full plate skirt flaring wide; regal and heavy.

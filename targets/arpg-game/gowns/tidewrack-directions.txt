@@ -1,0 +1,7 @@
+# Tidewrack: six takes for the Drowned Marches wardrobe pilot. Lines starting with # are ignored.
+Corsair captain: a long coat-dress open over a short ruffled skirt, a tricorne, a sash; driftwood brown and salt white.
+Shell armour: a breastplate and a scaled skirt of overlapping shells, a shell crown; pale pearl and sand.
+Sailcloth gown: patched sailcloth layered into a full skirt, rope lacing, a knotted headscarf; weathered and lovely.
+Leviathan bone: a corset and skirt hoops of bleached bone ribs over a grey-blue skirt, a fin-like headpiece.
+Naga-touched: a sleek teal-scaled bodice and a skirt split like a tail, brass trims; exotic and dangerous.
+Wreck salvage plate: hull planks and brass fittings made into a plated skirt and cuirass, a diving-helm-like hood; heavy, inventive.

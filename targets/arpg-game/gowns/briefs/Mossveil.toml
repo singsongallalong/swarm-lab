@@ -1,0 +1,19 @@
+# Drowned Marches wardrobe pilot (Rhodri, 2026-11-01; arpg-game R039).
+skill = "Mossveil"
+family = "armour"
+figure = "feminine"
+directions = "mossveil-directions.txt"
+brief = """
+Zone: the Fetid Forest (levels 12-16): a green, watery, fetid night forest round overgrown pale-stone ruins, fungus and moss everywhere. Make a gothic forest gown: elegant and a little uncanny, as if the forest grew a lady, with frills and ruffles that read as moss, fungal gills or ferns. Palette: deep moss green, sickly lichen yellow-green, pale ruin-stone bone, and black.
+
+The game's world is night-bound and muted (docs/art/bible.md). From the high ARPG camera the
+set must read as its own family, apart from iron, leather, studded, linen, fenscale and the
+courtly and classic gowns already made. Pretty and feminine first: this set exists so players
+who want a lovely dress have one, and it must still belong in its zone.
+
+Make all four slots: Helm (headpiece), Chest (bodice and upper skirt), Gloves (sleeves and
+hands), Boots (lower skirt, hem and shoes). Name them MossveilHelm, MossveilDress, MossveilSleeves and MossveilHem
+unless your idea calls for better names (keep the Mossveil prefix). Aim for 80 parts or fewer for
+the whole set (the budget is 100; fewer, bolder parts read better from above). Looks only:
+no base, numbers or drop weight.
+"""

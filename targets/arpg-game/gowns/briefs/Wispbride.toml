@@ -1,0 +1,19 @@
+# Drowned Marches wardrobe pilot (Rhodri, 2026-11-01; arpg-game R039).
+skill = "Wispbride"
+family = "armour"
+figure = "feminine"
+directions = "wispbride-directions.txt"
+brief = """
+Zone: the Fen (levels 8-12): a dead-willow mist fen of drowned willows, ankle mist, reeds, black water and will-o'-wisps round the great willow. Make a fen gown: something a lost bride of the marsh or a wisp-keeper would wear, pale against the black water, with drooping willow-strand lines and a hint of the wisps' cold glow (colour only: no particles or lights). Palette: mist grey, willow grey-green, black water, and a cold pale wisp blue.
+
+The game's world is night-bound and muted (docs/art/bible.md). From the high ARPG camera the
+set must read as its own family, apart from iron, leather, studded, linen, fenscale and the
+courtly and classic gowns already made. Pretty and feminine first: this set exists so players
+who want a lovely dress have one, and it must still belong in its zone.
+
+Make all four slots: Helm (headpiece), Chest (bodice and upper skirt), Gloves (sleeves and
+hands), Boots (lower skirt, hem and shoes). Name them WispbrideHelm, WispbrideDress, WispbrideSleeves and WispbrideHem
+unless your idea calls for better names (keep the Wispbride prefix). Aim for 80 parts or fewer for
+the whole set (the budget is 100; fewer, bolder parts read better from above). Looks only:
+no base, numbers or drop weight.
+"""

@@ -1,0 +1,7 @@
+# Reedmail: six takes for the Drowned Marches wardrobe pilot. Lines starting with # are ignored.
+Lamellar warden: rows of small dark bog-iron plates laced with reed cord, a knee-length flared lamellar skirt, a reed-plume helm.
+Scale skirt: an eel-scale skirt in overlapping green-black scales that flares from a fitted waist, a scale bodice, a simple circlet.
+Valkyrie of the marsh: a winged open helm, a polished breastplate, a plated skirt of long tassets over a green underskirt, tall greaves.
+Huntress: a leather corset over a short pleated reed skirt with iron studs, thigh boots, a hood with a willow-leaf brooch.
+Templar sister: a surcoat-dress over mail, a mail coif, a long plated skirt split for wading; grey-green tabard with a pale wisp sigil.
+Bark and bone: willow-bark plates over a layered skirt, small bone charms on cords; rough-made but carefully, prettily arranged.

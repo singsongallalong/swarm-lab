@@ -1,0 +1,19 @@
+# Drowned Marches wardrobe pilot (Rhodri, 2026-11-01; arpg-game R039).
+skill = "Floodchoir"
+family = "armour"
+figure = "feminine"
+directions = "floodchoir-directions.txt"
+brief = """
+Zone: the Drowned Parish (map, levels 10-12): a parish village half under black floodwater, its church tower leaning out of the flood, lamps still lit in upstairs windows. Make a gothic church gown: what the parish's choir, nuns or mourners might wear, black and solemn but beautiful, with stained-glass or candle hints. Palette: black, slate, wet stone grey, candle amber, a touch of stained-glass crimson or violet.
+
+The game's world is night-bound and muted (docs/art/bible.md). From the high ARPG camera the
+set must read as its own family, apart from iron, leather, studded, linen, fenscale and the
+courtly and classic gowns already made. Pretty and feminine first: this set exists so players
+who want a lovely dress have one, and it must still belong in its zone.
+
+Make all four slots: Helm (headpiece), Chest (bodice and upper skirt), Gloves (sleeves and
+hands), Boots (lower skirt, hem and shoes). Name them FloodchoirHelm, FloodchoirDress, FloodchoirSleeves and FloodchoirHem
+unless your idea calls for better names (keep the Floodchoir prefix). Aim for 80 parts or fewer for
+the whole set (the budget is 100; fewer, bolder parts read better from above). Looks only:
+no base, numbers or drop weight.
+"""

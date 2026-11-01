@@ -1,0 +1,7 @@
+# Wispbride: six takes for the Drowned Marches wardrobe pilot. Lines starting with # are ignored.
+Drowned bride: a long tattered wedding gown in faded mist-grey, a veil like hanging willow strands, the hem dark and sodden as if risen from the water.
+Wisp-keeper: a hooded mantle-gown in grey-green with lantern-like glass baubles of pale wisp blue hanging at the waist and wrists.
+Willow dryad: the skirt falls in long narrow strips like willow leaves over a slim bodice, a crown of bare twigs; grey-green and bark brown.
+Reed maiden: a fitted bodice laced with woven reeds, a tiered skirt edged in reed-tassel fringe, a wide reed sun hat; straw and fen green.
+Moth of the marsh: layered wing-like panels at the shoulders and back of the skirt, dusky grey with pale blue eye-spots; light and floaty.
+Mourning lace: black lace over mist-grey, a high collar, a short black veil and long gloves; the gothic Fen, solemn and elegant.
