@@ -1,0 +1,22 @@
+{
+  "A": {"reads": 7, "elegance": 6, "skirt": 7, "parts": 6, "total": 6.55,
+        "why": "Best front bell skirt and a rope belt, but the teal bodice and shoulders dominate from above and the back reads as a coat.",
+        "fix": "Cut teal to the sash and trim only; recolour the bodice and shoulders driftwood or sand, and carry the bell flare round the back."},
+  "B": {"reads": 5, "elegance": 4, "skirt": 6, "parts": 5, "total": 4.9,
+        "why": "Slate column with saturated blue shoulder slabs: it reads as a military greatcoat with no waist or flare, off-palette.",
+        "fix": "Drop the cobalt shoulder tops, move to the driftwood/salt palette, then cinch the waist and flare the hem."},
+  "C": {"reads": 5, "elegance": 6, "skirt": 6, "parts": 6, "total": 5.65,
+        "why": "Well-muted salt palette and a laced sailcloth front, but a straight narrow skirt with bulky cuffs reads close to the linen robe.",
+        "fix": "Belt the waist and flare the skirt to the shins; slim the cuffed sleeves and raise the headpiece."},
+  "D": {"reads": 8, "elegance": 6, "skirt": 7, "parts": 7, "total": 7.05,
+        "why": "The tiered salt skirt is the strongest, most distinct gown silhouette from ARPG, with an on-brief palette and a driftwood quill crest, but the hard flat tiers read as a cake or plinth and the torso is boxy.",
+        "fix": "Turn the stepped tiers into sloped, overlapping flounces ending at the shins; narrow the shoulders and sleeves to make a waist."},
+  "E": {"reads": 7, "elegance": 7, "skirt": 7, "parts": 6, "total": 6.85,
+        "why": "Best palette (sand, driftwood, sparse teal), clearest corseted waist and a smooth A-line, but the headpiece vanishes from above and the sleeves are wide.",
+        "fix": "Add a tall shell/coral/driftwood headpiece; slim the stacked sleeves and push the hem flare one step wider."},
+  "F": {"reads": 5, "elegance": 6, "skirt": 4, "parts": 5, "total": 5.1,
+        "why": "The corsair tricorn is the best theme read, but the waist shelf, boxy straight skirt, cobalt shoulder caps and trouser-like dark back stop it reading as a dress.",
+        "fix": "Remove the hip ledge and flare the skirt as one continuous panel front and back; recolour the shoulder caps."},
+  "ranking": ["D", "E", "A", "C", "F", "B"],
+  "notes": "No set is fully there. D owns the silhouette, E owns the palette and waist, and F owns the theme (tricorn). The ideal would be D's flare, softened into flounces, on E's colours, with a corsair or shell headpiece. Common faults: wide box shoulders and stacked sleeves across most sets (against the narrow-shoulder brief), dark plain backs that stop reading as a gown, and off-palette cobalt on B and F. Teal is overused only on A."
+}

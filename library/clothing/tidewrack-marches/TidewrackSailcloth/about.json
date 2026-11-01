@@ -1,0 +1,22 @@
+{
+  "run": "tidewrack-marches",
+  "letter": "C",
+  "set": "TidewrackSailcloth",
+  "looks": [
+    "TidewrackSailclothDress",
+    "TidewrackSailclothHelm",
+    "TidewrackSailclothHem",
+    "TidewrackSailclothSleeves"
+  ],
+  "original_looks": [
+    "TidewrackDress",
+    "TidewrackHelm",
+    "TidewrackHem",
+    "TidewrackSleeves"
+  ],
+  "pick_rank": 3,
+  "intent": "A warm-ivory sailcloth gown for the Sunken Shelf, rope-laced front and back into a narrow driftwood belt, with a flared hip ruffle, a stepped bell skirt over a darker back train and sand bow, slim bell cuffs and a raised knotted headscarf with a shell boss - reading from the high camera as a narrow waist over a wide, layered A.",
+  "reason": "Sailcloth gown: a laced bodice and torn sailcloth drapes, the most on-theme for the wrecks, all salt and ivory (6.1, third).",
+  "first_fix": "Almost all salt-white, so from above it blurs into one pale block near linen: add a driftwood or brass corset for contrast and angle the side tatters back onto the skirt.",
+  "parts": 88
+}

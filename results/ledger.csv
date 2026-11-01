@@ -28,5 +28,5 @@ domain-features-2,Domain,deepseek,deepseek-flash[1m],24,23,23,0,0,706943797,10.5
 wasteland-features-1,Waste,deepseek,deepseek-flash[1m],3,2,3,0,1,138852004,1.8196,2413.0,,
 wispbride-marches,Wispbride,deepseek,deepseek-flash[1m],6,6,6,0,3,108566253,2.4555,1416.0,,
 ruinplate-marches,Ruinplate,deepseek,deepseek-flash[1m],6,5,6,0,3,120167612,2.8324,1614.0,,
-tidewrack-marches,Tidewrack,deepseek,deepseek-flash[1m],6,6,6,0,0,58059539,1.7139,900.1,,
 reedmail-marches,Reedmail,deepseek,deepseek-flash[1m],6,5,5,0,3,131193523,2.8944,1535.7,src/shared/data/armourLooks/ReedmailCoif.luau: deleted,
+tidewrack-marches,Tidewrack,deepseek,deepseek-flash[1m],6,5,6,0,3,106770466,2.5137,1232.8,,

@@ -1,0 +1,16 @@
+{
+  "skill": "Tidewrack",
+  "look": "TidewrackCrest,TidewrackDress,TidewrackSleeves,TidewrackHem",
+  "rows_added": ["TidewrackCrest", "TidewrackDress", "TidewrackSleeves", "TidewrackHem"],
+  "intent": "A Sunken Shelf corsair's gown of driftwood and wet sand with salt-sailcloth panels: a warm shell-fan crown over a fitted bodice, a salt-bound sash and a full bell skirt hooped in bone, reading from the high camera as a pale shell crown and white sash above a narrow waist and a warm brown skirt that bells wide at the hem.",
+  "renders": [
+    ".swarm/out/armour-set-r7.png",
+    ".swarm/out/armour-set-close-r7.png",
+    ".swarm/out/armour-set-fit-r7.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A pale bone or shell material variant: SmoothPlastic is the closest matte, so bleached bone reads grey under the night preset",
+    "A back anchor for a train or bustle: hung from a thigh it swings with one leg, and the lower torso may not hang below its bottom"
+  ]
+}

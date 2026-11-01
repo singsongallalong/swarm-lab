@@ -1,0 +1,16 @@
+{
+  "skill": "Tidewrack",
+  "look": "TidewrackHelm,TidewrackDress,TidewrackSleeves,TidewrackHem",
+  "rows_added": ["TidewrackHelm", "TidewrackDress", "TidewrackSleeves", "TidewrackHem"],
+  "intent": "A Sunken Shelf corsair's gown of wet-sand and driftwood bodice over a warm salt-ivory sailcloth bell skirt, with Naga teal kept to the waist sash and one hem stripe and tarnished brass trim; from the high camera it reads as a narrow sand top over a wide pale bell, not a teal robe.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A shell or pearl material with a faint sheen: under the night preset's zero specular, salt white reads flat.",
+    "A centre skirt panel spanning both thighs, so a gown can hang as one closed cone instead of two leg panels meeting at a seam."
+  ]
+}

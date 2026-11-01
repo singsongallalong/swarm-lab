@@ -1,0 +1,22 @@
+{
+  "run": "tidewrack-marches",
+  "letter": "E",
+  "set": "TidewrackShell",
+  "looks": [
+    "TidewrackShellDress",
+    "TidewrackShellHelm",
+    "TidewrackShellHem",
+    "TidewrackShellSleeves"
+  ],
+  "original_looks": [
+    "TidewrackDress",
+    "TidewrackHelm",
+    "TidewrackHem",
+    "TidewrackSleeves"
+  ],
+  "pick_rank": 2,
+  "intent": "A corsair's shell-armoured gown of salt-white salvage and driftwood, with a salt headscarf and tall scallop comb, a cinched corset, a pale sailcloth back panel and a wide tiered bell skirt that reads A-shaped from the high camera.",
+  "reason": "Shell-armoured gown: an ivory bell skirt with a dark stomacher that marks the waist and thin teal trims; it holds best on the slim avatar (6.65, second, both passes).",
+  "first_fix": "A pale bar juts out from the hip and hem and reads as a floating part: remove or reattach it; then give it a taller headpiece than the cap.",
+  "parts": 86
+}

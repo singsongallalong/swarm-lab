@@ -1,0 +1,14 @@
+{
+  "picked": ["A", "E", "C"],
+  "reasons": {
+    "A": "Corsair's gown: a dark driftwood bodice over an ivory sailcloth A-line with a fitted waist, an upright shell-fan crest and teal kept to a sash; the clearest gown from the ARPG camera (second critic 7.2, first; first critic 6.55, third).",
+    "E": "Shell-armoured gown: an ivory bell skirt with a dark stomacher that marks the waist and thin teal trims; it holds best on the slim avatar (6.65, second, both passes).",
+    "C": "Sailcloth gown: a laced bodice and torn sailcloth drapes, the most on-theme for the wrecks, all salt and ivory (6.1, third)."
+  },
+  "fixes": {
+    "A": "The stacked pale sleeve cuffs are the widest point at hip level: slim them; and carry the ivory round to the back skirt, which is dark grey.",
+    "E": "A pale bar juts out from the hip and hem and reads as a floating part: remove or reattach it; then give it a taller headpiece than the cap.",
+    "C": "Almost all salt-white, so from above it blurs into one pale block near linen: add a driftwood or brass corset for contrast and angle the side tatters back onto the skirt."
+  },
+  "notes": "6 of 6 survived the draft and the rework with no resume (g00 hit its 40-turn cap in the rework; its set still passed). The rework reshuffled the run: D, first after the draft (7.05, a flared tier skirt), lost its flare and fell to last (4.5); A rose from 6.55 to 7.2 by moving teal off the bodice. F's corsair tricorn is the boldest headpiece in the run and worth borrowing. Every set keeps wide, boxy sleeves that read as broad shoulders from above. Trap: one generator (g04) wrote two look files to swarm-lab/tidewrack-marches/... outside its worktree as well as inside it; the stray copies were deleted and never committed."
+}

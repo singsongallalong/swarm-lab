@@ -1,0 +1,251 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..73e6d52 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -29,6 +29,10 @@ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+ local StuddedCap = require("./armourLooks/StuddedCap")
+ local StuddedGloves = require("./armourLooks/StuddedGloves")
++local TidewrackDress = require("./armourLooks/TidewrackDress")
++local TidewrackHelm = require("./armourLooks/TidewrackHelm")
++local TidewrackHem = require("./armourLooks/TidewrackHem")
++local TidewrackSleeves = require("./armourLooks/TidewrackSleeves")
+ local TowerShield = require("./armourLooks/TowerShield")
+ 
+ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+@@ -56,6 +60,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
++	TidewrackDress = TidewrackDress,
++	TidewrackHelm = TidewrackHelm,
++	TidewrackHem = TidewrackHem,
++	TidewrackSleeves = TidewrackSleeves,
+ 	SpellShield = SpellShield,
+ 	StormTalisman = StormTalisman,
+ 	TowerShield = TowerShield,
+diff --git a/src/shared/data/armourLooks/TidewrackDress.luau b/src/shared/data/armourLooks/TidewrackDress.luau
+new file mode 100644
+index 0000000..bd8eee3
+--- /dev/null
++++ b/src/shared/data/armourLooks/TidewrackDress.luau
+@@ -0,0 +1,59 @@
++--!strict
++-- The tidewrack dress (the Tidewrack gown's chest): a fitted salt sailcloth
++-- bodice with a high collar, a teal choker and a pale shell at the throat; a
++-- narrow teal sash at the waist and a small bustle behind. The skirt's first
++-- tier hangs from the thighs as a salt drum whose thin driftwood flange and
++-- brass edge overhang the shin's flounces (TidewrackHem). The back is ivory
++-- like the front, laced with rope.
++
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The set's palette: salt-white sailcloth, driftwood, tarnished brass, and the
++-- Naga's teal kept to the sash and the choker.
++local salt = { 182, 184, 171 }
++local saltShade = { 148, 150, 140 }
++local drift = { 118, 104, 82 }
++local brass = { 150, 120, 70 }
++local teal = { 64, 106, 100 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "TidewrackDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice, close over the chest and over the shoulder tops.
++		Kit.box("UpperTorso", { 2.04, 1.64, 1.04 }, { 0, 0.005, 0 }, "Fabric", salt),
++		-- The high collar, the teal choker and a pale shell at the throat.
++		Kit.box("UpperTorso", { 0.86, 0.36, 0.86 }, { 0, 0.9, 0 }, "Fabric", salt),
++		Kit.box("UpperTorso", { 0.9, 0.07, 0.9 }, { 0, 0.86, 0 }, "Fabric", teal),
++		Kit.box("UpperTorso", { 0.18, 0.18, 0.1 }, { 0, 0.98, -0.47 }, "Metal", c.bone),
++		-- The back, ivory like the front, rope-laced above the small bustle.
++		Kit.box("UpperTorso", { 0.06, 1.05, 0.06 }, { 0, -0.06, 0.56 }, "Fabric", c.rope, { 0, 0, 24 }),
++		Kit.box("UpperTorso", { 0.06, 1.05, 0.06 }, { 0, -0.06, 0.56 }, "Fabric", c.rope, { 0, 0, -24 }),
++		Kit.box("UpperTorso", { 0.14, 0.12, 0.1 }, { 0, -0.52, 0.56 }, "Fabric", c.rope),
++		-- The waist: the teal sash is the whole waist's width, so it reads as the
++		-- narrowest point; a thin brass line and an off-centre buckle below it.
++		Kit.box("LowerTorso", { 2.02, 0.4, 1.02 }, { 0, 0, 0 }, "Fabric", teal),
++		Kit.box("LowerTorso", { 2.05, 0.04, 1.05 }, { 0, -0.15, 0 }, "Metal", brass),
++		Kit.box("LowerTorso", { 0.18, 0.16, 0.08 }, { 0.35, 0.02, -0.55 }, "Metal", brass),
++		-- The bustle, kept inside the lower torso so it never crosses a thigh.
++		Kit.box("LowerTorso", { 1.3, 0.32, 0.26 }, { 0, 0.02, 0.55 }, "Fabric", salt),
++		Kit.box("LowerTorso", { 1.1, 0.26, 0.2 }, { 0, -0.05, 0.66 }, "Fabric", saltShade),
++		-- Close sleeves on the upper arms, banded in driftwood above the elbow;
++		-- the flare is the gloves' work.
++		Kit.box("UpperArm", { 1.04, 1.22, 1.04 }, { 0, 0.01, 0 }, "Fabric", salt),
++		Kit.box("UpperArm", { 1.08, 0.08, 1.08 }, { 0, -0.5, 0 }, "Wood", drift),
++		-- The skirt's first tier, hung from the thighs: a salt drum ended by a
++		-- thin driftwood flange and a brass edge. The flange overhangs the shin's
++		-- flounces below, so the tiers read as draped fabric, not a plinth.
++		Kit.box("UpperLeg", { 1.05, 1.26, 1.1 }, { 0.025, 0.12, 0 }, "Fabric", salt),
++		Kit.box("UpperLeg", { 1.16, 0.08, 1.22 }, { 0.08, -0.54, 0 }, "Wood", drift),
++		Kit.box("UpperLeg", { 1.2, 0.03, 1.26 }, { 0.1, -0.585, 0 }, "Metal", brass),
++		Kit.box("UpperLeg", { 0.12, 0.62, 0.07 }, { 0.12, 0.44, -0.55 }, "Fabric", teal, { 0, 0, 8 }, "Right"),
++		Kit.box("UpperLeg", { 0.09, 0.52, 0.07 }, { 0.24, 0.48, -0.56 }, "Fabric", teal, { 0, 0, -6 }, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/TidewrackHelm.luau b/src/shared/data/armourLooks/TidewrackHelm.luau
+new file mode 100644
+index 0000000..74b6574
+--- /dev/null
++++ b/src/shared/data/armourLooks/TidewrackHelm.luau
+@@ -0,0 +1,44 @@
++--!strict
++-- The tidewrack helm (the Tidewrack gown's headpiece): a salt-white sailcloth
++-- snood and veil gathered at the crown, crowned with a comb of salvaged brass
++-- that rises and sweeps back, and a pale shell at the brow. Nothing sits wide
++-- at the ear: the height and the fall are at the back, where the veil hangs.
++
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The set's palette: salt-white sailcloth, driftwood, tarnished brass, and the
++-- Naga's teal kept to one thin ribbon.
++local salt = { 182, 184, 171 }
++local drift = { 118, 104, 82 }
++local brass = { 150, 120, 70 }
++local teal = { 64, 106, 100 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "TidewrackHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The snood, drawn close over the crown, and the driftwood band that
++		-- gathers it at the brow.
++		Kit.box("Head", { 1.28, 0.5, 1.28 }, { 0, 0.42, 0 }, "Fabric", salt),
++		Kit.box("Head", { 1.3, 0.1, 1.3 }, { 0, 0.16, 0 }, "Wood", drift),
++		-- The comb: one tall brass fin and two shorter teeth, all sweeping back.
++		Kit.box("Head", { 0.1, 0.88, 0.46 }, { 0, 1.0, 0.16 }, "Metal", brass, { 22, 0, 0 }),
++		Kit.box("Head", { 0.08, 0.54, 0.34 }, { 0.27, 0.82, 0.12 }, "Metal", brass, { 18, 0, 8 }),
++		Kit.box("Head", { 0.08, 0.54, 0.34 }, { -0.27, 0.82, 0.12 }, "Metal", brass, { 18, 0, -8 }),
++		-- A pale shell pinned at the brow, and a teal ribbon gathering the comb.
++		Kit.box("Head", { 0.42, 0.2, 0.12 }, { 0, 0.3, -0.63 }, "Metal", c.bone, { 0, 0, 10 }),
++		Kit.box("Head", { 1.14, 0.07, 0.1 }, { 0, 0.62, 0.66 }, "Fabric", teal),
++		-- The veil: a wide centre fall and two narrow side falls, behind the head,
++		-- weighted at the hem in driftwood so it hangs straight.
++		Kit.box("Head", { 0.95, 1.0, 0.06 }, { 0, 0.02, 0.66 }, "Fabric", salt, { 6, 0, 0 }),
++		Kit.box("Head", { 0.3, 0.9, 0.06 }, { 0.36, 0.0, 0.64 }, "Fabric", salt, { 4, 0, -6 }),
++		Kit.box("Head", { 0.3, 0.9, 0.06 }, { -0.36, 0.0, 0.64 }, "Fabric", salt, { 4, 0, 6 }),
++		Kit.box("Head", { 1.0, 0.08, 0.08 }, { 0, -0.5, 0.72 }, "Wood", drift, { 6, 0, 0 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/TidewrackHem.luau b/src/shared/data/armourLooks/TidewrackHem.luau
+new file mode 100644
+index 0000000..16f637c
+--- /dev/null
++++ b/src/shared/data/armourLooks/TidewrackHem.luau
+@@ -0,0 +1,42 @@
++--!strict
++-- The tidewrack hem (the Tidewrack gown's boots): the skirt carried down the
++-- shins as two salt flounces. Each ends in a thin driftwood flange that
++-- overhangs the flounce below, with a brass edge on the upper one and the
++-- Naga's teal on the hem, so the tiers read as draped fabric. The hem is raised
++-- to the lower shin, showing a salt stocking with a brass ankle ring and a
++-- driftwood slipper with a brass toe.
++
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The set's palette: salt-white sailcloth, driftwood, tarnished brass, and the
++-- Naga's teal kept to the hem's edge.
++local salt = { 182, 184, 171 }
++local drift = { 118, 104, 82 }
++local brass = { 150, 120, 70 }
++local teal = { 64, 106, 100 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "TidewrackHem",
++	slot = "Boots",
++	parts = {
++		-- The upper flounce: its top tucks under the thigh tier's flange, and its
++		-- own flange overhangs the lower flounce.
++		Kit.box("LowerLeg", { 1.0, 0.52, 1.05 }, { 0, 0.42, 0 }, "Fabric", salt),
++		Kit.box("LowerLeg", { 1.5, 0.08, 1.55 }, { 0.25, 0.12, 0 }, "Wood", drift),
++		Kit.box("LowerLeg", { 1.54, 0.03, 1.59 }, { 0.27, 0.085, 0 }, "Metal", brass),
++		-- The lower flounce, tucked under the flange above, ending in the hem
++		-- flange and its thin teal edge.
++		Kit.box("LowerLeg", { 1.35, 0.31, 1.4 }, { 0.175, -0.055, 0 }, "Fabric", salt),
++		Kit.box("LowerLeg", { 2.1, 0.09, 2.15 }, { 0.55, -0.25, 0 }, "Wood", drift),
++		Kit.box("LowerLeg", { 2.14, 0.035, 2.19 }, { 0.57, -0.31, 0 }, "Fabric", teal),
++		-- The lower leg: a salt stocking under a brass ankle ring.
++		Kit.box("LowerLeg", { 1.02, 0.32, 1.02 }, { 0.01, -0.44, 0 }, "Fabric", salt),
++		Kit.box("LowerLeg", { 1.06, 0.06, 1.06 }, { 0.03, -0.54, 0 }, "Metal", brass),
++		-- The slipper: driftwood, with a brass toe cap.
++		Kit.box("Foot", { 1.04, 0.32, 1.18 }, { 0, 0.02, -0.06 }, "Leather", drift),
++		Kit.box("Foot", { 0.66, 0.14, 0.14 }, { 0, 0.02, -0.66 }, "Metal", brass),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/TidewrackSleeves.luau b/src/shared/data/armourLooks/TidewrackSleeves.luau
+new file mode 100644
+index 0000000..f99cb9f
+--- /dev/null
++++ b/src/shared/data/armourLooks/TidewrackSleeves.luau
+@@ -0,0 +1,33 @@
++--!strict
++-- The tidewrack sleeves (the Tidewrack gown's gloves): a close upper sleeve's
++-- work ends at the elbow; below it the gown's sleeve flares in one modest salt
++-- tier to a teal ribbon, a driftwood cuff and a brass rim, then a driftwood
++-- glove. Slim enough that the arms read as arms beside the narrow bodice.
++
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The set's palette: salt-white sailcloth, driftwood, tarnished brass, and the
++-- Naga's teal kept to one thin ribbon at the cuff.
++local salt = { 182, 184, 171 }
++local drift = { 118, 104, 82 }
++local brass = { 150, 120, 70 }
++local teal = { 64, 106, 100 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "TidewrackSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The sleeve: close at the elbow, one modest flare down the forearm.
++		Kit.box("LowerArm", { 1.06, 0.5, 1.06 }, { 0, 0.27, 0 }, "Fabric", salt),
++		Kit.box("LowerArm", { 1.18, 0.44, 1.18 }, { 0, -0.13, 0 }, "Fabric", salt),
++		-- The cuff: a teal ribbon, a driftwood band, a brass rim at the wrist.
++		Kit.box("LowerArm", { 1.2, 0.05, 1.2 }, { 0, -0.38, 0 }, "Fabric", teal),
++		Kit.box("LowerArm", { 1.24, 0.12, 1.24 }, { 0, -0.45, 0 }, "Wood", drift),
++		Kit.box("LowerArm", { 1.28, 0.05, 1.28 }, { 0, -0.53, 0 }, "Metal", brass),
++		-- The glove.
++		Kit.box("Hand", { 1.03, 0.32, 1.03 }, { 0, 0, 0 }, "Leather", drift),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..d868435 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,18 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:TidewrackHelm"] = row(
++		"A salt sailcloth snood and veil under a swept brass comb, with a shell at the brow."
++	),
++	["armour:TidewrackDress"] = row(
++		"A teal-sashed sailcloth gown with a raised, brass-edged flounced skirt over boots."
++	),
++	["armour:TidewrackSleeves"] = row(
++		"Salt sleeves flaring to driftwood cuffs, brass rims and planked driftwood gloves."
++	),
++	["armour:TidewrackHem"] = row(
++		"A salt skirt's lower tiers banded in hull planks, teal-piped above brass-toed shoes."
++	),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

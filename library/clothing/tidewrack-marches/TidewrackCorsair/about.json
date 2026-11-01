@@ -1,0 +1,22 @@
+{
+  "run": "tidewrack-marches",
+  "letter": "A",
+  "set": "TidewrackCorsair",
+  "looks": [
+    "TidewrackCorsairDress",
+    "TidewrackCorsairHelm",
+    "TidewrackCorsairHem",
+    "TidewrackCorsairSleeves"
+  ],
+  "original_looks": [
+    "TidewrackDress",
+    "TidewrackHelm",
+    "TidewrackHem",
+    "TidewrackSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A Sunken Shelf corsair's gown of wet-sand and driftwood bodice over a warm salt-ivory sailcloth bell skirt, with Naga teal kept to the waist sash and one hem stripe and tarnished brass trim; from the high camera it reads as a narrow sand top over a wide pale bell, not a teal robe.",
+  "reason": "Corsair's gown: a dark driftwood bodice over an ivory sailcloth A-line with a fitted waist, an upright shell-fan crest and teal kept to a sash; the clearest gown from the ARPG camera (second critic 7.2, first; first critic 6.55, third).",
+  "first_fix": "The stacked pale sleeve cuffs are the widest point at hip level: slim them; and carry the ivory round to the back skirt, which is dark grey.",
+  "parts": 92
+}

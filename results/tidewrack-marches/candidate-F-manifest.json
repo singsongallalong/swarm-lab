@@ -1,0 +1,17 @@
+{
+  "skill": "Tidewrack",
+  "look": "TidewrackHelm,TidewrackDress,TidewrackSleeves,TidewrackHem",
+  "rows_added": ["TidewrackHelm", "TidewrackDress", "TidewrackSleeves", "TidewrackHem"],
+  "intent": "A corsair captain's tidewrack gown: a salt-white sailcloth bodice and full tiered skirt under an open driftwood coat-dress with split tails, a teal Naga sash and bow, and a plumed tricorne, reading from the high camera as a pale, narrow-shouldered gown over a wide dark-fringed bell.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A lighter driftwood grey-brown that stays grey-brown under the night preset; the coat reads near-black at the ARPG camera.",
+    "A triangular or wedge brim piece for a truer tricorne; boxes make a stepped brim.",
+    "A gauze or lace material for the petticoat edge and a veil; every cloth here is an opaque Fabric box."
+  ]
+}
