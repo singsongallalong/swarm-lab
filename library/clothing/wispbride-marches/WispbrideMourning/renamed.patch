@@ -1,0 +1,269 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..4ac9375 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -30,6 +30,10 @@ local StuddedBoots = require("./armourLooks/StuddedBoots")
+ local StuddedCap = require("./armourLooks/StuddedCap")
+ local StuddedGloves = require("./armourLooks/StuddedGloves")
+ local TowerShield = require("./armourLooks/TowerShield")
++local WispbrideMourningDress = require("./armourLooks/WispbrideMourningDress")
++local WispbrideMourningHelm = require("./armourLooks/WispbrideMourningHelm")
++local WispbrideMourningHem = require("./armourLooks/WispbrideMourningHem")
++local WispbrideMourningSleeves = require("./armourLooks/WispbrideMourningSleeves")
+ 
+ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	BoneTalisman = BoneTalisman,
+@@ -59,6 +63,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	SpellShield = SpellShield,
+ 	StormTalisman = StormTalisman,
+ 	TowerShield = TowerShield,
++	WispbrideMourningDress = WispbrideMourningDress,
++	WispbrideMourningHelm = WispbrideMourningHelm,
++	WispbrideMourningHem = WispbrideMourningHem,
++	WispbrideMourningSleeves = WispbrideMourningSleeves,
+ }
+ 
+ return table.freeze(ArmourLooks)
+diff --git a/src/shared/data/armourLooks/WispbrideMourningDress.luau b/src/shared/data/armourLooks/WispbrideMourningDress.luau
+new file mode 100644
+index 0000000..ad85e1a
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideMourningDress.luau
+@@ -0,0 +1,78 @@
++--!strict
++-- The wispbride's gown: a fitted pale mist-grey bodice under a black lace
++-- bertha collar and laced down the back, pinched by a narrow willow sash at
++-- the natural waist, and a full pale skirt that flares out from just under
++-- that sash and strides with the legs. Long willow strands hang from the
++-- waist over the skirt, longer at the back, and cold wisp blue sits at the
++-- throat and at the strands' tips. Black is only a thin trim, so the figure
++-- reads pale against the fen's black water.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's mourning palette: black lace over pale mist grey, willow
++-- grey-green, and the wisps' cold blue kept to small drops.
++local lace = { 32, 34, 40 }
++local mist = { 150, 155, 163 }
++local mistDeep = { 118, 123, 132 }
++local pearl = { 186, 190, 198 }
++local willow = { 104, 120, 100 }
++local wisp = { 150, 208, 224 }
++
++-- How far the upper skirt runs down the thigh, from just above its top so the
++-- two legs' panels meet into one skirt standing.
++local SKIRT = 1.3
++local SKIRT_TOP = 0.72
++local SKIRT_Y = SKIRT_TOP - SKIRT / 2
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideMourningDress",
++	slot = "Chest",
++	parts = {
++		-- The pale bodice, and the lace bertha laid flat across the shoulders:
++		-- a collar that stays inside the shoulder line and only a little above
++		-- it, so the top stays narrow.
++		Kit.box("UpperTorso", { 2.06, 1.62, 1.06 }, { 0, 0, 0 }, "Fabric", mist),
++		Kit.box("UpperTorso", { 2.12, 0.14, 1.16 }, { 0, 0.84, 0 }, "Fabric", mist),
++		Kit.box("UpperTorso", { 2.16, 0.06, 1.2 }, { 0, 0.9, 0 }, "Fabric", lace),
++		-- The wisp brooch pinning the collar at the throat.
++		Kit.box("UpperTorso", { 0.16, 0.2, 0.1 }, { 0, 0.76, -0.58 }, "SmoothPlastic", wisp),
++		-- A pale stomacher laced in black down the front, and black lacing
++		-- down the back, where the high camera sees it.
++		Kit.box("UpperTorso", { 0.9, 1.2, 0.06 }, { 0, -0.02, -0.555 }, "Fabric", pearl),
++		Kit.box("UpperTorso", { 0.46, 1.34, 0.06 }, { 0, -0.01, 0.54 }, "Fabric", lace),
++		Kit.box("UpperTorso", { 0.42, 0.05, 0.05 }, { 0, 0.28, 0.575 }, "Fabric", pearl),
++		Kit.box("UpperTorso", { 0.42, 0.05, 0.05 }, { 0, 0.03, 0.575 }, "Fabric", pearl),
++		Kit.box("UpperTorso", { 0.42, 0.05, 0.05 }, { 0, -0.22, 0.575 }, "Fabric", pearl),
++		Kit.box("UpperTorso", { 0.5, 0.05, 0.05 }, { 0, 0.28, -0.59 }, "Fabric", lace),
++		Kit.box("UpperTorso", { 0.5, 0.05, 0.05 }, { 0, 0.03, -0.59 }, "Fabric", lace),
++		Kit.box("UpperTorso", { 0.5, 0.05, 0.05 }, { 0, -0.22, -0.59 }, "Fabric", lace),
++		-- The waist: a pale ground under a thin black piping and the narrow
++		-- willow sash, knotted off centre, that pinches the figure in.
++		Kit.box("LowerTorso", { 2.06, 0.4, 1.06 }, { 0, 0, 0 }, "Fabric", mist),
++		Kit.box("LowerTorso", { 2.14, 0.04, 1.14 }, { 0, 0.1, 0 }, "Fabric", lace),
++		Kit.box("LowerTorso", { 2.16, 0.18, 1.18 }, { 0, -0.04, 0 }, "Fabric", willow),
++		Kit.box("LowerTorso", { 0.2, 0.18, 0.16 }, { 0.44, -0.04, -0.62 }, "Fabric", willow),
++		-- The upper sleeves stay pale and close to the arm, with black only as
++		-- a thin band at the elbow; all their volume is on the gloves' cuffs.
++		Kit.box("UpperArm", { 1.04, 1.2, 1.04 }, { 0, 0, 0 }, "Fabric", mistDeep),
++		Kit.box("UpperArm", { 1.08, 0.12, 1.08 }, { 0, -0.5, 0 }, "Fabric", lace),
++		-- The upper skirt: wide panels to the front, back and outside of every
++		-- thigh, flaring out from the waist rather than the knee. Long willow
++		-- strands hang from the waist over them, the back ones longer.
++		Kit.box("UpperLeg", { 1.45, SKIRT, 0.09 }, { 0.08, SKIRT_Y, -0.575 }, "Fabric", mist, { 8, 0, 10 }),
++		Kit.box("UpperLeg", { 1.45, SKIRT, 0.09 }, { 0.08, SKIRT_Y, 0.575 }, "Fabric", mist, { -8, 0, 10 }),
++		Kit.box("UpperLeg", { 0.09, SKIRT, 1.15 }, { 0.72, SKIRT_Y, 0 }, "Fabric", mist, { 0, 0, 16 }),
++		Kit.box("UpperLeg", { 1.24, 0.5, 0.09 }, { 0.03, 0.32, 0.62 }, "Fabric", mist, { -8, 0, 4 }),
++		Kit.box("UpperLeg", { 0.14, 1.28, 0.05 }, { 0.32, 0.04, -0.633 }, "Fabric", willow, { 8, 0, 10 }),
++		Kit.box("UpperLeg", { 0.14, 1.42, 0.05 }, { 0.32, -0.03, 0.643 }, "Fabric", willow, { -8, 0, 10 }),
++		Kit.box("UpperLeg", { 0.05, 1.28, 0.14 }, { 0.776, 0.04, 0 }, "Fabric", willow, { 0, 0, 16 }),
++		-- Wisp dew at the strands' ends.
++		Kit.box("UpperLeg", { 0.14, 0.13, 0.13 }, { 0.42, -0.55, -0.71 }, "SmoothPlastic", wisp),
++		Kit.box("UpperLeg", { 0.13, 0.12, 0.12 }, { 0.44, -0.68, 0.74 }, "SmoothPlastic", wisp),
++		-- The sash's ends, hung from the right thigh so they swing with it.
++		Kit.box("UpperLeg", { 0.1, 0.8, 0.06 }, { 0.16, 0.28, -0.6 }, "Fabric", willow, { 6, 0, 3 }, "Right"),
++		Kit.box("UpperLeg", { 0.08, 0.62, 0.05 }, { 0.32, 0.34, -0.6 }, "Fabric", willow, { 6, 0, -5 }, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/WispbrideMourningHelm.luau b/src/shared/data/armourLooks/WispbrideMourningHelm.luau
+new file mode 100644
+index 0000000..6e8eee1
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideMourningHelm.luau
+@@ -0,0 +1,50 @@
++--!strict
++-- The wispbride's headpiece: a mourning wreath. A black lace cap ringed by a
++-- willow wreath, three willow withes rising from the back with cold wisp dew
++-- at their tips, drooping fronds behind the ears, and a short black veil over
++-- a pale mist under-veil falling to the shoulders. The height is at the crown
++-- and the back, never wide at the ears, so the head reads tall.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's mourning palette: black lace over pale mist grey, willow
++-- grey-green, and the wisps' cold blue kept to small drops.
++local lace = { 32, 34, 40 }
++local mist = { 150, 155, 163 }
++local willow = { 104, 120, 100 }
++local wisp = { 150, 208, 224 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideMourningHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The lace cap, proud of the head on every side.
++		Kit.box("Head", { 1.3, 0.46, 1.3 }, { 0, 0.42, 0.03 }, "Fabric", lace),
++		-- The willow wreath: four bands ringing the crown.
++		Kit.box("Head", { 1.26, 0.1, 0.09 }, { 0, 0.58, -0.63 }, "Fabric", willow),
++		Kit.box("Head", { 1.26, 0.1, 0.09 }, { 0, 0.58, 0.69 }, "Fabric", willow),
++		Kit.box("Head", { 0.09, 0.1, 1.24 }, { 0.66, 0.58, 0.03 }, "Fabric", willow),
++		Kit.box("Head", { 0.09, 0.1, 1.24 }, { -0.66, 0.58, 0.03 }, "Fabric", willow),
++		-- The brow band, and the wisp drop at its centre.
++		Kit.box("Head", { 1.3, 0.12, 0.08 }, { 0, 0.44, -0.64 }, "Fabric", mist),
++		Kit.box("Head", { 0.15, 0.17, 0.1 }, { 0, 0.44, -0.68 }, "SmoothPlastic", wisp),
++		-- The short black veil, with the pale under-veil showing beneath and
++		-- around its edge.
++		Kit.box("Head", { 1.2, 1.32, 0.06 }, { 0, -0.14, 0.8 }, "Fabric", lace, { -7, 0, 0 }),
++		Kit.box("Head", { 1.32, 1.14, 0.05 }, { 0, -0.3, 0.73 }, "Fabric", mist, { -5, 0, 0 }),
++		-- Three willow withes rising from the back of the wreath.
++		Kit.box("Head", { 0.06, 0.6, 0.06 }, { 0, 0.9, 0.42 }, "Fabric", willow, { 14, 0, 0 }),
++		Kit.box("Head", { 0.06, 0.52, 0.06 }, { 0.4, 0.86, 0.4 }, "Fabric", willow, { 12, 0, -12 }),
++		Kit.box("Head", { 0.06, 0.52, 0.06 }, { -0.4, 0.86, 0.4 }, "Fabric", willow, { 12, 0, 12 }),
++		-- Wisp dew on the withes' tips.
++		Kit.box("Head", { 0.15, 0.17, 0.15 }, { 0, 1.2, 0.5 }, "SmoothPlastic", wisp),
++		Kit.box("Head", { 0.14, 0.16, 0.14 }, { 0.46, 1.12, 0.46 }, "SmoothPlastic", wisp),
++		Kit.box("Head", { 0.14, 0.16, 0.14 }, { -0.46, 1.12, 0.46 }, "SmoothPlastic", wisp),
++		-- Willow fronds drooping from the wreath behind the ears.
++		Kit.box("Head", { 0.05, 0.8, 0.05 }, { 0.5, 0.22, 0.56 }, "Fabric", willow, { 8, 0, 12 }),
++		Kit.box("Head", { 0.05, 0.8, 0.05 }, { -0.5, 0.22, 0.56 }, "Fabric", willow, { 8, 0, -12 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/WispbrideMourningHem.luau b/src/shared/data/armourLooks/WispbrideMourningHem.luau
+new file mode 100644
+index 0000000..a2105bc
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideMourningHem.luau
+@@ -0,0 +1,39 @@
++--!strict
++-- The wispbride's lower skirt and shoes: the pale mist-grey skirt carried on
++-- down the shins from the thigh panels above, widening to a clear bell at the
++-- ankle, gathered by a black lace band just under the knee, a willow strand
++-- down each side, a cold wisp drop at the hem, and black lace shoes with a
++-- pointed toe showing beneath the skirt.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's mourning palette: black lace over pale mist grey, willow
++-- grey-green, and the wisps' cold blue kept to small drops.
++local lace = { 32, 34, 40 }
++local mist = { 150, 155, 163 }
++local willow = { 104, 120, 100 }
++local wisp = { 150, 208, 224 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideMourningHem",
++	slot = "Boots",
++	parts = {
++		-- The lower skirt: a flap to each side of every shin, set wide and
++		-- flared outward to the hem so the two legs' flaps meet standing.
++		Kit.box("LowerLeg", { 1.4, 1.34, 0.09 }, { 0.06, -0.05, -0.6 }, "Fabric", mist, { 10, 0, 8 }),
++		Kit.box("LowerLeg", { 1.4, 1.34, 0.09 }, { 0.06, -0.05, 0.6 }, "Fabric", mist, { -10, 0, 8 }),
++		Kit.box("LowerLeg", { 0.09, 1.34, 1.15 }, { 0.72, -0.05, 0 }, "Fabric", mist, { 0, 0, 12 }),
++		-- The black lace band gathering the skirt under the knee.
++		Kit.box("LowerLeg", { 1.44, 0.24, 0.13 }, { 0.06, 0.44, -0.6 }, "Fabric", lace, { 10, 0, 8 }),
++		Kit.box("LowerLeg", { 1.44, 0.24, 0.13 }, { 0.06, 0.44, 0.6 }, "Fabric", lace, { -10, 0, 8 }),
++		-- Willow strands down the skirt, and a wisp drop at the hem.
++		Kit.box("LowerLeg", { 0.055, 1.1, 0.05 }, { 0.48, -0.08, -0.667 }, "Fabric", willow, { 10, 0, 8 }),
++		Kit.box("LowerLeg", { 0.055, 1.1, 0.05 }, { 0.32, -0.08, 0.667 }, "Fabric", willow, { -10, 0, 8 }),
++		Kit.box("LowerLeg", { 0.13, 0.12, 0.13 }, { 0.52, -0.52, -0.78 }, "SmoothPlastic", wisp),
++		-- Black lace shoes, and the pointed toe out past the hem.
++		Kit.box("Foot", { 1.06, 0.3, 1.2 }, { 0, 0, -0.06 }, "Fabric", lace),
++		Kit.box("Foot", { 0.38, 0.24, 0.42 }, { 0, -0.02, -0.66 }, "Fabric", lace),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/WispbrideMourningSleeves.luau b/src/shared/data/armourLooks/WispbrideMourningSleeves.luau
+new file mode 100644
+index 0000000..9944e84
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideMourningSleeves.luau
+@@ -0,0 +1,35 @@
++--!strict
++-- The wispbride's long gloves: pale mist-grey sleeves over the forearms from a
++-- light trumpet cuff at the elbow down to the wrist, a willow cord wound
++-- round them, a lace flounce over the back of the hand, and pale gloves with
++-- one cold wisp bead each. Black is only a thin band at the elbow, so the arms
++-- stay pale like the gown and never read as an armoured yoke at the shoulders.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's mourning palette: black lace over pale mist grey, willow
++-- grey-green, and the wisps' cold blue kept to small drops.
++local lace = { 32, 34, 40 }
++local mist = { 150, 155, 163 }
++local mistDeep = { 118, 123, 132 }
++local willow = { 104, 120, 100 }
++local wisp = { 150, 208, 224 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideMourningSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The light cuff turned down at the elbow, and the pale sleeve.
++		Kit.box("LowerArm", { 1.2, 0.26, 1.2 }, { 0, 0.42, 0 }, "Fabric", mist),
++		Kit.box("LowerArm", { 1.03, 1.06, 1.03 }, { 0, 0, 0 }, "Fabric", mistDeep),
++		-- The willow cord wound round the forearm.
++		Kit.box("LowerArm", { 1.06, 0.07, 1.06 }, { 0, 0.1, 0 }, "Fabric", willow),
++		-- A lace flounce falling from the wrist over the back of the hand.
++		Kit.box("LowerArm", { 0.94, 0.26, 0.05 }, { 0, -0.46, -0.53 }, "Fabric", lace, { 12, 0, 0 }),
++		-- The pale glove, and the wisp bead on its back.
++		Kit.box("Hand", { 1.06, 0.34, 1.06 }, { 0, 0, 0 }, "Fabric", mistDeep),
++		Kit.box("Hand", { 0.13, 0.12, 0.13 }, { 0, 0.03, -0.53 }, "SmoothPlastic", wisp),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..6f2c491 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,12 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:WispbrideMourningHelm"] = row("A black lace cap and short veil under a willow wreath with cold wisp dew."),
++	["armour:WispbrideMourningDress"] = row("A mist-grey bodice under black lace, a high bertha collar and a willow sash."),
++	["armour:WispbrideMourningSleeves"] = row("Long black lace gloves from a pale elbow cuff to a pearl wrist, one wisp bead."),
++	["armour:WispbrideMourningHem"] = row(
++		"A pale mist-grey skirt falling to a wide lace-hemmed bell over black pointed shoes."
++	),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

@@ -1,0 +1,17 @@
+{
+  "weights": {"gown": 3, "pretty": 2.5, "skirt": 2, "parts": 1.5, "invention": 1},
+  "A": {"gown": 6, "pretty": 6, "skirt": 6, "parts": 5, "invention": 5, "total": 5.75,
+        "why": "Clearest bride from above with a flaring skirt and dark veil, but blocky sleeves square the shoulders and the tiered hem bands read armour-like."},
+  "B": {"gown": 4, "pretty": 4, "skirt": 4, "parts": 4, "invention": 4, "total": 4.0,
+        "why": "Broad shoulders and a flat hem plate make a box on a tray, with a tabard front and no wisp colour."},
+  "C": {"gown": 4, "pretty": 5, "skirt": 5, "parts": 5, "invention": 7, "total": 4.9,
+        "why": "Most fen-like with hanging willow strands and a reed crown, but the columnar skirt never flares and the set has no pale or glow."},
+  "D": {"gown": 3, "pretty": 3, "skirt": 4, "parts": 3, "invention": 3, "total": 3.2,
+        "why": "Green banded hoops on the shoulders and a boxy skirt read as segmented armour, not a gown."},
+  "E": {"gown": 6, "pretty": 5, "skirt": 6, "parts": 5, "invention": 5, "total": 5.5,
+        "why": "Best A-line flare in the run, spoiled by a skull-like back of the veil and flanged wide shoulders."},
+  "F": {"gown": 5, "pretty": 6, "skirt": 5, "parts": 5, "invention": 5, "total": 5.25,
+        "why": "Truest palette with a readable wisp-blue hem, but no veil, wide green sleeves and a near-straight skirt."},
+  "ranking": ["A", "E", "F", "C", "B", "D"],
+  "notes": "Every set still has square, blocky shoulders and too little flare, so none yet reads as a woman's outline first; the best parts are scattered (E's flare, F's palette and blue hem, C's willow strands, A's veil) and no one set combines them."
+}

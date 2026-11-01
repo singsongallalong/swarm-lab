@@ -1,0 +1,22 @@
+{
+  "run": "wispbride-marches",
+  "letter": "F",
+  "set": "WispbrideKeeper",
+  "looks": [
+    "WispbrideKeeperDress",
+    "WispbrideKeeperHelm",
+    "WispbrideKeeperHem",
+    "WispbrideKeeperSleeves"
+  ],
+  "original_looks": [
+    "WispbrideDress",
+    "WispbrideHelm",
+    "WispbrideHem",
+    "WispbrideSleeves"
+  ],
+  "pick_rank": 3,
+  "intent": "A drowned bride's courtly fen gown in pale mist-grey with a willow-green laced bodice and slim green upper sleeves, a black-water waist, a low green circlet trailing a pale strand veil to mid-back, and a full tiered skirt ending in a broad cold-blue hem, reading from the high camera as a narrow-shouldered pale A-line over a dark waist.",
+  "reason": "Wisp-keeper: the brief's palette done best, mist skirt under a willow-green laced bodice, and its cold-blue hem is the only wisp glow that reads from the high camera (5.25, third).",
+  "first_fix": "The headpiece is a flat cap that leaves her reading bareheaded from above, and the skirt hangs nearly straight: add a strand veil and splay the panels toward the hem.",
+  "parts": 95
+}

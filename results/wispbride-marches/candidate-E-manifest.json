@@ -1,0 +1,13 @@
+{
+  "skill": "Wispbride",
+  "look": "WispbrideVeil,WispbrideDress,WispbrideSleeves,WispbrideHem",
+  "rows_added": ["WispbrideVeil", "WispbrideDress", "WispbrideSleeves", "WispbrideHem"],
+  "intent": "A fen bride's muted gothic gown — pale mist bodice and fitted sleeves, willow sash and circlet, one continuous pale bell skirt widening from the hip to a low mist hem, and a veil falling down the back in long strands tipped in wisp blue — which from the high camera reads as a narrow pale top over a full pale bell, with dusky moth wings and cold blue eyes low on the back.",
+  "renders": [".swarm/out/armour-set-r4.png", ".swarm/out/armour-set-close-r4.png", ".swarm/out/armour-set-fit-r4.png"],
+  "revisions": 3,
+  "requests": [
+    "A translucent Fabric for the veil: opaque parts read as a pale bonnet rather than gauze.",
+    "A rounded or scalloped hem piece: the low hem is one continuous band, but its corners are still square blocks.",
+    "An emissive colour for the wisp eyes: colour-only blue is a few dim pixels at the high camera."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "skill": "Wispbride",
+  "look": "WispbrideHelm,WispbrideDress,WispbrideSleeves,WispbrideHem",
+  "rows_added": ["WispbrideHelm", "WispbrideDress", "WispbrideSleeves", "WispbrideHem"],
+  "intent": "A fen-mourning Victorian gown: a pale mist-grey bodice and pale sleeves pinched by a narrow willow sash over a full bell skirt that flares from the waist, with long willow strands, a black lace cap and short veil, and cold wisp-blue dew, so the high camera reads a pale A-line bride under a black-veiled head.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A translucent or alpha-cut lace material, so the black lace reads as lace rather than solid cloth.",
+    "A tapered cone primitive for skirts, so the bell is one clean flare instead of stepped panels that can show a seam where the thigh and shin panels meet.",
+    "A collar that can stand at the neck and still be seen from the high camera: any collar inside the neck width is hidden by the blocky head above the torso."
+  ]
+}

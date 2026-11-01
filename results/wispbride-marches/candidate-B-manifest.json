@@ -1,0 +1,17 @@
+{
+  "skill": "Wispbride",
+  "look": "WispbrideHelm,WispbrideDress,WispbrideSleeves,WispbrideHem",
+  "rows_added": ["WispbrideHelm", "WispbrideDress", "WispbrideSleeves", "WispbrideHem"],
+  "intent": "A drowned bride's fen-wedding gown in pale mist grey with a willow apron, a narrow back capelet and a black-water cinched waist, its skirt stepping wider at every tier to a cold wisp-blue hem sodden black; from the high camera it reads as a narrow veiled top over a wide pale bell.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A sheer or translucent material for the veil; Fabric renders opaque, so the willow-strand veil is solid.",
+    "A skirt piece that flares in depth as well as width; box panels only step outward, so the gown's cone reads from the front and high camera more than from the side.",
+    "A cold pale wisp-blue in Kit.colors so the marsh-light accent could be shared across the fen's family rather than held in local colour tables."
+  ]
+}

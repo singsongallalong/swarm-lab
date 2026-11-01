@@ -1,0 +1,274 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..f0334ff 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -30,6 +30,10 @@ local StuddedBoots = require("./armourLooks/StuddedBoots")
+ local StuddedCap = require("./armourLooks/StuddedCap")
+ local StuddedGloves = require("./armourLooks/StuddedGloves")
+ local TowerShield = require("./armourLooks/TowerShield")
++local WispbrideCrown = require("./armourLooks/WispbrideCrown")
++local WispbrideDress = require("./armourLooks/WispbrideDress")
++local WispbrideHem = require("./armourLooks/WispbrideHem")
++local WispbrideSleeves = require("./armourLooks/WispbrideSleeves")
+ 
+ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	BoneTalisman = BoneTalisman,
+@@ -59,6 +63,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	SpellShield = SpellShield,
+ 	StormTalisman = StormTalisman,
+ 	TowerShield = TowerShield,
++	WispbrideCrown = WispbrideCrown,
++	WispbrideDress = WispbrideDress,
++	WispbrideHem = WispbrideHem,
++	WispbrideSleeves = WispbrideSleeves,
+ }
+ 
+ return table.freeze(ArmourLooks)
+diff --git a/src/shared/data/armourLooks/WispbrideCrown.luau b/src/shared/data/armourLooks/WispbrideCrown.luau
+new file mode 100644
+index 0000000..87e1fd0
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideCrown.luau
+@@ -0,0 +1,48 @@
++--!strict
++-- The wispbride's crown (the Wispbride helm): a drowned bride's veil of pale
++-- mist-grey cloth over the crown, falling long down the back, under a crown of
++-- bare willow twigs that arch up and back with two cold wisp-blue dewdrops at
++-- their tips. Everything stays narrow at the ear and rises at the head, so the
++-- silhouette reads as a bride, not a helm.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	mist = { 130, 138, 142 },
++	mistLight = { 158, 166, 170 },
++	mistDark = { 96, 106, 112 },
++	willowDark = { 64, 80, 68 },
++	bark = { 76, 60, 46 },
++	barkDark = { 52, 42, 34 },
++	wisp = { 132, 172, 198 },
++	wispDim = { 92, 126, 148 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideCrown",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The veil: a cloth cap over the crown, a dark band at the brow, and a
++		-- long panel down the back with a cold edge at its hem.
++		Kit.box("Head", { 1.3, 0.46, 1.3 }, { 0, 0.37, 0.02 }, "Fabric", c.mist),
++		Kit.box("Head", { 1.32, 0.08, 1.32 }, { 0, 0.14, 0.02 }, "Fabric", c.willowDark),
++		Kit.box("Head", { 1.16, 1.5, 0.08 }, { 0, -0.42, 0.63 }, "Fabric", c.mist),
++		Kit.box("Head", { 1.18, 0.1, 0.1 }, { 0, -1.12, 0.63 }, "Fabric", c.wispDim),
++		-- Two thin strands of the veil framing the back, one paler than the other.
++		Kit.box("Head", { 0.1, 1.4, 0.1 }, { 0.62, -0.35, 0.62 }, "Fabric", c.mistLight),
++		Kit.box("Head", { 0.1, 1.4, 0.1 }, { -0.62, -0.35, 0.62 }, "Fabric", c.mistDark),
++		-- Bare willow twigs rooted in the crown, arching up and back, the outer
++		-- pair darker and splayed no wider than the head.
++		Kit.box("Head", { 0.06, 0.95, 0.06 }, { 0, 1.02, 0.24 }, "Wood", c.bark, { 12, 0, 0 }),
++		Kit.box("Head", { 0.055, 0.8, 0.055 }, { 0.2, 0.95, 0.2 }, "Wood", c.bark, { 12, 0, -12 }),
++		Kit.box("Head", { 0.055, 0.8, 0.055 }, { -0.2, 0.95, 0.2 }, "Wood", c.bark, { 12, 0, 12 }),
++		Kit.box("Head", { 0.05, 0.6, 0.05 }, { 0.38, 0.85, 0.12 }, "Wood", c.barkDark, { 18, 0, -22 }),
++		Kit.box("Head", { 0.05, 0.6, 0.05 }, { -0.38, 0.85, 0.12 }, "Wood", c.barkDark, { 18, 0, 22 }),
++		-- A cold dewdrop hanging at each outer twig's tip.
++		Kit.box("Head", { 0.09, 0.12, 0.09 }, { 0.5, 1.14, 0.22 }, "SmoothPlastic", c.wisp),
++		Kit.box("Head", { 0.09, 0.12, 0.09 }, { -0.5, 1.14, 0.22 }, "SmoothPlastic", c.wisp),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/WispbrideDress.luau b/src/shared/data/armourLooks/WispbrideDress.luau
+new file mode 100644
+index 0000000..405caf4
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideDress.luau
+@@ -0,0 +1,78 @@
++--!strict
++-- The wispbride's dress (the Wispbride chest): a pale mist bodice with a dark V
++-- neckline, a willow stomacher and a narrow black-water sash with one cold
++-- wisp-blue clasp at the waist. Below it the gown closes into one continuous
++-- sage panel across the front, from the waist over both thighs, with pale strand
++-- lines pressed into it and a dark back panel of hanging strands kept behind.
++-- The skirt hangs from the thighs and the hem's skirt (Boots) carries it on at
++-- the knee, stepping wider. The sleeve above the elbow stays close to the arm.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	mist = { 130, 138, 142 },
++	sage = { 106, 122, 106 },
++	willow = { 94, 112, 96 },
++	willowDark = { 64, 80, 68 },
++	bark = { 76, 60, 46 },
++	barkDark = { 52, 42, 34 },
++	water = { 30, 36, 40 },
++	wisp = { 132, 172, 198 },
++}
++
++local bodice: { ArmourLookTypes.ArmourPart } = {
++	-- The fitted bodice, its dark V neckline and a pale drop at the throat.
++	Kit.box("UpperTorso", { 2.04, 1.68, 1.06 }, { 0, 0, 0 }, "Fabric", c.mist),
++	Kit.box("UpperTorso", { 0.3, 0.07, 0.04 }, { 0.2, 0.675, -0.545 }, "Fabric", c.willowDark, { 0, 0, -40 }),
++	Kit.box("UpperTorso", { 0.3, 0.07, 0.04 }, { -0.2, 0.675, -0.545 }, "Fabric", c.willowDark, { 0, 0, 40 }),
++	Kit.box("UpperTorso", { 0.1, 0.16, 0.06 }, { 0, 0.57, -0.58 }, "Fabric", c.mist),
++	-- The stomacher down the front, cross-laced in bark cord.
++	Kit.box("UpperTorso", { 0.64, 1.12, 0.05 }, { 0, -0.1, -0.545 }, "Fabric", c.willow),
++	Kit.box("UpperTorso", { 0.5, 0.045, 0.04 }, { 0, 0.06, -0.585 }, "Fabric", c.barkDark, { 0, 0, 25 }),
++	Kit.box("UpperTorso", { 0.5, 0.045, 0.04 }, { 0, 0.06, -0.585 }, "Fabric", c.barkDark, { 0, 0, -25 }),
++	-- The sleeve's upper part, kept close to the arm, with a willow band at the
++	-- elbow where the hanging sleeve is taken up below (Gloves).
++	Kit.box("UpperArm", { 1.06, 1.24, 1.06 }, { 0, 0.02, 0 }, "Fabric", c.mist),
++	Kit.box("UpperArm", { 1.08, 0.14, 1.08 }, { 0, -0.5, 0 }, "Fabric", c.willowDark),
++}
++
++local waist: { ArmourLookTypes.ArmourPart } = {
++	-- A pale lower bodice under one narrow black-water sash, with a single cold
++	-- wisp clasp at the front and a sage bow at the small of the back.
++	Kit.box("LowerTorso", { 2.04, 0.38, 1.06 }, { 0, 0, 0 }, "Fabric", c.mist),
++	Kit.box("LowerTorso", { 2.08, 0.18, 1.12 }, { 0, 0.04, 0 }, "Fabric", c.water),
++	Kit.box("LowerTorso", { 0.14, 0.14, 0.08 }, { 0, 0.04, -0.59 }, "SmoothPlastic", c.wisp, { 0, 0, 45 }),
++	Kit.box("LowerTorso", { 0.2, 0.16, 0.14 }, { 0, 0.06, 0.55 }, "Fabric", c.willow),
++	Kit.box("LowerTorso", { 0.46, 0.2, 0.08 }, { 0.28, 0.1, 0.57 }, "Fabric", c.willow, { 0, 0, -18 }),
++	Kit.box("LowerTorso", { 0.46, 0.2, 0.08 }, { -0.28, 0.1, 0.57 }, "Fabric", c.willow, { 0, 0, 18 }),
++}
++
++local skirt: { ArmourLookTypes.ArmourPart } = {
++	-- The front, closed: one broad sage panel per thigh, overlapped at the centre
++	-- (the left laid a shade prouder so the join has no seam to split).
++	Kit.box("UpperLeg", { 1.3, 1.33, 0.06 }, { 0.1, 0.085, -0.55 }, "Fabric", c.sage, { 3, 0, 0 }, "Right"),
++	Kit.box("UpperLeg", { 1.3, 1.33, 0.06 }, { 0.1, 0.085, -0.57 }, "Fabric", c.sage, { 3, 0, 0 }, "Left"),
++	-- The broad sage sides, meeting the front and back at their edges.
++	Kit.box("UpperLeg", { 0.06, 1.3, 1.12 }, { 0.72, 0.1, 0 }, "Fabric", c.sage),
++	-- The dark back panel, the left laid prouder like the front.
++	Kit.box("UpperLeg", { 1.3, 1.3, 0.06 }, { 0.1, 0.1, 0.55 }, "Fabric", c.water, { -6, 0, 0 }, "Right"),
++	Kit.box("UpperLeg", { 1.3, 1.3, 0.06 }, { 0.1, 0.1, 0.57 }, "Fabric", c.water, { -6, 0, 0 }, "Left"),
++	-- Two pale strand lines pressed into the front panel, and three strands
++	-- hanging over the dark back panel, uneven.
++	Kit.box("UpperLeg", { 0.12, 1.3, 0.04 }, { -0.2, 0.1, -0.61 }, "Fabric", c.mist, { 3, 0, 0 }),
++	Kit.box("UpperLeg", { 0.12, 1.24, 0.04 }, { 0.45, 0.13, -0.61 }, "Fabric", c.willowDark, { 3, 0, 0 }),
++	Kit.box("UpperLeg", { 0.18, 1.22, 0.05 }, { -0.34, 0.14, 0.6 }, "Fabric", c.mist, { -6, 0, 0 }),
++	Kit.box("UpperLeg", { 0.18, 1.16, 0.05 }, { 0, 0.17, 0.6 }, "Fabric", c.willowDark, { -6, 0, 0 }),
++	Kit.box("UpperLeg", { 0.18, 1.28, 0.05 }, { 0.34, 0.11, 0.6 }, "Fabric", c.bark, { -6, 0, 0 }),
++	-- The bow's two tails, hanging with the thighs from the small of the back.
++	Kit.box("UpperLeg", { 0.14, 1.3, 0.05 }, { -0.43, 0.21, 0.645 }, "Fabric", c.mist, { -6, 0, 0 }),
++	Kit.box("UpperLeg", { 0.14, 1.22, 0.05 }, { -0.29, 0.25, 0.645 }, "Fabric", c.willowDark, { -6, 0, 0 }),
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideDress",
++	slot = "Chest",
++	parts = Kit.join({ bodice, waist, skirt }),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/WispbrideHem.luau b/src/shared/data/armourLooks/WispbrideHem.luau
+new file mode 100644
+index 0000000..4a51974
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideHem.luau
+@@ -0,0 +1,44 @@
++--!strict
++-- The wispbride's hem (the Wispbride boots): the lower half of the gown's skirt,
++-- carried on the shins from the knee down. The sage front panel of the dress
++-- continues straight on, then steps wider into a broad sage hem tier, so the
++-- skirt is broader than the hips from front, side and back. The dark back panel
++-- and its hanging strands carry on above the tier, and wet black shoes show
++-- their toes below it.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	mist = { 130, 138, 142 },
++	sage = { 106, 122, 106 },
++	willowDark = { 64, 80, 68 },
++	water = { 30, 36, 40 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideHem",
++	slot = "Boots",
++	parts = {
++		-- The sage front, wider than the dress's at the knee, and its sage sides.
++		Kit.box("LowerLeg", { 1.5, 1.2, 0.06 }, { 0.1, 0.08, -0.56 }, "Fabric", c.sage, { 3, 0, 0 }, "Right"),
++		Kit.box("LowerLeg", { 1.5, 1.2, 0.06 }, { 0.1, 0.08, -0.58 }, "Fabric", c.sage, { 3, 0, 0 }, "Left"),
++		Kit.box("LowerLeg", { 0.06, 1.2, 1.12 }, { 0.82, 0.08, 0 }, "Fabric", c.sage),
++		-- The dark back panel, continued from the dress.
++		Kit.box("LowerLeg", { 1.32, 1.2, 0.06 }, { 0.1, 0.08, 0.56 }, "Fabric", c.water, { -4, 0, 0 }, "Right"),
++		Kit.box("LowerLeg", { 1.32, 1.2, 0.06 }, { 0.1, 0.08, 0.58 }, "Fabric", c.water, { -4, 0, 0 }, "Left"),
++		-- The broad hem tier that makes the skirt wider than the hips, stepped out
++		-- from the panels above it.
++		Kit.box("LowerLeg", { 1.9, 0.3, 1.5 }, { 0.1, -0.34, 0 }, "Fabric", c.sage, nil, "Right"),
++		Kit.box("LowerLeg", { 1.9, 0.3, 1.5 }, { 0.1, -0.34, 0.02 }, "Fabric", c.sage, nil, "Left"),
++		-- The pale strand lines continued, and two strands hanging over the dark
++		-- back above the tier.
++		Kit.box("LowerLeg", { 0.12, 0.82, 0.04 }, { -0.2, 0.25, -0.63 }, "Fabric", c.mist, { 3, 0, 0 }),
++		Kit.box("LowerLeg", { 0.12, 0.8, 0.04 }, { 0.45, 0.26, -0.63 }, "Fabric", c.willowDark, { 3, 0, 0 }),
++		Kit.box("LowerLeg", { 0.18, 1.0, 0.05 }, { -0.34, 0.12, 0.7 }, "Fabric", c.mist, { -14, 0, 0 }),
++		Kit.box("LowerLeg", { 0.16, 0.9, 0.05 }, { 0, 0.14, 0.72 }, "Fabric", c.willowDark, { -14, 0, 0 }),
++		-- Wet black shoes, their toes a little past the hem.
++		Kit.box("Foot", { 1.08, 0.36, 1.4 }, { 0, 0, -0.08 }, "Leather", c.water),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/WispbrideSleeves.luau b/src/shared/data/armourLooks/WispbrideSleeves.luau
+new file mode 100644
+index 0000000..5c99b27
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideSleeves.luau
+@@ -0,0 +1,35 @@
++--!strict
++-- The wispbride's sleeves (the Wispbride gloves): a slim mist sleeve to the arm
++-- with one narrow bone cuff, and a long sage hanging sleeve falling behind the
++-- forearm with two uneven strands down its back. The fullness is carried behind
++-- the arm and below the wrist, not out at the elbow, so the figure is no wider
++-- from above. The glove below is wet black cloth.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	mist = { 130, 138, 142 },
++	sage = { 106, 122, 106 },
++	willowDark = { 64, 80, 68 },
++	bone = { 148, 140, 124 },
++	water = { 30, 36, 40 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The slim sleeve, the narrow bone cuff at the wrist.
++		Kit.box("LowerArm", { 1.06, 1.2, 1.06 }, { 0, 0, 0 }, "Fabric", c.mist),
++		Kit.box("LowerArm", { 1.1, 0.12, 1.1 }, { 0, -0.5, 0 }, "Fabric", c.bone),
++		-- The hanging sleeve: a sage drape behind the forearm, falling well below
++		-- the hand, with two strands of the skirt's kind on its back.
++		Kit.box("LowerArm", { 0.64, 1.4, 0.05 }, { 0, -0.58, 0.555 }, "Fabric", c.sage, { -4, 0, 0 }),
++		Kit.box("LowerArm", { 0.14, 1.25, 0.04 }, { -0.2, -0.55, 0.59 }, "Fabric", c.mist, { -4, 0, 0 }),
++		Kit.box("LowerArm", { 0.14, 1.35, 0.04 }, { 0.18, -0.5, 0.59 }, "Fabric", c.willowDark, { -4, 0, 0 }),
++		-- The glove, wet black.
++		Kit.box("Hand", { 1.08, 0.44, 1.08 }, { 0, 0, 0 }, "Leather", c.water),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..81cd70e 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,14 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:WispbrideCrown"] = row("A drowned bride's veil under a crown of bare willow twigs and cold blue drops."),
++	["armour:WispbrideDress"] = row(
++		"A slim mist gown with a dark V neckline, willow stomacher and a willow-strand skirt."
++	),
++	["armour:WispbrideSleeves"] = row(
++		"Bell sleeves gathered at the wrist, hung with willow leaves over wet black gloves."
++	),
++	["armour:WispbrideHem"] = row("The gown's lower skirt of willow strands, a cold blue hem and wet black shoes."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

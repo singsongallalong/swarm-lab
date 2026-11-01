@@ -1,0 +1,22 @@
+{
+  "run": "wispbride-marches",
+  "letter": "E",
+  "set": "WispbrideMoth",
+  "looks": [
+    "WispbrideMothDress",
+    "WispbrideMothHem",
+    "WispbrideMothSleeves",
+    "WispbrideMothVeil"
+  ],
+  "original_looks": [
+    "WispbrideDress",
+    "WispbrideHem",
+    "WispbrideSleeves",
+    "WispbrideVeil"
+  ],
+  "pick_rank": 2,
+  "intent": "A fen bride's muted gothic gown \u2014 pale mist bodice and fitted sleeves, willow sash and circlet, one continuous pale bell skirt widening from the hip to a low mist hem, and a veil falling down the back in long strands tipped in wisp blue \u2014 which from the high camera reads as a narrow pale top over a full pale bell, with dusky moth wings and cold blue eyes low on the back.",
+  "reason": "Moth bride: the best A-line in the run, one pale bell skirt widening from the hip to a low mist hem, with a willow sash and a strand veil down the back (5.5, second).",
+  "first_fix": "The back of the veil shows two dark square holes that read as a skull from behind, and flat flanges stick out at the shoulders: make the veil one pale fall and drop the flanges.",
+  "parts": 98
+}

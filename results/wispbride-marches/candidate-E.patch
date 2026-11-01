@@ -1,0 +1,264 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..1f2cbe3 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -30,6 +30,10 @@ local StuddedBoots = require("./armourLooks/StuddedBoots")
+ local StuddedCap = require("./armourLooks/StuddedCap")
+ local StuddedGloves = require("./armourLooks/StuddedGloves")
+ local TowerShield = require("./armourLooks/TowerShield")
++local WispbrideDress = require("./armourLooks/WispbrideDress")
++local WispbrideHem = require("./armourLooks/WispbrideHem")
++local WispbrideSleeves = require("./armourLooks/WispbrideSleeves")
++local WispbrideVeil = require("./armourLooks/WispbrideVeil")
+ 
+ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	BoneTalisman = BoneTalisman,
+@@ -59,6 +63,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	SpellShield = SpellShield,
+ 	StormTalisman = StormTalisman,
+ 	TowerShield = TowerShield,
++	WispbrideDress = WispbrideDress,
++	WispbrideHem = WispbrideHem,
++	WispbrideSleeves = WispbrideSleeves,
++	WispbrideVeil = WispbrideVeil,
+ }
+ 
+ return table.freeze(ArmourLooks)
+diff --git a/src/shared/data/armourLooks/WispbrideDress.luau b/src/shared/data/armourLooks/WispbrideDress.luau
+new file mode 100644
+index 0000000..3a70373
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideDress.luau
+@@ -0,0 +1,75 @@
++--!strict
++-- The wispbride's dress (zone armour, the Wispbride set): a pale mist bodice
++-- under a veil stomacher and collar, willow corset lines and a willow sash,
++-- bowed at the right hip. The pale overskirt widens from the hip into one bell
++-- to the knee, its back carrying layered moth wings with pale-ringed blue
++-- eyes; the upper back is a fall of pale veil wings and long strands tipped in
++-- wisp blue. Fitted mist sleeves keep the shoulder line pale and narrow, with
++-- the volume left to the bell sleeves below the elbow.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's cool palette: pale mist, dusky wings, willow and the wisp's blue.
++local c = {
++	mist = { 158, 164, 174 },
++	dusk = { 84, 88, 102 },
++	willow = { 106, 122, 106 },
++	water = { 32, 36, 42 },
++	wisp = { 152, 192, 218 },
++	veil = { 186, 190, 198 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideDress",
++	slot = "Chest",
++	parts = {
++		-- The pale bodice, its veil stomacher and willow corset lines.
++		Kit.box("UpperTorso", { 2.08, 1.64, 1.08 }, { 0, 0, 0 }, "Fabric", c.mist),
++		Kit.box("UpperTorso", { 0.8, 1.36, 0.06 }, { 0, -0.12, -0.56 }, "Fabric", c.veil),
++		Kit.box("UpperTorso", { 0.06, 1.36, 0.06 }, { -0.44, -0.12, -0.57 }, "Fabric", c.willow),
++		Kit.box("UpperTorso", { 0.06, 1.36, 0.06 }, { 0.44, -0.12, -0.57 }, "Fabric", c.willow),
++		-- The pale collar behind the neck, and the willow shoulder straps.
++		Kit.box("UpperTorso", { 1.02, 0.28, 0.16 }, { 0, 0.84, 0.4 }, "Fabric", c.veil),
++		Kit.box("UpperTorso", { 1.04, 0.06, 0.17 }, { 0, 0.98, 0.4 }, "Fabric", c.wisp),
++		Kit.box("UpperTorso", { 0.16, 0.08, 0.9 }, { -0.55, 0.78, 0 }, "Fabric", c.willow),
++		Kit.box("UpperTorso", { 0.16, 0.08, 0.9 }, { 0.55, 0.78, 0 }, "Fabric", c.willow),
++		-- The waist: a willow sash over a black-water belt, and a bow at the hip.
++		Kit.box("LowerTorso", { 2.08, 0.28, 1.08 }, { 0, 0.02, 0 }, "Fabric", c.willow),
++		Kit.box("LowerTorso", { 2.1, 0.08, 1.1 }, { 0, -0.12, 0 }, "Fabric", c.water),
++		Kit.box("LowerTorso", { 0.2, 0.16, 0.1 }, { 0.55, 0, -0.57 }, "Fabric", c.veil),
++		Kit.box("LowerTorso", { 0.24, 0.13, 0.08 }, { 0.4, 0.03, -0.58 }, "Fabric", c.veil, { 0, 0, 22 }),
++		Kit.box("LowerTorso", { 0.24, 0.13, 0.08 }, { 0.7, 0.03, -0.58 }, "Fabric", c.veil, { 0, 0, -22 }),
++		-- The bow's two blue ends, hung from the right thigh so they swing.
++		Kit.box("UpperLeg", { 0.07, 0.55, 0.05 }, { 0.03, 0.42, -0.61 }, "Fabric", c.wisp, { 4, 0, -5 }, "Right"),
++		Kit.box("UpperLeg", { 0.06, 0.44, 0.05 }, { 0.14, 0.48, -0.61 }, "Fabric", c.wisp, { 4, 0, 4 }, "Right"),
++		-- The pale overskirt, widening from the hip: front, back and outside.
++		Kit.box("UpperLeg", { 0.98, 1.32, 0.08 }, { -0.01, 0.09, -0.56 }, "Fabric", c.mist, { 18, 0, 0 }),
++		Kit.box("UpperLeg", { 0.98, 1.32, 0.08 }, { -0.01, 0.09, 0.56 }, "Fabric", c.mist, { -18, 0, 0 }),
++		Kit.box("UpperLeg", { 0.08, 1.23, 1.0 }, { 0.75, 0.12, 0 }, "Fabric", c.mist, { 0, 0, 22 }),
++		-- Its hem at the knee, a willow hem down the outside, and willow strands.
++		Kit.box("UpperLeg", { 1.0, 0.16, 0.1 }, { 0, -0.48, -0.76 }, "Fabric", c.mist, { 18, 0, 0 }),
++		Kit.box("UpperLeg", { 0.09, 0.1, 1.0 }, { 0.97, -0.46, 0 }, "Fabric", c.willow, { 0, 0, 22 }),
++		Kit.box("UpperLeg", { 0.05, 0.78, 0.05 }, { -0.32, 0.3, -0.56 }, "Fabric", c.willow, { 18, 0, 0 }),
++		Kit.box("UpperLeg", { 0.05, 0.78, 0.05 }, { 0.32, 0.3, -0.56 }, "Fabric", c.willow, { 18, 0, 0 }),
++		-- The moth wing over the back of each leg, ringed and eyed in blue.
++		Kit.box("UpperLeg", { 0.78, 1.1, 0.05 }, { 0.2, 0.14, 0.61 }, "Fabric", c.dusk, { -18, 0, -8 }),
++		Kit.box("UpperLeg", { 0.36, 0.4, 0.03 }, { 0.2, 0.149, 0.638 }, "Fabric", c.veil, { -18, 0, -8 }),
++		Kit.box("UpperLeg", { 0.2, 0.24, 0.03 }, { 0.2, 0.157, 0.662 }, "Fabric", c.wisp, { -18, 0, -8 }),
++		-- The veil fall down the upper back: pale wings and long strands tipped in blue.
++		Kit.box("UpperTorso", { 0.62, 0.62, 0.05 }, { -0.32, 0.46, 0.56 }, "Fabric", c.veil, { -10, 0, 10 }),
++		Kit.box("UpperTorso", { 0.62, 0.62, 0.05 }, { 0.32, 0.46, 0.56 }, "Fabric", c.veil, { -10, 0, -10 }),
++		Kit.box("UpperTorso", { 0.05, 0.85, 0.05 }, { -0.5, -0.22, 0.59 }, "Fabric", c.veil),
++		Kit.box("UpperTorso", { 0.05, 0.85, 0.05 }, { -0.17, -0.22, 0.59 }, "Fabric", c.veil),
++		Kit.box("UpperTorso", { 0.05, 0.85, 0.05 }, { 0.17, -0.22, 0.59 }, "Fabric", c.veil),
++		Kit.box("UpperTorso", { 0.05, 0.85, 0.05 }, { 0.5, -0.22, 0.59 }, "Fabric", c.veil),
++		Kit.box("UpperTorso", { 0.1, 0.13, 0.06 }, { -0.5, -0.67, 0.59 }, "Fabric", c.wisp),
++		Kit.box("UpperTorso", { 0.1, 0.13, 0.06 }, { -0.17, -0.67, 0.59 }, "Fabric", c.wisp),
++		Kit.box("UpperTorso", { 0.1, 0.13, 0.06 }, { 0.17, -0.67, 0.59 }, "Fabric", c.wisp),
++		Kit.box("UpperTorso", { 0.1, 0.13, 0.06 }, { 0.5, -0.67, 0.59 }, "Fabric", c.wisp),
++		-- Fitted mist sleeves on the upper arms, willow-banded at the elbow.
++		Kit.box("UpperArm", { 1.04, 1.23, 1.04 }, { 0, 0, 0 }, "Fabric", c.mist),
++		Kit.box("UpperArm", { 1.08, 0.1, 1.08 }, { 0, -0.54, 0 }, "Fabric", c.willow),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/WispbrideHem.luau b/src/shared/data/armourLooks/WispbrideHem.luau
+new file mode 100644
+index 0000000..5e61b86
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideHem.luau
+@@ -0,0 +1,38 @@
++--!strict
++-- The wispbride's hem (zone armour, the Wispbride set): the underside of the
++-- skirt, hung from the shins in pale mist panels that widen from the knee into
++-- one continuous low hem. Willow bands cross the knee, and black-water
++-- slippers with pointed toes and a cold wisp bead wait beneath.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's cool palette: pale mist, willow and the wisp's blue.
++local c = {
++	mist = { 158, 164, 174 },
++	willow = { 106, 122, 106 },
++	water = { 32, 36, 42 },
++	wisp = { 152, 192, 218 },
++	veil = { 186, 190, 198 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideHem",
++	slot = "Boots",
++	parts = {
++		-- The skirt's lower tier: wide front and back panels and a flared outside.
++		Kit.box("LowerLeg", { 1.5, 1.16, 0.08 }, { 0.25, -0.01, -0.55 }, "Fabric", c.mist, { 16, 0, 0 }),
++		Kit.box("LowerLeg", { 1.5, 1.16, 0.08 }, { 0.25, -0.01, 0.55 }, "Fabric", c.mist, { -16, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 1.3, 1.3 }, { 1.26, 0.06, 0 }, "Fabric", c.mist, { 0, 0, 24 }),
++		-- Willow bands at the knee, over the tier's top edge.
++		Kit.box("LowerLeg", { 1.0, 0.1, 0.12 }, { 0, 0.52, -0.5 }, "Fabric", c.willow, { 16, 0, 0 }),
++		Kit.box("LowerLeg", { 1.0, 0.1, 0.12 }, { 0, 0.52, 0.5 }, "Fabric", c.willow, { -16, 0, 0 }),
++		-- The continuous low hem, in mist so the bell reads as one piece.
++		Kit.box("LowerLeg", { 2.05, 0.24, 1.7 }, { 1.025, -0.54, 0 }, "Fabric", c.mist),
++		-- Black-water slippers with pointed toes and a cold wisp bead.
++		Kit.box("Foot", { 1.06, 0.34, 1.1 }, { 0, 0.02, -0.02 }, "Fabric", c.water),
++		Kit.box("Foot", { 0.46, 0.16, 0.4 }, { 0, -0.02, -0.72 }, "Fabric", c.water),
++		Kit.box("Foot", { 0.12, 0.08, 0.05 }, { 0, 0.03, -0.93 }, "Metal", c.wisp),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/WispbrideSleeves.luau b/src/shared/data/armourLooks/WispbrideSleeves.luau
+new file mode 100644
+index 0000000..ff200fe
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideSleeves.luau
+@@ -0,0 +1,35 @@
++--!strict
++-- The wispbride's sleeves (zone armour, the Wispbride set): fitted mist
++-- sleeves down the forearm, willow-banded at the elbow, ending in a wide pale
++-- bell with a veil edge and a thin wisp-blue thread at the cuff. The hands are
++-- gloved in black water.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's cool palette: pale mist, willow and the wisp's blue.
++local c = {
++	mist = { 158, 164, 174 },
++	willow = { 106, 122, 106 },
++	water = { 32, 36, 42 },
++	wisp = { 152, 192, 218 },
++	veil = { 186, 190, 198 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideSleeves",
++	slot = "Gloves",
++	parts = {
++		-- Fitted mist sleeve down the forearm, and its willow band at the elbow.
++		Kit.box("LowerArm", { 1.04, 1.12, 1.04 }, { 0, -0.01, 0 }, "Fabric", c.mist),
++		Kit.box("LowerArm", { 1.08, 0.1, 1.08 }, { 0, 0.48, 0 }, "Fabric", c.willow),
++		-- The pale bell at the wrist, its veil edge and a cold blue thread.
++		Kit.box("LowerArm", { 1.14, 0.2, 1.14 }, { 0, -0.28, 0 }, "Fabric", c.mist),
++		Kit.box("LowerArm", { 1.26, 0.24, 1.26 }, { 0, -0.44, 0 }, "Fabric", c.mist),
++		Kit.box("LowerArm", { 1.28, 0.06, 1.28 }, { 0, -0.55, 0 }, "Fabric", c.veil),
++		Kit.box("LowerArm", { 1.29, 0.04, 1.29 }, { 0, -0.5, 0 }, "Fabric", c.wisp),
++		-- Black-water gloves.
++		Kit.box("Hand", { 1.04, 0.34, 1.04 }, { 0, 0, 0 }, "Fabric", c.water),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/WispbrideVeil.luau b/src/shared/data/armourLooks/WispbrideVeil.luau
+new file mode 100644
+index 0000000..8d290ea
+--- /dev/null
++++ b/src/shared/data/armourLooks/WispbrideVeil.luau
+@@ -0,0 +1,49 @@
++--!strict
++-- The wispbride's veil (zone armour, the Wispbride set): a pale bride's veil
++-- drawn over the crown and down the sides and back of the head, pinned by a
++-- willow circlet with rising withies and a moonstone at the brow. Two
++-- moth-wing panels hang behind the ears, each with a pale ring and a cold
++-- wisp-blue eye, and willow strands trail past the veil.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The fen's cool palette: pale mist, dusky wings, willow and the wisp's blue.
++local c = {
++	veil = { 186, 190, 198 },
++	dusk = { 84, 88, 102 },
++	willow = { 106, 122, 106 },
++	wisp = { 152, 192, 218 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "WispbrideVeil",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The veil over the crown and down the sides of the head.
++		Kit.box("Head", { 1.26, 0.36, 1.26 }, { 0, 0.48, 0 }, "Fabric", c.veil),
++		Kit.box("Head", { 0.05, 0.85, 0.62 }, { -0.6, -0.1, 0.26 }, "Fabric", c.veil, { 0, 0, -3 }),
++		Kit.box("Head", { 0.05, 0.85, 0.62 }, { 0.6, -0.1, 0.26 }, "Fabric", c.veil, { 0, 0, 3 }),
++		-- The willow circlet and the moonstone at the brow.
++		Kit.box("Head", { 1.3, 0.12, 1.3 }, { 0, 0.31, 0 }, "Fabric", c.willow),
++		Kit.box("Head", { 0.2, 0.22, 0.08 }, { 0, 0.31, -0.68 }, "Metal", c.wisp),
++		-- Three willow withies rising and leaning back from the circlet.
++		Kit.box("Head", { 0.08, 0.7, 0.08 }, { 0, 0.78, 0.16 }, "Fabric", c.willow, { 16, 0, 0 }),
++		Kit.box("Head", { 0.07, 0.52, 0.07 }, { -0.26, 0.68, 0.1 }, "Fabric", c.willow, { 14, 0, 10 }),
++		Kit.box("Head", { 0.07, 0.52, 0.07 }, { 0.26, 0.68, 0.1 }, "Fabric", c.willow, { 14, 0, -10 }),
++		-- The veil's fall down the back, and the pair of moth-wing panels.
++		Kit.box("Head", { 1.14, 1.0, 0.05 }, { 0, -0.07, 0.63 }, "Fabric", c.veil),
++		Kit.box("Head", { 0.44, 0.72, 0.05 }, { -0.26, -0.22, 0.7 }, "Fabric", c.dusk, { -4, 0, 8 }),
++		Kit.box("Head", { 0.44, 0.72, 0.05 }, { 0.26, -0.22, 0.7 }, "Fabric", c.dusk, { -4, 0, -8 }),
++		-- A pale ring and a cold blue eye on each wing.
++		Kit.box("Head", { 0.24, 0.28, 0.03 }, { -0.26, -0.218, 0.73 }, "Fabric", c.veil, { -4, 0, 8 }),
++		Kit.box("Head", { 0.24, 0.28, 0.03 }, { 0.26, -0.218, 0.73 }, "Fabric", c.veil, { -4, 0, -8 }),
++		Kit.box("Head", { 0.14, 0.18, 0.03 }, { -0.26, -0.216, 0.755 }, "Fabric", c.wisp, { -4, 0, 8 }),
++		Kit.box("Head", { 0.14, 0.18, 0.03 }, { 0.26, -0.216, 0.755 }, "Fabric", c.wisp, { -4, 0, -8 }),
++		-- Willow strands trailing past the veil's edge.
++		Kit.box("Head", { 0.05, 0.78, 0.05 }, { -0.54, -0.14, 0.67 }, "Fabric", c.willow, { 2, 0, 4 }),
++		Kit.box("Head", { 0.05, 0.78, 0.05 }, { 0.54, -0.14, 0.67 }, "Fabric", c.willow, { 2, 0, -4 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..f0db8b6 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,12 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:WispbrideVeil"] = row("A pale bridal veil over a willow circlet, its moth wings eyed in wisp blue."),
++	["armour:WispbrideDress"] = row(
++		"A mist-grey gown with a willow sash, its back trailing veil strands tipped in blue."
++	),
++	["armour:WispbrideSleeves"] = row("Mist sleeves ending in wide pale bells, willow-banded and blue-threaded."),
++	["armour:WispbrideHem"] = row("A wide pale underskirt tier with a low hem above black-water slippers."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

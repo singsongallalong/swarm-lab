@@ -1,0 +1,17 @@
+{
+  "skill": "Wispbride",
+  "look": "WispbrideHelm,WispbrideDress,WispbrideSleeves,WispbrideHem",
+  "rows_added": ["WispbrideHelm", "WispbrideDress", "WispbrideSleeves", "WispbrideHem"],
+  "intent": "A fen bride's gown: a pale mist veil and willow circlet with a wisp-blue point, reed-laced bodice over a black-water sash, willow-green overstrips and bell cuffs, and a hem of uneven willow and reed strips over a black-water undergown; from the high camera it reads as a pale triple-tiered bell widening to a frayed, black-soaked hem.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A hollow ring or annulus for the circlet and waist bands, so a band does not read as a filled square from above.",
+    "A conical frustum or wedge ring for the skirt, so the flare sweeps between tiers instead of stepping in boxes.",
+    "A soft translucent cloth material for the veil, so it reads as mist rather than a solid pale block."
+  ]
+}

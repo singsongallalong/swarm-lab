@@ -1,0 +1,14 @@
+{
+  "picked": ["A", "E", "F"],
+  "reasons": {
+    "A": "Mourning bride: a pale mist bodice over a skirt that really flares, under a black hooded veil crowned with small wisp-blue prongs; the clearest bride from the ARPG camera (second critic 5.75, first).",
+    "E": "Moth bride: the best A-line in the run, one pale bell skirt widening from the hip to a low mist hem, with a willow sash and a strand veil down the back (5.5, second).",
+    "F": "Wisp-keeper: the brief's palette done best, mist skirt under a willow-green laced bodice, and its cold-blue hem is the only wisp glow that reads from the high camera (5.25, third)."
+  },
+  "fixes": {
+    "A": "The sleeves are big grey blocks level with the shoulders, so the top reads square: slim them; then break the stacked dark skirt bands into one hem band.",
+    "E": "The back of the veil shows two dark square holes that read as a skull from behind, and flat flanges stick out at the shoulders: make the veil one pale fall and drop the flanges.",
+    "F": "The headpiece is a flat cap that leaves her reading bareheaded from above, and the skirt hangs nearly straight: add a strand veil and splay the panels toward the hem."
+  },
+  "notes": "6 of 6 survived both passes with no resume. Every set still has blocky, square shoulders (wide sleeve blocks on UpperArm); the feminine check passed them, but critics read them as broad. The strengths are spread across sets (E's flare, F's colour and blue hem, C's willow strands, A's veil), and no single set brings them together. The rework moved the order (first critic: E, F, B, C, A, D; second: A, E, F, C, B, D) but raised the top score by only 0.0 to 0.1 out of 10."
+}

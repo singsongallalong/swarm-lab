@@ -1,0 +1,16 @@
+{
+  "skill": "Wispbride",
+  "look": "WispbrideHelm,WispbrideDress,WispbrideSleeves,WispbrideHem",
+  "rows_added": ["WispbrideHelm", "WispbrideDress", "WispbrideSleeves", "WispbrideHem"],
+  "intent": "A drowned bride's courtly fen gown in pale mist-grey with a willow-green laced bodice and slim green upper sleeves, a black-water waist, a low green circlet trailing a pale strand veil to mid-back, and a full tiered skirt ending in a broad cold-blue hem, reading from the high camera as a narrow-shouldered pale A-line over a dark waist.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "Translucent glass for the wisp baubles: SmoothPlastic is the nearest opaque material.",
+    "A tapered (wedge-shaped) skirt panel, so a gown can flare as a true cone rather than stepped boxes."
+  ]
+}

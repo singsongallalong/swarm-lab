@@ -1,0 +1,22 @@
+{
+  "run": "wispbride-marches",
+  "letter": "A",
+  "set": "WispbrideMourning",
+  "looks": [
+    "WispbrideMourningDress",
+    "WispbrideMourningHelm",
+    "WispbrideMourningHem",
+    "WispbrideMourningSleeves"
+  ],
+  "original_looks": [
+    "WispbrideDress",
+    "WispbrideHelm",
+    "WispbrideHem",
+    "WispbrideSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A fen-mourning Victorian gown: a pale mist-grey bodice and pale sleeves pinched by a narrow willow sash over a full bell skirt that flares from the waist, with long willow strands, a black lace cap and short veil, and cold wisp-blue dew, so the high camera reads a pale A-line bride under a black-veiled head.",
+  "reason": "Mourning bride: a pale mist bodice over a skirt that really flares, under a black hooded veil crowned with small wisp-blue prongs; the clearest bride from the ARPG camera (second critic 5.75, first).",
+  "first_fix": "The sleeves are big grey blocks level with the shoulders, so the top reads square: slim them; then break the stacked dark skirt bands into one hem band.",
+  "parts": 89
+}

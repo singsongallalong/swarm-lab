@@ -1,0 +1,17 @@
+{
+  "weights": {"gown": 3, "pretty": 2.5, "skirt": 2, "parts": 1.5, "invention": 1},
+  "A": {"gown": 4, "pretty": 4, "skirt": 5, "parts": 4, "invention": 5, "total": 4.3,
+        "why": "Wisp-tipped headpiece and pale skirt are right, but heavy black block sleeves make a square armoured yoke that reads as iron from above."},
+  "B": {"gown": 5, "pretty": 5, "skirt": 5, "parts": 5, "invention": 5, "total": 5.0,
+        "why": "A pale, calm bridal palette with back strands, undone by a flat shoulder slab past the arms and a stacked boxy skirt."},
+  "C": {"gown": 4, "pretty": 5, "skirt": 4, "parts": 5, "invention": 6, "total": 4.6,
+        "why": "The most fen-like idea (reed crown, willow strands, true grey-green) but the lower half splits into two legs and reads as a robe, not a skirt."},
+  "D": {"gown": 4, "pretty": 3, "skirt": 4, "parts": 4, "invention": 3, "total": 3.7,
+        "why": "A khaki sun hat dominates from above and the square, equally wide grey tiers have none of the brief's colours or droop."},
+  "E": {"gown": 6, "pretty": 5, "skirt": 6, "parts": 6, "invention": 6, "total": 5.8,
+        "why": "The clearest flaring bell and train from the ARPG camera, held back by wide dark slate sleeves and a too-white hem."},
+  "F": {"gown": 5, "pretty": 6, "skirt": 5, "parts": 5, "invention": 5, "total": 5.3,
+        "why": "A soft, pretty pale gown with pleats and a willow bodice, but a stovepipe hat, a straight unflared skirt and a wisp glow too small to read."},
+  "ranking": ["E", "F", "B", "C", "A", "D"],
+  "notes": "No set yet delivers a fitted waist over a skirt that flares from the hip, and the cold wisp blue and drooping willow strands, the two ideas that make this the Fen's gown, are either missing or too small to read from the high camera."
+}
