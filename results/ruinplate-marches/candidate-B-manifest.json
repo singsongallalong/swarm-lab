@@ -1,0 +1,13 @@
+{
+  "skill": "Ruinplate",
+  "look": "RuinplateHelm,RuinplateDress,RuinplateSleeves,RuinplateHem",
+  "rows_added": ["RuinplateHelm", "RuinplateDress", "RuinplateSleeves", "RuinplateHem"],
+  "intent": "A Grashan ruin-stone court gown of pale carved plate and old bronze, with a bronze-framed crown helm over a moss wimple, a moss sash, and a wide three-tier bell skirt whose last tier flares and carries moss on its ledges and hem.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": ["A pale stone material that keeps rear-facing plates light under the night preset: the back plates use the paler stone tint, but back faces still read a shade grey."]
+}

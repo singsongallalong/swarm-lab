@@ -1,0 +1,17 @@
+{
+  "skill": "Ruinplate",
+  "look": "RuinplateHelm,RuinplateDress,RuinplateSleeves,RuinplateHem",
+  "rows_added": ["RuinplateHelm", "RuinplateDress", "RuinplateSleeves", "RuinplateHem"],
+  "intent": "A Grashan ruin-queen's gown in pale ruin stone, old bronze and pale moss: a tall broken crown, pale narrow shoulders, a fitted waist under a bronze belt, a pale moss cape, and a full stepped plate skirt that flares in depth and reads as a solid pale bell from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered plate or cone shape for skirts: axis-aligned boxes force stepped ledges where a tapered panel would read as one smooth bell.",
+    "A skirt piece spanning both thighs, so the front panels meet at the centre without a mirrored seam and the knee gap closes.",
+    "A rougher carved-stone material than Marble for the pale ruin stone."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "A": {"reads": 3, "elegance": 5, "skirt": 3, "parts": 6, "total": 4.05,
+        "why": "Pale plated suit with separate legs; no gown silhouette, hem band floats at ankles with a gap at the knee.",
+        "fix": "Join thigh plates and hem into one closed flared tasset skirt from waist to shin; taper the banded shoulders."},
+  "B": {"reads": 7, "elegance": 6, "skirt": 7, "parts": 6, "total": 6.55,
+        "why": "Clear fitted-bodice gown with stepped flared skirt and crenellated crown, but heavy green cube sleeves broaden the shoulders.",
+        "fix": "Slim the moss sleeve blocks and keep the shoulder line pale and narrow; carry pale stone onto the dark back skirt."},
+  "C": {"reads": 6, "elegance": 5, "skirt": 7, "parts": 6, "total": 5.9,
+        "why": "Solid tiered stone construction but a straight column skirt and dominant moss green read as robe or pillar.",
+        "fix": "Flare the skirt tiers into an A or bell shape; reduce green to an accent and slim the shoulder blocks."},
+  "D": {"reads": 7, "elegance": 7, "skirt": 6, "parts": 6, "total": 6.65,
+        "why": "Most elegant aged-stone palette with a scalloped tasset skirt and V-necklace; wide pale sleeve slabs and a dark back hold it back.",
+        "fix": "Narrow and taper the sleeves at the shoulder; pale stone on the back tassets; keep the flare in profile."},
+  "E": {"reads": 5, "elegance": 5, "skirt": 6, "parts": 5, "total": 5.2,
+        "why": "Clean but timid monochrome grey A-line; weak waist, flat helm and pauldron-like stepped sleeves; back reads as iron.",
+        "fix": "Cinch the waist with a bronze girdle, add a crown or crest, slim the sleeves, and add moss and bronze accents."},
+  "F": {"reads": 8, "elegance": 6, "skirt": 7, "parts": 8, "total": 7.2,
+        "why": "Ziggurat skirt makes unmistakable concentric ruin rings from the ARPG camera; spired crown and palette on brief; stiff and blocky at the shoulder.",
+        "fix": "Slim the green shoulder cubes; vary the tier heights for grace and cap the hollow bottom ring."},
+  "ranking": ["F", "D", "B", "C", "E", "A"],
+  "notes": "F has the strongest top-down family read (stepped stone skirt). D is the most elegant and on-palette but too broad at the shoulder. B and F share the same heavy green-cube sleeve fault. All candidates leave the back dark grey or green, which weakens the read when the character faces away. A lacks a skirt entirely."
+}

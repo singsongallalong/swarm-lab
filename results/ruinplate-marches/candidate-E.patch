@@ -1,0 +1,299 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..2a903e2 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -24,6 +24,10 @@ local LinenCowl = require("./armourLooks/LinenCowl")
+ local LinenRobe = require("./armourLooks/LinenRobe")
+ local LinenSlippers = require("./armourLooks/LinenSlippers")
+ local LinenWraps = require("./armourLooks/LinenWraps")
++local RuinplateDress = require("./armourLooks/RuinplateDress")
++local RuinplateHelm = require("./armourLooks/RuinplateHelm")
++local RuinplateHem = require("./armourLooks/RuinplateHem")
++local RuinplateSleeves = require("./armourLooks/RuinplateSleeves")
+ local SpellShield = require("./armourLooks/SpellShield")
+ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+@@ -53,6 +57,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	LinenRobe = LinenRobe,
+ 	LinenSlippers = LinenSlippers,
+ 	LinenWraps = LinenWraps,
++	RuinplateDress = RuinplateDress,
++	RuinplateHelm = RuinplateHelm,
++	RuinplateHem = RuinplateHem,
++	RuinplateSleeves = RuinplateSleeves,
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
+diff --git a/src/shared/data/armourLooks/RuinplateDress.luau b/src/shared/data/armourLooks/RuinplateDress.luau
+new file mode 100644
+index 0000000..94165a4
+--- /dev/null
++++ b/src/shared/data/armourLooks/RuinplateDress.luau
+@@ -0,0 +1,94 @@
++--!strict
++-- The ruinplate dress (the Ruinplate gown's chest): a fitted pale stone
++-- cuirass with a shallow bust and a bold four-point bronze sun, a bronze
++-- neckline and bodice V, a dark corset pulled in under a wide bronze girdle,
++-- and a plate fauld over a pleated skirt whose back is pale stone. The skirt
++-- steps out in tiers to the floor, so it reads as one bell from the high
++-- camera; moss and a hanging tassel keep it old.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local stone = { 164, 158, 144 }
++local stoneLight = { 190, 184, 166 }
++local stoneDark = { 124, 120, 110 }
++local cloth = { 114, 116, 108 }
++local clothDark = { 90, 94, 88 }
++local bronze = { 140, 106, 60 }
++local bronzeLight = { 176, 138, 82 }
++local moss = { 82, 110, 56 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "RuinplateDress",
++	slot = "Chest",
++	parts = Kit.join({
++		{
++			-- The cuirass, and a shallow bust either side of the sun.
++			Kit.box("UpperTorso", { 2.08, 1.7, 1.06 }, { 0, 0, 0 }, "Metal", stone),
++			Kit.box("UpperTorso", { 0.5, 0.36, 0.14 }, { 0.34, 0.3, -0.545 }, "Metal", stoneLight, { 0, 0, -6 }),
++			Kit.box("UpperTorso", { 0.5, 0.36, 0.14 }, { -0.34, 0.3, -0.545 }, "Metal", stoneLight, { 0, 0, 6 }),
++			-- The carved sun: a bronze boss crossed by a long vertical and
++			-- horizontal ray, so its four points read boldly.
++			{
++				on = "UpperTorso",
++				shape = "Cylinder",
++				size = { 0.44, 0.13, 0.44 },
++				at = { 0, 0.14, -0.59 },
++				turn = { 90, 0, 0 },
++				material = "Metal",
++				color = bronzeLight,
++			},
++			Kit.box("UpperTorso", { 0.1, 0.4, 0.08 }, { 0, 0.14, -0.65 }, "Metal", bronze),
++			Kit.box("UpperTorso", { 0.4, 0.1, 0.08 }, { 0, 0.14, -0.65 }, "Metal", bronze),
++			-- The bronze neckline, and the bodice's V pointing down to the girdle.
++			Kit.box("UpperTorso", { 0.94, 0.09, 0.07 }, { 0, 0.7, -0.555 }, "Metal", bronze),
++			Kit.box("UpperTorso", { 0.06, 0.56, 0.05 }, { 0.15, -0.7, -0.545 }, "Metal", bronze, { 0, 0, -26 }),
++			Kit.box("UpperTorso", { 0.06, 0.56, 0.05 }, { -0.15, -0.7, -0.545 }, "Metal", bronze, { 0, 0, 26 }),
++			-- Moss flat on the left shoulder.
++			Kit.box("UpperTorso", { 0.28, 0.1, 0.32 }, { -0.7, 0.87, -0.18 }, "Fabric", moss, { 0, 0, -5 }),
++			-- The close upper sleeve.
++			Kit.box("UpperArm", { 1.04, 1.2, 1.04 }, { 0, 0, 0 }, "Fabric", cloth),
++		},
++		{
++			-- The dark corset, the wide bronze girdle and its pale diamond.
++			Kit.box("LowerTorso", { 2.04, 0.4, 1.04 }, { 0, 0, 0 }, "Fabric", clothDark),
++			Kit.box("LowerTorso", { 2.06, 0.3, 1.1 }, { 0, 0.05, 0 }, "Metal", bronze),
++			Kit.box("LowerTorso", { 0.28, 0.28, 0.09 }, { 0, 0.05, -0.59 }, "Metal", stoneLight, { 0, 0, 45 }),
++		},
++		{
++			-- The plate fauld over the skirt, edged in bronze round both sides.
++			Kit.box("UpperLeg", { 1.16, 0.52, 0.09 }, { 0.08, 0.46, -0.575 }, "Metal", stone, { 3, 0, 0 }),
++			Kit.box("UpperLeg", { 1.16, 0.52, 0.09 }, { 0.08, 0.46, 0.575 }, "Metal", stoneLight, { -3, 0, 0 }),
++			Kit.box("UpperLeg", { 0.09, 0.52, 1.16 }, { 0.615, 0.46, 0 }, "Metal", stoneDark, { 0, 0, 3 }),
++			Kit.box("UpperLeg", { 1.14, 0.07, 0.1 }, { 0.08, 0.225, -0.6 }, "Metal", bronze, { 3, 0, 0 }),
++			Kit.box("UpperLeg", { 1.14, 0.07, 0.1 }, { 0.08, 0.225, 0.6 }, "Metal", bronze, { -3, 0, 0 }),
++		},
++		{
++			-- The pleated skirt: cloth at the front and sides, pale stone round
++			-- the back, so the gown carries its stone behind as well as before.
++			Kit.box("UpperLeg", { 1.34, 1.24, 0.07 }, { 0.17, 0.02, -0.56 }, "Fabric", cloth, { 8, 0, 0 }),
++			Kit.box("UpperLeg", { 1.34, 1.24, 0.07 }, { 0.17, 0.02, 0.56 }, "Metal", stoneLight, { -8, 0, 0 }),
++			Kit.box("UpperLeg", { 0.07, 1.24, 1.08 }, { 0.805, 0.02, 0 }, "Fabric", cloth, { 0, 0, 8 }),
++			Kit.box("UpperLeg", { 0.11, 1.16, 0.03 }, { 0.3, 0.02, -0.62 }, "Fabric", clothDark, { 8, 0, 0 }),
++			-- A bronze seam down the back of the stone, from the fauld's hem
++			-- to the knee.
++			Kit.box("UpperLeg", { 0.08, 0.73, 0.06 }, { 0.3, -0.185, 0.61 }, "Metal", bronze, { -8, 0, 0 }),
++			-- A mend low on the right leg.
++			Kit.box("UpperLeg", { 0.22, 0.28, 0.03 }, { 0.3, -0.3, -0.62 }, "Fabric", clothDark, { 8, 0, 0 }, "Right"),
++			-- Moss on the right hip and up the right seam, and the bronze tassel.
++			Kit.box("UpperLeg", { 0.24, 0.12, 0.14 }, { 0.5, 0.33, -0.64 }, "Fabric", moss, { 0, 0, -10 }, "Right"),
++			Kit.box("UpperLeg", { 0.12, 0.42, 0.16 }, { 0.81, -0.2, -0.42 }, "Fabric", moss, { 0, 0, -6 }, "Right"),
++			Kit.box("UpperLeg", { 0.06, 0.3, 0.05 }, { 0.45, 0.12, -0.67 }, "Metal", bronze, { 0, 0, -4 }, "Right"),
++			Kit.box(
++				"UpperLeg",
++				{ 0.12, 0.14, 0.09 },
++				{ 0.44, -0.08, -0.67 },
++				"Metal",
++				stoneLight,
++				{ 0, 0, -4 },
++				"Right"
++			),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/RuinplateHelm.luau b/src/shared/data/armourLooks/RuinplateHelm.luau
+new file mode 100644
+index 0000000..8b3e502
+--- /dev/null
++++ b/src/shared/data/armourLooks/RuinplateHelm.luau
+@@ -0,0 +1,49 @@
++--!strict
++-- The ruinplate helm (the Ruinplate gown's headpiece): a tall pale stone crest
++-- and an old bronze circlet over a dark headcloth that wraps the crown, cheeks
++-- and jaw, leaving only a face window. A pale veil falls behind to the
++-- shoulders with a bronze hem, so the pale stone carries round the back; moss
++-- has taken the crest's left foot.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local stone = { 164, 158, 144 }
++local stoneLight = { 190, 184, 166 }
++local stoneDark = { 124, 120, 110 }
++local cloth = { 114, 116, 108 }
++local clothDark = { 90, 94, 88 }
++local bronze = { 140, 106, 60 }
++local bronzeLight = { 176, 138, 82 }
++local moss = { 82, 110, 56 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "RuinplateHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The headcloth: a cap over the crown, a wimple under the jaw, and
++		-- cheek and back panels, so only a window of face shows.
++		Kit.box("Head", { 1.28, 0.32, 1.28 }, { 0, 0.48, 0.02 }, "Fabric", cloth),
++		Kit.box("Head", { 1.28, 0.36, 1.28 }, { 0, -0.47, 0.02 }, "Fabric", cloth),
++		Kit.box("Head", { 0.09, 0.64, 1.28 }, { 0.62, 0, 0.02 }, "Fabric", cloth),
++		Kit.box("Head", { 0.09, 0.64, 1.28 }, { -0.62, 0, 0.02 }, "Fabric", cloth),
++		Kit.box("Head", { 1.28, 0.64, 0.09 }, { 0, 0, 0.62 }, "Fabric", cloth),
++		-- The pale veil behind, its dark pleat and its bronze hem.
++		Kit.box("Head", { 1.1, 1.32, 0.07 }, { 0, -0.26, 0.68 }, "Fabric", stoneLight, { -6, 0, 0 }),
++		Kit.box("Head", { 0.13, 1.28, 0.06 }, { 0, -0.26, 0.725 }, "Fabric", clothDark, { -6, 0, 0 }),
++		Kit.box("Head", { 1.16, 0.12, 0.09 }, { 0, -0.9, 0.75 }, "Metal", bronze, { -6, 0, 0 }),
++		-- The circlet and its pale brow stone.
++		Kit.box("Head", { 1.38, 0.15, 1.38 }, { 0, 0.31, 0 }, "Metal", bronze),
++		Kit.box("Head", { 0.18, 0.18, 0.06 }, { 0, 0.31, -0.705 }, "Metal", bronzeLight, { 0, 0, 45 }),
++		-- The crown front, and the tall crest over the crown with a bronze rail
++		-- along its top: the crest is what reads from the high camera.
++		Kit.box("Head", { 0.58, 0.3, 0.14 }, { 0, 0.47, -0.64 }, "Metal", stone),
++		Kit.box("Head", { 0.36, 0.16, 0.78 }, { 0, 0.67, 0.08 }, "Metal", stoneDark),
++		Kit.box("Head", { 0.26, 0.5, 0.62 }, { 0, 0.92, 0.06 }, "Metal", stoneLight),
++		Kit.box("Head", { 0.3, 0.07, 0.64 }, { 0, 1.185, 0.06 }, "Metal", bronze),
++		-- Moss at the crest's left foot.
++		Kit.box("Head", { 0.3, 0.1, 0.2 }, { -0.33, 0.67, 0.18 }, "Fabric", moss, { 0, 0, 8 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/RuinplateHem.luau b/src/shared/data/armourLooks/RuinplateHem.luau
+new file mode 100644
+index 0000000..3871786
+--- /dev/null
++++ b/src/shared/data/armourLooks/RuinplateHem.luau
+@@ -0,0 +1,58 @@
++--!strict
++-- The ruinplate hem (the Ruinplate gown's boots): the skirt's lower tiers,
++-- stepped wide to the floor, with bold bronze hem bands, moss at hem and seam
++-- and pale stone shoes. The front and sides are pleated stone-grey cloth; the
++-- back is pale stone, carried down from the fauld.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local stone = { 164, 158, 144 }
++local stoneLight = { 190, 184, 166 }
++local cloth = { 114, 116, 108 }
++local clothDark = { 90, 94, 88 }
++local bronze = { 140, 106, 60 }
++local moss = { 82, 110, 56 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "RuinplateHem",
++	slot = "Boots",
++	parts = Kit.join({
++		{
++			-- The upper tier on the shins, taking over from the thigh skirt.
++			Kit.box("LowerLeg", { 1.48, 0.9, 0.07 }, { 0.24, 0.165, -0.56 }, "Fabric", cloth, { 6, 0, 0 }),
++			Kit.box("LowerLeg", { 1.48, 0.9, 0.07 }, { 0.24, 0.165, 0.56 }, "Metal", stoneLight, { -6, 0, 0 }),
++			Kit.box("LowerLeg", { 0.07, 0.9, 1.14 }, { 0.945, 0.165, 0 }, "Fabric", cloth, { 0, 0, 6 }),
++			Kit.box("LowerLeg", { 0.08, 0.8, 0.06 }, { 0.3, 0.165, 0.61 }, "Metal", bronze, { -6, 0, 0 }),
++			-- The hem tier, stepped wider still.
++			Kit.box("LowerLeg", { 1.86, 0.72, 0.07 }, { 0.43, -0.25, -0.62 }, "Fabric", cloth, { 10, 0, 0 }),
++			Kit.box("LowerLeg", { 1.86, 0.72, 0.07 }, { 0.43, -0.25, 0.62 }, "Metal", stoneLight, { -10, 0, 0 }),
++			Kit.box("LowerLeg", { 0.07, 0.72, 1.28 }, { 1.325, -0.25, 0 }, "Fabric", cloth, { 0, 0, 10 }),
++			Kit.box("LowerLeg", { 0.08, 0.62, 0.06 }, { 0.3, -0.25, 0.67 }, "Metal", bronze, { -10, 0, 0 }),
++			Kit.box("LowerLeg", { 0.12, 0.66, 0.03 }, { 0.45, -0.25, -0.675 }, "Fabric", clothDark, { 10, 0, 0 }),
++			-- Bold bronze bands on the hem, front and back.
++			Kit.box("LowerLeg", { 1.86, 0.09, 0.11 }, { 0.43, -0.56, -0.7 }, "Metal", bronze, { 10, 0, 0 }),
++			Kit.box("LowerLeg", { 1.86, 0.09, 0.11 }, { 0.43, -0.56, 0.7 }, "Metal", bronze, { -10, 0, 0 }),
++			-- A mend at the front hem, and moss on the right hem, the left back
++			-- and up the right side seam.
++			Kit.box(
++				"LowerLeg",
++				{ 0.24, 0.3, 0.03 },
++				{ 0.55, -0.35, -0.675 },
++				"Fabric",
++				clothDark,
++				{ 10, 0, 0 },
++				"Right"
++			),
++			Kit.box("LowerLeg", { 0.4, 0.18, 0.22 }, { 0.9, -0.48, -0.63 }, "Fabric", moss, { 0, 0, -8 }, "Right"),
++			Kit.box("LowerLeg", { 0.4, 0.16, 0.22 }, { 0.6, -0.46, 0.68 }, "Fabric", moss, { 0, 0, 6 }, "Left"),
++			Kit.box("LowerLeg", { 0.14, 0.46, 0.14 }, { 1.33, -0.35, 0.1 }, "Fabric", moss, { 0, 0, -6 }, "Right"),
++		},
++		{
++			-- The shoes: pale stone with a bright toe.
++			Kit.box("Foot", { 1.06, 0.34, 1.16 }, { 0, 0.02, -0.05 }, "Metal", stone),
++			Kit.box("Foot", { 1.08, 0.18, 0.2 }, { 0, -0.06, -0.61 }, "Metal", stoneLight),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/RuinplateSleeves.luau b/src/shared/data/armourLooks/RuinplateSleeves.luau
+new file mode 100644
+index 0000000..7106b85
+--- /dev/null
++++ b/src/shared/data/armourLooks/RuinplateSleeves.luau
+@@ -0,0 +1,31 @@
++--!strict
++-- The ruinplate sleeves (the Ruinplate gown's gloves): a close stone-grey
++-- sleeve from the elbow to mid-forearm that opens into one soft bell cuff at
++-- the wrist, banded in old bronze, over pale stone gauntlets. Moss has taken
++-- the right cuff.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local stone = { 164, 158, 144 }
++local cloth = { 114, 116, 108 }
++local bronze = { 140, 106, 60 }
++local moss = { 82, 110, 56 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "RuinplateSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The close sleeve and its one soft bell cuff.
++		Kit.box("LowerArm", { 1.08, 0.68, 1.08 }, { 0, 0.185, 0 }, "Fabric", cloth),
++		Kit.box("LowerArm", { 1.5, 0.46, 1.5 }, { 0, -0.31, 0 }, "Fabric", cloth),
++		-- The bronze wrist band.
++		Kit.box("LowerArm", { 1.52, 0.09, 1.52 }, { 0, -0.5, 0 }, "Metal", bronze),
++		-- The gauntlet and its knuckle ridge on the back of the hand.
++		Kit.box("Hand", { 1.08, 0.34, 1.06 }, { 0, 0, -0.02 }, "Metal", stone),
++		Kit.box("Hand", { 0.94, 0.12, 0.12 }, { 0, 0.02, 0.53 }, "Metal", bronze),
++		-- Moss on the right cuff only.
++		Kit.box("LowerArm", { 0.28, 0.14, 0.12 }, { 0.72, -0.28, -0.16 }, "Fabric", moss, { 0, 0, -8 }, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..1df6c66 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,12 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:RuinplateHelm"] = row("A pale stone crown and bronze circlet holding a long pleated stone-grey veil."),
++	["armour:RuinplateDress"] = row(
++		"A pale stone cuirass carved with a bronze sun, cinched over a bell of grey pleats."
++	),
++	["armour:RuinplateSleeves"] = row("Stone-grey bell sleeves banded in old bronze, over pale stone gauntlets."),
++	["armour:RuinplateHem"] = row("The gown's stepped grey skirt hem, bronze-banded and mossed, over pale shoes."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

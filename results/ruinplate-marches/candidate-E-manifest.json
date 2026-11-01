@@ -1,0 +1,17 @@
+{
+  "skill": "Ruinplate",
+  "look": "RuinplateHelm,RuinplateDress,RuinplateSleeves,RuinplateHem",
+  "rows_added": ["RuinplateHelm", "RuinplateDress", "RuinplateSleeves", "RuinplateHem"],
+  "intent": "A Grashan priestess-guard's courtly ruin-stone gown in pale stone, old bronze and moss: a tall crest over a veiled face, a wide bronze girdle at a hard waist, and a tiered skirt that flares to the floor and carries pale stone round the back.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A translucent or finer veil cloth: at Fabric weight the veil reads as a stiff pale panel behind the head.",
+    "A moss or stone-creep material for the tufts, so they read as growth rather than painted green blocks up close.",
+    "A tapered plate for the skirt tiers and sleeve bell: boxes step rather than taper, so the flare is stepped rather than a true cone."
+  ]
+}

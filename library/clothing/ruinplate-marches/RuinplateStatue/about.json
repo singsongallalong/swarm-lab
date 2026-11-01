@@ -1,0 +1,22 @@
+{
+  "run": "ruinplate-marches",
+  "letter": "D",
+  "set": "RuinplateStatue",
+  "looks": [
+    "RuinplateStatueDress",
+    "RuinplateStatueHelm",
+    "RuinplateStatueHem",
+    "RuinplateStatueSleeves"
+  ],
+  "original_looks": [
+    "RuinplateDress",
+    "RuinplateHelm",
+    "RuinplateHem",
+    "RuinplateSleeves"
+  ],
+  "pick_rank": 3,
+  "intent": "An ancient Grashan statue-knight's gown in pale ruin stone, old bronze and moss: a crowned crested helm, a bronze-laced bodice with a pale backplate, and a bell skirt of stacked lames that keeps flaring to a moss hem, reading as a pale stone bell from the high camera.",
+  "reason": "Statue knight: the most feminine and courtly, a V-neck cuirass, hooped tassets corded in bronze and moss at the hem, all aged pale stone (6.65, third).",
+  "first_fix": "The skirt tucks back in at the shin: make the lowest hoop the widest point, and slim the bulky sleeves.",
+  "parts": 96
+}

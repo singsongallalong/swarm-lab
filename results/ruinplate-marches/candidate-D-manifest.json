@@ -1,0 +1,16 @@
+{
+  "skill": "Ruinplate",
+  "look": "RuinplateHelm,RuinplateDress,RuinplateSleeves,RuinplateHem",
+  "rows_added": ["RuinplateHelm", "RuinplateDress", "RuinplateSleeves", "RuinplateHem"],
+  "intent": "An ancient Grashan statue-knight's gown in pale ruin stone, old bronze and moss: a crowned crested helm, a bronze-laced bodice with a pale backplate, and a bell skirt of stacked lames that keeps flaring to a moss hem, reading as a pale stone bell from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A stone material for the plates: Metal stands in, so the carved ruin stone is drawn with an armour material.",
+    "A cone or tapered-cylinder shape: the bell skirt has to be built from stacked flat lames instead."
+  ]
+}

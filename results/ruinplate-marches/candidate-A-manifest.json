@@ -1,0 +1,17 @@
+{
+  "skill": "Ruinplate",
+  "look": "RuinplateCrown,RuinplateBodice,RuinplateBracers,RuinplateHem",
+  "rows_added": ["RuinplateCrown", "RuinplateBodice", "RuinplateBracers", "RuinplateHem"],
+  "intent": "An ancient Grashan court gown in pale ruin stone with old-bronze trim and a moss petticoat, reading from the high camera as a narrow crowned top drawn to a bronze belt over one continuous, back-closed pale tasset bell that runs unbroken from waist to hem.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A verdigris patina colour between bronze and moss so the plates can carry the 'old green-bronze' read without relying on a second green.",
+    "A skirt piece that flares in two axes at once; flat boxes can only build the bell from overlapping plates.",
+    "A knee-bending skirt segment; the thigh and shin tiers can only be overlapped, not articulated."
+  ]
+}

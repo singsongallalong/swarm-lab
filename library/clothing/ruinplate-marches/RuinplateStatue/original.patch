@@ -1,0 +1,258 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..2a903e2 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -24,6 +24,10 @@ local LinenCowl = require("./armourLooks/LinenCowl")
+ local LinenRobe = require("./armourLooks/LinenRobe")
+ local LinenSlippers = require("./armourLooks/LinenSlippers")
+ local LinenWraps = require("./armourLooks/LinenWraps")
++local RuinplateDress = require("./armourLooks/RuinplateDress")
++local RuinplateHelm = require("./armourLooks/RuinplateHelm")
++local RuinplateHem = require("./armourLooks/RuinplateHem")
++local RuinplateSleeves = require("./armourLooks/RuinplateSleeves")
+ local SpellShield = require("./armourLooks/SpellShield")
+ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+@@ -53,6 +57,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	LinenRobe = LinenRobe,
+ 	LinenSlippers = LinenSlippers,
+ 	LinenWraps = LinenWraps,
++	RuinplateDress = RuinplateDress,
++	RuinplateHelm = RuinplateHelm,
++	RuinplateHem = RuinplateHem,
++	RuinplateSleeves = RuinplateSleeves,
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
+diff --git a/src/shared/data/armourLooks/RuinplateDress.luau b/src/shared/data/armourLooks/RuinplateDress.luau
+new file mode 100644
+index 0000000..7581f1b
+--- /dev/null
++++ b/src/shared/data/armourLooks/RuinplateDress.luau
+@@ -0,0 +1,68 @@
++--!strict
++-- The ruinplate dress (zone armour, RuinplateDress): the statue knight's fitted
++-- cuirass and the upper skirt. A pale ruin-stone bodice laced closed in bronze,
++-- a narrow standing collar, a belt at the waist, a small bustle, and two
++-- overlapping rings of stone lames on the thighs, bronze-banded.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local stone = { 156, 152, 138 }
++local stoneLight = { 176, 172, 156 }
++local stoneDark = { 118, 116, 106 }
++local stoneShade = { 136, 132, 120 } -- the arms, a shade back so the cuirass leads
++local bronze = { 120, 98, 62 }
++local moss = { 94, 102, 70 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "RuinplateDress",
++	slot = "Chest",
++	parts = Kit.join({
++		{
++			-- The cuirass, its raised breastplate and the bronze V at the neck.
++			Kit.box("UpperTorso", { 2.04, 1.64, 1.06 }, { 0, 0, 0 }, "Metal", stone),
++			Kit.box("UpperTorso", { 1.68, 0.84, 0.1 }, { 0, 0.22, -0.58 }, "Metal", stoneLight),
++			Kit.box("UpperTorso", { 0.07, 0.78, 0.05 }, { 0.25, 0.44, -0.65 }, "Metal", bronze, { 0, 0, -26 }),
++			Kit.box("UpperTorso", { 0.07, 0.78, 0.05 }, { -0.25, 0.44, -0.65 }, "Metal", bronze, { 0, 0, 26 }),
++			-- The brooch where the V closes, and a chip knocked from the left plate.
++			Kit.box("UpperTorso", { 0.16, 0.16, 0.06 }, { 0, 0.09, -0.67 }, "Metal", bronze),
++			Kit.box("UpperTorso", { 0.2, 0.12, 0.05 }, { -0.52, 0.42, -0.63 }, "Metal", stoneDark, { 0, 0, 12 }),
++			-- A raised pale backplate, so the back reads as stone and not shadow.
++			Kit.box("UpperTorso", { 1.68, 1.12, 0.08 }, { 0, 0.06, 0.56 }, "Metal", stoneLight),
++			-- A bronze collar ring and a narrow stone collar above it.
++			Kit.box("UpperTorso", { 0.84, 0.12, 0.88 }, { 0, 0.86, 0 }, "Metal", bronze),
++			Kit.box("UpperTorso", { 0.7, 0.16, 0.74 }, { 0, 0.97, 0.02 }, "Metal", stoneLight),
++			-- The corset band at the waist and its bronze lacing.
++			Kit.box("UpperTorso", { 2.02, 0.24, 1.08 }, { 0, -0.62, 0 }, "Metal", stoneDark),
++			Kit.box("UpperTorso", { 0.06, 0.58, 0.05 }, { 0.1, -0.44, -0.61 }, "Metal", bronze, { 0, 0, 16 }),
++			Kit.box("UpperTorso", { 0.06, 0.58, 0.05 }, { -0.1, -0.44, -0.61 }, "Metal", bronze, { 0, 0, -16 }),
++			-- Moss at the right of the corset.
++			Kit.box("UpperTorso", { 0.3, 0.26, 0.06 }, { 0.72, -0.58, -0.53 }, "Fabric", moss, { 0, 0, 10 }),
++			-- The waist, and the belt with its pale stone buckle.
++			Kit.box("LowerTorso", { 2.06, 0.38, 1.08 }, { 0, 0, 0 }, "Metal", stone),
++			Kit.box("LowerTorso", { 2.1, 0.16, 1.12 }, { 0, 0, 0 }, "Metal", bronze),
++			Kit.box("LowerTorso", { 0.28, 0.2, 0.08 }, { 0, 0, -0.61 }, "Metal", stoneLight),
++			-- The bustle at the back, in pale stone with the rest.
++			Kit.box("LowerTorso", { 1.24, 0.32, 0.24 }, { 0, 0, 0.62 }, "Metal", stone),
++			-- A fitted sleeve, narrow at the shoulder and easing wider down the
++			-- upper arm; the flare belongs to the sleeves (RuinplateSleeves).
++			Kit.box("UpperArm", { 1.02, 0.34, 1.02 }, { 0, 0.42, 0 }, "Metal", stoneShade),
++			Kit.box("UpperArm", { 1.1, 0.86, 1.1 }, { 0, -0.16, 0 }, "Metal", stoneShade),
++		},
++		-- The upper skirt: an upper ring of stone lames and a lower, wider ring,
++		-- with a bronze band where they step and a moss drape at the right hip.
++		{
++			Kit.box("UpperLeg", { 1.1, 0.76, 0.1 }, { 0, 0.32, -0.56 }, "Metal", stoneLight, { 0, 0, 3 }),
++			Kit.box("UpperLeg", { 1.1, 0.76, 0.1 }, { 0, 0.32, 0.56 }, "Metal", stoneLight, { 0, 0, 3 }),
++			Kit.box("UpperLeg", { 0.1, 0.76, 1.08 }, { 0.56, 0.32, 0 }, "Metal", stone, { 0, 0, 4 }),
++			Kit.box("UpperLeg", { 1.12, 0.12, 0.1 }, { 0, -0.06, -0.58 }, "Metal", bronze, { 0, 0, 3 }),
++			Kit.box("UpperLeg", { 1.12, 0.12, 0.1 }, { 0, -0.06, 0.58 }, "Metal", bronze, { 0, 0, 3 }),
++			Kit.box("UpperLeg", { 0.1, 0.12, 1.1 }, { 0.57, -0.06, 0 }, "Metal", bronze, { 0, 0, 4 }),
++			Kit.box("UpperLeg", { 1.3, 0.46, 0.1 }, { 0.1, -0.35, -0.6 }, "Metal", stone, { 0, 0, 7 }),
++			Kit.box("UpperLeg", { 1.3, 0.46, 0.1 }, { 0.1, -0.35, 0.6 }, "Metal", stoneLight, { 0, 0, 7 }),
++			Kit.box("UpperLeg", { 0.1, 0.46, 1.3 }, { 0.71, -0.35, 0 }, "Metal", stone, { 0, 0, 9 }),
++			Kit.box("UpperLeg", { 0.44, 0.4, 0.05 }, { 0.36, 0.22, -0.63 }, "Fabric", moss, { 0, 0, 4 }, "Right"),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/RuinplateHelm.luau b/src/shared/data/armourLooks/RuinplateHelm.luau
+new file mode 100644
+index 0000000..a404bd9
+--- /dev/null
++++ b/src/shared/data/armourLooks/RuinplateHelm.luau
+@@ -0,0 +1,49 @@
++--!strict
++-- The ruinplate helm (zone armour, RuinplateHelm): the statue knight's crowned
++-- helm. A pale ruin-stone bowl under a bronze brow band, a blank stone mask with
++-- a shadowed eye slit, a bronze-edged crest swept up and back, a bronze circlet
++-- crowned with three points, and a moss veil falling down the nape.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- Pale Grashan ruin stone, dull old bronze and the moss that has taken it.
++local stone = { 156, 152, 138 }
++local stoneLight = { 176, 172, 156 }
++local stoneDark = { 118, 116, 106 }
++local stoneShadow = { 78, 78, 72 }
++local bronze = { 120, 98, 62 }
++local moss = { 94, 102, 70 }
++local mossDark = { 70, 80, 54 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "RuinplateHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The bowl, and the bronze band about the brow.
++		Kit.box("Head", { 1.3, 0.7, 1.3 }, { 0, 0.26, 0.02 }, "Metal", stoneLight),
++		Kit.box("Head", { 1.36, 0.16, 1.36 }, { 0, -0.04, 0.02 }, "Metal", bronze),
++		-- A blank carved mask, with shadow in the eye slit and a low nose ridge.
++		Kit.box("Head", { 1.08, 0.54, 0.12 }, { 0, -0.34, -0.62 }, "Metal", stone),
++		Kit.box("Head", { 0.76, 0.1, 0.06 }, { 0, -0.26, -0.7 }, "Metal", stoneShadow),
++		Kit.box("Head", { 0.12, 0.26, 0.1 }, { 0, -0.38, -0.7 }, "Metal", stoneLight),
++		-- The nape guard and the moss veil hung from the brow band.
++		Kit.box("Head", { 1.08, 0.46, 0.28 }, { 0, -0.3, 0.56 }, "Metal", stoneDark),
++		Kit.box("Head", { 0.92, 0.3, 0.1 }, { 0, -0.12, 0.74 }, "Fabric", moss),
++		Kit.box("Head", { 0.72, 0.4, 0.08 }, { 0, -0.44, 0.78 }, "Fabric", mossDark, { 4, 0, 0 }),
++		Kit.box("Head", { 0.3, 0.1, 0.1 }, { 0, 0.04, 0.72 }, "Metal", bronze),
++		-- The crest: a bronze socket, a pale fin capped in bronze, and a shorter
++		-- dark fin swept back behind it.
++		Kit.box("Head", { 0.26, 0.12, 1.06 }, { 0, 0.64, 0.04 }, "Metal", bronze),
++		Kit.box("Head", { 0.3, 0.72, 0.88 }, { 0, 0.88, 0.12 }, "Metal", stoneLight, { 18, 0, 0 }),
++		Kit.box("Head", { 0.34, 0.08, 0.92 }, { 0, 1.22, 0.23 }, "Metal", bronze, { 18, 0, 0 }),
++		Kit.box("Head", { 0.18, 0.44, 0.5 }, { 0, 0.72, 0.52 }, "Metal", stoneDark, { 30, 0, 0 }),
++		-- The circlet's three points, and moss taken to the crown's right.
++		Kit.box("Head", { 0.08, 0.32, 0.08 }, { 0, 0.15, -0.64 }, "Metal", bronze),
++		Kit.box("Head", { 0.07, 0.24, 0.07 }, { 0.36, 0.11, -0.62 }, "Metal", bronze, { 0, 0, -10 }),
++		Kit.box("Head", { 0.07, 0.24, 0.07 }, { -0.36, 0.11, -0.62 }, "Metal", bronze, { 0, 0, 10 }),
++		Kit.box("Head", { 0.34, 0.14, 0.3 }, { 0.42, 0.36, 0.28 }, "Fabric", moss, { 0, 0, 12 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/RuinplateHem.luau b/src/shared/data/armourLooks/RuinplateHem.luau
+new file mode 100644
+index 0000000..b972f5d
+--- /dev/null
++++ b/src/shared/data/armourLooks/RuinplateHem.luau
+@@ -0,0 +1,41 @@
++--!strict
++-- The ruinplate hem (zone armour, RuinplateHem): the statue knight's lower
++-- skirt and shoes. A tall ring of stone lames on the shins, flaring wider to the
++-- ankle in front, in profile and at the sides, under a bronze knee band and over
++-- a flared moss hem; moss taken to the right shin and dark stone sabatons under
++-- bronze toe caps.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local stone = { 156, 152, 138 }
++local stoneLight = { 176, 172, 156 }
++local stoneDark = { 118, 116, 106 }
++local bronze = { 120, 98, 62 }
++local moss = { 94, 102, 70 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "RuinplateHem",
++	slot = "Boots",
++	parts = {
++		-- The knee band, capping the shin ring where the thigh's lames end.
++		Kit.box("LowerLeg", { 1.6, 0.1, 0.1 }, { 0.13, 0.57, -0.68 }, "Metal", bronze, { 0, 0, 9 }),
++		Kit.box("LowerLeg", { 1.6, 0.1, 0.1 }, { 0.13, 0.57, 0.68 }, "Metal", bronze, { 0, 0, 9 }),
++		Kit.box("LowerLeg", { 0.1, 0.1, 1.7 }, { 0.84, 0.57, 0 }, "Metal", bronze, { 0, 0, 11 }),
++		-- The tall shin ring, flaring down and forward to the ankle.
++		Kit.box("LowerLeg", { 1.58, 1.22, 0.1 }, { 0.13, 0.01, -0.66 }, "Metal", stoneLight, { 5, 0, 9 }),
++		Kit.box("LowerLeg", { 1.58, 1.22, 0.1 }, { 0.13, 0.01, 0.66 }, "Metal", stoneLight, { -5, 0, 9 }),
++		Kit.box("LowerLeg", { 0.1, 1.22, 1.68 }, { 0.82, 0.01, 0 }, "Metal", stone, { 0, 0, 11 }),
++		-- The moss hem, a flared under-tier at the ankle.
++		Kit.box("LowerLeg", { 1.8, 0.3, 0.1 }, { 0.13, -0.46, -0.74 }, "Fabric", moss, { 8, 0, 9 }),
++		Kit.box("LowerLeg", { 1.8, 0.3, 0.1 }, { 0.13, -0.46, 0.74 }, "Fabric", moss, { -8, 0, 9 }),
++		Kit.box("LowerLeg", { 0.1, 0.3, 1.8 }, { 0.86, -0.46, 0 }, "Fabric", moss, { 0, 0, 11 }),
++		-- Moss creeping up the right shin, a chipped plate on the left.
++		Kit.box("LowerLeg", { 0.34, 0.4, 0.05 }, { 0.4, -0.08, -0.75 }, "Fabric", moss, { 0, 0, 9 }, "Right"),
++		Kit.box("LowerLeg", { 0.18, 0.22, 0.06 }, { 0.44, -0.1, -0.745 }, "Metal", stoneDark, { 0, 0, 9 }, "Left"),
++		-- The sabatons: dark stone shoes under bronze toe caps.
++		Kit.box("Foot", { 1.06, 0.3, 1.24 }, { 0, 0.02, -0.07 }, "Metal", stoneDark),
++		Kit.box("Foot", { 0.86, 0.18, 0.36 }, { 0, 0.12, -0.55 }, "Metal", bronze),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/RuinplateSleeves.luau b/src/shared/data/armourLooks/RuinplateSleeves.luau
+new file mode 100644
+index 0000000..9bb16fa
+--- /dev/null
++++ b/src/shared/data/armourLooks/RuinplateSleeves.luau
+@@ -0,0 +1,35 @@
++--!strict
++-- The ruinplate sleeves (zone armour, RuinplateSleeves): the statue knight's
++-- gauntlets and the gown's lower sleeves. A slim stone vambrace banded in bronze
++-- at the elbow, a bell of stone flaring to a bronze cuff, a moss dagge hanging
++-- from the cuff, and slim stone-plated gloves.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local stone = { 156, 152, 138 }
++local stoneLight = { 176, 172, 156 }
++local stoneShade = { 136, 132, 120 } -- the sleeves, a shade back like the upper arm
++local bronze = { 120, 98, 62 }
++local moss = { 94, 102, 70 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "RuinplateSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The vambrace, reaching the elbow, and its bronze elbow band.
++		Kit.box("LowerArm", { 1.12, 0.6, 1.12 }, { 0, 0.3, 0 }, "Metal", stoneShade),
++		Kit.box("LowerArm", { 1.16, 0.12, 1.16 }, { 0, 0.54, 0 }, "Metal", bronze),
++		-- The bell of the sleeve, flaring down the forearm to the cuff.
++		Kit.box("LowerArm", { 1.24, 0.56, 1.24 }, { 0, -0.24, 0 }, "Metal", stoneShade),
++		Kit.box("LowerArm", { 1.28, 0.12, 1.28 }, { 0, -0.52, 0 }, "Metal", bronze),
++		-- The moss dagge hanging from the cuff at the outside of the wrist.
++		Kit.box("LowerArm", { 0.12, 0.42, 0.34 }, { 0.56, -0.7, 0 }, "Fabric", moss),
++		-- Moss taken to the right cuff.
++		Kit.box("LowerArm", { 0.06, 0.2, 0.26 }, { 0.64, -0.48, 0.18 }, "Fabric", moss, nil, "Right"),
++		-- The glove, and its pale knuckle plate.
++		Kit.box("Hand", { 1.04, 0.34, 1.04 }, { 0, 0, 0 }, "Metal", stone),
++		Kit.box("Hand", { 0.66, 0.3, 0.08 }, { 0, 0.02, 0.52 }, "Metal", stoneLight),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..118d36d 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:RuinplateHelm"] = row("A pale stone crowned helm with a bronze crest and a moss veil down the nape."),
++	["armour:RuinplateDress"] = row("A pale stone cuirass laced in bronze over a flaring plated skirt."),
++	["armour:RuinplateSleeves"] = row("Pale stone sleeves flaring to bronze cuffs over slim stone-plated gloves."),
++	["armour:RuinplateHem"] = row("A plated stone hem in bronze bands and moss over dark stone sabatons."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

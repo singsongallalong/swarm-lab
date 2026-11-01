@@ -1,0 +1,22 @@
+{
+  "run": "ruinplate-marches",
+  "letter": "C",
+  "set": "RuinplateZiggurat",
+  "looks": [
+    "RuinplateZigguratCrown",
+    "RuinplateZigguratDress",
+    "RuinplateZigguratHem",
+    "RuinplateZigguratSleeves"
+  ],
+  "original_looks": [
+    "RuinplateCrown",
+    "RuinplateDress",
+    "RuinplateHem",
+    "RuinplateSleeves"
+  ],
+  "pick_rank": 2,
+  "intent": "An ancient Grashan court battle gown in pale ruin stone, old bronze and moss, reading from the high camera as a pale stepped bell: a fitted cuirass over a moss sash, a wide four-tiered skirt of stone lames flaring from a narrow waist to a broad hem, and a centred bronze-ridged crest with a moss veil.",
+  "reason": "Ziggurat: a stepped pale-stone skirt like a ruin's terraces, the most 'carved from the ruins' outline in the run, clean tiers with no gaps (7.0, second).",
+  "first_fix": "Blocky and golem-like above the waist: cinch the waist, narrow the shoulders, and swap the chimney crown for a wide low circlet.",
+  "parts": 89
+}

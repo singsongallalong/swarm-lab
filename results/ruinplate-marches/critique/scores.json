@@ -1,0 +1,22 @@
+{
+  "A": {"reads": 5, "elegance": 5.5, "skirt": 4.5, "parts": 5.5, "total": 5.13,
+        "why": "Nice moss-banded pale bodice, but the skirt is a front-only apron; back and side read as legs, with no flare.",
+        "fix": "Wrap a flared, overlapping skirt all the way round to the shins and narrow the boxy shoulders."},
+  "B": {"reads": 6, "elegance": 6, "skirt": 6.5, "parts": 6, "total": 6.1,
+        "why": "A coherent pale/bronze/moss robe with a good crested helm, but a straight column with no waist or flare, and broad square shoulders.",
+        "fix": "Cinch the waist and step the skirt outward in tiers; slim the sleeves; mute the gold visor."},
+  "C": {"reads": 8, "elegance": 5.5, "skirt": 7.5, "parts": 7, "total": 7.0,
+        "why": "The most distinctive ruin-stone ziggurat skirt, with clean tiers and a strong top-down read, but the torso, shoulders and crown are blocky and golem-like.",
+        "fix": "Pull in the waist, narrow the shoulders, replace the chimney crown with a wide low circlet, and add moss and bronze tier lips."},
+  "D": {"reads": 7, "elegance": 7, "skirt": 6, "parts": 6, "total": 6.65,
+        "why": "The most feminine and courtly: V-neck cuirass, hooped tassets with bronze cords, moss hem. But the skirt tucks in at the hem and the sleeves are bulky.",
+        "fix": "Make the lowest hoop the widest point at the shins; overlap and thicken the tassets on the slim fit; slim the sleeves."},
+  "E": {"reads": 4.5, "elegance": 5, "skirt": 5.5, "parts": 5, "total": 4.93,
+        "why": "Mid-grey with a straight split skirt and big square shoulders; reads as an iron knight in a surcoat, not pale ruinplate.",
+        "fix": "Lift the base colour to pale bone stone, flare the skirt, shrink the shoulders, mute the visor."},
+  "F": {"reads": 8, "elegance": 6.5, "skirt": 7.5, "parts": 7, "total": 7.3,
+        "why": "A clear tiered bell gown with bronze lips and moss bands, a fitted waist band, and tiers that hold on the slim avatar. Best overall read.",
+        "fix": "Replace the fist-like prong crest with a clean crown or fan crest; slim the sleeves; age the brightest hem tier toward bone."},
+  "ranking": ["F", "C", "D", "B", "A", "E"],
+  "notes": "The tiered and stepped skirts (F, C) win the high-camera read and feel like Grashan ruin stone. D has the most femininity and elegance and should feed its waist and neckline language into the winner. Nearly every candidate has square, torso-width sleeve and shoulder blocks, which works against the narrow-shoulder brief; that is the common fix. Gold visors read too bright across B, E and F. Recommend keeping F, C and D."
+}

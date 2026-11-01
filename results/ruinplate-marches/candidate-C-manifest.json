@@ -1,0 +1,18 @@
+{
+  "skill": "Ruinplate",
+  "look": "RuinplateCrown,RuinplateDress,RuinplateSleeves,RuinplateHem",
+  "rows_added": ["RuinplateCrown", "RuinplateDress", "RuinplateSleeves", "RuinplateHem"],
+  "intent": "An ancient Grashan court battle gown in pale ruin stone, old bronze and moss, reading from the high camera as a pale stepped bell: a fitted cuirass over a moss sash, a wide four-tiered skirt of stone lames flaring from a narrow waist to a broad hem, and a centred bronze-ridged crest with a moss veil.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered or cone shape for skirts: a bell has to be built from stepped boxes, so the flare comes in hard steps rather than one fall.",
+    "A worn bronze that keeps its colour under the night preset; the old bronze trim reads almost brown at this light.",
+    "A moss material with a little variation, so the thin hems and seams read as growth rather than painted green lines.",
+    "Small pauldrons, as the direction asked: nothing may rise or stand out at the shoulder, so the sleeve is kept close to the arm instead."
+  ]
+}

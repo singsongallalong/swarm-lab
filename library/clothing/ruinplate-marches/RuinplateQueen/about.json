@@ -1,0 +1,22 @@
+{
+  "run": "ruinplate-marches",
+  "letter": "F",
+  "set": "RuinplateQueen",
+  "looks": [
+    "RuinplateQueenDress",
+    "RuinplateQueenHelm",
+    "RuinplateQueenHem",
+    "RuinplateQueenSleeves"
+  ],
+  "original_looks": [
+    "RuinplateDress",
+    "RuinplateHelm",
+    "RuinplateHem",
+    "RuinplateSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A Grashan ruin-queen's gown in pale ruin stone, old bronze and pale moss: a tall broken crown, pale narrow shoulders, a fitted waist under a bronze belt, a pale moss cape, and a full stepped plate skirt that flares in depth and reads as a solid pale bell from the high camera.",
+  "reason": "Ruin queen: a pale-stone tiered bell with bronze lips and moss bands under a cinched waist, the clearest gown from the ARPG camera and the most its own family; it holds on the slim avatar (second critic 7.3, first; first critic also first).",
+  "first_fix": "The crest reads as a stone fist from above: make it a clean crown or fan crest; then slim the sleeves.",
+  "parts": 80
+}
