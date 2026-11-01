@@ -1,0 +1,17 @@
+{
+  "weights": {"gown": 3, "pretty": 2.5, "skirt": 2, "parts": 1.5, "invention": 1},
+  "A": {"gown": 4, "pretty": 4, "skirt": 5, "parts": 4, "invention": 6, "total": 4.4,
+        "why": "Uses the bone palette and a striking spire, but reads as a pale stone column with broad shoulders, not a flaring gown."},
+  "B": {"gown": 6, "pretty": 5, "skirt": 4, "parts": 5, "invention": 6, "total": 5.2,
+        "why": "Clear flared skirt and gothic plume hat, but the skirt splays into separate wedges with gaps and the black bodice is wide and heavy."},
+  "C": {"gown": 5, "pretty": 5, "skirt": 5, "parts": 5, "invention": 5, "total": 5.0,
+        "why": "A-line front skirt and fern crown read as a dress head-on, but blocky wide sleeves and a column back weaken it from above."},
+  "D": {"gown": 7, "pretty": 6, "skirt": 7, "parts": 7, "invention": 8, "total": 6.85,
+        "why": "Tiered ruffled bell skirt and mushroom-cap hat nail the fungal forest-lady idea; wide dark sleeves and an uncinched waist hold it back."},
+  "E": {"gown": 5, "pretty": 4, "skirt": 6, "parts": 5, "invention": 5, "total": 4.95,
+        "why": "Tiered front skirt and mushroom-button cap are nice, but a near-black boxy top and a column back read as a coat from above."},
+  "F": {"gown": 3, "pretty": 4, "skirt": 3, "parts": 4, "invention": 4, "total": 3.5,
+        "why": "Fern crest and lichen patches carry the theme, but there is no skirt flare and the legs and feet read as trousers under a tunic."},
+  "ranking": ["D", "B", "C", "E", "A", "F"],
+  "notes": "Every set keeps wide boxy sleeves that make the shoulders the widest point, and almost none cinch the waist; the lichen yellow-green and bone are underused, leaving most sets a murky dark green."
+}

@@ -1,0 +1,17 @@
+{
+  "weights": {"gown": 3, "pretty": 2.5, "skirt": 2, "parts": 1.5, "invention": 1},
+  "A": {"gown": 3, "pretty": 4, "skirt": 4, "parts": 3, "invention": 4, "total": 3.55,
+        "why": "Huge square shoulder blocks and trouser legs under a near-white apron read as armour or a maid, not a flared gown."},
+  "B": {"gown": 6, "pretty": 5.5, "skirt": 6, "parts": 6, "invention": 5, "total": 5.78,
+        "why": "A real flared moss skirt and black bodice, but the tall black shako headpiece and gold hip braid read as military or courtly, not forest."},
+  "C": {"gown": 6.5, "pretty": 5.5, "skirt": 7, "parts": 5.5, "invention": 5, "total": 6.05,
+        "why": "The cleanest A-line skirt in the run, but a bare-looking yellow head from above, boxy sleeves and no moss or fungal frills."},
+  "D": {"gown": 7, "pretty": 6.5, "skirt": 6.5, "parts": 7, "invention": 7.5, "total": 6.83,
+        "why": "A mushroom-cap hat and gill-ruffled tiered skirt that read as fungus from above, let down by a coat-like boxy bodice and a squat knee-length skirt."},
+  "E": {"gown": 5.5, "pretty": 5, "skirt": 6, "parts": 6, "invention": 6, "total": 5.6,
+        "why": "A charming spotted mushroom cap on a stone-ziggurat skirt and wide one-green body that reads as a plinth more than a dress."},
+  "F": {"gown": 4.5, "pretty": 4, "skirt": 6, "parts": 4.5, "invention": 4, "total": 4.63,
+        "why": "A nice fern crest, but a huge dark box chest on a stepped pyramid in a single green gives no waist and no femininity."},
+  "ranking": ["D", "C", "B", "E", "F", "A"],
+  "notes": "No set yet has a narrow shoulder line. Every one keeps full-width block sleeves, so from the high camera the upper body is as wide as the hem. The moss, fungal-gill or fern frills of the brief show up only in D and E."
+}

@@ -1,0 +1,22 @@
+{
+  "run": "mossveil-marches",
+  "letter": "C",
+  "set": "MossveilFern",
+  "looks": [
+    "MossveilFernDress",
+    "MossveilFernHelm",
+    "MossveilFernHem",
+    "MossveilFernSleeves"
+  ],
+  "original_looks": [
+    "MossveilDress",
+    "MossveilHelm",
+    "MossveilHem",
+    "MossveilSleeves"
+  ],
+  "pick_rank": 2,
+  "intent": "A gothic forest-court gown of deep moss and black with a fitted laced bodice, slim wrist-ruffled sleeves and a full wrapped A-line skirt ending in a bold stepped bone-and-lichen hem, so the high camera reads a narrow waist over a wide pale-edged bell.",
+  "reason": "Fern lady: the cleanest A-line in the run, a lighter moss front panel in a dark moss skirt with a stepped bone-and-lichen hem, and it holds on the slim avatar (6.05, second).",
+  "first_fix": "From above the head is a bare yellow square: give it a fern or moss-and-bone crown with a veil down the back; then taper the block sleeves and add a gill-frilled hem.",
+  "parts": 76
+}

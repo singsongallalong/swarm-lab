@@ -1,0 +1,16 @@
+{
+  "skill": "Mossveil",
+  "look": "MossveilHelm,MossveilDress,MossveilSleeves,MossveilHem",
+  "rows_added": ["MossveilHelm", "MossveilDress", "MossveilSleeves", "MossveilHem"],
+  "intent": "A ruin priestess's pale ruin-stone gown, black-corseted under a dark green cinch with a bone girdle and lichen frill, the skirt flaring panel by panel to a moss-eaten, lichen-frilled hem, dark moss sleeves held close to the arm, and a low moss-and-bone crown of bone points and bracket-fungus shelves; from the high camera it reads as a narrow pale bodice over a wide flaring bell under a low mossy crown.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered part (or a wedge that widens with height) so a skirt can flare smoothly across the thigh and knee instead of stepping through stacked boxes.",
+    "A soft flared-ring piece for frills and ruffles, so a fungal-gill hem is one part rather than a ring of boxes."
+  ]
+}

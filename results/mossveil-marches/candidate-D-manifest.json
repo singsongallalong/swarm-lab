@@ -1,0 +1,16 @@
+{
+  "skill": "Mossveil",
+  "look": "MossveilHelm,MossveilDress,MossveilSleeves,MossveilHem",
+  "rows_added": ["MossveilHelm", "MossveilDress", "MossveilSleeves", "MossveilHem"],
+  "intent": "A gothic forest ballgown: a deep-moss bodice with slim dark sleeves and gill-ruffled wrists, a sickly lichen sash at the waist and a matching lichen tier in a wide mushroom-gill skirt under a toadstool-cap bonnet; from the high camera it reads as a narrow cinched top over a bright-rimmed bell.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered cone or elliptical skirt tier: cylinders only give round straight drums, so the skirt steps in shelves instead of a smooth bell.",
+    "A translucent gauze for the veil, so the moon could show through the moss."
+  ]
+}

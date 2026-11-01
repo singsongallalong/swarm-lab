@@ -1,4 +1,4 @@
-# reedmail-marches: the Sunken Shelf's armoured gown (Drowned Marches pilot, 2026-11-01)
+# reedmail-marches: the Fen's armoured gown (Drowned Marches pilot, 2026-11-01)
 
 Brief `targets/arpg-game/gowns/briefs/Reedmail.toml` (Rhodri, arpg-game R039): an armoured
 skirt for the fen; `figure = "feminine"`. Six DeepSeek Flash generators on

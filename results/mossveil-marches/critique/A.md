@@ -1,0 +1,5 @@
+Keep: the pale ruin-stone apron down the front is the one clear zone accent, and the bone-and-lichen trim lines on the hems are in the right palette.
+
+1. The sleeves are huge square green blocks that stand out past and above the shoulders, and from the ARPG camera they turn the figure into a pauldroned knight. Cut them down to the arm's own width at the shoulder, so the shoulder line is the narrowest thing on the body, and let any volume start at the elbow.
+2. There is no skirt. The legs read as two separate pale-green trousers under an apron. Build one continuous dark moss-green skirt that wraps all round from a fitted waist and flares out to the shins, with thigh panels that overlap the shin panels so no gap shows from above. Keep the bone apron as a narrow front panel on top of it.
+3. The pale front is close to white and fills the whole torso and lap, so it glares in a night scene. Shift it to a greyed bone, narrow it to a centre strip, and put the frills (moss or fungal gills: stacked thin lichen-green and bone ledges) on the hem and neckline, where they read from above.

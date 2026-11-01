@@ -1,0 +1,14 @@
+{
+  "picked": ["D", "C", "B"],
+  "reasons": {
+    "D": "Fungal ballgown: a toadstool-cap bonnet with a bone rim over a tiered skirt of lichen-yellow gill ruffles; the only set that reads as fungus and as nothing else in the game from the high camera (second critic 6.83, first; first critic 6.85, first).",
+    "C": "Fern lady: the cleanest A-line in the run, a lighter moss front panel in a dark moss skirt with a stepped bone-and-lichen hem, and it holds on the slim avatar (6.05, second).",
+    "B": "Bog orchid: a real flared moss bell under a black laced bodice with a bone hem, the strongest elegant two-tone read (5.78, third)."
+  },
+  "fixes": {
+    "D": "The bodice and sleeves are a full-width dark block and the skirt is a squat knee-length cake: narrow the sleeves, cinch the waist with a bone or lichen band, and lengthen the tiers to the shins.",
+    "C": "From above the head is a bare yellow square: give it a fern or moss-and-bone crown with a veil down the back; then taper the block sleeves and add a gill-frilled hem.",
+    "B": "The tall black headpiece reads as a soldier's shako and the gold hip blocks as courtly braid that widens the waist: replace it with a low fern or bracket-fungus wreath and move the yellow-green to the wrists."
+  },
+  "notes": "6 of 6 survived the draft and the rework with no resume. D led both passes. During the rework one generator (g01) wrote a copy of its helm file to a path outside its worktree (swarm-lab/mossveil-marches/gens/...), then fixed its own file; the stray copy was removed and never committed. Every set keeps full-width block sleeves, and only D and E show the moss/fungus frills the brief asks for."
+}

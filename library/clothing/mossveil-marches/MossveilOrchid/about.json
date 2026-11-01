@@ -1,0 +1,22 @@
+{
+  "run": "mossveil-marches",
+  "letter": "B",
+  "set": "MossveilOrchid",
+  "looks": [
+    "MossveilOrchidDress",
+    "MossveilOrchidHelm",
+    "MossveilOrchidHem",
+    "MossveilOrchidSleeves"
+  ],
+  "original_looks": [
+    "MossveilDress",
+    "MossveilHelm",
+    "MossveilHem",
+    "MossveilSleeves"
+  ],
+  "pick_rank": 3,
+  "intent": "A gothic bog-orchid court gown: a black laced bodice with a lichen neckline and a pale bone belt above one continuous moss-green bell skirt with a bright bone hem ruffle and a bone orchid crown, reading from the high camera as a narrow dark top over a wide pale-edged green bell.",
+  "reason": "Bog orchid: a real flared moss bell under a black laced bodice with a bone hem, the strongest elegant two-tone read (5.78, third).",
+  "first_fix": "The tall black headpiece reads as a soldier's shako and the gold hip blocks as courtly braid that widens the waist: replace it with a low fern or bracket-fungus wreath and move the yellow-green to the wrists.",
+  "parts": 76
+}

@@ -1,0 +1,241 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..9b2ffb2 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -24,6 +24,10 @@ local LinenCowl = require("./armourLooks/LinenCowl")
+ local LinenRobe = require("./armourLooks/LinenRobe")
+ local LinenSlippers = require("./armourLooks/LinenSlippers")
+ local LinenWraps = require("./armourLooks/LinenWraps")
++local MossveilOrchidDress = require("./armourLooks/MossveilOrchidDress")
++local MossveilOrchidHelm = require("./armourLooks/MossveilOrchidHelm")
++local MossveilOrchidHem = require("./armourLooks/MossveilOrchidHem")
++local MossveilOrchidSleeves = require("./armourLooks/MossveilOrchidSleeves")
+ local SpellShield = require("./armourLooks/SpellShield")
+ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+@@ -53,6 +57,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	LinenRobe = LinenRobe,
+ 	LinenSlippers = LinenSlippers,
+ 	LinenWraps = LinenWraps,
++	MossveilOrchidDress = MossveilOrchidDress,
++	MossveilOrchidHelm = MossveilOrchidHelm,
++	MossveilOrchidHem = MossveilOrchidHem,
++	MossveilOrchidSleeves = MossveilOrchidSleeves,
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
+diff --git a/src/shared/data/armourLooks/MossveilOrchidDress.luau b/src/shared/data/armourLooks/MossveilOrchidDress.luau
+new file mode 100644
+index 0000000..2cd3ad4
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilOrchidDress.luau
+@@ -0,0 +1,58 @@
++--!strict
++-- The bog orchid gown's bodice (the Mossveil chest): a fitted black court
++-- bodice with a moss panel over the bust and a dark green stomacher laced in
++-- lichen, a bold lichen band at the neckline, a bone calyx collar at the
++-- throat, a moss waist cinched under a wide pale bone belt with a small
++-- bustle, slim moss upper sleeves close to the arm, and the orchid skirt's top
++-- tier hung from the thighs in five broad overlapping panels. The pale belt
++-- draws the eye to the narrow waist, and the panels hand over to the shins as
++-- one continuous bell.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local black = { 22, 24, 21 }
++local moss = { 58, 76, 50 }
++local mossDark = { 40, 54, 36 }
++local mossDeep = { 27, 37, 25 }
++local lichen = { 152, 160, 92 }
++local bone = { 170, 164, 146 }
++local boneDim = { 136, 130, 116 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilOrchidDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice, the moss bust panel and the dark stomacher.
++		Kit.box("UpperTorso", { 2.08, 1.62, 1.06 }, { 0, 0, 0 }, "Fabric", black),
++		Kit.box("UpperTorso", { 1.9, 0.6, 0.06 }, { 0, 0.44, -0.55 }, "Fabric", moss),
++		Kit.box("UpperTorso", { 0.62, 1.02, 0.06 }, { 0.03, -0.04, -0.57 }, "Fabric", mossDark),
++		-- A bold lichen band along the neckline.
++		Kit.box("UpperTorso", { 1.7, 0.12, 0.06 }, { 0, 0.7, -0.56 }, "Fabric", lichen),
++		-- Lichen lacing across the stomacher, a little off centre.
++		Kit.box("UpperTorso", { 0.05, 0.3, 0.04 }, { 0.12, 0.22, -0.61 }, "Fabric", lichen, { 0, 0, 32 }),
++		Kit.box("UpperTorso", { 0.05, 0.3, 0.04 }, { 0.12, -0.02, -0.61 }, "Fabric", lichen, { 0, 0, -32 }),
++		-- A single orchid bloom on the heart side.
++		Kit.box("UpperTorso", { 0.18, 0.18, 0.08 }, { -0.52, 0.46, -0.56 }, "Fabric", lichen, { 0, 0, 20 }),
++		-- The calyx collar: a bone band at the throat, a petal behind and a pair beside.
++		Kit.box("UpperTorso", { 0.94, 0.12, 0.94 }, { 0, 0.8, 0 }, "SmoothPlastic", bone),
++		Kit.box("UpperTorso", { 0.9, 0.5, 0.08 }, { 0, 1.0, 0.46 }, "SmoothPlastic", bone, { 10, 0, 0 }),
++		Kit.box("UpperTorso", { 0.26, 0.44, 0.08 }, { 0.34, 0.97, 0.08 }, "SmoothPlastic", boneDim, { 6, 0, -14 }),
++		-- The waist cinched in moss under a wide pale bone belt, knotted off centre.
++		Kit.box("LowerTorso", { 2.12, 0.36, 1.12 }, { 0, 0, 0 }, "Fabric", mossDark),
++		Kit.box("LowerTorso", { 2.2, 0.3, 1.2 }, { 0, 0, -0.01 }, "SmoothPlastic", bone),
++		Kit.box("LowerTorso", { 0.2, 0.2, 0.09 }, { 0.5, 0, -0.64 }, "Fabric", lichen),
++		-- The bustle swelling the back below the waist.
++		Kit.box("LowerTorso", { 1.5, 0.5, 0.3 }, { 0, 0.05, 0.64 }, "Fabric", mossDeep, { -4, 0, 0 }),
++		-- Slim moss upper sleeves, close to the arm, under the bell of the gloves.
++		Kit.box("UpperArm", { 1.02, 1.22, 1.02 }, { 0, 0, 0 }, "Fabric", mossDark),
++		-- The orchid skirt's top tier: five broad overlapping panels on each thigh,
++		-- all ending level at the knee so they hand over to the shin panels.
++		Kit.box("UpperLeg", { 1.2, 1.25, 0.08 }, { 0.06, 0.125, -0.56 }, "Fabric", moss, { 4, 0, 0 }),
++		Kit.box("UpperLeg", { 1.2, 1.25, 0.08 }, { 0.06, 0.125, 0.56 }, "Fabric", moss, { -4, 0, 0 }),
++		Kit.box("UpperLeg", { 1.3, 1.15, 0.1 }, { 0.6, 0.125, -0.5 }, "Fabric", moss, { 4, -40, 6 }),
++		Kit.box("UpperLeg", { 0.16, 1.245, 1.1 }, { 1.0, 0.125, 0 }, "Fabric", mossDark, { 0, 0, 10 }),
++		Kit.box("UpperLeg", { 1.3, 1.15, 0.1 }, { 0.6, 0.125, 0.5 }, "Fabric", mossDark, { -4, 40, 6 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/MossveilOrchidHelm.luau b/src/shared/data/armourLooks/MossveilOrchidHelm.luau
+new file mode 100644
+index 0000000..f462583
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilOrchidHelm.luau
+@@ -0,0 +1,40 @@
++--!strict
++-- The bog orchid crown (the Mossveil gown's helm): a bone circlet above the
++-- brow holding a low black cap, with a dark central petal between two pale
++-- bone petals that sweep up and back, lichen-yellow tips, bone twigs in the
++-- circlet and a dark veil hanging behind. All of the height is carried up and
++-- back, so the head stays narrow at ear level and reads as a flower.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local black = { 22, 24, 21 }
++local mossDark = { 40, 54, 36 }
++local mossDeep = { 27, 37, 25 }
++local lichen = { 152, 160, 92 }
++local bone = { 170, 164, 146 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilOrchidHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The bone circlet, and the low black cap it holds.
++		Kit.box("Head", { 1.36, 0.13, 1.36 }, { 0, 0.26, 0 }, "SmoothPlastic", bone),
++		Kit.box("Head", { 1.24, 0.42, 1.24 }, { 0, 0.45, 0.02 }, "Fabric", black),
++		-- The dark central petal, swept back, and its lichen tip.
++		Kit.box("Head", { 0.55, 1.3, 0.12 }, { 0, 1.18, 0.12 }, "Fabric", mossDark, { 12, 0, 0 }),
++		Kit.box("Head", { 0.44, 0.22, 0.12 }, { 0, 1.79, 0.02 }, "Fabric", lichen, { 12, 0, 0 }),
++		-- Two pale bone petals opened outward, the crown's height.
++		Kit.box("Head", { 0.5, 1.05, 0.12 }, { 0.46, 1.0, 0.18 }, "SmoothPlastic", bone, { 14, 0, -24 }),
++		-- A lower moss pair sweeping back, lichen tipped.
++		Kit.box("Head", { 0.4, 0.8, 0.12 }, { 0.38, 0.78, 0.42 }, "Fabric", mossDeep, { 26, 0, -16 }),
++		Kit.box("Head", { 0.18, 0.16, 0.12 }, { 0.5, 1.13, 0.59 }, "Fabric", lichen, { 26, 0, -16 }),
++		-- Bone twigs in the circlet, and the lichen bud at the brow.
++		Kit.box("Head", { 0.07, 0.5, 0.07 }, { 0.46, 0.52, -0.1 }, "SmoothPlastic", bone, { 0, 0, -18 }),
++		Kit.box("Head", { 0.16, 0.26, 0.1 }, { 0, 0.22, -0.68 }, "Fabric", lichen, { -10, 0, 0 }),
++		-- The veil, hanging from the back of the crown.
++		Kit.box("Head", { 1.1, 1.3, 0.06 }, { 0, -0.28, 0.68 }, "Fabric", black, { -5, 0, 0 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/MossveilOrchidHem.luau b/src/shared/data/armourLooks/MossveilOrchidHem.luau
+new file mode 100644
+index 0000000..8d6e45c
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilOrchidHem.luau
+@@ -0,0 +1,39 @@
++--!strict
++-- The bog orchid gown's lower skirt (the Mossveil boots): the petals carried
++-- on from the knee, five broad overlapping panels on each shin that together
++-- form one continuous moss bell, all ending level at the lower shin. A pale
++-- bone ruffle runs round the whole hem, so the skirt reads as a wide bright-
++-- edged bell from above rather than separate leg panels. Pointed black shoes
++-- with bone buckles show below it.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local black = { 22, 24, 21 }
++local moss = { 58, 76, 50 }
++local mossDark = { 40, 54, 36 }
++local bone = { 170, 164, 146 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilOrchidHem",
++	slot = "Boots",
++	parts = {
++		-- The panels, all ending level at the lower shin, overlapping into one bell.
++		Kit.box("LowerLeg", { 1.2, 1.04, 0.1 }, { 0.08, 0.215, -0.68 }, "Fabric", moss, { 12, 0, 0 }),
++		Kit.box("LowerLeg", { 1.2, 1.04, 0.1 }, { 0.08, 0.215, 0.68 }, "Fabric", moss, { -12, 0, 0 }),
++		Kit.box("LowerLeg", { 1.4, 0.8, 0.1 }, { 0.7, 0.215, -0.55 }, "Fabric", moss, { 12, -40, 10 }),
++		Kit.box("LowerLeg", { 1.4, 0.8, 0.1 }, { 0.7, 0.215, 0.55 }, "Fabric", mossDark, { -12, 40, 10 }),
++		Kit.box("LowerLeg", { 0.16, 1.04, 1.2 }, { 1.25, 0.215, 0 }, "Fabric", mossDark, { 0, 0, 18 }),
++		-- The bone ruffle, following each panel's hem as one level pale band.
++		Kit.box("LowerLeg", { 1.24, 0.12, 0.16 }, { 0.08, -0.36, -0.8 }, "SmoothPlastic", bone, { 12, 0, 0 }),
++		Kit.box("LowerLeg", { 1.24, 0.12, 0.16 }, { 0.08, -0.36, 0.8 }, "SmoothPlastic", bone, { -12, 0, 0 }),
++		Kit.box("LowerLeg", { 1.44, 0.12, 0.16 }, { 0.75, -0.36, -0.65 }, "SmoothPlastic", bone, { 12, -40, 10 }),
++		Kit.box("LowerLeg", { 1.44, 0.12, 0.16 }, { 0.75, -0.36, 0.65 }, "SmoothPlastic", bone, { -12, 40, 10 }),
++		Kit.box("LowerLeg", { 0.18, 0.12, 1.24 }, { 1.45, -0.36, 0 }, "SmoothPlastic", bone, { 0, 0, 18 }),
++		-- The pointed black shoes, bone buckled.
++		Kit.box("Foot", { 1.04, 0.32, 1.12 }, { 0, 0.02, -0.04 }, "Fabric", black),
++		Kit.box("Foot", { 0.5, 0.2, 0.3 }, { 0, -0.04, -0.6 }, "Fabric", black),
++		Kit.box("Foot", { 0.16, 0.1, 0.08 }, { 0.2, 0.1, -0.56 }, "SmoothPlastic", bone),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/MossveilOrchidSleeves.luau b/src/shared/data/armourLooks/MossveilOrchidSleeves.luau
+new file mode 100644
+index 0000000..9ef47d0
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilOrchidSleeves.luau
+@@ -0,0 +1,37 @@
++--!strict
++-- The bog orchid gown's sleeves (the Mossveil gloves): the forearms fall into
++-- a slim round stepped bell of moss cloth, frilled out from a narrow elbow
++-- band to a lichen-edged cuff, with a petal drooping over the back of each
++-- hand and close black gloves. All of the volume sits low at the forearm and
++-- stays close to the arm, so the shoulder line above it reads narrow.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local black = { 22, 24, 21 }
++local moss = { 58, 76, 50 }
++local mossDark = { 40, 54, 36 }
++local lichen = { 152, 160, 92 }
++
++-- A cloth ring, round from the high camera.
++local function bell(size: { number }, at: { number }, color: { number }): ArmourLookTypes.ArmourPart
++	return { on = "LowerArm", shape = "Cylinder", size = size, at = at, material = "Fabric", color = color }
++end
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilOrchidSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The bell, stepping out from the elbow band to the cuff.
++		bell({ 1.08, 0.14, 1.08 }, { 0, 0.5, 0 }, mossDark),
++		bell({ 1.14, 0.34, 1.14 }, { 0, 0.28, 0 }, moss),
++		bell({ 1.22, 0.42, 1.22 }, { 0, -0.12, 0 }, moss),
++		bell({ 1.32, 0.16, 1.32 }, { 0, -0.46, 0 }, mossDark),
++		bell({ 1.36, 0.08, 1.36 }, { 0, -0.57, 0 }, lichen),
++		-- The petal that droops over the back of the hand.
++		Kit.box("LowerArm", { 0.32, 0.5, 0.1 }, { 0.42, -0.76, 0.3 }, "Fabric", moss, { 0, 0, 12 }),
++		-- Close black gloves.
++		Kit.box("Hand", { 1.06, 0.42, 1.06 }, { 0, 0, 0 }, "Fabric", black),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..f6a5fa3 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,12 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:MossveilOrchidHelm"] = row(
++		"Bone orchid petals and a pale circlet over black, with a dark veil and lichen buds."
++	),
++	["armour:MossveilOrchidDress"] = row("A black court bodice with a lichen neckline and bone belt, above an orchid skirt."),
++	["armour:MossveilOrchidSleeves"] = row("Moss bell sleeves frilled and lichen-edged at the cuff, with black gloves."),
++	["armour:MossveilOrchidHem"] = row("An orchid-petal lower skirt over pointed black shoes, with a bone hem ruffle."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

@@ -47,6 +47,32 @@ picker's rank in its run; the rest were passed over, with reasons in `about.json
 The **Classic** sets were made for the classic blocky body (the `feminine` figure and its
 shoulder check). The **Courtly** sets were made for the standard body.
 
+## Drowned Marches pilot (2026-11-01)
+
+Nine more gown sets from the Drowned Marches wardrobe pilot (Rhodri, arpg-game R039), three
+picks from each of three runs, all on the `feminine` figure. Each run had two render-only
+critic passes with one rework between them; run evidence is in `results/<run>/`. Same files
+per set as above (`renamed.patch`, `original.patch`, `sheet.png`, `about.json`). Part counts
+were measured with `ArmourLook.partCount` on arpg-game main `a2b439d`. All nine apply there
+together (each also applies alone), and `Catalog`, `ContentCompleteness` and `DressBudget` pass.
+
+| Set | Run | Zone | Pick | Parts | In short |
+| --- | --- | --- | --- | --- | --- |
+| WispbrideMourning | wispbride-marches (A) | Fen | 1 | 89 | pale mist bodice, flaring skirt, black hooded veil with wisp-blue prongs |
+| WispbrideMoth | wispbride-marches (E) | Fen | 2 | 98 | the best A-line bell, pale from hip to mist hem, strand veil down the back |
+| WispbrideKeeper | wispbride-marches (F) | Fen | 3 | 95 | mist skirt, willow-green laced bodice, a cold-blue hem that reads from above |
+| ReedmailValkyrie | reedmail-marches (E) | Fen | 1 | 98 | ankle-length bell of reed-straw and green panels, bone V cuirass, winged reed circlet |
+| ReedmailBark | reedmail-marches (D) | Fen | 2 | 88 | willow-bark lamellar battle skirt flaring band by band to a bone hem |
+| ReedmailScale | reedmail-marches (A) | Fen | 3 | 92 | tiered fen-green eel-scale skirt edged in straw, fanned reed plume |
+| MossveilFungal | mossveil-marches (D) | Fetid Forest | 1 | 85 | toadstool-cap bonnet, tiered skirt of lichen-yellow gill ruffles |
+| MossveilFern | mossveil-marches (C) | Fetid Forest | 2 | 76 | the cleanest A-line: light moss front panel, stepped bone-and-lichen hem |
+| MossveilOrchid | mossveil-marches (B) | Fetid Forest | 3 | 76 | flared moss bell under a black laced bodice, bone hem, orchid crown |
+
+All are under the raised gown budget of about 100 (Rhodri, 2026-11-01) and over the old 64.
+The shared flaw in all nine is full-width block sleeves: the shoulder check passes them, but
+critics read the top as broad. Narrowing the sleeves is the first fix for most of them
+(`first_fix` in each `about.json`).
+
 ## Porting notes
 
 1. **Apply:** from a swarm-lab clone, onto a branch from arpg-game main:

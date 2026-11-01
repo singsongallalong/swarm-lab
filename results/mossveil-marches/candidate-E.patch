@@ -1,0 +1,356 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..9b2ffb2 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -24,6 +24,10 @@ local LinenCowl = require("./armourLooks/LinenCowl")
+ local LinenRobe = require("./armourLooks/LinenRobe")
+ local LinenSlippers = require("./armourLooks/LinenSlippers")
+ local LinenWraps = require("./armourLooks/LinenWraps")
++local MossveilDress = require("./armourLooks/MossveilDress")
++local MossveilHelm = require("./armourLooks/MossveilHelm")
++local MossveilHem = require("./armourLooks/MossveilHem")
++local MossveilSleeves = require("./armourLooks/MossveilSleeves")
+ local SpellShield = require("./armourLooks/SpellShield")
+ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+@@ -53,6 +57,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	LinenRobe = LinenRobe,
+ 	LinenSlippers = LinenSlippers,
+ 	LinenWraps = LinenWraps,
++	MossveilDress = MossveilDress,
++	MossveilHelm = MossveilHelm,
++	MossveilHem = MossveilHem,
++	MossveilSleeves = MossveilSleeves,
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
+diff --git a/src/shared/data/armourLooks/MossveilDress.luau b/src/shared/data/armourLooks/MossveilDress.luau
+new file mode 100644
+index 0000000..43fd1f4
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilDress.luau
+@@ -0,0 +1,89 @@
++--!strict
++-- The moss court's gown, chest (zone armour, the Fetid Forest): a black
++-- fitted bodice laced in lichen over a moss stomacher, a pale ruffled collar,
++-- a great moss-pale bow with ribbons, close moss sleeves banded at the elbow,
++-- and a bright lichen waist band between a moss sash and the moss hip frill.
++-- Below, two flaring tiers of moss green on the thighs, each ended with a thin
++-- pale ruffle lip, deepening as well as widening so the skirt stands out in
++-- every view. Every tier is a front, a back and an outer panel whose inner
++-- edge sits on the body's centre line, so the legs' tiers meet as one skirt
++-- standing and part as they stride.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++type ArmourPart = ArmourLookTypes.ArmourPart
++
++local moss = { 66, 82, 52 }
++local mossPale = { 88, 104, 62 }
++local lichen = { 124, 134, 78 }
++local black = { 32, 34, 31 }
++
++-- One tier of the skirt on a thigh: `w` is half the skirt's full width there,
++-- and `z` how far the front and back panels stand off the leg. Both grow with
++-- each tier, so the skirt bells in depth as well as width.
++local function tier(
++	y: number,
++	h: number,
++	w: number,
++	z: number,
++	lean: number,
++	out: number,
++	colour: { number }
++): { ArmourPart }
++	local cx = w / 2 - 0.5
++	local depth = 2 * z + 0.1
++	return {
++		Kit.box("UpperLeg", { w, h, 0.09 }, { cx, y, -z }, "Fabric", colour, { lean, 0, 0 }),
++		Kit.box("UpperLeg", { w, h, 0.09 }, { cx, y, z }, "Fabric", colour, { -lean, 0, 0 }),
++		Kit.box("UpperLeg", { 0.09, h, depth }, { w - 0.545, y, 0 }, "Fabric", colour, { 0, 0, out }),
++	}
++end
++
++-- A thin ruffle lip at a tier's hem: a band round the leg whose top face
++-- reads as a ring of colour from the high camera.
++local function lip(y: number, w: number, d: number, colour: { number }): ArmourPart
++	return Kit.box("UpperLeg", { w, 0.06, d }, { w / 2 - 0.5, y, 0 }, "Fabric", colour)
++end
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilDress",
++	slot = "Chest",
++	parts = Kit.join({
++		{
++			-- The bodice, fitted black over a moss stomacher, laced in lichen.
++			Kit.box("UpperTorso", { 2.06, 1.66, 1.06 }, { 0, 0, 0 }, "Fabric", black),
++			Kit.box("UpperTorso", { 0.6, 1.2, 0.07 }, { 0, -0.05, -0.54 }, "Fabric", moss),
++			Kit.box("UpperTorso", { 0.74, 0.06, 0.07 }, { 0, 0.42, -0.59 }, "Fabric", lichen),
++			Kit.box("UpperTorso", { 0.74, 0.06, 0.07 }, { 0, 0.2, -0.59 }, "Fabric", lichen),
++			Kit.box("UpperTorso", { 0.74, 0.06, 0.07 }, { 0, -0.02, -0.59 }, "Fabric", lichen),
++			-- The pale neckline band and the high collar showing round the head.
++			Kit.box("UpperTorso", { 1.8, 0.08, 1.08 }, { 0, 0.66, 0 }, "Fabric", mossPale),
++			Kit.box("UpperTorso", { 1.28, 0.18, 1.24 }, { 0, 0.77, 0 }, "Fabric", black),
++			Kit.box("UpperTorso", { 1.34, 0.12, 1.3 }, { 0, 0.88, 0 }, "Fabric", mossPale),
++			-- The great bow, and the bustle behind it.
++			Kit.box("UpperTorso", { 0.58, 0.34, 0.16 }, { 0.44, -0.32, -0.56 }, "Fabric", mossPale, { 0, 0, 14 }),
++			Kit.box("UpperTorso", { 0.58, 0.34, 0.16 }, { -0.44, -0.32, -0.56 }, "Fabric", mossPale, { 0, 0, -14 }),
++			Kit.box("UpperTorso", { 0.24, 0.24, 0.18 }, { 0, -0.32, -0.59 }, "Fabric", lichen),
++			Kit.box("UpperTorso", { 1.38, 0.36, 0.26 }, { 0, -0.6, 0.56 }, "Fabric", moss),
++			-- The waist: a bright lichen band between a moss sash and the hip frill.
++			Kit.box("LowerTorso", { 2.02, 0.42, 1.02 }, { 0, 0, 0 }, "Fabric", black),
++			Kit.box("LowerTorso", { 2.14, 0.2, 1.14 }, { 0, 0.04, 0 }, "Fabric", lichen),
++			Kit.box("LowerTorso", { 2.12, 0.07, 1.12 }, { 0, 0.165, 0 }, "Fabric", moss),
++			Kit.box("LowerTorso", { 2.4, 0.17, 1.42 }, { 0, -0.11, 0 }, "Fabric", moss),
++			-- Close moss sleeves to the arm, pale band and lichen cord at the elbow.
++			Kit.box("UpperArm", { 1.06, 1.24, 1.06 }, { 0, 0, 0 }, "Fabric", moss),
++			Kit.box("UpperArm", { 1.14, 0.18, 1.14 }, { 0, -0.5, 0 }, "Fabric", mossPale),
++			Kit.box("UpperArm", { 1.16, 0.05, 1.16 }, { 0, -0.6, 0 }, "Fabric", lichen),
++		},
++		tier(0.42, 0.62, 1.08, 0.58, 4, 5, moss),
++		{ lip(0.09, 1.16, 1.36, mossPale) },
++		tier(-0.25, 0.62, 1.34, 0.74, 6, 7, moss),
++		{ lip(-0.55, 1.42, 1.68, lichen) },
++		{
++			-- The bow's ribbons down the skirt's front, one either side of centre.
++			Kit.box("UpperLeg", { 0.18, 0.48, 0.06 }, { -0.32, 0.38, -0.68 }, "Fabric", mossPale, { 2, 0, 0 }),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/MossveilHelm.luau b/src/shared/data/armourLooks/MossveilHelm.luau
+new file mode 100644
+index 0000000..e31a2d2
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilHelm.luau
+@@ -0,0 +1,113 @@
++--!strict
++-- The moss court's crown (zone armour, the Fetid Forest): a deep moss bonnet
++-- set back on the head under a wide pale brim frilled in lichen, its crown
++-- ringed by a moss wreath from which a crown of pale fungus caps grows,
++-- overhanging the moss and one raised on a stalk. A pale bow sits at the
++-- front above the brow, with a curtain and black ribbons down the nape.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local moss = { 66, 82, 52 }
++local mossPale = { 88, 104, 62 }
++local lichen = { 124, 134, 78 }
++local black = { 32, 34, 31 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The moss crown sits back so the face stays open; the wide pale brim juts over it.
++		Kit.box("Head", { 1.34, 0.48, 1.38 }, { 0, 0.4, 0.04 }, "Fabric", moss),
++		Kit.box("Head", { 1.62, 0.12, 0.66 }, { 0, 0.27, -0.66 }, "Fabric", mossPale, { 8, 0, 0 }),
++		Kit.box("Head", { 1.66, 0.07, 0.68 }, { 0, 0.19, -0.66 }, "Fabric", lichen, { 8, 0, 0 }),
++		-- The wreath round the crown, and the caps crowning it, overhanging its edge.
++		Kit.box("Head", { 1.42, 0.12, 1.46 }, { 0, 0.56, 0.04 }, "Fabric", mossPale),
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.32, 0.13, 0.32 },
++			at = { -0.62, 0.64, -0.34 },
++			material = "Fabric",
++			color = c.bone,
++		},
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.26, 0.1, 0.26 },
++			at = { -0.64, 0.6, 0.24 },
++			material = "Fabric",
++			color = c.fenBone,
++		},
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.3, 0.11, 0.3 },
++			at = { -0.28, 0.66, 0.72 },
++			material = "Fabric",
++			color = c.bone,
++		},
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.34, 0.12, 0.34 },
++			at = { 0.26, 0.65, 0.74 },
++			material = "Fabric",
++			color = c.bone,
++		},
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.26, 0.1, 0.26 },
++			at = { 0.62, 0.61, 0.28 },
++			material = "Fabric",
++			color = c.fenBone,
++		},
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.24, 0.09, 0.24 },
++			at = { 0.55, 0.62, -0.5 },
++			material = "Fabric",
++			color = c.bone,
++		},
++		-- One cap raised on a stalk above the crown.
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.07, 0.26, 0.07 },
++			at = { 0, 0.72, 0.3 },
++			material = "Fabric",
++			color = c.fenBone,
++		},
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.34, 0.12, 0.34 },
++			at = { 0, 0.88, 0.3 },
++			material = "Fabric",
++			color = c.bone,
++		},
++		-- A cap clinging to the brim's left edge.
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.22, 0.09, 0.22 },
++			at = { -0.72, 0.3, -0.5 },
++			material = "Fabric",
++			color = c.bone,
++		},
++		-- The pale bow above the brow, the curtain, and two black ribbons.
++		Kit.box("Head", { 0.4, 0.18, 0.22 }, { 0.21, 0.6, -0.74 }, "Fabric", mossPale, { 0, 8, 0 }),
++		Kit.box("Head", { 0.4, 0.18, 0.22 }, { -0.21, 0.6, -0.74 }, "Fabric", mossPale, { 0, -8, 0 }),
++		Kit.box("Head", { 0.18, 0.18, 0.24 }, { 0, 0.6, -0.76 }, "Fabric", lichen),
++		Kit.box("Head", { 1.2, 0.56, 0.14 }, { 0, 0, 0.72 }, "Fabric", moss),
++		Kit.box("Head", { 1.22, 0.07, 0.15 }, { 0, -0.3, 0.72 }, "Fabric", lichen),
++		Kit.box("Head", { 0.12, 1.0, 0.05 }, { 0.52, -0.16, 0.8 }, "Fabric", black, { 0, 0, -3 }),
++		Kit.box("Head", { 0.12, 0.9, 0.05 }, { -0.52, -0.2, 0.8 }, "Fabric", black, { 0, 0, 3 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/MossveilHem.luau b/src/shared/data/armourLooks/MossveilHem.luau
+new file mode 100644
+index 0000000..5de49ec
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilHem.luau
+@@ -0,0 +1,64 @@
++--!strict
++-- The moss court's gown, boots (zone armour, the Fetid Forest): the skirt's
++-- lower tiers carried on the shins, moss green with thin pale and lichen
++-- ruffle lips, a band of pale ruin-stone petticoat showing at the hem, and
++-- black shoes with a moss ribbon. Each tier's panels land on the body's
++-- centre line so the two legs' tiers meet into one skirt standing.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++type ArmourPart = ArmourLookTypes.ArmourPart
++
++local moss = { 66, 82, 52 }
++local mossDark = { 46, 58, 38 }
++local mossPale = { 88, 104, 62 }
++local lichen = { 124, 134, 78 }
++local black = { 32, 34, 31 }
++
++-- One tier of the skirt on a shin: `w` is half the skirt's full width there,
++-- and `z` how far the front and back panels stand off the leg.
++local function tier(
++	y: number,
++	h: number,
++	w: number,
++	z: number,
++	lean: number,
++	out: number,
++	colour: { number }
++): { ArmourPart }
++	local cx = w / 2 - 0.5
++	local depth = 2 * z + 0.1
++	return {
++		Kit.box("LowerLeg", { w, h, 0.09 }, { cx, y, -z }, "Fabric", colour, { lean, 0, 0 }),
++		Kit.box("LowerLeg", { w, h, 0.09 }, { cx, y, z }, "Fabric", colour, { -lean, 0, 0 }),
++		Kit.box("LowerLeg", { 0.09, h, depth }, { w - 0.545, y, 0 }, "Fabric", colour, { 0, 0, out }),
++	}
++end
++
++-- A thin ruffle lip at a tier's hem: a band round the leg whose top face
++-- reads as a ring of colour from the high camera.
++local function lip(y: number, w: number, d: number, colour: { number }): ArmourPart
++	return Kit.box("LowerLeg", { w, 0.06, d }, { w / 2 - 0.5, y, 0 }, "Fabric", colour)
++end
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilHem",
++	slot = "Boots",
++	parts = Kit.join({
++		tier(0.31, 0.62, 1.66, 0.94, 6, 8, moss),
++		{ lip(-0.01, 1.72, 2.08, mossPale) },
++		tier(-0.24, 0.55, 2.06, 1.14, 8, 10, mossDark),
++		{ lip(-0.52, 2.12, 2.5, lichen) },
++		{
++			-- The bone petticoat showing under the lichen hem.
++			lip(-0.58, 1.98, 2.24, c.bone),
++			-- Black shoes with a moss ribbon across the instep.
++			Kit.box("Foot", { 1.06, 0.3, 1.3 }, { 0, 0, -0.12 }, "Leather", black),
++			Kit.box("Foot", { 1.1, 0.05, 1.12 }, { 0, 0.11, 0.02 }, "Fabric", moss),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/MossveilSleeves.luau b/src/shared/data/armourLooks/MossveilSleeves.luau
+new file mode 100644
+index 0000000..1a79adb
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilSleeves.luau
+@@ -0,0 +1,25 @@
++--!strict
++-- The moss court's gown, gloves (zone armour, the Fetid Forest): a black
++-- undersleeve below the moss upper sleeve, a moss band above the wrist and a
++-- pale moss bell cuff frilled in lichen, over black gloves.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local moss = { 66, 82, 52 }
++local mossPale = { 88, 104, 62 }
++local lichen = { 124, 134, 78 }
++local black = { 32, 34, 31 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilSleeves",
++	slot = "Gloves",
++	parts = {
++		Kit.box("LowerArm", { 1.1, 1.06, 1.1 }, { 0, 0.02, 0 }, "Fabric", black),
++		Kit.box("LowerArm", { 1.18, 0.16, 1.18 }, { 0, -0.28, 0 }, "Fabric", mossPale),
++		Kit.box("LowerArm", { 1.3, 0.3, 1.3 }, { 0, -0.5, 0 }, "Fabric", moss),
++		Kit.box("LowerArm", { 1.34, 0.07, 1.34 }, { 0, -0.66, 0 }, "Fabric", lichen),
++		Kit.box("Hand", { 1.08, 0.36, 1.08 }, { 0, 0, 0 }, "Fabric", black),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..b894131 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:MossveilHelm"] = row("A black bonnet with a moss brim, fruiting with pale fungus caps."),
++	["armour:MossveilDress"] = row("A black laced bodice with a great moss bow over a tiered moss-green skirt."),
++	["armour:MossveilSleeves"] = row("Black sleeves bell out into moss cuffs frilled with pale lichen."),
++	["armour:MossveilHem"] = row("Moss-green skirt tiers fall to a pale bone petticoat and black shoes."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

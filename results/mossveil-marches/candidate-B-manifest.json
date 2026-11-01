@@ -1,0 +1,16 @@
+{
+  "skill": "Mossveil",
+  "look": "MossveilHelm,MossveilDress,MossveilSleeves,MossveilHem",
+  "rows_added": ["MossveilHelm", "MossveilDress", "MossveilSleeves", "MossveilHem"],
+  "intent": "A gothic bog-orchid court gown: a black laced bodice with a lichen neckline and a pale bone belt above one continuous moss-green bell skirt with a bright bone hem ruffle and a bone orchid crown, reading from the high camera as a narrow dark top over a wide pale-edged green bell.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A sheer or translucent cloth for the veil; every Fabric piece is opaque.",
+    "A tapered petal shape pointed along its length; boxes and wedges only give straight-edged petals."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "skill": "Mossveil",
+  "look": "MossveilHelm,MossveilDress,MossveilSleeves,MossveilHem",
+  "rows_added": ["MossveilHelm", "MossveilDress", "MossveilSleeves", "MossveilHem"],
+  "intent": "A gothic forest-court gown of deep moss and black with a fitted laced bodice, slim wrist-ruffled sleeves and a full wrapped A-line skirt ending in a bold stepped bone-and-lichen hem, so the high camera reads a narrow waist over a wide pale-edged bell.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A translucent or two-sided cloth material for the veil; Fabric this thin reads as solid board.",
+    "A cone shape for skirt tiers, so a hem can flare smoothly without stepped corners."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "skill": "Mossveil",
+  "look": "MossveilHelm,MossveilDress,MossveilSleeves,MossveilHem",
+  "rows_added": ["MossveilHelm", "MossveilDress", "MossveilSleeves", "MossveilHem"],
+  "intent": "A deep moss court gown with bone neck and waist trims, close sleeves and a wide tiered skirt falling to a lichen ruffled hem, reading from the high camera as a slim dark bodice over a great moss-and-lichen bell under a bone-fan bonnet.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered or cone part: a full skirt built from boxes can only step outward in tiers rather than fall as one smooth bell.",
+    "A translucent cloth for the helm veil; with opaque parts it reads as a solid panel."
+  ]
+}

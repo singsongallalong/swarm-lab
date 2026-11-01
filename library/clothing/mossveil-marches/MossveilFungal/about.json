@@ -1,0 +1,22 @@
+{
+  "run": "mossveil-marches",
+  "letter": "D",
+  "set": "MossveilFungal",
+  "looks": [
+    "MossveilFungalDress",
+    "MossveilFungalHelm",
+    "MossveilFungalHem",
+    "MossveilFungalSleeves"
+  ],
+  "original_looks": [
+    "MossveilDress",
+    "MossveilHelm",
+    "MossveilHem",
+    "MossveilSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A gothic forest ballgown: a deep-moss bodice with slim dark sleeves and gill-ruffled wrists, a sickly lichen sash at the waist and a matching lichen tier in a wide mushroom-gill skirt under a toadstool-cap bonnet; from the high camera it reads as a narrow cinched top over a bright-rimmed bell.",
+  "reason": "Fungal ballgown: a toadstool-cap bonnet with a bone rim over a tiered skirt of lichen-yellow gill ruffles; the only set that reads as fungus and as nothing else in the game from the high camera (second critic 6.83, first; first critic 6.85, first).",
+  "first_fix": "The bodice and sleeves are a full-width dark block and the skirt is a squat knee-length cake: narrow the sleeves, cinch the waist with a bone or lichen band, and lengthen the tiers to the shins.",
+  "parts": 85
+}

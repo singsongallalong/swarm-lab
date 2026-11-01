@@ -1,0 +1,16 @@
+{
+  "skill": "Mossveil",
+  "look": "MossveilHelm,MossveilDress,MossveilSleeves,MossveilHem",
+  "rows_added": ["MossveilHelm", "MossveilDress", "MossveilSleeves", "MossveilHem"],
+  "intent": "A gothic-lolita forest gown of black laced bodice, great pale moss bow and a deep tiered moss-green bell skirt ringed in lichen and bone, crowned with a moss bonnet overgrown by pale fungus caps, reading from the high camera as a green-and-black lady's shape over a wide ringed bell.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered skirt panel: a box can only step further out, so the bell is a staircase; a trapezoid part would let the tiers flare smoothly.",
+    "A soft cloth material whose edge catches the moon (velvet or moss), since nothing in the world shines and the ruffles must carry all their light in flat colour."
+  ]
+}

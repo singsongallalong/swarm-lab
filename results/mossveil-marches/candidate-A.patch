@@ -1,0 +1,323 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..9b2ffb2 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -24,6 +24,10 @@ local LinenCowl = require("./armourLooks/LinenCowl")
+ local LinenRobe = require("./armourLooks/LinenRobe")
+ local LinenSlippers = require("./armourLooks/LinenSlippers")
+ local LinenWraps = require("./armourLooks/LinenWraps")
++local MossveilDress = require("./armourLooks/MossveilDress")
++local MossveilHelm = require("./armourLooks/MossveilHelm")
++local MossveilHem = require("./armourLooks/MossveilHem")
++local MossveilSleeves = require("./armourLooks/MossveilSleeves")
+ local SpellShield = require("./armourLooks/SpellShield")
+ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+@@ -53,6 +57,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	LinenRobe = LinenRobe,
+ 	LinenSlippers = LinenSlippers,
+ 	LinenWraps = LinenWraps,
++	MossveilDress = MossveilDress,
++	MossveilHelm = MossveilHelm,
++	MossveilHem = MossveilHem,
++	MossveilSleeves = MossveilSleeves,
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
+diff --git a/src/shared/data/armourLooks/MossveilDress.luau b/src/shared/data/armourLooks/MossveilDress.luau
+new file mode 100644
+index 0000000..aee31a1
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilDress.luau
+@@ -0,0 +1,94 @@
++--!strict
++-- The Mossveil gown (the Mossveil gown's chest): a pale ruin-stone bodice
++-- over a black underbust corset, a stomacher carved with dark rings and
++-- laced in lichen, dark moss sleeves held close to the arm, and a dark green
++-- cinch at the waist with a pale girdle ring and a lichen frill. The skirt
++-- hangs from the thighs and flares panel by panel from the cinch to the knee:
++-- front and back panels meet at the centre line so the two legs make one bell
++-- standing, with an outer panel and a flared corner pleat a leg. A small moss
++-- bustle and bow sit at the small of the back.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local colors = table.freeze({
++	stone = { 168, 166, 150 }, -- pale ruin-stone, the gown's cloth
++	stonePale = { 196, 190, 172 }, -- carved edges and rings
++	moss = { 54, 76, 44 },
++	mossDark = { 34, 48, 32 },
++	lichen = { 132, 140, 78 },
++	black = { 26, 28, 28 },
++})
++
++-- The skirt hangs just under the cinch and stops above the knee, flaring to
++-- match the lower skirt's top.
++local SKIRT_TOP = 0.54
++local SKIRT_LENGTH = 1.0
++local SKIRT_Y = SKIRT_TOP - SKIRT_LENGTH / 2
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice and the dark moss yoke at the collarbones.
++		Kit.box("UpperTorso", { 2.06, 1.62, 1.06 }, { 0, 0, 0 }, "Fabric", colors.stone),
++		Kit.box("UpperTorso", { 1.92, 0.14, 1.08 }, { 0, 0.7, 0 }, "Fabric", colors.mossDark),
++		-- A black underbust corset; the stomacher runs down over it.
++		Kit.box("UpperTorso", { 2.06, 0.5, 1.07 }, { 0, -0.55, 0 }, "Fabric", colors.black),
++		Kit.box("UpperTorso", { 0.6, 1.36, 0.07 }, { 0, -0.04, -0.555 }, "Slate", colors.stonePale),
++		Kit.box("UpperTorso", { 0.68, 0.07, 0.09 }, { 0, 0.34, -0.585 }, "Slate", colors.mossDark),
++		Kit.box("UpperTorso", { 0.68, 0.07, 0.09 }, { 0, 0.06, -0.585 }, "Slate", colors.mossDark),
++		-- Lichen lacing down the corset in a V, its point at the girdle.
++		Kit.box("UpperTorso", { 0.07, 0.44, 0.06 }, { -0.12, -0.6, -0.585 }, "Fabric", colors.lichen, { 0, 0, 28 }),
++		Kit.box("UpperTorso", { 0.07, 0.44, 0.06 }, { 0.12, -0.6, -0.585 }, "Fabric", colors.lichen, { 0, 0, -28 }),
++		-- A pale bracket fungus on one shoulder blade, moss creeping up the hips.
++		Kit.box("UpperTorso", { 0.5, 0.09, 0.28 }, { -0.45, 0.3, 0.56 }, "Fabric", colors.lichen),
++		Kit.box("UpperTorso", { 0.34, 0.06, 0.2 }, { -0.42, 0.2, 0.58 }, "Fabric", colors.stonePale),
++		Kit.box("UpperTorso", { 0.3, 0.44, 0.05 }, { 0.74, -0.42, -0.535 }, "Fabric", colors.moss, { 0, 0, 8 }),
++		Kit.box("UpperTorso", { 0.26, 0.38, 0.05 }, { -0.7, -0.48, 0.54 }, "Fabric", colors.mossDark, { 0, 0, -6 }),
++		-- The sleeves' upper part in dark moss, flush to the arm, lichen ruffled
++		-- at the elbow.
++		Kit.box("UpperArm", { 1.02, 1.2, 1.02 }, { 0, 0, 0 }, "Fabric", colors.mossDark),
++		Kit.box("UpperArm", { 1.1, 0.1, 1.1 }, { 0, -0.6, 0 }, "Fabric", colors.lichen),
++		-- The waist cinch: a dark green band with a pale girdle ring and a lichen frill.
++		Kit.box("LowerTorso", { 2.02, 0.34, 1.06 }, { 0, 0.03, 0 }, "Fabric", colors.mossDark),
++		Kit.box("LowerTorso", { 2.06, 0.06, 1.1 }, { 0, 0.19, 0 }, "Slate", colors.stonePale),
++		Kit.box("LowerTorso", { 2.06, 0.12, 1.14 }, { 0, -0.13, 0 }, "Fabric", colors.lichen),
++		-- The small bustle and its bow at the small of the back.
++		Kit.box("LowerTorso", { 1.3, 0.36, 0.32 }, { 0, 0, 0.62 }, "Fabric", colors.mossDark),
++		Kit.box("LowerTorso", { 0.2, 0.2, 0.14 }, { 0, 0.14, 0.84 }, "Fabric", colors.lichen),
++		Kit.box("LowerTorso", { 0.42, 0.26, 0.12 }, { -0.3, 0.12, 0.82 }, "Fabric", colors.moss, { 0, 0, 18 }),
++		Kit.box("LowerTorso", { 0.42, 0.26, 0.12 }, { 0.3, 0.12, 0.82 }, "Fabric", colors.moss, { 0, 0, -18 }),
++		Kit.box("LowerTorso", { 0.12, 0.3, 0.06 }, { -0.15, -0.03, 0.8 }, "Fabric", colors.mossDark, { 0, 0, 10 }),
++		Kit.box("LowerTorso", { 0.12, 0.26, 0.06 }, { 0.15, 0, 0.8 }, "Fabric", colors.mossDark, { 0, 0, -8 }),
++		-- The upper skirt from the thighs: front and back panels meeting at the
++		-- centre, an outer panel and a flared corner pleat, widening to the knee.
++		Kit.box(
++			"UpperLeg",
++			{ 1.12, SKIRT_LENGTH, 0.06 },
++			{ 0.06, SKIRT_Y, -0.565 },
++			"Fabric",
++			colors.stone,
++			{ 8, 0, 0 }
++		),
++		Kit.box(
++			"UpperLeg",
++			{ 1.12, SKIRT_LENGTH, 0.06 },
++			{ 0.06, SKIRT_Y, 0.565 },
++			"Fabric",
++			colors.stone,
++			{ -8, 0, 0 }
++		),
++		Kit.box("UpperLeg", { 0.06, SKIRT_LENGTH, 0.94 }, { 0.62, SKIRT_Y, 0 }, "Fabric", colors.stone, { 0, 0, 12 }),
++		Kit.box(
++			"UpperLeg",
++			{ 0.6, SKIRT_LENGTH, 0.06 },
++			{ 0.6, SKIRT_Y, -0.6 },
++			"Fabric",
++			colors.stone,
++			{ 10, -45, 0 }
++		),
++		Kit.box("UpperLeg", { 0.6, SKIRT_LENGTH, 0.06 }, { 0.6, SKIRT_Y, 0.6 }, "Fabric", colors.stone, { -10, 45, 0 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/MossveilHelm.luau b/src/shared/data/armourLooks/MossveilHelm.luau
+new file mode 100644
+index 0000000..cb82102
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilHelm.luau
+@@ -0,0 +1,48 @@
++--!strict
++-- The Mossveil crown (the Mossveil gown's helm): a ruin priestess's
++-- moss-and-bone crown. A pale bone circlet rings the brow, three low bone
++-- points rise just above it, and a stack of bracket-fungus shelves climbs the
++-- back of the head with moss over them. A moss veil falls from the crown down
++-- the nape, frilled with lichen at its end.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local colors = table.freeze({
++	stone = { 150, 152, 140 }, -- pale ruin-stone
++	stonePale = { 196, 190, 172 }, -- bone, carved and pale
++	moss = { 54, 76, 44 },
++	mossDark = { 34, 48, 32 },
++	lichen = { 132, 140, 78 }, -- sickly lichen yellow-green
++})
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The stone coif over the crown, the bone circlet round the brow and its
++		-- brow plate.
++		Kit.box("Head", { 1.3, 0.28, 1.3 }, { 0, 0.47, 0 }, "Slate", colors.stone),
++		Kit.box("Head", { 1.36, 0.12, 1.36 }, { 0, 0.3, 0 }, "Slate", colors.stonePale),
++		Kit.box("Head", { 0.8, 0.14, 0.1 }, { 0, 0.4, -0.63 }, "Slate", colors.stonePale),
++		-- The moss fringe under the circlet.
++		Kit.box("Head", { 1.2, 0.1, 0.12 }, { 0, 0.22, -0.6 }, "Fabric", colors.moss),
++		-- Three low bone points of the crown over the brow.
++		Kit.box("Head", { 0.18, 0.5, 0.14 }, { 0, 0.6, -0.58 }, "Slate", colors.stonePale),
++		Kit.box("Head", { 0.14, 0.4, 0.12 }, { -0.34, 0.56, -0.54 }, "Slate", colors.stonePale, { 0, 0, -10 }),
++		Kit.box("Head", { 0.14, 0.4, 0.12 }, { 0.34, 0.56, -0.54 }, "Slate", colors.stonePale, { 0, 0, 10 }),
++		-- Bracket-fungus shelves stacked up the back of the crown.
++		Kit.box("Head", { 0.9, 0.08, 0.36 }, { 0, 0.58, 0.55 }, "Slate", colors.stonePale, { 12, 0, 0 }),
++		Kit.box("Head", { 0.72, 0.07, 0.28 }, { 0.03, 0.44, 0.62 }, "Slate", colors.stone, { 8, 0, 0 }),
++		Kit.box("Head", { 0.54, 0.06, 0.22 }, { 0.06, 0.32, 0.66 }, "Slate", colors.stonePale, { 4, 0, 0 }),
++		-- Moss growing over the shelves, and a lichen frond off the circlet.
++		Kit.box("Head", { 0.6, 0.06, 0.4 }, { 0.14, 0.63, 0.5 }, "Fabric", colors.moss, { 10, 0, 0 }),
++		Kit.box("Head", { 0.09, 0.3, 0.06 }, { 0.66, 0.52, -0.15 }, "Fabric", colors.lichen, { 0, 0, -16 }),
++		-- The moss veil down the nape, frilled with lichen at its end.
++		Kit.box("Head", { 1.28, 0.4, 0.08 }, { 0, 0.12, 0.68 }, "Fabric", colors.moss, { 3, 0, 0 }),
++		Kit.box("Head", { 0.98, 0.44, 0.07 }, { 0.03, -0.28, 0.7 }, "Fabric", colors.mossDark, { 2, 0, 0 }),
++		Kit.box("Head", { 0.96, 0.08, 0.06 }, { 0.03, -0.54, 0.71 }, "Fabric", colors.lichen),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/MossveilHem.luau b/src/shared/data/armourLooks/MossveilHem.luau
+new file mode 100644
+index 0000000..7e83bdc
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilHem.luau
+@@ -0,0 +1,85 @@
++--!strict
++-- The Mossveil hem (the Mossveil gown's boots): the lower skirt carried on
++-- the shins, its panels' tops set to meet the thigh skirt's flared hem at the
++-- knee and widening hard to the ankle, so the whole skirt is one bell. Deep
++-- moss eats up from a lichen-frilled hem, higher on the right, over black
++-- pointed slippers with a pale ankle ring.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local colors = table.freeze({
++	stone = { 168, 166, 150 }, -- pale ruin-stone, the gown's cloth
++	stonePale = { 196, 190, 172 }, -- the carved ring at the ankle
++	moss = { 54, 76, 44 },
++	mossLit = { 82, 104, 58 }, -- the moss's moonlit upper edge
++	lichen = { 132, 140, 78 },
++	black = { 26, 28, 28 },
++})
++
++-- The lower skirt's top meets the thigh skirt's hem at the knee; its hem clears the shoe.
++local SKIRT_TOP = 0.54
++local SKIRT_LENGTH = 1.02
++local SKIRT_Y = SKIRT_TOP - SKIRT_LENGTH / 2
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilHem",
++	slot = "Boots",
++	parts = {
++		-- The lower skirt: front, back, an outer panel and two corner pleats a leg.
++		Kit.box(
++			"LowerLeg",
++			{ 1.12, SKIRT_LENGTH, 0.06 },
++			{ 0.06, SKIRT_Y, -0.792 },
++			"Fabric",
++			colors.stone,
++			{ 18, 0, 0 }
++		),
++		Kit.box(
++			"LowerLeg",
++			{ 1.12, SKIRT_LENGTH, 0.06 },
++			{ 0.06, SKIRT_Y, 0.792 },
++			"Fabric",
++			colors.stone,
++			{ -18, 0, 0 }
++		),
++		Kit.box("LowerLeg", { 0.06, SKIRT_LENGTH, 0.94 }, { 0.898, SKIRT_Y, 0 }, "Fabric", colors.stone, { 0, 0, 20 }),
++		Kit.box(
++			"LowerLeg",
++			{ 0.6, SKIRT_LENGTH, 0.06 },
++			{ 0.723, SKIRT_Y, -0.723 },
++			"Fabric",
++			colors.stone,
++			{ 10, -45, 0 }
++		),
++		Kit.box(
++			"LowerLeg",
++			{ 0.6, SKIRT_LENGTH, 0.06 },
++			{ 0.723, SKIRT_Y, 0.723 },
++			"Fabric",
++			colors.stone,
++			{ -10, 45, 0 }
++		),
++		-- Moss eating up the skirt from the hem, a taller tongue on the right.
++		Kit.box("LowerLeg", { 1.06, 0.42, 0.05 }, { 0.06, -0.28, -0.92 }, "Fabric", colors.moss, { 18, 0, 0 }),
++		Kit.box("LowerLeg", { 1.06, 0.4, 0.05 }, { 0.06, -0.29, 0.92 }, "Fabric", colors.moss, { -18, 0, 0 }),
++		Kit.box(
++			"LowerLeg",
++			{ 0.48, 0.3, 0.06 },
++			{ 0.32, -0.16, -0.93 },
++			"Fabric",
++			colors.mossLit,
++			{ 18, 0, 0 },
++			"Right"
++		),
++		-- The hem's lichen frill, round the front, back and outer sides.
++		Kit.box("LowerLeg", { 1.1, 0.1, 0.08 }, { 0.06, -0.45, -1.0 }, "Fabric", colors.lichen, { 18, 0, 0 }),
++		Kit.box("LowerLeg", { 1.1, 0.1, 0.08 }, { 0.06, -0.45, 1.0 }, "Fabric", colors.lichen, { -18, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 0.1, 0.98 }, { 1.12, -0.45, 0 }, "Fabric", colors.lichen, { 0, 0, 20 }),
++		-- Black slippers with a pointed toe and a pale carved ring at the ankle.
++		Kit.box("Foot", { 1.06, 0.36, 1.14 }, { 0, 0.02, -0.04 }, "Leather", colors.black),
++		Kit.box("Foot", { 0.36, 0.2, 0.34 }, { 0, -0.06, -0.66 }, "Leather", colors.black),
++		Kit.box("Foot", { 1.12, 0.08, 1.2 }, { 0, 0.16, -0.04 }, "Slate", colors.stonePale),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/MossveilSleeves.luau b/src/shared/data/armourLooks/MossveilSleeves.luau
+new file mode 100644
+index 0000000..6e781b3
+--- /dev/null
++++ b/src/shared/data/armourLooks/MossveilSleeves.luau
+@@ -0,0 +1,31 @@
++--!strict
++-- The Mossveil sleeves (the Mossveil gown's gloves): the gown's lower
++-- sleeves, a moss bell swelling from the elbow to a double lichen-frilled
++-- cuff like a fungal gill, over long black gloves beneath.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local colors = table.freeze({
++	moss = { 54, 76, 44 },
++	mossDark = { 34, 48, 32 },
++	lichen = { 132, 140, 78 },
++	black = { 26, 28, 28 },
++})
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "MossveilSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The bell sleeve: narrow at the elbow, swelling to the wrist.
++		Kit.box("LowerArm", { 1.18, 0.5, 1.18 }, { 0, 0.37, 0 }, "Fabric", colors.moss),
++		Kit.box("LowerArm", { 1.4, 0.34, 1.4 }, { 0, 0.02, 0 }, "Fabric", colors.moss),
++		Kit.box("LowerArm", { 1.56, 0.3, 1.56 }, { 0, -0.28, 0 }, "Fabric", colors.mossDark),
++		-- Two frill tiers at the cuff, the lower wider, like fungal gills.
++		Kit.box("LowerArm", { 1.5, 0.12, 1.5 }, { 0, -0.4, 0 }, "Fabric", colors.lichen),
++		Kit.box("LowerArm", { 1.62, 0.14, 1.62 }, { 0, -0.49, 0 }, "Fabric", colors.lichen),
++		-- A long black glove under the cuff.
++		Kit.box("Hand", { 1.04, 1.0, 1.04 }, { 0, 0, 0 }, "Leather", colors.black),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..0d59352 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:MossveilHelm"] = row("A pale ruin-stone circlet and tall carved crest, moss weeping down the nape."),
++	["armour:MossveilDress"] = row("A pale stone bodice cinched in black, with a moss bustle and a full panel skirt."),
++	["armour:MossveilSleeves"] = row("Moss bell sleeves swelling to double lichen-frilled cuffs over black gloves."),
++	["armour:MossveilHem"] = row("A pale skirt hem mossed over and lichen frilled, over black pointed slippers."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),
