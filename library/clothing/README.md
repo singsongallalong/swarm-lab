@@ -100,6 +100,9 @@ the game later.
 | CliffwindValkyrie | cliffwind-wave2 (A) | Aor'lan Cliffs | 1 | 75 | cliff valkyrie: pale sky-blue steel A-line with a real bell, white stomacher and cape, white bow-winged helm |
 | CliffwindStorm | cliffwind-wave2 (B) | Aor'lan Cliffs | 2 | 80 | cloud-white skirt of jagged wind-cut panels flaring hard under grey-blue plate, winged helm |
 | CliffwindEyrie | cliffwind-wave2 (D) | Aor'lan Cliffs | 3 | 74 | cloud-white bodice over a sky-blue skirt, tan leather, steel feather-crested half-helm |
+| BasaltplateTerrace | basaltplate-wave2 (B) | Aor'lan Mountain | 1 | 64 | shoulders stacked into stepped basalt ledges with red seams, a chest crack, a low sealed helm with a red slit |
+| BasaltplateCrag | basaltplate-wave2 (C) | Aor'lan Mountain | 2 | 60 | one big raw basalt crag breaking out of the right pauldron: a mountain outline |
+| BasaltplateCairn | basaltplate-wave2 (D) | Aor'lan Mountain | 3 | 59 | clean black slab plate, red undersides on sloped pauldrons, a cairn-stone helm |
 <!-- wave2-aorlan-end -->
 
 ## Wave 2: Heartland (2026-11-02)

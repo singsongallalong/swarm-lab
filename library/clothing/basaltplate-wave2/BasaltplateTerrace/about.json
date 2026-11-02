@@ -1,0 +1,22 @@
+{
+  "run": "basaltplate-wave2",
+  "letter": "B",
+  "set": "BasaltplateTerrace",
+  "looks": [
+    "BasaltplateTerraceBoots",
+    "BasaltplateTerraceChest",
+    "BasaltplateTerraceGloves",
+    "BasaltplateTerraceHelm"
+  ],
+  "original_looks": [
+    "BasaltplateBoots",
+    "BasaltplateChest",
+    "BasaltplateGloves",
+    "BasaltplateHelm"
+  ],
+  "pick_rank": 1,
+  "intent": "A heavy black basalt-and-iron set whose shoulders stack into stepped rock ledges with magma-red seams, under a low sealed helm with one red slit, so at the high camera it reads as a broad, layered mountain silhouette split by red.",
+  "reason": "Columnar terraces: shoulders stacked into stepped basalt ledges with magma-red seams between the layers and a zigzag crack on the chest, under a low sealed helm with one red slit; one rock idea that reads from above and is unlike any reference family (second critic 7.65, first; first critic 6.2, third).",
+  "first_fix": "Step the terraces harder (each tier narrower, the top one tilted) and thicken the chest crack so it joins the pauldron seams.",
+  "parts": 64
+}

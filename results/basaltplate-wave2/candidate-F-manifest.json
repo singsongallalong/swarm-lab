@@ -1,0 +1,15 @@
+{
+  "skill": "Basaltplate",
+  "look": "BasaltplateHelm,BasaltplateChest,BasaltplateGloves,BasaltplateBoots",
+  "rows_added": ["BasaltplateHelm", "BasaltplateChest", "BasaltplateGloves", "BasaltplateBoots"],
+  "intent": "Golem plate cut from the mountain: near-black squared basalt slabs seamed in magma red, a stepped slab crown under a jutting iron brow, and shoulder caps knocked askew over their seams, so the high camera reads a broad, blocky black silhouette lined in red.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A separate sleeve under each pauldron: the 64-part budget forced the upper arm and pauldron into one slab."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "skill": "Basaltplate",
+  "look": "BasaltplateHood,BasaltplateCuirass,BasaltplateGauntlets,BasaltplateGreaves",
+  "rows_added": [
+    "BasaltplateHood",
+    "BasaltplateCuirass",
+    "BasaltplateGauntlets",
+    "BasaltplateGreaves"
+  ],
+  "intent": "A forge-priest of near-black basalt slabs and black iron, split by broad magma-red seams that read at the high camera, with a tall hooded helm, a stepped basalt shard off the right pauldron and a censer on a short chain.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A small ember light inside the censer and the plate seams; armour looks are colour only, so the magma stays painted red rather than lit.",
+    "More parts for real hanging chain: the belt wanted chain loops, but each link is a part and the chest sat at its 26-part cap."
+  ]
+}

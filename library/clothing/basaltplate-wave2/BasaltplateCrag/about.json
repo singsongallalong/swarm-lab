@@ -1,0 +1,22 @@
+{
+  "run": "basaltplate-wave2",
+  "letter": "C",
+  "set": "BasaltplateCrag",
+  "looks": [
+    "BasaltplateCragBoots",
+    "BasaltplateCragChest",
+    "BasaltplateCragGloves",
+    "BasaltplateCragHelm"
+  ],
+  "original_looks": [
+    "BasaltplateBoots",
+    "BasaltplateChest",
+    "BasaltplateGloves",
+    "BasaltplateHelm"
+  ],
+  "pick_rank": 2,
+  "intent": "Near-black basalt slabs and black iron seamed with thick magma-red lines, with one large raw basalt crag breaking out of the right pauldron over a red seam, so the high camera reads a heavy dark silhouette with a single jagged rock shoulder and an iron-combed helm.",
+  "reason": "Crag: one big raw basalt crag breaking out of the right pauldron over a red seam, a true mountain outline at the ARPG camera (second critic 7.3, second; it rose from 5.65).",
+  "first_fix": "The rest of the body is plain black boxes: grow the crag past the head line and tie the other pauldron in with a stepped edge.",
+  "parts": 60
+}

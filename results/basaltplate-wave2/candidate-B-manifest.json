@@ -1,0 +1,20 @@
+{
+  "skill": "Basaltplate",
+  "look": "BasaltplateHelm,BasaltplateChest,BasaltplateGloves,BasaltplateBoots",
+  "rows_added": [
+    "BasaltplateHelm",
+    "BasaltplateChest",
+    "BasaltplateGloves",
+    "BasaltplateBoots"
+  ],
+  "intent": "A heavy black basalt-and-iron set whose shoulders stack into stepped rock ledges with magma-red seams, under a low sealed helm with one red slit, so at the high camera it reads as a broad, layered mountain silhouette split by red.",
+  "renders": [
+    ".swarm/out/armour-set-r7.png",
+    ".swarm/out/armour-set-close-r7.png",
+    ".swarm/out/armour-set-fit-r7.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A thin band or ring part for seams: the red seams between the stepped pauldron slabs are solid boxes, so from above they read as broad plates rather than thin glowing lines."
+  ]
+}

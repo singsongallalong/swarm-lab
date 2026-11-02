@@ -1,0 +1,21 @@
+{
+  "skill": "Basaltplate",
+  "look": "BasaltplateHelm,BasaltplateChest,BasaltplateGloves,BasaltplateBoots",
+  "rows_added": [
+    "BasaltplateHelm",
+    "BasaltplateChest",
+    "BasaltplateGloves",
+    "BasaltplateBoots"
+  ],
+  "intent": "A near-black basalt plate set cut from the mountain, with a dark faceted horn seamed with magma at its root, boulder pauldrons and a small echo shard, red cracks across the chest slabs and a red sash, reading as a broad black mass veined with red at the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A dim emissive seam material between Neon and SmoothPlastic, so the magma seams carry a little heat in the dark without reading as a gameplay glow.",
+    "A tapered or curved horn piece for bull horns that read as horns rather than stepped blocks."
+  ]
+}

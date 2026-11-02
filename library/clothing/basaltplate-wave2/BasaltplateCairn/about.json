@@ -1,0 +1,22 @@
+{
+  "run": "basaltplate-wave2",
+  "letter": "D",
+  "set": "BasaltplateCairn",
+  "looks": [
+    "BasaltplateCairnBoots",
+    "BasaltplateCairnChest",
+    "BasaltplateCairnGloves",
+    "BasaltplateCairnHelm"
+  ],
+  "original_looks": [
+    "BasaltplateBoots",
+    "BasaltplateChest",
+    "BasaltplateGloves",
+    "BasaltplateHelm"
+  ],
+  "pick_rank": 3,
+  "intent": "A black basalt slab-stacked set with magma red in every seam and a cairn-stone helm, reading as the mountain's own body at the high camera.",
+  "reason": "Cairn: clean, well-fitted slab plate with the run's best red-seam read (red undersides on sloped pauldrons) under a cairn-stone helm (second critic 6.9, third; it rose from 4.75).",
+  "first_fix": "Smooth regular slabs read as an iron knight in black: offset or chip the pauldron slabs, and lengthen the tassets over the bare green hip.",
+  "parts": 59
+}

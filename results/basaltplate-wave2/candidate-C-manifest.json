@@ -1,0 +1,16 @@
+{
+  "skill": "Basaltplate",
+  "look": "BasaltplateHelm,BasaltplateChest,BasaltplateGloves,BasaltplateBoots",
+  "rows_added": ["BasaltplateHelm", "BasaltplateChest", "BasaltplateGloves", "BasaltplateBoots"],
+  "intent": "Near-black basalt slabs and black iron seamed with thick magma-red lines, with one large raw basalt crag breaking out of the right pauldron over a red seam, so the high camera reads a heavy dark silhouette with a single jagged rock shoulder and an iron-combed helm.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A Kit.rock (or low-poly crag mesh) builder: the outcrop needed four box parts to read as one rock instead of a box.",
+    "A matte magma material a shade hotter than 118,44,36 that still reads as colour, not Neon, from the ARPG camera."
+  ]
+}

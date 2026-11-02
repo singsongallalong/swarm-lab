@@ -1,0 +1,231 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..d0f9ca3 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -3,6 +3,10 @@
+ -- (art pass A014), and every offhand's (A020): shields and talismans are worn
+ -- on the left forearm and hand. A new look is a new file here, never code.
+ local ArmourLookTypes = require("../ArmourLookTypes")
++local BasaltplateBoots = require("./armourLooks/BasaltplateBoots")
++local BasaltplateChest = require("./armourLooks/BasaltplateChest")
++local BasaltplateGloves = require("./armourLooks/BasaltplateGloves")
++local BasaltplateHelm = require("./armourLooks/BasaltplateHelm")
+ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+@@ -32,6 +36,10 @@ local StuddedGloves = require("./armourLooks/StuddedGloves")
+ local TowerShield = require("./armourLooks/TowerShield")
+ 
+ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
++	BasaltplateBoots = BasaltplateBoots,
++	BasaltplateChest = BasaltplateChest,
++	BasaltplateGloves = BasaltplateGloves,
++	BasaltplateHelm = BasaltplateHelm,
+ 	BoneTalisman = BoneTalisman,
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
+diff --git a/src/shared/data/armourLooks/BasaltplateBoots.luau b/src/shared/data/armourLooks/BasaltplateBoots.luau
+new file mode 100644
+index 0000000..b977d7b
+--- /dev/null
++++ b/src/shared/data/armourLooks/BasaltplateBoots.luau
+@@ -0,0 +1,31 @@
++--!strict
++-- The basaltplate boots (zone armour, the BasaltplateBoots base): the mountain's
++-- feet. Squared black greaves under a black knee cop, with a magma seam where
++-- the cop meets the greave, a raised slab on the shin and another seam at the
++-- ankle, over a broad sabaton.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The set's palette, local to the four Basaltplate looks.
++local basalt = { 46, 48, 55 }
++local basaltSlab = { 62, 65, 74 }
++local magma = { 122, 45, 33 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "BasaltplateBoots",
++	slot = "Boots",
++	parts = {
++		-- The greave and the knee cop over it.
++		Kit.box("LowerLeg", { 1.14, 0.98, 1.16 }, { 0, -0.05, 0 }, "Basalt", basalt),
++		Kit.box("LowerLeg", { 1.26, 0.2, 1.28 }, { 0, 0.5, 0 }, "Basalt", basalt),
++		-- The magma seam where the cop meets the greave.
++		Kit.box("LowerLeg", { 1.32, 0.07, 1.34 }, { 0, 0.42, 0 }, "SmoothPlastic", magma),
++		-- The raised shin slab and the seam at the ankle.
++		Kit.box("LowerLeg", { 0.8, 0.66, 0.1 }, { 0, 0.02, -0.61 }, "Basalt", basaltSlab),
++		Kit.box("LowerLeg", { 1.18, 0.07, 1.2 }, { 0, -0.4, 0 }, "SmoothPlastic", magma),
++		-- The broad sabaton.
++		Kit.box("Foot", { 1.12, 0.46, 1.28 }, { 0, 0.02, -0.1 }, "Basalt", basalt),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/BasaltplateChest.luau b/src/shared/data/armourLooks/BasaltplateChest.luau
+new file mode 100644
+index 0000000..dd2a28b
+--- /dev/null
++++ b/src/shared/data/armourLooks/BasaltplateChest.luau
+@@ -0,0 +1,56 @@
++--!strict
++-- The basaltplate chest (zone armour, the BasaltplateChest base): the mountain
++-- worn as a cuirass. Three raised basalt column slabs down the front with magma
++-- in the seams between them, a broad back slab with a seam across it and a red
++-- seam at the waist, a black iron belt buckled off centre, and black slab
++-- pauldrons with magma between plate and sleeve. The right shoulder carries one
++-- plate more than the left.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The set's palette, local to the four Basaltplate looks.
++local basalt = { 46, 48, 55 }
++local basaltDark = { 28, 29, 34 }
++local basaltSlab = { 62, 65, 74 }
++local magma = { 122, 45, 33 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "BasaltplateChest",
++	slot = "Chest",
++	parts = {
++		-- The block of the mountain.
++		Kit.box("UpperTorso", { 2.12, 1.7, 1.12 }, { 0, 0, 0 }, "Basalt", basalt),
++		Kit.box("LowerTorso", { 2.12, 0.46, 1.12 }, { 0, 0, 0 }, "Basalt", basaltDark),
++		-- Three raised column slabs down the front, the middle one proud.
++		Kit.box("UpperTorso", { 0.6, 1.42, 0.1 }, { -0.72, 0.02, -0.61 }, "Basalt", basaltSlab),
++		Kit.box("UpperTorso", { 0.64, 1.46, 0.12 }, { 0.02, 0, -0.62 }, "Basalt", basaltSlab),
++		Kit.box("UpperTorso", { 0.58, 1.38, 0.1 }, { 0.74, 0.04, -0.61 }, "Basalt", basaltSlab),
++		-- Magma in the two seams between them.
++		Kit.box("UpperTorso", { 0.12, 1.32, 0.12 }, { -0.36, 0.02, -0.6 }, "SmoothPlastic", magma),
++		Kit.box("UpperTorso", { 0.12, 1.24, 0.12 }, { 0.4, 0.06, -0.6 }, "SmoothPlastic", magma),
++		-- The back: one broad slab and a seam low across it.
++		Kit.box("UpperTorso", { 1.86, 1.32, 0.12 }, { 0, 0.04, 0.61 }, "Basalt", basaltSlab),
++		Kit.box("UpperTorso", { 1.6, 0.09, 0.13 }, { 0, -0.48, 0.615 }, "SmoothPlastic", magma),
++		-- The black iron belt, buckled off centre, with red at the waist below.
++		Kit.box("LowerTorso", { 2.22, 0.22, 1.22 }, { 0, 0.02, 0 }, "Metal", c.ironDark),
++		Kit.box("LowerTorso", { 0.24, 0.2, 0.08 }, { 0.42, 0.02, -0.64 }, "Metal", c.ironWorn),
++		Kit.box("LowerTorso", { 2.16, 0.07, 1.16 }, { 0, -0.18, 0 }, "SmoothPlastic", magma),
++		-- Black sleeves under the pauldrons.
++		Kit.box("UpperArm", { 1.08, 1.24, 1.08 }, { 0, 0, 0 }, "Basalt", basaltDark),
++		-- Two black slab plates on each shoulder, and one more on the right.
++		Kit.box("UpperArm", { 1.36, 0.22, 1.32 }, { 0.1, 0.56, 0 }, "Basalt", basalt, { 0, 0, -14 }),
++		Kit.box("UpperArm", { 1.24, 0.18, 1.2 }, { 0.08, 0.34, 0 }, "Basalt", basalt, { 0, 0, -8 }),
++		Kit.box("UpperArm", { 1.1, 0.16, 1.08 }, { 0.14, 0.7, 0 }, "Basalt", basalt, { 0, 0, -18 }, "Right"),
++		-- The magma seam between the plate and the sleeve.
++		Kit.box("UpperArm", { 1.14, 0.07, 1.14 }, { 0.02, 0.22, 0 }, "SmoothPlastic", magma),
++		-- The basalt gorget, raised to meet the helm and close the neck.
++		Kit.box("UpperTorso", { 1.34, 0.28, 1.22 }, { 0, 0.88, 0 }, "Basalt", basaltDark),
++		-- Two vents at the sternum, echoing the helm.
++		Kit.box("UpperTorso", { 0.08, 0.26, 0.08 }, { -0.18, 0.58, -0.7 }, "SmoothPlastic", basaltDark),
++		Kit.box("UpperTorso", { 0.08, 0.26, 0.08 }, { 0.18, 0.58, -0.7 }, "SmoothPlastic", basaltDark),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/BasaltplateGloves.luau b/src/shared/data/armourLooks/BasaltplateGloves.luau
+new file mode 100644
+index 0000000..b4751bb
+--- /dev/null
++++ b/src/shared/data/armourLooks/BasaltplateGloves.luau
+@@ -0,0 +1,30 @@
++--!strict
++-- The basaltplate gauntlets (zone armour, the BasaltplateGloves base): heavy
++-- hands cut from the mountain. Each forearm is sheathed in black basalt under a
++-- flared black cuff, with a magma seam ringing the cuff's top edge and another
++-- at the wrist. The plated hand carries a raised slab knuckle ridge.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The set's palette, local to the four Basaltplate looks.
++local basalt = { 46, 48, 55 }
++local basaltSlab = { 62, 65, 74 }
++local magma = { 122, 45, 33 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "BasaltplateGloves",
++	slot = "Gloves",
++	parts = {
++		-- The forearm sheath and the flared cuff over it.
++		Kit.box("LowerArm", { 1.12, 1, 1.12 }, { 0, -0.06, 0 }, "Basalt", basalt),
++		Kit.box("LowerArm", { 1.32, 0.26, 1.32 }, { 0, 0.4, 0 }, "Basalt", basalt),
++		-- The magma seam round the cuff's top edge, and the one at the wrist.
++		Kit.box("LowerArm", { 1.36, 0.07, 1.36 }, { 0, 0.545, 0 }, "SmoothPlastic", magma),
++		Kit.box("LowerArm", { 1.16, 0.06, 1.16 }, { 0, -0.37, 0 }, "SmoothPlastic", magma),
++		-- The plated hand and its slab knuckle ridge.
++		Kit.box("Hand", { 1.1, 0.46, 1.1 }, { 0, 0, 0 }, "Basalt", basalt),
++		Kit.box("Hand", { 1.08, 0.16, 0.24 }, { 0, 0.12, -0.5 }, "Basalt", basaltSlab),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/BasaltplateHelm.luau b/src/shared/data/armourLooks/BasaltplateHelm.luau
+new file mode 100644
+index 0000000..961d94d
+--- /dev/null
++++ b/src/shared/data/armourLooks/BasaltplateHelm.luau
+@@ -0,0 +1,43 @@
++--!strict
++-- The basaltplate helm (zone armour, the BasaltplateHelm base): a helm stacked
++-- from offset basalt slabs, like a cairn of the mountain's own columns. Magma
++-- shows in the seams between the slabs, and the sealed visor is cut by three
++-- breathing vents, the centre one still hot. The top slab leans off to the
++-- right, so the outline breaks the sky at the high camera instead of reading
++-- as a plain box.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The set's palette, local to the four Basaltplate looks: basalt black with a
++-- blue cast, a darker recess, a slightly lifted slab face, and the magma in
++-- the seams. Every top plate is basalt black, never iron grey.
++local basalt = { 46, 48, 55 }
++local basaltDark = { 28, 29, 34 }
++local basaltSlab = { 62, 65, 74 }
++local magma = { 122, 45, 33 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "BasaltplateHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The long jaw box that seals the helm to the chin and meets the gorget.
++		Kit.box("Head", { 1.28, 0.54, 1.26 }, { 0, -0.33, 0 }, "Basalt", basaltDark),
++		-- The lower slab, the magma seam, and the mid slab above it.
++		Kit.box("Head", { 1.36, 0.36, 1.32 }, { 0.01, -0.01, 0 }, "Basalt", basalt),
++		Kit.box("Head", { 1.4, 0.08, 1.38 }, { 0.01, 0.19, 0 }, "SmoothPlastic", magma),
++		Kit.box("Head", { 1.32, 0.34, 1.28 }, { -0.02, 0.36, 0.01 }, "Basalt", basalt, { 0, 0, 3 }),
++		-- The second seam and the crown slab.
++		Kit.box("Head", { 1.44, 0.08, 1.42 }, { -0.01, 0.55, 0.01 }, "SmoothPlastic", magma),
++		Kit.box("Head", { 1.38, 0.2, 1.34 }, { 0.02, 0.64, -0.01 }, "Basalt", basalt, { 0, 0, -4 }),
++		-- The cairn stone on top, set off to the right and back.
++		Kit.box("Head", { 0.72, 0.2, 0.76 }, { 0.28, 0.83, 0.06 }, "Basalt", basaltSlab, { 0, 0, 8 }),
++		-- The sealed visor and its three vents, the centre one still hot.
++		Kit.box("Head", { 0.96, 0.58, 0.09 }, { 0, 0.02, -0.665 }, "Basalt", basaltSlab),
++		Kit.box("Head", { 0.1, 0.38, 0.08 }, { -0.24, 0.02, -0.74 }, "SmoothPlastic", basaltDark),
++		Kit.box("Head", { 0.1, 0.38, 0.08 }, { 0, 0.02, -0.74 }, "SmoothPlastic", magma),
++		Kit.box("Head", { 0.1, 0.38, 0.08 }, { 0.24, 0.02, -0.74 }, "SmoothPlastic", basaltDark),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..b154e25 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,16 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:BasaltplateHelm"] = row(
++		"A helm stacked from offset black basalt slabs, red seams between them and three vents."
++	),
++	["armour:BasaltplateChest"] = row(
++		"Black basalt column slabs seamed with magma, an iron belt and broad black pauldrons."
++	),
++	["armour:BasaltplateGloves"] = row(
++		"Heavy black basalt gauntlets with flared cuffs and magma seams at cuff and wrist."
++	),
++	["armour:BasaltplateBoots"] = row("Black basalt greaves and sabatons, magma seams at the knee and the ankle."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

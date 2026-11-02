@@ -1,0 +1,14 @@
+{
+  "picked": ["B", "C", "D"],
+  "reasons": {
+    "B": "Columnar terraces: shoulders stacked into stepped basalt ledges with magma-red seams between the layers and a zigzag crack on the chest, under a low sealed helm with one red slit; one rock idea that reads from above and is unlike any reference family (second critic 7.65, first; first critic 6.2, third).",
+    "C": "Crag: one big raw basalt crag breaking out of the right pauldron over a red seam, a true mountain outline at the ARPG camera (second critic 7.3, second; it rose from 5.65).",
+    "D": "Cairn: clean, well-fitted slab plate with the run's best red-seam read (red undersides on sloped pauldrons) under a cairn-stone helm (second critic 6.9, third; it rose from 4.75)."
+  },
+  "fixes": {
+    "B": "Step the terraces harder (each tier narrower, the top one tilted) and thicken the chest crack so it joins the pauldron seams.",
+    "C": "The rest of the body is plain black boxes: grow the crag past the head line and tie the other pauldron in with a stepped edge.",
+    "D": "Smooth regular slabs read as an iron knight in black: offset or chip the pauldron slabs, and lengthen the tassets over the bare green hip."
+  },
+  "notes": "6 of 6 survived the draft and the rework with no resume. The two critic passes disagreed more than in any wave-2 run: pass 1 led with E (7.35) and A (7.0), pass 2 put them fourth and last (6.5, 5.85) after the rework, and picked B, C and D, which all rose. All six are black slab plate with red seams, so the shoulder idea carries the family; every set leaves the dummy's green hips and legs showing between plates."
+}
