@@ -97,6 +97,9 @@ the game later.
 | CinderveilObsidian | cinderveil-wave2 (C) | Aor'lan Mountain | 1 | 83 | obsidian court: fitted black bodice, ash corset, sulphur sash, wide charcoal bell with a magma-red hem |
 | CinderveilCrystal | cinderveil-wave2 (A) | Aor'lan Mountain | 2 | 71 | black crystal crown, basalt bodice seamed with red cracks, the best flare from the hip |
 | CinderveilFissure | cinderveil-wave2 (B) | Aor'lan Mountain | 3 | 66 | bright jagged magma cracks over basalt, ash stole and hem; the strongest lava read |
+| CliffwindValkyrie | cliffwind-wave2 (A) | Aor'lan Cliffs | 1 | 75 | cliff valkyrie: pale sky-blue steel A-line with a real bell, white stomacher and cape, white bow-winged helm |
+| CliffwindStorm | cliffwind-wave2 (B) | Aor'lan Cliffs | 2 | 80 | cloud-white skirt of jagged wind-cut panels flaring hard under grey-blue plate, winged helm |
+| CliffwindEyrie | cliffwind-wave2 (D) | Aor'lan Cliffs | 3 | 74 | cloud-white bodice over a sky-blue skirt, tan leather, steel feather-crested half-helm |
 <!-- wave2-aorlan-end -->
 
 ## Wave 2: Heartland (2026-11-02)

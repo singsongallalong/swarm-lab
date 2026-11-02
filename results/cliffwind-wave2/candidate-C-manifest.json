@@ -1,0 +1,16 @@
+{
+  "skill": "Cliffwind",
+  "look": "CliffwindHelm,CliffwindDress,CliffwindSleeves,CliffwindHem",
+  "rows_added": ["CliffwindHelm", "CliffwindDress", "CliffwindSleeves", "CliffwindHem"],
+  "intent": "A courtly cliff-valkyrie gown: a torso-tight cloud-white bodice with slim sky-blue sleeves and a steel-laced waist over a white bell skirt that steps out from a sky hip band to a wide flounced hem, with a swept steel crest over a white coif and a sky-blue train down the back; from the high camera it reads as a narrow white top over a wide tiered white bell with blue bands and a steel crest.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A sheer gauze veil for the crest: armour parts have no transparency, so the veil is solid cloth.",
+    "A shallow taper for the skirt: boxes cannot taper, so the bell is built as stepped shells."
+  ]
+}

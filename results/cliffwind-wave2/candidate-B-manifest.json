@@ -1,0 +1,16 @@
+{
+  "skill": "Cliffwind",
+  "look": "CliffwindHelm,CliffwindDress,CliffwindSleeves,CliffwindHem",
+  "rows_added": ["CliffwindHelm", "CliffwindDress", "CliffwindSleeves", "CliffwindHem"],
+  "intent": "A high-fantasy storm-valkyrie court gown of grey-blue plate and cloud-white cloth with lightning trims, reading from the high camera as a slim dark-sleeved top over a wide sky-hemmed bell skirt.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A pale sky-blue cloth that stays blue rather than greying under the mood preset.",
+    "A single skirt piece spanning thigh and shin so the two tiers can never part at the knee."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "run": "cliffwind-wave2",
+  "letter": "D",
+  "set": "CliffwindEyrie",
+  "looks": [
+    "CliffwindEyrieDress",
+    "CliffwindEyrieHelm",
+    "CliffwindEyrieHem",
+    "CliffwindEyrieSleeves"
+  ],
+  "original_looks": [
+    "CliffwindDress",
+    "CliffwindHelm",
+    "CliffwindHem",
+    "CliffwindSleeves"
+  ],
+  "pick_rank": 3,
+  "intent": "An eyrie-keeper's court gown of cloud-white bodice, sky-blue bell skirt, tan leather and a steel feather-crested half-helm, reading from the high camera as a narrow pale top over a wide blue skirt.",
+  "reason": "Eyrie keeper: a cloud-white bodice over a sky-blue skirt with tan leather and a steel feather-crested half-helm, the only take carrying the brief's rock tan (second critic 5.6, third).",
+  "first_fix": "The split skirt hangs straight and reads as a tabard: splay it into one A-line, and drop the wide white cuff rings.",
+  "parts": 74
+}

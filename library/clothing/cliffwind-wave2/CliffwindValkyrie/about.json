@@ -1,0 +1,22 @@
+{
+  "run": "cliffwind-wave2",
+  "letter": "A",
+  "set": "CliffwindValkyrie",
+  "looks": [
+    "CliffwindValkyrieDress",
+    "CliffwindValkyrieHelm",
+    "CliffwindValkyrieHem",
+    "CliffwindValkyrieSleeves"
+  ],
+  "original_looks": [
+    "CliffwindDress",
+    "CliffwindHelm",
+    "CliffwindHem",
+    "CliffwindSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A courtly cliff-valkyrie gown in sky blue, cloud white and blue steel — a winged steel helm, a white stomacher and a short white cape over a long bell skirt — that reads from the high camera as one pale blue bell under a white-winged crown.",
+  "reason": "Cliff valkyrie: the run's clearest armoured gown, a pale sky-blue steel A-line with a real bell from the hip under a white bow-winged helm, one pale blue bell from the ARPG camera (second critic 7.35, first; first critic 7.13, first).",
+  "first_fix": "Slim the full-width block sleeves and drop the shoulder caps; carry the light colours round the dark back; add wind movement and rock-tan trim.",
+  "parts": 75
+}

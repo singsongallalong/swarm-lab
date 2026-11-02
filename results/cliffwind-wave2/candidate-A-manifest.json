@@ -1,0 +1,17 @@
+{
+  "skill": "Cliffwind",
+  "look": "CliffwindHelm,CliffwindDress,CliffwindSleeves,CliffwindHem",
+  "rows_added": ["CliffwindHelm", "CliffwindDress", "CliffwindSleeves", "CliffwindHem"],
+  "intent": "A courtly cliff-valkyrie gown in sky blue, cloud white and blue steel — a winged steel helm, a white stomacher and a short white cape over a long bell skirt — that reads from the high camera as one pale blue bell under a white-winged crown.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A brighter cloud white than (184, 194, 204) for cloth: the cape falls in its own shadow and reads grey rather than white at the high camera.",
+    "A tapered or wedge-shaped gore piece: boxes make the skirt a faceted bell with a stepped hem instead of one smooth cone.",
+    "A thin two-sided cloth material for the skirt gores: boxes need 0.09 thickness, so their edges read as plates from above."
+  ]
+}

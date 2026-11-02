@@ -1,0 +1,16 @@
+{
+  "skill": "Cliffwind",
+  "look": "CliffwindHelm,CliffwindDress,CliffwindSleeves,CliffwindHem",
+  "rows_added": ["CliffwindHelm", "CliffwindDress", "CliffwindSleeves", "CliffwindHem"],
+  "intent": "A courtly cliff-valkyrie gown in pale sky blue and cloud white — a light steel breastplate over a warm tan sash, a closed tiered pennant skirt that bells from hip to ankle, and a winged hood with a wide scarf streaming back — reading from the high camera as a slim blue top over a bright, full bell.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered or wedge-cut skirt panel: box panels can only step wider, so the bell is built from tiers rather than one clean flare.",
+    "A rippled or scalloped hem piece to make the pennant hems feel wind-caught; box hems stay straight."
+  ]
+}

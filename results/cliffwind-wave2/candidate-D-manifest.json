@@ -1,0 +1,16 @@
+{
+  "skill": "Cliffwind",
+  "look": "CliffwindHelm,CliffwindDress,CliffwindSleeves,CliffwindHem",
+  "rows_added": ["CliffwindHelm", "CliffwindDress", "CliffwindSleeves", "CliffwindHem"],
+  "intent": "An eyrie-keeper's court gown of cloud-white bodice, sky-blue bell skirt, tan leather and a steel feather-crested half-helm, reading from the high camera as a narrow pale top over a wide blue skirt.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A tapered or cone-shaped part for skirt tiers; boxes only give stepped shelves, so the bell has to be built in steps.",
+    "A feather-shaped piece for the helm crest and hem feathers; boxes read as flat slats from above."
+  ]
+}

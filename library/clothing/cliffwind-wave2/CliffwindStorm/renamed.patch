@@ -1,0 +1,238 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..4d1394a 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -7,6 +7,10 @@ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+ local Chainmail = require("./armourLooks/Chainmail")
++local CliffwindStormDress = require("./armourLooks/CliffwindStormDress")
++local CliffwindStormHelm = require("./armourLooks/CliffwindStormHelm")
++local CliffwindStormHem = require("./armourLooks/CliffwindStormHem")
++local CliffwindStormSleeves = require("./armourLooks/CliffwindStormSleeves")
+ local EmberTalisman = require("./armourLooks/EmberTalisman")
+ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+@@ -36,6 +40,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
+ 	Chainmail = Chainmail,
++	CliffwindStormDress = CliffwindStormDress,
++	CliffwindStormHelm = CliffwindStormHelm,
++	CliffwindStormHem = CliffwindStormHem,
++	CliffwindStormSleeves = CliffwindStormSleeves,
+ 	EmberTalisman = EmberTalisman,
+ 	FenscaleGrips = FenscaleGrips,
+ 	FenscaleHood = FenscaleHood,
+diff --git a/src/shared/data/armourLooks/CliffwindStormDress.luau b/src/shared/data/armourLooks/CliffwindStormDress.luau
+new file mode 100644
+index 0000000..90cf60a
+--- /dev/null
++++ b/src/shared/data/armourLooks/CliffwindStormDress.luau
+@@ -0,0 +1,59 @@
++--!strict
++-- The storm sister's gown, chest (the Cliffwind set): a fitted grey-blue
++-- cuirass framing a broad cloud-white stomacher with a lightning bolt down
++-- it, and a white neckline. A wide cloud-white cape falls from the back below
++-- the shoulders, its hem a sky-blue line. The waist is a narrow dark corset
++-- laced in white and belted in warm rock tan. Below it a peplum of blue
++-- plates overhangs the white skirt, which hangs from the thighs in five wide
++-- gores a leg, widening from the hip and reaching past the knee.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local CLOUD = { 202, 205, 208 }
++local CLOUD_SHADE = { 172, 178, 186 }
++local SKY = { 150, 176, 210 }
++local PLATE = { 100, 118, 144 }
++local PLATE_DARK = { 72, 86, 108 }
++local STEEL_LIGHT = { 206, 218, 232 }
++local TAN = { 150, 126, 96 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CliffwindStormDress",
++	slot = "Chest",
++	parts = {
++		-- The cuirass, a grey-blue plate over the whole torso, with the white
++		-- collar and stomacher showing through it.
++		Kit.box("UpperTorso", { 2.04, 1.64, 1.04 }, { 0, 0, 0 }, "Metal", PLATE),
++		Kit.box("UpperTorso", { 1.18, 0.14, 1.09 }, { 0, 0.76, 0 }, "Fabric", CLOUD),
++		Kit.box("UpperTorso", { 1, 1.2, 0.07 }, { 0, -0.18, -0.545 }, "Fabric", CLOUD),
++		-- The bolt down the stomacher, three steps.
++		Kit.box("UpperTorso", { 0.11, 0.34, 0.05 }, { 0.06, 0.22, -0.6 }, "Metal", STEEL_LIGHT, { 0, 0, -18 }),
++		Kit.box("UpperTorso", { 0.11, 0.34, 0.05 }, { -0.05, -0.04, -0.6 }, "Metal", STEEL_LIGHT, { 0, 0, 22 }),
++		Kit.box("UpperTorso", { 0.11, 0.3, 0.05 }, { 0.05, -0.3, -0.6 }, "Metal", STEEL_LIGHT, { 0, 0, -16 }),
++		-- The white cape, hung from below the shoulder tops and falling to the
++		-- hip, its hem edged in sky blue.
++		Kit.box("UpperTorso", { 1.72, 1.35, 0.07 }, { 0, -0.2, 0.58 }, "Fabric", CLOUD, { -6, 0, 0 }),
++		Kit.box("UpperTorso", { 1.74, 0.1, 0.06 }, { 0, -0.86, 0.65 }, "Fabric", SKY, { -6, 0, 0 }),
++		-- The waist: a narrow dark corset, laced in white, under a tan belt.
++		Kit.box("LowerTorso", { 1.8, 0.42, 0.96 }, { 0, 0, 0 }, "Metal", PLATE_DARK),
++		Kit.box("LowerTorso", { 0.05, 0.32, 0.05 }, { -0.09, 0, -0.51 }, "Fabric", CLOUD, { 0, 0, -32 }),
++		Kit.box("LowerTorso", { 0.05, 0.32, 0.05 }, { 0.09, 0, -0.51 }, "Fabric", CLOUD, { 0, 0, 32 }),
++		Kit.box("LowerTorso", { 1.88, 0.18, 1.02 }, { 0, 0.1, 0 }, "Leather", TAN),
++		Kit.box("LowerTorso", { 0.18, 0.2, 0.06 }, { 0.08, 0.1, -0.52 }, "Metal", STEEL_LIGHT),
++		-- The peplum: grey-blue plates hung from the belt over the white skirt.
++		Kit.box("UpperLeg", { 1.02, 0.44, 0.07 }, { 0.04, 0.44, -0.6 }, "Metal", PLATE, { 12, -6, 0 }),
++		Kit.box("UpperLeg", { 0.07, 0.44, 0.94 }, { 0.58, 0.44, 0 }, "Metal", PLATE_DARK, { 0, 0, 12 }),
++		Kit.box("UpperLeg", { 1.02, 0.44, 0.07 }, { 0.04, 0.44, 0.6 }, "Metal", PLATE, { -12, 6, 0 }),
++		-- The upper skirt: five gores a leg that widen from the hip, shaded
++		-- only on the front folds, and run on past the knee to meet the shins.
++		Kit.box("UpperLeg", { 1.4, 1.24, 0.07 }, { 0.02, 0, -0.56 }, "Fabric", CLOUD, { 12, -7, 8 }),
++		Kit.box("UpperLeg", { 1.1, 1.24, 0.07 }, { 0.55, 0, -0.46 }, "Fabric", CLOUD_SHADE, { 10, -40, 10 }),
++		Kit.box("UpperLeg", { 0.07, 1.24, 1.08 }, { 0.6, 0, 0 }, "Fabric", CLOUD, { 0, 0, 22 }),
++		Kit.box("UpperLeg", { 1.1, 1.24, 0.07 }, { 0.55, 0, 0.46 }, "Fabric", CLOUD, { -10, 40, 10 }),
++		Kit.box("UpperLeg", { 1.4, 1.24, 0.07 }, { 0.02, 0, 0.56 }, "Fabric", CLOUD, { -12, 7, 8 }),
++		-- The upper sleeves, slim and dark, so the eye goes to the white skirt.
++		Kit.box("UpperArm", { 1.02, 1.24, 1.02 }, { 0, 0, 0 }, "Fabric", PLATE_DARK),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CliffwindStormHelm.luau b/src/shared/data/armourLooks/CliffwindStormHelm.luau
+new file mode 100644
+index 0000000..60e6b82
+--- /dev/null
++++ b/src/shared/data/armourLooks/CliffwindStormHelm.luau
+@@ -0,0 +1,41 @@
++--!strict
++-- The storm sister's crown (the Cliffwind set's helm): a snug cloud-white
++-- coif over the crown and down the back of the head, its hem a sky-blue line.
++-- A steel circlet with a sky gem sits at the brow, and above it two broad
++-- white feather wings sweep far up, out and back, with sky-blue tips and a
++-- small lightning bolt between them. It takes its height above the ears,
++-- never its width at them, so it reads as a headpiece and not a helm.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local CLOUD = { 202, 205, 208 }
++local CLOUD_SHADE = { 172, 178, 186 }
++local SKY = { 150, 176, 210 }
++local STEEL = { 150, 158, 170 }
++local STEEL_LIGHT = { 206, 218, 232 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CliffwindStormHelm",
++	slot = "Helm",
++	parts = {
++		-- The coif: a white cap over the crown, and the fall of cloth down the
++		-- back of the head with a sky-blue hem.
++		Kit.box("Head", { 1.28, 0.52, 1.28 }, { 0, 0.36, 0.01 }, "Fabric", CLOUD),
++		Kit.box("Head", { 1.2, 0.92, 0.07 }, { 0, -0.08, 0.63 }, "Fabric", CLOUD_SHADE, { -4, 0, 0 }),
++		Kit.box("Head", { 1.24, 0.09, 0.07 }, { 0, -0.53, 0.66 }, "Fabric", SKY, { -4, 0, 0 }),
++		-- The circlet and its gem at the brow.
++		Kit.box("Head", { 1.3, 0.09, 1.3 }, { 0, 0.15, 0 }, "Metal", STEEL),
++		Kit.box("Head", { 0.16, 0.14, 0.06 }, { 0, 0.15, -0.66 }, "Metal", SKY),
++		-- The wings, one each side: broad white plates swept far up, out and
++		-- back above the ears, with a sky-blue feather tip above each.
++		Kit.box("Head", { 0.56, 1, 0.08 }, { 0.44, 0.62, 0.18 }, "Fabric", CLOUD, { 28, -35, -22 }),
++		Kit.box("Head", { 0.56, 1, 0.08 }, { -0.44, 0.62, 0.18 }, "Fabric", CLOUD, { 28, 35, 22 }),
++		Kit.box("Head", { 0.34, 0.5, 0.07 }, { 0.64, 1.06, 0.46 }, "Fabric", SKY, { 40, -35, -34 }),
++		Kit.box("Head", { 0.34, 0.5, 0.07 }, { -0.64, 1.06, 0.46 }, "Fabric", SKY, { 40, 35, 34 }),
++		-- The bolt on the front of the cap, two steps.
++		Kit.box("Head", { 0.08, 0.26, 0.05 }, { 0.03, 0.28, -0.65 }, "Metal", STEEL_LIGHT, { 0, 0, -20 }),
++		Kit.box("Head", { 0.08, 0.24, 0.05 }, { -0.035, 0.5, -0.62 }, "Metal", STEEL_LIGHT, { 0, 0, 22 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CliffwindStormHem.luau b/src/shared/data/armourLooks/CliffwindStormHem.luau
+new file mode 100644
+index 0000000..4746b19
+--- /dev/null
++++ b/src/shared/data/armourLooks/CliffwindStormHem.luau
+@@ -0,0 +1,42 @@
++--!strict
++-- The storm sister's hem, boots (the Cliffwind set): the white skirt carried
++-- on down the shins in five wide gores a leg, widening out of the knee to
++-- meet the thigh's gores and running to the ankle. A sky-blue petticoat band
++-- finishes the hem, wider again than the white above. The gores are shaded
++-- only on the front folds, so the back stays white. Grey-blue shoes with a
++-- steel toe and a warm tan sole below.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local CLOUD = { 202, 205, 208 }
++local CLOUD_SHADE = { 172, 178, 186 }
++local SKY = { 150, 176, 210 }
++local PLATE = { 100, 118, 144 }
++local STEEL = { 150, 158, 170 }
++local TAN = { 150, 126, 96 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CliffwindStormHem",
++	slot = "Boots",
++	parts = {
++		-- The lower skirt: five white gores a leg, hung from the knee and
++		-- flaring out to the ankle.
++		Kit.box("LowerLeg", { 1.75, 1.06, 0.07 }, { 0.02, 0.09, -0.752 }, "Fabric", CLOUD, { 10, -8, 10 }),
++		Kit.box("LowerLeg", { 1.2, 1.06, 0.07 }, { 0.68, 0.09, -0.68 }, "Fabric", CLOUD_SHADE, { 12, -40, 12 }),
++		Kit.box("LowerLeg", { 0.07, 1.06, 1.2 }, { 1.05, 0.09, 0 }, "Fabric", CLOUD, { 0, 0, 28 }),
++		Kit.box("LowerLeg", { 1.2, 1.06, 0.07 }, { 0.68, 0.09, 0.68 }, "Fabric", CLOUD, { -12, 40, 12 }),
++		Kit.box("LowerLeg", { 1.75, 1.06, 0.07 }, { 0.02, 0.09, 0.752 }, "Fabric", CLOUD, { -10, 8, 10 }),
++		-- The sky-blue petticoat band at the ankle, wider again.
++		Kit.box("LowerLeg", { 2, 0.18, 0.07 }, { 0.02, -0.51, -0.9 }, "Fabric", SKY, { 24, -9, 12 }),
++		Kit.box("LowerLeg", { 0.95, 0.18, 0.07 }, { 0.98, -0.51, -0.8 }, "Fabric", SKY, { 18, -40, 16 }),
++		Kit.box("LowerLeg", { 0.07, 0.18, 1.5 }, { 1.32, -0.51, 0 }, "Fabric", SKY, { 0, 0, 32 }),
++		Kit.box("LowerLeg", { 0.95, 0.18, 0.07 }, { 0.98, -0.51, 0.8 }, "Fabric", SKY, { -18, 40, 16 }),
++		Kit.box("LowerLeg", { 2, 0.18, 0.07 }, { 0.02, -0.51, 0.9 }, "Fabric", SKY, { -24, 9, 12 }),
++		-- The shoes: grey-blue, a steel toe, a warm tan sole.
++		Kit.box("Foot", { 1.04, 0.32, 1.3 }, { 0, 0.01, -0.14 }, "Leather", PLATE),
++		Kit.box("Foot", { 1.06, 0.2, 0.36 }, { 0, -0.01, -0.72 }, "Metal", STEEL),
++		Kit.box("Foot", { 1.06, 0.07, 1.34 }, { 0, -0.16, -0.15 }, "Leather", TAN),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CliffwindStormSleeves.luau b/src/shared/data/armourLooks/CliffwindStormSleeves.luau
+new file mode 100644
+index 0000000..d7340ab
+--- /dev/null
++++ b/src/shared/data/armourLooks/CliffwindStormSleeves.luau
+@@ -0,0 +1,31 @@
++--!strict
++-- The storm sister's sleeves, gloves (the Cliffwind set): slim dark
++-- steel-blue sleeves that keep the arms close and quiet, with a modest
++-- trumpet at the elbow ringed in sky blue and a cloud-white lace cuff at the
++-- wrist. Dark grey-blue gloves with a pale band at the wrist, so the white of
++-- the gown stays in the stomacher, cape and skirt.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local CLOUD = { 202, 205, 208 }
++local SKY = { 150, 176, 210 }
++local PLATE = { 100, 118, 144 }
++local PLATE_DARK = { 72, 86, 108 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CliffwindStormSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The lower sleeve, its elbow flare and the sky-blue rim at its top.
++		Kit.box("LowerArm", { 1.02, 1.16, 1.02 }, { 0, -0.02, 0 }, "Fabric", PLATE_DARK),
++		Kit.box("LowerArm", { 1.14, 0.3, 1.14 }, { 0, 0.46, 0 }, "Fabric", PLATE),
++		Kit.box("LowerArm", { 1.18, 0.09, 1.18 }, { 0, 0.585, 0 }, "Metal", SKY),
++		-- The cloud-white lace cuff at the wrist.
++		Kit.box("LowerArm", { 1.1, 0.22, 1.1 }, { 0, -0.49, 0 }, "Fabric", CLOUD),
++		-- The glove, with a pale band at the wrist.
++		Kit.box("Hand", { 1.04, 0.44, 1.08 }, { 0, 0, -0.02 }, "Leather", PLATE_DARK),
++		Kit.box("Hand", { 1.08, 0.07, 1.12 }, { 0, 0.16, -0.01 }, "Fabric", SKY),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..f309535 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:CliffwindStormHelm"] = row("A cloud-white coif with swept wings, a steel circlet and a lightning bolt."),
++	["armour:CliffwindStormDress"] = row("A grey-blue plated bodice with a white stomacher, tan belt and a plated peplum."),
++	["armour:CliffwindStormSleeves"] = row("Slim steel-blue sleeves with sky rings and cloud-white lace cuffs."),
++	["armour:CliffwindStormHem"] = row("A cloud-white skirt bell over a sky-blue hem, on grey-blue shoes with steel toes."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

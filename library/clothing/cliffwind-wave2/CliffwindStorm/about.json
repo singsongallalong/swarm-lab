@@ -1,0 +1,22 @@
+{
+  "run": "cliffwind-wave2",
+  "letter": "B",
+  "set": "CliffwindStorm",
+  "looks": [
+    "CliffwindStormDress",
+    "CliffwindStormHelm",
+    "CliffwindStormHem",
+    "CliffwindStormSleeves"
+  ],
+  "original_looks": [
+    "CliffwindDress",
+    "CliffwindHelm",
+    "CliffwindHem",
+    "CliffwindSleeves"
+  ],
+  "pick_rank": 2,
+  "intent": "A high-fantasy storm-valkyrie court gown of grey-blue plate and cloud-white cloth with lightning trims, reading from the high camera as a slim dark-sleeved top over a wide sky-hemmed bell skirt.",
+  "reason": "Storm sister: a bright cloud-white skirt of jagged wind-cut panels that flares hard under grey-blue plate and a winged helm, the most wind in any set (second critic 7.0, second; it rose from 6.33).",
+  "first_fix": "The dark navy block sleeves read as pauldrons: slim and lighten them; sweep the hem shards one way, as if the wind took them.",
+  "parts": 80
+}
