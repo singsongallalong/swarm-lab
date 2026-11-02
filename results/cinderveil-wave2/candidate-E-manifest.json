@@ -1,0 +1,16 @@
+{
+  "skill": "Cinderveil",
+  "look": "CinderveilHelm,CinderveilDress,CinderveilSleeves,CinderveilHem",
+  "rows_added": ["CinderveilHelm", "CinderveilDress", "CinderveilSleeves", "CinderveilHem"],
+  "intent": "A vent-priestess gown: a basalt bodice with a magma-red sash and a black over-skirt split over a wide ash-grey underskirt, bold red seams and a sulphur hem, under a grey hood and smoke veil, reading from the high camera as a narrow cinched waist over a bright full bell.",
+  "renders": [
+    ".swarm/out/armour-set-r7.png",
+    ".swarm/out/armour-set-close-r7.png",
+    ".swarm/out/armour-set-fit-r7.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered or trapezoid skirt panel: box panels step the bell at the knee instead of flaring smoothly.",
+    "A translucent cloth material for the veils, so the vent smoke reads as smoke rather than a solid sheet."
+  ]
+}

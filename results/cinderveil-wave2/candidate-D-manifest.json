@@ -1,0 +1,16 @@
+{
+  "skill": "Cinderveil",
+  "look": "CinderveilHelm,CinderveilDress,CinderveilSleeves,CinderveilHem",
+  "rows_added": ["CinderveilHelm", "CinderveilDress", "CinderveilSleeves", "CinderveilHem"],
+  "intent": "A magma-lolita court gown for the mountain's devotees: a dark basalt bodice with a pale ash V placket and sulphur brooch, a magma sash over an ash belt, four deep skirt tiers with a small train and uneven lit cracks, slim bell sleeves and a tiny horned bonnet with a sulphur-set red circlet, reading from the high camera as a dark bell with pale bands and bright irregular seams.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A cone or tapered skirt piece, so the bell could flare smoothly instead of in stepped box tiers.",
+    "Emissive or Neon magma for the crack seams; armour looks carry no glow, so the lit folds are colour only."
+  ]
+}

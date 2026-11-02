@@ -1,0 +1,22 @@
+{
+  "run": "cinderveil-wave2",
+  "letter": "A",
+  "set": "CinderveilCrystal",
+  "looks": [
+    "CinderveilCrystalDress",
+    "CinderveilCrystalHelm",
+    "CinderveilCrystalHem",
+    "CinderveilCrystalSleeves"
+  ],
+  "original_looks": [
+    "CinderveilDress",
+    "CinderveilHelm",
+    "CinderveilHem",
+    "CinderveilSleeves"
+  ],
+  "pick_rank": 2,
+  "intent": "A mountain devotee's court gown: a basalt bodice seamed with magma cracks beneath a black crystal crown, flaring through a short overskirt into a stepped ash-grey bell, so from the high camera it reads as a narrow-waisted dark top over a pale, wide hem.",
+  "reason": "Crystal crown: the best flare from the hip, a black crystal crown over a basalt bodice seamed with red cracks running down the skirt (second critic 6.55, second; it rose from 5.55 after the rework dropped its stepped plinth hem).",
+  "first_fix": "Nearly all black, it vanishes into the night: add ash grey to the skirt or bodice, make the cracks bolder, and slim the sleeves.",
+  "parts": 71
+}

@@ -82,6 +82,23 @@ The shared flaw in all eighteen is full-width block sleeves: the shoulder check 
 critics read the top as broad. Narrowing the sleeves is the first fix for most of them
 (`first_fix` in each `about.json`).
 
+## Wave 2: Aor'lan (2026-11-02)
+
+Wardrobe wave 2 for Aor'lan (Rhodri, arpg-game R039): two gown runs (`feminine` figure, slim
+sleeves and a flared skirt asked for) and two armour runs, three picks from each, all from
+swarm-lab briefs at `57474d7`. Each run had two render-only critic passes with one rework
+between them; run evidence is in `results/<run>/`. Same files per set as above. Part counts are
+`ArmourLook.partCount` on arpg-game main `20eaa41`, where every patch applies and `Catalog`,
+`ContentCompleteness` and `DressBudget` pass. **EPIC** sets will get a worn particle effect in
+the game later.
+
+| Set | Run | Zone | Pick | Parts | In short |
+| --- | --- | --- | --- | --- | --- |
+| CinderveilObsidian | cinderveil-wave2 (C) | Aor'lan Mountain | 1 | 83 | obsidian court: fitted black bodice, ash corset, sulphur sash, wide charcoal bell with a magma-red hem |
+| CinderveilCrystal | cinderveil-wave2 (A) | Aor'lan Mountain | 2 | 71 | black crystal crown, basalt bodice seamed with red cracks, the best flare from the hip |
+| CinderveilFissure | cinderveil-wave2 (B) | Aor'lan Mountain | 3 | 66 | bright jagged magma cracks over basalt, ash stole and hem; the strongest lava read |
+<!-- wave2-aorlan-end -->
+
 ## Porting notes
 
 1. **Apply:** from a swarm-lab clone, onto a branch from arpg-game main:

@@ -1,0 +1,21 @@
+{
+  "skill": "Cinderveil",
+  "look": "CinderveilHelm,CinderveilDress,CinderveilSleeves,CinderveilHem",
+  "rows_added": [
+    "CinderveilHelm",
+    "CinderveilDress",
+    "CinderveilSleeves",
+    "CinderveilHem"
+  ],
+  "intent": "A mountain devotee's court gown: a basalt bodice seamed with magma cracks beneath a black crystal crown, flaring through a short overskirt into a stepped ash-grey bell, so from the high camera it reads as a narrow-waisted dark top over a pale, wide hem.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "An emissive magma seam: armour parts carry no glow, so the cracks are flat red rather than molten.",
+    "A cloth veil with some transparency for the nape; the veil is a solid dark panel."
+  ]
+}

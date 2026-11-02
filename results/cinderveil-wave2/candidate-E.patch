@@ -1,0 +1,290 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..2771506 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -7,6 +7,10 @@ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+ local Chainmail = require("./armourLooks/Chainmail")
++local CinderveilDress = require("./armourLooks/CinderveilDress")
++local CinderveilHelm = require("./armourLooks/CinderveilHelm")
++local CinderveilHem = require("./armourLooks/CinderveilHem")
++local CinderveilSleeves = require("./armourLooks/CinderveilSleeves")
+ local EmberTalisman = require("./armourLooks/EmberTalisman")
+ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+@@ -36,6 +40,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
+ 	Chainmail = Chainmail,
++	CinderveilDress = CinderveilDress,
++	CinderveilHelm = CinderveilHelm,
++	CinderveilHem = CinderveilHem,
++	CinderveilSleeves = CinderveilSleeves,
+ 	EmberTalisman = EmberTalisman,
+ 	FenscaleGrips = FenscaleGrips,
+ 	FenscaleHood = FenscaleHood,
+diff --git a/src/shared/data/armourLooks/CinderveilDress.luau b/src/shared/data/armourLooks/CinderveilDress.luau
+new file mode 100644
+index 0000000..dd6d06e
+--- /dev/null
++++ b/src/shared/data/armourLooks/CinderveilDress.luau
+@@ -0,0 +1,87 @@
++--!strict
++-- The Cinderveil dress (the Cinderveil set's chest): a basalt-black bodice
++-- with a low ash neckline and a slim neck band, a broad magma-red sash at the
++-- waist under a pale belt, and a wide bell skirt hung from the thighs. The
++-- skirt is built in two tones: a black outer skirt with a red centre stripe
++-- running from the sash to the knee, over the pale grey underskirt that the
++-- boots carry on to the hem. The upper sleeves are close grey sleeves; all the
++-- volume is at the gloves' bell cuffs.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local BASALT = { 44, 40, 44 }
++local BASALT_DARK = { 28, 26, 30 }
++local SMOKE = { 80, 76, 73 }
++local ASH = { 100, 96, 92 }
++local SULPHUR = { 150, 134, 70 }
++local MAGMA = { 132, 48, 36 }
++local EMBER = { 172, 56, 36 }
++
++-- How far the upper skirt runs down the thigh from just above its top.
++local SKIRT = 1.3
++local SKIRT_Y = 0.75 - SKIRT / 2
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CinderveilDress",
++	slot = "Chest",
++	parts = Kit.join({
++		{
++			-- The bodice, its darker fitted front, and a slim neck band.
++			Kit.box("UpperTorso", { 2.08, 1.62, 1.04 }, { 0, 0.01, 0 }, "Fabric", BASALT),
++			Kit.box("UpperTorso", { 1.0, 1.04, 0.04 }, { 0, -0.12, -0.54 }, "Fabric", BASALT_DARK),
++			Kit.box("UpperTorso", { 1.26, 0.12, 1.18 }, { 0, 0.78, 0 }, "Fabric", ASH),
++			Kit.box("UpperTorso", { 1.3, 0.04, 1.22 }, { 0, 0.85, 0 }, "Fabric", SULPHUR),
++			-- A short ash sweetheart neckline, with a gold brooch at its point.
++			Kit.box("UpperTorso", { 0.09, 0.4, 0.04 }, { 0.16, 0.61, -0.555 }, "Fabric", ASH, { 0, 0, -30 }),
++			Kit.box("UpperTorso", { 0.09, 0.4, 0.04 }, { -0.16, 0.61, -0.555 }, "Fabric", ASH, { 0, 0, 30 }),
++			Kit.box("UpperTorso", { 0.16, 0.16, 0.08 }, { 0, 0.42, -0.575 }, "Metal", SULPHUR, { 0, 0, 45 }),
++			-- A bold cinder seam down the bodice, forking twice.
++			Kit.box("UpperTorso", { 0.09, 0.95, 0.04 }, { 0, 0.02, -0.575 }, "Neon", EMBER),
++			Kit.box("UpperTorso", { 0.07, 0.5, 0.04 }, { 0.19, -0.05, -0.575 }, "Neon", EMBER, { 0, 0, -22 }),
++			Kit.box("UpperTorso", { 0.06, 0.34, 0.04 }, { -0.17, 0.33, -0.575 }, "Neon", EMBER, { 0, 0, 25 }),
++			-- The bodice point over the sash.
++			Kit.box("UpperTorso", { 0.36, 0.36, 0.06 }, { 0, -0.58, -0.545 }, "Fabric", ASH, { 0, 0, 45 }),
++			-- The bustle at the back, and one ribbon tail down it.
++			Kit.box("UpperTorso", { 1.4, 0.62, 0.28 }, { 0, -0.45, 0.6 }, "Fabric", BASALT_DARK),
++			Kit.box("UpperTorso", { 1.44, 0.1, 0.3 }, { 0, -0.72, 0.6 }, "Fabric", ASH),
++			Kit.box("UpperTorso", { 0.14, 0.8, 0.04 }, { 0.55, 0.05, 0.755 }, "Fabric", ASH),
++			Kit.box("UpperTorso", { 0.16, 0.08, 0.05 }, { 0.55, -0.37, 0.755 }, "Fabric", SULPHUR),
++		},
++		{
++			-- The cinched waist: a broad magma sash under a pale belt and buckle.
++			Kit.box("LowerTorso", { 2.06, 0.4, 1.06 }, { 0, 0, 0 }, "Fabric", BASALT_DARK),
++			Kit.box("LowerTorso", { 2.12, 0.3, 1.12 }, { 0, 0.02, 0 }, "Fabric", MAGMA),
++			Kit.box("LowerTorso", { 2.14, 0.1, 1.16 }, { 0, 0.1, 0 }, "Fabric", ASH),
++			Kit.box("LowerTorso", { 0.2, 0.2, 0.08 }, { 0, 0.1, -0.6 }, "Metal", SULPHUR, { 0, 0, 45 }),
++		},
++		{
++			-- The upper sleeves: slim grey sleeves close to the arm, with a pale
++			-- band at the elbow where the gloves' bells take over.
++			Kit.box("UpperArm", { 1.02, 1.18, 1.02 }, { 0, 0.005, 0 }, "Fabric", SMOKE),
++			Kit.box("UpperArm", { 1.06, 0.1, 1.06 }, { 0, -0.5, 0 }, "Fabric", ASH),
++			Kit.box("UpperArm", { 0.05, 1.0, 0.05 }, { 0.52, 0.06, 0 }, "Fabric", SULPHUR),
++		},
++		{
++			-- The upper skirt: a black outer skirt with a red centre stripe,
++			-- flaring from the hip; the side panels close it, the right edge
++			-- wraps over in sulphur. Bold cinder seams run down the black.
++			Kit.box("UpperLeg", { 0.5, SKIRT, 0.08 }, { -0.25, SKIRT_Y, -0.64 }, "Fabric", MAGMA, { 8, 0, 0 }),
++			Kit.box("UpperLeg", { 0.9, SKIRT, 0.08 }, { 0.45, SKIRT_Y, -0.64 }, "Fabric", BASALT, { 8, 0, 0 }),
++			Kit.box("UpperLeg", { 1.4, SKIRT, 0.08 }, { 0.2, SKIRT_Y, 0.64 }, "Fabric", BASALT_DARK, { -8, 0, 0 }),
++			Kit.box("UpperLeg", { 0.1, SKIRT - 0.04, 1.15 }, { 0.7, SKIRT_Y, 0 }, "Fabric", BASALT_DARK, { 0, 0, 9 }),
++			Kit.box(
++				"UpperLeg",
++				{ 0.09, SKIRT, 0.06 },
++				{ -0.5, SKIRT_Y, -0.71 },
++				"Fabric",
++				SULPHUR,
++				{ 8, 0, 0 },
++				"Right"
++			),
++			Kit.box("UpperLeg", { 0.09, 0.9, 0.06 }, { 0.5, SKIRT_Y + 0.1, -0.675 }, "Neon", EMBER, { 8, 0, -8 }),
++			Kit.box("UpperLeg", { 0.07, 0.4, 0.06 }, { 0.36, SKIRT_Y - 0.3, -0.73 }, "Neon", EMBER, { 8, 0, 16 }),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CinderveilHelm.luau b/src/shared/data/armourLooks/CinderveilHelm.luau
+new file mode 100644
+index 0000000..66cde00
+--- /dev/null
++++ b/src/shared/data/armourLooks/CinderveilHelm.luau
+@@ -0,0 +1,45 @@
++--!strict
++-- The Cinderveil veil (the Cinderveil set's helm): a deep ash-grey hood
++-- gathered to a point above and behind the head, open at the face, and banded
++-- by a thin pale circlet with a cinder at the brow. The long veil falls like
++-- vent smoke, its pale panels edged with a magma-red lining, one wisp adrift.
++-- Height and fall, nothing wide at the ears; a circlet, not a mask.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local SMOKE = { 80, 76, 73 }
++local ASH = { 100, 96, 92 }
++local ASH_PALE = { 124, 119, 112 }
++local SULPHUR = { 150, 134, 70 }
++local MAGMA = { 132, 48, 36 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CinderveilHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The ash-grey hood shell: back, sides and crown, left open at the face.
++		Kit.box("Head", { 1.38, 1.16, 0.18 }, { 0, 0.02, 0.55 }, "Fabric", SMOKE),
++		Kit.box("Head", { 0.14, 1.06, 1.06 }, { 0.61, -0.02, 0.06 }, "Fabric", SMOKE),
++		Kit.box("Head", { 0.14, 1.06, 1.06 }, { -0.61, -0.02, 0.06 }, "Fabric", SMOKE),
++		Kit.box("Head", { 1.34, 0.22, 1.2 }, { 0, 0.66, 0.06 }, "Fabric", SMOKE),
++		-- The peak, stepping up and back, tipped in sulphur.
++		Kit.box("Head", { 0.84, 0.24, 0.8 }, { 0, 0.82, 0.24 }, "Fabric", SMOKE),
++		Kit.box("Head", { 0.4, 0.28, 0.36 }, { 0, 0.98, 0.38 }, "Fabric", SMOKE),
++		Kit.box("Head", { 0.42, 0.07, 0.38 }, { 0, 1.14, 0.38 }, "Fabric", SULPHUR),
++		-- A thin pale circlet across the brow, edged in sulphur.
++		Kit.box("Head", { 0.88, 0.06, 0.1 }, { 0, 0.51, -0.6 }, "Fabric", ASH_PALE),
++		Kit.box("Head", { 0.9, 0.035, 0.11 }, { 0, 0.565, -0.605 }, "Fabric", SULPHUR),
++		-- A cinder set at the brow, glowing like the mountain's cracks.
++		Kit.box("Head", { 0.15, 0.15, 0.08 }, { 0, 0.42, -0.66 }, "Neon", MAGMA, { 0, 0, 45 }),
++		-- The smoke veil: pale panels with a magma-red lining along their edges.
++		Kit.box("Head", { 1.06, 1.1, 0.06 }, { 0, -0.32, 0.7 }, "Fabric", ASH, { 8, 0, 0 }),
++		Kit.box("Head", { 1.18, 1.04, 0.04 }, { 0, -0.3, 0.65 }, "Fabric", MAGMA, { 8, 0, 0 }),
++		Kit.box("Head", { 0.78, 0.85, 0.05 }, { 0, -1.1, 0.83 }, "Fabric", ASH_PALE, { 10, 0, 0 }),
++		Kit.box("Head", { 0.8, 0.06, 0.06 }, { 0, -1.53, 0.91 }, "Fabric", SULPHUR, { 10, 0, 0 }),
++		-- One wisp drifting off to the left, so the veil is not a mirror.
++		Kit.box("Head", { 0.26, 0.62, 0.05 }, { -0.47, -0.75, 0.78 }, "Fabric", ASH, { 6, 0, -8 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CinderveilHem.luau b/src/shared/data/armourLooks/CinderveilHem.luau
+new file mode 100644
+index 0000000..b2d9752
+--- /dev/null
++++ b/src/shared/data/armourLooks/CinderveilHem.luau
+@@ -0,0 +1,55 @@
++--!strict
++-- The Cinderveil hem (the Cinderveil set's boots): the pale ash-grey
++-- underskirt carried on the shins, wide and flaring, with a broad magma-red
++-- centre stripe and a bold sulphur hem band that stands proud of the cloth so
++-- it reads from above. A pale ash band marks the knee, a dark side cover keeps
++-- the bare shin out of sight, and the pointed slipper shows below.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local BASALT = { 44, 40, 44 }
++local BASALT_DARK = { 28, 26, 30 }
++local SMOKE = { 80, 76, 73 }
++local GOWN = { 92, 88, 84 }
++local ASH = { 100, 96, 92 }
++local SULPHUR = { 150, 134, 70 }
++local MAGMA = { 132, 48, 36 }
++local EMBER = { 172, 56, 36 }
++
++-- The lower skirt runs from just above the shin's top to just above its foot.
++local SKIRT = 1.24
++local SKIRT_Y = 0.04
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CinderveilHem",
++	slot = "Boots",
++	parts = {
++		-- The wide pale underskirt: a red centre stripe and grey side gores
++		-- front, grey behind, all flaring outward from the knee.
++		Kit.box("LowerLeg", { 0.55, SKIRT, 0.08 }, { -0.225, SKIRT_Y, -0.72 }, "Fabric", MAGMA, { 14, 0, 0 }),
++		Kit.box("LowerLeg", { 1.1, SKIRT, 0.08 }, { 0.6, SKIRT_Y, -0.72 }, "Fabric", GOWN, { 14, 0, 0 }),
++		Kit.box("LowerLeg", { 1.65, SKIRT, 0.08 }, { 0.325, SKIRT_Y, 0.72 }, "Fabric", SMOKE, { -14, 0, 0 }),
++		Kit.box("LowerLeg", { 0.12, SKIRT, 1.35 }, { 1.0, SKIRT_Y, 0 }, "Fabric", SMOKE),
++		-- The right front edge wraps over in sulphur.
++		Kit.box("LowerLeg", { 0.09, SKIRT, 0.06 }, { -0.5, SKIRT_Y, -0.78 }, "Fabric", SULPHUR, { 14, 0, 0 }, "Right"),
++		-- The pale ash tuck at the knee.
++		Kit.box("LowerLeg", { 1.7, 0.14, 0.05 }, { 0.35, 0.6, -0.64 }, "Fabric", ASH, { 14, 0, 0 }),
++		-- The bold sulphur hem, proud of the cloth so its top face reads from above.
++		Kit.box("LowerLeg", { 1.72, 0.22, 0.1 }, { 0.36, -0.5, -0.91 }, "Fabric", SULPHUR, { 14, 0, 0 }),
++		Kit.box("LowerLeg", { 1.72, 0.22, 0.1 }, { 0.36, -0.5, 0.91 }, "Fabric", SULPHUR, { -14, 0, 0 }),
++		Kit.box("LowerLeg", { 0.12, 0.22, 1.72 }, { 1.12, -0.5, 0 }, "Fabric", SULPHUR),
++		-- The pale petticoat under the hem, and a dark knee side so the bare
++		-- shin never shows between the two skirt tiers.
++		Kit.box("LowerLeg", { 1.0, 0.26, 1.0 }, { 0, -0.56, 0 }, "Fabric", ASH),
++		Kit.box("LowerLeg", { 0.18, 0.36, 1.1 }, { 0.58, 0.46, 0 }, "Fabric", SMOKE),
++		-- One bold cinder seam on each grey gore.
++		Kit.box("LowerLeg", { 0.1, 0.8, 0.06 }, { 0.9, 0.0, -0.78 }, "Neon", EMBER, { 14, 0, -8 }),
++		-- The pointed slipper, low-heeled, with a sulphur strap.
++		Kit.box("Foot", { 1.08, 0.26, 1.16 }, { 0, 0.02, -0.06 }, "Leather", BASALT_DARK),
++		Kit.box("Foot", { 0.36, 0.18, 0.4 }, { 0, -0.06, -0.66 }, "Leather", BASALT),
++		Kit.box("Foot", { 0.42, 0.08, 0.26 }, { 0, -0.11, 0.4 }, "Leather", BASALT_DARK),
++		Kit.box("Foot", { 0.74, 0.07, 0.06 }, { 0, 0.1, -0.66 }, "Metal", SULPHUR),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CinderveilSleeves.luau b/src/shared/data/armourLooks/CinderveilSleeves.luau
+new file mode 100644
+index 0000000..d1e31c8
+--- /dev/null
++++ b/src/shared/data/armourLooks/CinderveilSleeves.luau
+@@ -0,0 +1,34 @@
++--!strict
++-- The Cinderveil sleeves (the Cinderveil set's gloves): a slim smoke-grey
++-- sleeve flares once at the elbow and again into a wide grey bell at the
++-- wrist, lined magma-red and rimmed in sulphur. A grey smoke streamer falls
++-- behind each cuff, and the hands are dark gloves.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local BASALT_DARK = { 28, 26, 30 }
++local SMOKE = { 80, 76, 73 }
++local ASH = { 100, 96, 92 }
++local SULPHUR = { 150, 134, 70 }
++local MAGMA = { 132, 48, 36 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CinderveilSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The smoke-grey forearm sleeve.
++		Kit.box("LowerArm", { 1.06, 0.9, 1.06 }, { 0, -0.04, 0 }, "Fabric", SMOKE),
++		-- The elbow bell.
++		Kit.box("LowerArm", { 1.2, 0.34, 1.2 }, { 0, 0.38, 0 }, "Fabric", BASALT_DARK),
++		-- The wrist bell: grey outside, a magma-red lining and a sulphur rim.
++		Kit.box("LowerArm", { 1.36, 0.34, 1.36 }, { 0, -0.4, 0 }, "Fabric", SMOKE),
++		Kit.box("LowerArm", { 1.4, 0.1, 1.4 }, { 0, -0.56, 0 }, "Fabric", MAGMA),
++		Kit.box("LowerArm", { 1.42, 0.05, 1.42 }, { 0, -0.62, 0 }, "Fabric", SULPHUR),
++		-- The dark glove.
++		Kit.box("Hand", { 1.06, 0.34, 1.06 }, { 0, 0, 0 }, "Leather", BASALT_DARK),
++		-- A smoke streamer falling behind each cuff.
++		Kit.box("LowerArm", { 0.2, 0.6, 0.05 }, { 0.28, -0.8, 0.62 }, "Fabric", ASH, { 10, 0, 6 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..aaccf78 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,14 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:CinderveilHelm"] = row("A grey hood with a pale brow circlet and a long smoke veil edged in magma red."),
++	["armour:CinderveilDress"] = row("A basalt bodice with a red sash and a black over-skirt split over a red centre."),
++	["armour:CinderveilSleeves"] = row(
++		"Slim grey sleeves flaring into grey bell cuffs, magma-red lined and sulphur-rimmed."
++	),
++	["armour:CinderveilHem"] = row(
++		"A wide ash-grey underskirt with a red centre stripe, bold gold hem and pointed slippers."
++	),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

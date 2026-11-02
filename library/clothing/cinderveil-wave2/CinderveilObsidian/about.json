@@ -1,0 +1,22 @@
+{
+  "run": "cinderveil-wave2",
+  "letter": "C",
+  "set": "CinderveilObsidian",
+  "looks": [
+    "CinderveilObsidianDress",
+    "CinderveilObsidianHelm",
+    "CinderveilObsidianHem",
+    "CinderveilObsidianSleeves"
+  ],
+  "original_looks": [
+    "CinderveilDress",
+    "CinderveilHelm",
+    "CinderveilHem",
+    "CinderveilSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "An obsidian-court mourning gown for the mountain's devotees: a fitted black bodice with an ash corset and sash, a sulphur clasp and a bold magma crack running down the right of a wide black bell skirt, reading from the high camera as a narrow veiled crest over a red-edged cone.",
+  "reason": "Obsidian court: the cleanest gown in the run, a fitted black bodice with an ash corset and sulphur sash over a wide charcoal bell skirt with a magma-red hem, the flare holding on the slim avatar and the read surviving the night from the ARPG camera (second critic 6.85, first; first critic 6.85, first).",
+  "first_fix": "Red cracks too faint from the high camera: add bold red fissures down the skirt, taper the sleeves and define the waist.",
+  "parts": 83
+}

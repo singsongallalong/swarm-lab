@@ -1,0 +1,20 @@
+{
+  "skill": "Cinderveil",
+  "look": "CinderveilHelm,CinderveilDress,CinderveilSleeves,CinderveilHem",
+  "rows_added": [
+    "CinderveilHelm",
+    "CinderveilDress",
+    "CinderveilSleeves",
+    "CinderveilHem"
+  ],
+  "intent": "A basalt-black Aor'lan gown with an ash stole, stomacher and hem and one tall flared panel per leg, its thick glowing magma cracks reading as the zone's signature while the pale ash keeps it legible from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered cloth piece (a frustum) to run the skirt's flare in one unbroken angled panel from hip to hem; a leaning box leaves a step at the knee."
+  ]
+}

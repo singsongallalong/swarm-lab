@@ -1,0 +1,17 @@
+{
+  "skill": "Cinderveil",
+  "look": "CinderveilHelm,CinderveilDress,CinderveilSleeves,CinderveilHem",
+  "rows_added": ["CinderveilHelm", "CinderveilDress", "CinderveilSleeves", "CinderveilHem"],
+  "intent": "An obsidian-court mourning gown for the mountain's devotees: a fitted black bodice with an ash corset and sash, a sulphur clasp and a bold magma crack running down the right of a wide black bell skirt, reading from the high camera as a narrow veiled crest over a red-edged cone.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A sheer veil material: armour parts cannot be transparent, so the veil reads as solid cloth.",
+    "A gloss material for obsidian: with the mood preset's specular off, the glossy black has to be painted with pale ash and obsidian edge trims.",
+    "A rounded sleeve that follows the arm: a 1-stud block arm can only be covered by a block sleeve, so the upper arms still read square."
+  ]
+}

@@ -1,0 +1,238 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..2e53dde 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -7,6 +7,10 @@ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+ local Chainmail = require("./armourLooks/Chainmail")
++local CinderveilFissureDress = require("./armourLooks/CinderveilFissureDress")
++local CinderveilFissureHelm = require("./armourLooks/CinderveilFissureHelm")
++local CinderveilFissureHem = require("./armourLooks/CinderveilFissureHem")
++local CinderveilFissureSleeves = require("./armourLooks/CinderveilFissureSleeves")
+ local EmberTalisman = require("./armourLooks/EmberTalisman")
+ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+@@ -35,6 +39,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	BoneTalisman = BoneTalisman,
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
++	CinderveilFissureDress = CinderveilFissureDress,
++	CinderveilFissureHelm = CinderveilFissureHelm,
++	CinderveilFissureHem = CinderveilFissureHem,
++	CinderveilFissureSleeves = CinderveilFissureSleeves,
+ 	Chainmail = Chainmail,
+ 	EmberTalisman = EmberTalisman,
+ 	FenscaleGrips = FenscaleGrips,
+diff --git a/src/shared/data/armourLooks/CinderveilFissureDress.luau b/src/shared/data/armourLooks/CinderveilFissureDress.luau
+new file mode 100644
+index 0000000..3edaa11
+--- /dev/null
++++ b/src/shared/data/armourLooks/CinderveilFissureDress.luau
+@@ -0,0 +1,55 @@
++--!strict
++-- The Cinderveil dress (zone armour, Aor'lan Mountain): a basalt-black gown
++-- with ash-grey accents, as a mountain devotee would wear it. The pale stole,
++-- stomacher and belt keep light on the figure; the bodice and the skirt panel
++-- are near-black. A thick magma crack glows down the stomacher, and the skirt
++-- falls in one tall panel per leg that angles out from the hip instead of
++-- stepping in tiers.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	basalt = { 34, 32, 34 },
++	basaltEdge = { 62, 58, 60 },
++	ash = { 154, 150, 142 },
++	ashPale = { 188, 184, 174 },
++	ember = { 148, 50, 34 },
++	magma = { 255, 92, 48 },
++	sulphur = { 176, 152, 72 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CinderveilFissureDress",
++	slot = "Chest",
++	parts = {
++		-- The dark bodice, with the ash stomacher narrowing to the waist.
++		Kit.box("UpperTorso", { 2.06, 1.64, 1.06 }, { 0, 0, 0 }, "Fabric", c.basalt),
++		Kit.box("UpperTorso", { 0.9, 0.78, 0.05 }, { 0, 0.3, -0.555 }, "Fabric", c.ash),
++		Kit.box("UpperTorso", { 0.66, 0.66, 0.055 }, { 0, -0.32, -0.557 }, "Fabric", c.ash),
++		-- A pale collar with its sulphur clasp: the light at the top.
++		Kit.box("UpperTorso", { 1.32, 0.14, 1.1 }, { 0, 0.77, 0 }, "Slate", c.ashPale),
++		Kit.box("UpperTorso", { 0.14, 0.1, 0.06 }, { 0, 0.77, -0.57 }, "Metal", c.sulphur),
++		-- The ash stole down the back, its dark edge and a thin crack.
++		Kit.box("UpperTorso", { 1.46, 1.12, 0.06 }, { 0, 0.02, 0.56 }, "Fabric", c.ash),
++		Kit.box("UpperTorso", { 1.46, 0.09, 0.07 }, { 0, -0.49, 0.56 }, "Slate", c.basaltEdge),
++		Kit.box("UpperTorso", { 0.05, 0.7, 0.03 }, { 0.2, 0.02, 0.607 }, "Fabric", c.ember, { 0, 0, 6 }),
++		-- The thick glowing crack down the stomacher, with its branch.
++		Kit.box("UpperTorso", { 0.09, 1.12, 0.045 }, { 0.06, 0.05, -0.585 }, "Neon", c.magma, { 0, 0, 12 }),
++		Kit.box("UpperTorso", { 0.06, 0.42, 0.04 }, { -0.14, -0.22, -0.589 }, "Neon", c.magma, { 0, 0, -38 }),
++		-- The pale stone belt at the waist, its dark under-edge and buckle.
++		Kit.box("LowerTorso", { 2.08, 0.36, 1.08 }, { 0, 0, 0 }, "Fabric", c.ashPale),
++		Kit.box("LowerTorso", { 2.1, 0.06, 1.1 }, { 0, -0.16, 0 }, "Slate", c.basalt),
++		Kit.box("LowerTorso", { 0.16, 0.14, 0.07 }, { 0, 0.02, -0.565 }, "Metal", c.sulphur),
++		-- The upper sleeve is slim and dark; the pale part is the Sleeves look.
++		Kit.box("UpperArm", { 1.04, 1.18, 1.04 }, { 0, 0, 0 }, "Fabric", c.basalt),
++		Kit.box("UpperArm", { 0.035, 0.9, 0.05 }, { 0.52, 0, 0 }, "Slate", c.ash),
++		Kit.box("UpperArm", { 0.03, 0.45, 0.03 }, { 0.05, 0, -0.535 }, "Fabric", c.ember, { 0, 0, 10 }),
++		-- The skirt: one tall dark panel per leg, tilted out from the hip, with a
++		-- thick glowing crack down the front.
++		Kit.box("UpperLeg", { 1.75, 1.15, 1.4 }, { 0.02, 0.18, 0 }, "Fabric", c.basalt, { 6, 0, 12 }),
++		Kit.box("UpperLeg", { 0.1, 0.65, 0.045 }, { 0.3, 0.26, -0.724 }, "Neon", c.magma, { 6, 0, 16 }),
++		Kit.box("UpperLeg", { 0.06, 0.35, 0.04 }, { 0.12, 0.02, -0.728 }, "Fabric", c.ember, { 6, 0, -32 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CinderveilFissureHelm.luau b/src/shared/data/armourLooks/CinderveilFissureHelm.luau
+new file mode 100644
+index 0000000..faa80e3
+--- /dev/null
++++ b/src/shared/data/armourLooks/CinderveilFissureHelm.luau
+@@ -0,0 +1,44 @@
++--!strict
++-- The Cinderveil circlet (zone armour, Aor'lan Mountain): a devotee's ring of
++-- pale ash stone over a dark under-edge, three points rising from it and a
++-- sulphur gem in a dark setting at the brow. A pale veil falls behind. A
++-- circlet, not a helm: it never widens at the ear, so the head reads tall and
++-- narrow from the high camera.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	ash = { 158, 154, 146 },
++	ashPale = { 186, 182, 172 },
++	basalt = { 40, 38, 38 },
++	basaltEdge = { 66, 63, 62 },
++	magma = { 132, 46, 34 },
++	sulphur = { 166, 148, 78 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CinderveilFissureHelm",
++	slot = "Helm",
++	parts = {
++		-- The circlet: a pale band with a dark line under it.
++		Kit.box("Head", { 1.34, 0.16, 1.34 }, { 0, 0.22, 0 }, "Slate", c.ashPale),
++		Kit.box("Head", { 1.36, 0.06, 1.36 }, { 0, 0.12, 0 }, "Slate", c.basalt),
++		-- Three pale points, the centre one climbing highest.
++		Kit.box("Head", { 0.34, 0.66, 0.28 }, { 0, 0.56, 0.02 }, "Slate", c.ash, { -8, 0, 0 }),
++		Kit.box("Head", { 0.2, 0.44, 0.19 }, { 0, 1.0, 0.08 }, "Slate", c.ashPale, { -8, 0, 0 }),
++		Kit.box("Head", { 0.1, 0.2, 0.1 }, { 0, 1.3, 0.1 }, "Slate", c.ashPale, { -8, 0, 0 }),
++		Kit.box("Head", { 0.13, 0.5, 0.13 }, { 0.4, 0.52, 0 }, "Slate", c.ash, { 0, 0, -8 }),
++		Kit.box("Head", { 0.13, 0.5, 0.13 }, { -0.4, 0.52, 0 }, "Slate", c.ash, { 0, 0, 8 }),
++		-- The stone setting and its sulphur gem at the brow.
++		Kit.box("Head", { 0.32, 0.26, 0.08 }, { 0, 0.22, -0.665 }, "Slate", c.basaltEdge),
++		Kit.box("Head", { 0.2, 0.18, 0.1 }, { 0, 0.22, -0.71 }, "Metal", c.sulphur),
++		-- The pale veil at the back, its dark edge and a magma crack.
++		Kit.box("Head", { 1, 0.84, 0.08 }, { 0, -0.13, 0.67 }, "Fabric", c.ash),
++		Kit.box("Head", { 1, 0.08, 0.09 }, { 0, -0.53, 0.67 }, "Slate", c.basalt),
++		Kit.box("Head", { 0.05, 0.55, 0.03 }, { 0.16, -0.14, 0.725 }, "Fabric", c.magma, { 0, 0, 7 }),
++		-- The crack climbing the centre point.
++		Kit.box("Head", { 0.045, 0.48, 0.03 }, { 0.06, 0.54, -0.14 }, "Fabric", c.magma, { -8, 0, 6 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CinderveilFissureHem.luau b/src/shared/data/armourLooks/CinderveilFissureHem.luau
+new file mode 100644
+index 0000000..734ef45
+--- /dev/null
++++ b/src/shared/data/armourLooks/CinderveilFissureHem.luau
+@@ -0,0 +1,36 @@
++--!strict
++-- The Cinderveil hem (zone armour, Aor'lan Mountain): the lower skirt carried
++-- on from the thigh in one tall basalt panel per leg, angled out, with a thick
++-- magma crack glowing down the front. The panel is closed by an ash hem tier
++-- and a pale under-edge, the ash accent the dark gown needs at the floor, and
++-- the shoes beneath are dark stone with an ash strap.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	basalt = { 34, 32, 34 },
++	ash = { 154, 150, 142 },
++	ashPale = { 188, 184, 174 },
++	ember = { 148, 50, 34 },
++	magma = { 255, 92, 48 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CinderveilFissureHem",
++	slot = "Boots",
++	parts = {
++		-- One tall dark panel per leg, angling out from the knee to the ankle.
++		Kit.box("LowerLeg", { 2, 1.4, 1.7 }, { 0.04, 0.25, 0 }, "Fabric", c.basalt, { 6, 0, 14 }),
++		-- The ash hem tier and its pale under-edge close the panel at the floor.
++		Kit.box("LowerLeg", { 2.4, 0.6, 2 }, { 0.04, -0.46, 0 }, "Fabric", c.ash),
++		Kit.box("LowerLeg", { 2.44, 0.06, 2.04 }, { 0.04, -0.75, 0 }, "Fabric", c.ashPale),
++		-- The thick glowing crack down the panel front and its thin branch.
++		Kit.box("LowerLeg", { 0.11, 0.9, 0.05 }, { 0.3, 0.342, -0.875 }, "Neon", c.magma, { 6, 0, 16 }),
++		Kit.box("LowerLeg", { 0.06, 0.4, 0.04 }, { 0.1, 0.05, -0.9 }, "Fabric", c.ember, { 6, 0, -32 }),
++		-- The shoes: dark stone with an ash strap over the instep.
++		Kit.box("Foot", { 1.08, 0.4, 1.18 }, { 0, 0, -0.03 }, "Slate", c.basalt),
++		Kit.box("Foot", { 1.1, 0.08, 1.2 }, { 0, 0.09, -0.03 }, "Fabric", c.ash),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CinderveilFissureSleeves.luau b/src/shared/data/armourLooks/CinderveilFissureSleeves.luau
+new file mode 100644
+index 0000000..3d7c1f3
+--- /dev/null
++++ b/src/shared/data/armourLooks/CinderveilFissureSleeves.luau
+@@ -0,0 +1,34 @@
++--!strict
++-- The Cinderveil sleeves (zone armour, Aor'lan Mountain): slim basalt sleeves
++-- down the forearm, stepping only slightly into the cuff so the arms stay
++-- narrow from above. An ash band and pale edge at the wrist, and one thick
++-- magma crack glowing down the cuff. Dark stone gloves below.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	basalt = { 34, 32, 34 },
++	ash = { 154, 150, 142 },
++	ashPale = { 188, 184, 174 },
++	magma = { 255, 92, 48 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CinderveilFissureSleeves",
++	slot = "Gloves",
++	parts = {
++		-- Three slim steps down the forearm; the bell is modest.
++		Kit.box("LowerArm", { 1.04, 0.55, 1.04 }, { 0, 0.32, 0 }, "Fabric", c.basalt),
++		Kit.box("LowerArm", { 1.1, 0.55, 1.1 }, { 0, -0.02, 0 }, "Fabric", c.basalt),
++		Kit.box("LowerArm", { 1.18, 0.5, 1.18 }, { 0, -0.4, 0 }, "Fabric", c.basalt),
++		-- The ash cuff band and pale under-edge.
++		Kit.box("LowerArm", { 1.2, 0.08, 1.2 }, { 0, -0.56, 0 }, "Fabric", c.ash),
++		Kit.box("LowerArm", { 1.22, 0.04, 1.22 }, { 0, -0.63, 0 }, "Fabric", c.ashPale),
++		-- One thick glowing crack down the cuff.
++		Kit.box("LowerArm", { 0.08, 0.34, 0.04 }, { 0.18, -0.4, -0.605 }, "Neon", c.magma, { 0, 0, 12 }),
++		-- The fitted dark glove below.
++		Kit.box("Hand", { 1.04, 0.36, 1.04 }, { 0, 0, 0 }, "Fabric", c.basalt),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..a602a84 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,14 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:CinderveilFissureHelm"] = row(
++		"A pale ash circlet with a climbing stone shard, a sulphur gem and a cracked veil."
++	),
++	["armour:CinderveilFissureDress"] = row(
++		"A basalt-black gown with an ash stole and stomacher, split by a glowing magma crack."
++	),
++	["armour:CinderveilFissureSleeves"] = row("Slim basalt sleeves with an ash cuff and a glowing magma crack."),
++	["armour:CinderveilFissureHem"] = row("A tall basalt skirt flaring to an ash hem band, cracked with glowing magma."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

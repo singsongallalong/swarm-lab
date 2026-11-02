@@ -1,0 +1,21 @@
+{
+  "skill": "Cinderveil",
+  "look": "CinderveilHelm,CinderveilDress,CinderveilSleeves,CinderveilHem",
+  "rows_added": [
+    "CinderveilHelm",
+    "CinderveilDress",
+    "CinderveilSleeves",
+    "CinderveilHem"
+  ],
+  "intent": "A mountain-devotee's basalt gown of ash-sashed bodice and flaring magma-seamed columns, crowned with obsidian shards; from the high camera a narrow black top over a wide red-veined bell with a tall pale-rimmed crown.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A way to make the magma seams glow: armour has no emissive colour, so the cracks are painted only.",
+    "A standing collar that clears the blocky head: any collar rising above the shoulders within the neck's width clips the head."
+  ]
+}

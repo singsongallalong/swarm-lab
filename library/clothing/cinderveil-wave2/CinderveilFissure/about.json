@@ -1,0 +1,22 @@
+{
+  "run": "cinderveil-wave2",
+  "letter": "B",
+  "set": "CinderveilFissure",
+  "looks": [
+    "CinderveilFissureDress",
+    "CinderveilFissureHelm",
+    "CinderveilFissureHem",
+    "CinderveilFissureSleeves"
+  ],
+  "original_looks": [
+    "CinderveilDress",
+    "CinderveilHelm",
+    "CinderveilHem",
+    "CinderveilSleeves"
+  ],
+  "pick_rank": 3,
+  "intent": "A basalt-black Aor'lan gown with an ash stole, stomacher and hem and one tall flared panel per leg, its thick glowing magma cracks reading as the zone's signature while the pale ash keeps it legible from the high camera.",
+  "reason": "Fissure: the run's strongest lava look, bright jagged magma cracks over basalt black with an ash stole and hem that keep it legible from above (second critic 6.45, third).",
+  "first_fix": "The skirt is nearly a column and the pale hem band reads as a pedestal: flare the skirt from the hip, darken the hem band, slim the sleeves.",
+  "parts": 66
+}

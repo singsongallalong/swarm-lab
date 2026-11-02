@@ -1,0 +1,14 @@
+{
+  "picked": ["C", "A", "B"],
+  "reasons": {
+    "C": "Obsidian court: the cleanest gown in the run, a fitted black bodice with an ash corset and sulphur sash over a wide charcoal bell skirt with a magma-red hem, the flare holding on the slim avatar and the read surviving the night from the ARPG camera (second critic 6.85, first; first critic 6.85, first).",
+    "A": "Crystal crown: the best flare from the hip, a black crystal crown over a basalt bodice seamed with red cracks running down the skirt (second critic 6.55, second; it rose from 5.55 after the rework dropped its stepped plinth hem).",
+    "B": "Fissure: the run's strongest lava look, bright jagged magma cracks over basalt black with an ash stole and hem that keep it legible from above (second critic 6.45, third)."
+  },
+  "fixes": {
+    "C": "Red cracks too faint from the high camera: add bold red fissures down the skirt, taper the sleeves and define the waist.",
+    "A": "Nearly all black, it vanishes into the night: add ash grey to the skirt or bodice, make the cracks bolder, and slim the sleeves.",
+    "B": "The skirt is nearly a column and the pale hem band reads as a pedestal: flare the skirt from the hip, darken the hem band, slim the sleeves."
+  },
+  "notes": "6 of 6 survived the draft and the rework with no resume (g00 and g05 hit the 40-turn cap in the rework; both sets still pass). No set has slim sleeves despite the brief asking twice: every take kept full-width arm blocks, so the wave-2 ask needs a check or an example, not words. Mostly-black gowns again fight the night; the best combination would be C's outline with B's cracks and E's grey and sulphur. D's stepped skirt read as a statue on a plinth in pass 2 (first in pass 1 at 6.6, last at 4.5 after the rework)."
+}
