@@ -1,0 +1,20 @@
+{
+  "skill": "Quarrywright",
+  "look": "QuarrywrightMask,QuarrywrightMantle,QuarrywrightBands,QuarrywrightWraps",
+  "rows_added": [
+    "QuarrywrightMask",
+    "QuarrywrightMantle",
+    "QuarrywrightBands",
+    "QuarrywrightWraps"
+  ],
+  "intent": "A funerary quarry guardian: a blank pale-stone death mask with a broken crown corner and a grave-linen shroud over cold blue-slate, banded in rusted iron, a quarryman's maul at the thigh; from the high camera it reads as a chalk-grey crown and broad pale shoulders above a blue-slate core.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A pale limestone material that stays chalky under the night preset: the death mask leans on Concrete and Slate, which shade grey rather than stone-white."
+  ]
+}

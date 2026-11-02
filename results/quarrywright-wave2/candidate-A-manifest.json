@@ -1,0 +1,21 @@
+{
+  "skill": "Quarrywright",
+  "look": "QuarrywrightDustMask,QuarrywrightYoke,QuarrywrightHandwraps,QuarrywrightTreads",
+  "rows_added": [
+    "QuarrywrightDustMask",
+    "QuarrywrightYoke",
+    "QuarrywrightHandwraps",
+    "QuarrywrightTreads"
+  ],
+  "intent": "A cool stone-pale quarryman's set under one hugely wide dark timber carrying yoke bound in rusted iron, with a thick slate goggle band, a dust mask, a wide rope strap and a thigh mallet; at the high camera the pale mass reads as quarried stone, barred by the yoke.",
+  "renders": [
+    ".swarm/out/armour-set-r7.png",
+    ".swarm/out/armour-set-close-r7.png",
+    ".swarm/out/armour-set-fit-r7.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A chalk-dust pale material, matte and flecked, so the stone-pale cloth reads as quarry dust rather than plain fabric under the mood preset.",
+    "A carrying-yoke builder (beam, iron hoops and hanging rope ends), so the set's one silhouette object costs fewer parts."
+  ]
+}

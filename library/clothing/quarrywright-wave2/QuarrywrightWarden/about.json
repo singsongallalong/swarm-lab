@@ -1,0 +1,22 @@
+{
+  "run": "quarrywright-wave2",
+  "letter": "D",
+  "set": "QuarrywrightWarden",
+  "looks": [
+    "QuarrywrightWardenBoots",
+    "QuarrywrightWardenChest",
+    "QuarrywrightWardenGloves",
+    "QuarrywrightWardenHelm"
+  ],
+  "original_looks": [
+    "QuarrywrightBoots",
+    "QuarrywrightChest",
+    "QuarrywrightGloves",
+    "QuarrywrightHelm"
+  ],
+  "pick_rank": 2,
+  "intent": "A pale quarry-stone set caked in dust white, cut in square blocks under a stepped dark slate helm, its pauldrons still holding the quarryman's iron wedges and a bone skull hung at the left hip, so from the high camera it reads as a pale-bodied, dark-headed stone warden.",
+  "reason": "Charnel warden: a dark slate box helm over a pale, heavy body with a skull charm at the hip, the run's only funerary touch and its best fit on both bodies (7.2, second; first critic 4.6, sixth).",
+  "first_fix": "Shape the box helm as a burial niche, whiten the body away from iron, and make one tool big enough to read.",
+  "parts": 60
+}

@@ -1,0 +1,21 @@
+{
+  "skill": "Quarrywright",
+  "look": "QuarrywrightHelm,QuarrywrightChest,QuarrywrightGloves,QuarrywrightBoots",
+  "rows_added": [
+    "QuarrywrightHelm",
+    "QuarrywrightChest",
+    "QuarrywrightGloves",
+    "QuarrywrightBoots"
+  ],
+  "intent": "A dust-white quarryman's mourning set: a wide flat dust brim and face veil under a single cold slate crown, a dust-caked tunic under a crossed leather-and-rope climbing harness, with chisels and a rusted mallet hung like grave goods, reading as a pale stone family from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A shared Kit tone for cool quarry grey and stone-dust white; the set carries its own so it stays apart from the linen set's warm oatmeal.",
+    "A safe stone material (Granite or Slate) for the cut-stone pauldron slabs, which use Metal today."
+  ]
+}

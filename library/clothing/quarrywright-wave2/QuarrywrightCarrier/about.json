@@ -1,0 +1,22 @@
+{
+  "run": "quarrywright-wave2",
+  "letter": "A",
+  "set": "QuarrywrightCarrier",
+  "looks": [
+    "QuarrywrightCarrierDustMask",
+    "QuarrywrightCarrierHandwraps",
+    "QuarrywrightCarrierTreads",
+    "QuarrywrightCarrierYoke"
+  ],
+  "original_looks": [
+    "QuarrywrightDustMask",
+    "QuarrywrightHandwraps",
+    "QuarrywrightTreads",
+    "QuarrywrightYoke"
+  ],
+  "pick_rank": 1,
+  "intent": "A cool stone-pale quarryman's set under one hugely wide dark timber carrying yoke bound in rusted iron, with a thick slate goggle band, a dust mask, a wide rope strap and a thigh mallet; at the high camera the pale mass reads as quarried stone, barred by the yoke.",
+  "reason": "Block-carrier: a wooden carrying yoke across the shoulders, the strongest outline of the run and unmistakable from the ARPG camera, over a dust-masked, hand-wrapped quarryman (second critic 7.5, first; first critic 6.15, fourth).",
+  "first_fix": "The body is iron-grey: warm it to dust white, hang clear loads (stone blocks, tools) from the yoke ends, and add one funerary sign.",
+  "parts": 53
+}

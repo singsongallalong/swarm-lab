@@ -1,0 +1,22 @@
+{
+  "skill": "Quarrywright",
+  "look": "QuarrywrightNicheHood,QuarrywrightDustTunic,QuarrywrightMasonGrips,QuarrywrightCutterBoots",
+  "rows_added": [
+    "QuarrywrightNicheHood",
+    "QuarrywrightDustTunic",
+    "QuarrywrightMasonGrips",
+    "QuarrywrightCutterBoots"
+  ],
+  "intent": "A chalk-pale burial kit — a close niche hood with a stepped lintel lip and keystone, a long dust-white tunic with one cold slate shoulder and a grave tag on a wire, broad linen cuffs and shin wraps, and a larger mallet and chisel hung at the thighs — that reads as a pale cut-stone figure with cold slate and rust accents from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A centre skirt panel or wider thigh flaps for a long tunic: Kit.flaps leaves a body-coloured split down the front of a knee-length skirt.",
+    "A belt prop that may hang from the lower torso: the C81 rule pushes any hanging tool onto the thighs, so the mallet and chisel swing with the leg rather than the belt.",
+    "A stone-dust white / pale quarry grey in Kit.colors, colder than oatmeal and paler than iron, so the dust family shares one palette."
+  ]
+}

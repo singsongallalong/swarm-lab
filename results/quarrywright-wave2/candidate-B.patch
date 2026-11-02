@@ -1,0 +1,244 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00eb..9a375df1 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -24,6 +24,10 @@ local LinenCowl = require("./armourLooks/LinenCowl")
+ local LinenRobe = require("./armourLooks/LinenRobe")
+ local LinenSlippers = require("./armourLooks/LinenSlippers")
+ local LinenWraps = require("./armourLooks/LinenWraps")
++local QuarrywrightBoots = require("./armourLooks/QuarrywrightBoots")
++local QuarrywrightChest = require("./armourLooks/QuarrywrightChest")
++local QuarrywrightGloves = require("./armourLooks/QuarrywrightGloves")
++local QuarrywrightHelm = require("./armourLooks/QuarrywrightHelm")
+ local SpellShield = require("./armourLooks/SpellShield")
+ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+@@ -53,6 +57,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	LinenRobe = LinenRobe,
+ 	LinenSlippers = LinenSlippers,
+ 	LinenWraps = LinenWraps,
++	QuarrywrightBoots = QuarrywrightBoots,
++	QuarrywrightChest = QuarrywrightChest,
++	QuarrywrightGloves = QuarrywrightGloves,
++	QuarrywrightHelm = QuarrywrightHelm,
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
+diff --git a/src/shared/data/armourLooks/QuarrywrightBoots.luau b/src/shared/data/armourLooks/QuarrywrightBoots.luau
+new file mode 100644
+index 00000000..5e21faa1
+--- /dev/null
++++ b/src/shared/data/armourLooks/QuarrywrightBoots.luau
+@@ -0,0 +1,34 @@
++--!strict
++-- The quarrywright boots (zone armour, the QuarrywrightBoots base): dust-white
++-- boots to the knee, wound round with linen and cuffed in dark leather, with a
++-- dust-pale toe cap over a stone-grey foot. A chisel is tucked through the
++-- right shin's linen, so the tools follow the set everywhere.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The quarry's tones (see QuarrywrightHelm): the dust and the pale stone
++-- beneath it.
++local stone = { 138, 142, 144 }
++local dust = { 188, 188, 180 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "QuarrywrightBoots",
++	slot = "Boots",
++	parts = {
++		-- The boot shaft, dust-white, with a dark leather cuff at the knee.
++		Kit.box("LowerLeg", { 1.08, 0.94, 1.08 }, { 0, -0.08, 0 }, "Fabric", dust),
++		Kit.box("LowerLeg", { 1.14, 0.16, 1.14 }, { 0, 0.4, 0 }, "Leather", c.leatherDark),
++		-- Linen wound round the shin, the band askew.
++		Kit.box("LowerLeg", { 1.12, 0.14, 1.12 }, { 0, -0.3, 0 }, "Fabric", c.linen, { 0, 0, -4 }),
++		-- The stone-grey foot, with a dust-white toe cap over it.
++		Kit.box("Foot", { 1.06, 0.34, 1.14 }, { 0, 0.02, -0.03 }, "Leather", stone),
++		Kit.wedge("Foot", { 1.06, 0.26, 0.34 }, { 0, 0.03, -0.42 }, "Leather", dust),
++		-- A chisel tucked through the right shin's linen, blade up.
++		Kit.box("LowerLeg", { 0.06, 0.38, 0.06 }, { 0.58, -0.02, 0.16 }, "Metal", c.ironDark, nil, "Right"),
++		Kit.wedge("LowerLeg", { 0.16, 0.12, 0.05 }, { 0.58, 0.2, 0.16 }, "Metal", c.ironWorn, nil, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/QuarrywrightChest.luau b/src/shared/data/armourLooks/QuarrywrightChest.luau
+new file mode 100644
+index 00000000..ec7fb0c1
+--- /dev/null
++++ b/src/shared/data/armourLooks/QuarrywrightChest.luau
+@@ -0,0 +1,61 @@
++--!strict
++-- The quarrywright chest (zone armour, the QuarrywrightChest base): the
++-- quarryman's work tunic in stone dust, white all through, under a climbing
++-- harness of dark leather and rope crossed over chest and back. Splitting
++-- wedges and chisels hang at the ribs like grave goods, and a rusted mallet
++-- off the belt pouch; one shoulder carries two stepped slabs of cut stone,
++-- the other only a linen wrap.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The quarry's tones, local to the set (see QuarrywrightHelm): the dust that
++-- cakes everything, and the pale stone grey beneath it.
++local stone = { 138, 142, 144 }
++local dust = { 188, 188, 180 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "QuarrywrightChest",
++	slot = "Chest",
++	parts = Kit.join({
++		-- The linen underskirt showing below the tunic, hung from the thighs.
++		Kit.flaps(0.5, "Fabric", c.linen),
++		{
++			-- The tunic and its skirt, dust-white.
++			Kit.box("UpperTorso", { 2.08, 1.64, 1.08 }, { 0, 0, 0 }, "Fabric", dust),
++			Kit.box("LowerTorso", { 2.1, 0.44, 1.1 }, { 0, 0, 0 }, "Fabric", dust),
++			-- The dust mantle over the shoulders, a warm linen line under it.
++			Kit.box("UpperTorso", { 2.26, 0.28, 1.2 }, { 0, 0.62, 0 }, "Fabric", dust),
++			Kit.box("UpperTorso", { 2.32, 0.12, 1.24 }, { 0, 0.46, 0 }, "Fabric", c.linen),
++			-- The climbing harness: a dark leather strap and a rope crossing
++			-- over chest and back, a rope belt and an off-centre iron buckle.
++			Kit.box("UpperTorso", { 2.14, 0.15, 1.12 }, { 0, 0.08, 0 }, "Leather", c.leatherDark, { 0, 0, -30 }),
++			Kit.box("UpperTorso", { 2.12, 0.1, 1.1 }, { 0, 0.02, 0 }, "Fabric", c.rope, { 0, 0, 34 }),
++			Kit.box("LowerTorso", { 2.14, 0.16, 1.14 }, { 0, 0.04, 0 }, "Fabric", c.rope),
++			Kit.box("LowerTorso", { 0.18, 0.14, 0.08 }, { 0.3, 0.04, -0.58 }, "Metal", c.ironDark),
++			-- A chalk pouch hung from the belt at the right hip, and a rusted
++			-- mallet strapped to it so it reads as a quarry tool.
++			Kit.box("LowerTorso", { 0.3, 0.28, 0.18 }, { 0.76, -0.1, -0.5 }, "Fabric", c.linen),
++			Kit.box("LowerTorso", { 0.05, 0.34, 0.05 }, { 0.76, 0.02, -0.63 }, "Wood", c.timber),
++			Kit.box("LowerTorso", { 0.2, 0.12, 0.14 }, { 0.76, -0.16, -0.63 }, "Metal", c.rust),
++			-- Sleeves of the same tunic, and the right shoulder's two cut slabs.
++			Kit.box("UpperArm", { 1.06, 1.2, 1.06 }, { 0, 0, 0 }, "Fabric", dust),
++			Kit.box("UpperArm", { 1.28, 0.16, 1.24 }, { 0.04, 0.56, 0 }, "Metal", dust, { 0, 0, -8 }, "Right"),
++			Kit.box("UpperArm", { 1.18, 0.14, 1.16 }, { 0.02, 0.42, 0 }, "Metal", stone, { 0, 0, -5 }, "Right"),
++			-- The left arm's linen wrap instead, so the shoulders are uneven.
++			Kit.box("UpperArm", { 1.12, 0.15, 1.12 }, { 0, 0.3, 0 }, "Fabric", c.linen, { 0, 0, 7 }, "Left"),
++			-- Trophies: a splitting wedge at the right ribs, a chisel at the
++			-- left on a rope loop, its blade hanging bright.
++			Kit.wedge("UpperTorso", { 0.16, 0.46, 0.24 }, { 0.66, -0.12, -0.6 }, "Metal", c.ironDark, { 0, 90, 0 }),
++			Kit.box("UpperTorso", { 0.14, 0.1, 0.08 }, { -0.56, 0, -0.58 }, "Fabric", c.rope),
++			Kit.box("UpperTorso", { 0.08, 0.44, 0.08 }, { -0.56, -0.22, -0.57 }, "Metal", c.ironDark, { 0, 0, -6 }),
++			Kit.wedge("UpperTorso", { 0.2, 0.16, 0.08 }, { -0.58, -0.46, -0.57 }, "Metal", c.ironWorn, { 0, 0, -6 }),
++			-- Wear: a torn linen patch at the hem and a stone-grey rubbed back.
++			Kit.box("LowerTorso", { 0.46, 0.16, 0.06 }, { -0.42, -0.1, -0.56 }, "Fabric", c.linen),
++			Kit.box("UpperTorso", { 0.7, 0.5, 0.06 }, { 0.36, -0.2, 0.55 }, "Fabric", stone, { 0, 0, 6 }),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/QuarrywrightGloves.luau b/src/shared/data/armourLooks/QuarrywrightGloves.luau
+new file mode 100644
+index 00000000..c69b0d3a
+--- /dev/null
++++ b/src/shared/data/armourLooks/QuarrywrightGloves.luau
+@@ -0,0 +1,33 @@
++--!strict
++-- The quarrywright gloves (zone armour, the QuarrywrightGloves base): a
++-- dust-white bracer wound round with linen, a dark leather cuff at the elbow
++-- and dust-white hand wraps over an iron knuckle ridge. A chisel is lashed to
++-- the right forearm, so one arm carries a tool and the other does not.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The dust that cakes the set (see QuarrywrightHelm).
++local dust = { 188, 188, 180 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "QuarrywrightGloves",
++	slot = "Gloves",
++	parts = {
++		-- The bracer: dust-white cloth over the forearm.
++		Kit.box("LowerArm", { 1.1, 0.9, 1.1 }, { 0, -0.08, 0 }, "Fabric", dust),
++		-- Linen wound round it, the band askew.
++		Kit.box("LowerArm", { 1.14, 0.14, 1.14 }, { 0, -0.3, 0 }, "Fabric", c.linen, { 0, 0, 4 }),
++		-- The dark leather cuff at the elbow.
++		Kit.box("LowerArm", { 1.16, 0.18, 1.16 }, { 0, 0.38, 0 }, "Leather", c.leatherDark),
++		-- The hand wrapped in dust-white cloth, an iron knuckle ridge on it.
++		Kit.box("Hand", { 1.08, 0.34, 1.08 }, { 0, 0, 0 }, "Fabric", dust),
++		Kit.box("Hand", { 0.7, 0.12, 0.12 }, { 0, 0.08, -0.52 }, "Metal", c.ironDark),
++		-- A chisel lashed to the right bracer's outside, blade up.
++		Kit.box("LowerArm", { 0.07, 0.46, 0.07 }, { 0.6, -0.04, 0.02 }, "Metal", c.ironDark, nil, "Right"),
++		Kit.wedge("LowerArm", { 0.18, 0.12, 0.06 }, { 0.6, 0.22, 0.02 }, "Metal", c.ironWorn, nil, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/QuarrywrightHelm.luau b/src/shared/data/armourLooks/QuarrywrightHelm.luau
+new file mode 100644
+index 00000000..65d383d6
+--- /dev/null
++++ b/src/shared/data/armourLooks/QuarrywrightHelm.luau
+@@ -0,0 +1,43 @@
++--!strict
++-- The quarrywright helm (zone armour, the QuarrywrightHelm base): a
++-- stonecutter's wide-brimmed mourning hat. A broad, flat dust-white brim under
++-- a cold slate crown, a linen band with a chisel tucked through it, and a
++-- dust-white veil hung from the brim over the face, with linen wound round
++-- the jaw and nape. The brim is the set's mark from the high camera; the veil
++-- is its death.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The quarry's two tones, local to the set: the dust that cakes everything
++-- and the one cold dark slate, kept to the crown alone.
++local dust = { 188, 188, 180 }
++local slate = { 56, 64, 82 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "QuarrywrightHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The crown, cold slate, low under the brim.
++		Kit.box("Head", { 1.28, 0.6, 1.28 }, { 0, 0.36, 0 }, "Metal", slate),
++		-- A dust-white comb over it, front to back: the bright stripe on top.
++		Kit.box("Head", { 0.36, 0.16, 1.32 }, { 0, 0.7, 0 }, "Metal", dust),
++		-- The brim, wide and flat, one pale disc: the set's whole outline.
++		Kit.box("Head", { 2.15, 0.07, 2.05 }, { 0, 0.05, 0 }, "Metal", dust),
++		-- One back corner bent down where it was dropped.
++		Kit.box("Head", { 0.7, 0.07, 0.55 }, { -0.72, 0.02, 0.85 }, "Metal", dust, { 10, 0, -6 }),
++		-- The linen band round the crown, holding the chisel.
++		Kit.box("Head", { 1.34, 0.1, 1.34 }, { 0, 0.15, 0 }, "Fabric", c.linen),
++		-- A chisel tucked through the band on the right, blade up.
++		Kit.box("Head", { 0.1, 0.54, 0.1 }, { 0.7, 0.42, -0.3 }, "Metal", c.ironDark, { 0, 0, -18 }),
++		Kit.wedge("Head", { 0.24, 0.14, 0.09 }, { 0.78, 0.7, -0.3 }, "Metal", c.ironWorn, { 0, 0, -18 }),
++		-- Linen wound round the jaw and nape, closing the neck under the brim.
++		Kit.box("Head", { 1.32, 0.64, 1.32 }, { 0, -0.28, 0.02 }, "Fabric", c.linen),
++		-- The dust-white veil hung from the brim over the face.
++		Kit.box("Head", { 1.1, 0.75, 0.07 }, { 0, -0.32, -0.72 }, "Fabric", dust, { 3, 0, 0 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551e..8595fac9 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,18 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:QuarrywrightHelm"] = row(
++		"A wide-brimmed stonecutter's helm in stone dust, a cold slate crown and a face veil."
++	),
++	["armour:QuarrywrightChest"] = row(
++		"A dust-white quarry tunic under a crossed rope harness, tools hung at the belt."
++	),
++	["armour:QuarrywrightGloves"] = row(
++		"Dust-white bracers wound with linen, iron knuckles, a chisel lashed to one arm."
++	),
++	["armour:QuarrywrightBoots"] = row(
++		"Dust-white boots wound with linen, a dark leather cuff, a chisel in one shin wrap."
++	),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

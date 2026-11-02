@@ -143,6 +143,46 @@ $1.57, Fortwarden $1.25), all at off-peak prices. The DeepSeek balance went from
 ($10.01) over the same hours, but that includes the Grashan and Aor'lan sessions' runs on the same
 key, so the Heartland share cannot be read off it exactly; it is within the $14 cap either way.
 
+## Wave 2: Grashan (2026-11-02)
+
+Wardrobe wave 2 for Grashan (Rhodri, arpg-game R039): two gown runs (`feminine` figure, slim
+sleeves and a flared skirt asked for) and two armour runs, three picks from each, all from
+swarm-lab briefs at `57474d7`. Each run had two render-only critic passes with one rework
+between them; run evidence is in `results/<run>/`. Same files per set as above. Part counts are
+`ArmourLook.partCount` on arpg-game main `a45a052` (2026-11-02), where all twelve apply together
+(each also applies alone) and `Catalog`, `ContentCompleteness` and `DressBudget` pass. The
+gowns are under the 100-part gown budget, the armour under 64. **EPIC** sets will get a worn
+particle effect in the game later.
+
+| Set | Run | Zone | Pick | Parts | In short |
+| --- | --- | --- | --- | --- | --- |
+| GrashanveilHalo | grashanveil-wave2 (D) | Grashan Ruins | 1 | 89 | rayed gold sun halo behind the head, pale V-neck bodice, terracotta belt, pleated stone skirt |
+| GrashanveilTerrace | grashanveil-wave2 (F) | Grashan Ruins | 2 | 87 | the run's best skirt, a terracotta A-line from a belted waist under a stepped ziggurat crown; slimmest sleeves |
+| GrashanveilTemple | grashanveil-wave2 (B) | Grashan Ruins | 3 | 82 | stepped ziggurat headdress over stepped temple tiers in pale stone with terracotta and gold lips |
+| FeastqueenBanquet **EPIC** | feastqueen-wave2 (B) | Grashan Feast | 1 | 81 | wine bell skirt from the hip, gold butterfly bodice, candle crown; the richest epic read |
+| FeastqueenIvory **EPIC** | feastqueen-wave2 (A) | Grashan Feast | 2 | 94 | gold bodice with a chain necklace over an ivory A-line, a veil of candle spikes; the prettiest dress |
+| FeastqueenSundisc **EPIC** | feastqueen-wave2 (F) | Grashan Feast | 3 | 95 | sun-disc crown and ruff collar over a pleated gold skirt flaring at the front |
+| SunwardenSunburst | sunwarden-wave2 (A) | Grashan Ruins | 1 | 63 | radiating gold sunburst crest, wide pale-stone shoulder slabs over dark old bronze |
+| SunwardenSunwheel | sunwarden-wave2 (F) | Grashan Ruins | 2 | 62 | muted olive bronze and pale stone, a big sun-wheel on the back that shows from above |
+| SunwardenBoulder | sunwarden-wave2 (C) | Grashan Ruins | 3 | 55 | round barrel pauldrons with gold caps like two carved boulders; the most massive outline |
+| QuarrywrightCarrier | quarrywright-wave2 (A) | Charnel Quarry | 1 | 53 | a wooden carrying yoke across the shoulders over a dust-masked, hand-wrapped quarryman |
+| QuarrywrightWarden | quarrywright-wave2 (D) | Charnel Quarry | 2 | 60 | dark slate box helm over a pale heavy body, a skull charm at the hip |
+| QuarrywrightDustcap | quarrywright-wave2 (B) | Charnel Quarry | 3 | 59 | the most dust-white set: crossed straps under a strong slate cap |
+<!-- wave2-grashan-end -->
+
+Only GrashanveilTerrace narrowed its sleeves (the preview dummy's blue upper arm shows past
+them); every other gown keeps shoulder-wide block sleeves, so narrowing them is still the first
+fix. The Feastqueen sets each put Neon on about three small parts, but the glow barely shows
+from the camera. QuarrywrightCarrier's yoke came from the rework, the one rework in this wave
+that clearly raised a set. QuarrywrightCarrier's looks keep its worker's slot names
+(`QuarrywrightCarrierDustMask`, `...Yoke`, `...Handwraps`, `...Treads`), and FeastqueenIvory's
+headpiece is `FeastqueenIvoryVeil`.
+
+Cost: the harness puts the four runs at $6.93 (Grashanveil $2.32, Feastqueen $2.46, Sunwarden
+$1.49, Quarrywright $1.49), all at off-peak prices. The DeepSeek balance went from 26.33 to 14.54
+($11.79) over the same hours, but that includes the Heartland and Aor'lan sessions' runs on the
+same key, so the Grashan share cannot be read off it exactly; it is within the $14 cap either way.
+
 ## Porting notes
 
 1. **Apply:** from a swarm-lab clone, onto a branch from arpg-game main:

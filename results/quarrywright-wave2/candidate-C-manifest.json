@@ -1,0 +1,20 @@
+{
+  "skill": "Quarrywright",
+  "look": "QuarrywrightHelm,QuarrywrightChest,QuarrywrightGloves,QuarrywrightBoots",
+  "rows_added": [
+    "QuarrywrightHelm",
+    "QuarrywrightChest",
+    "QuarrywrightGloves",
+    "QuarrywrightBoots"
+  ],
+  "intent": "A quarry overseer's set in pale stone dust: a broad brimmed iron helm with a pick head crossing its crown, a dust-white apron-coat with pale sleeves, one slate band at each elbow and a linen grave-wrap down the tabard edge, a rusted chain belt at the waist, and linen-wrapped, slate-plated boots with pale cuffs.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A chalk or limewash material that stays pale under the mood preset, rather than painting stone dust onto Leather and Fabric."
+  ]
+}

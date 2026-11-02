@@ -1,0 +1,218 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00eb..6161ec0b 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -24,6 +24,10 @@ local LinenCowl = require("./armourLooks/LinenCowl")
+ local LinenRobe = require("./armourLooks/LinenRobe")
+ local LinenSlippers = require("./armourLooks/LinenSlippers")
+ local LinenWraps = require("./armourLooks/LinenWraps")
++local QuarrywrightDustMask = require("./armourLooks/QuarrywrightDustMask")
++local QuarrywrightHandwraps = require("./armourLooks/QuarrywrightHandwraps")
++local QuarrywrightTreads = require("./armourLooks/QuarrywrightTreads")
++local QuarrywrightYoke = require("./armourLooks/QuarrywrightYoke")
+ local SpellShield = require("./armourLooks/SpellShield")
+ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+@@ -53,6 +57,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	LinenRobe = LinenRobe,
+ 	LinenSlippers = LinenSlippers,
+ 	LinenWraps = LinenWraps,
++	QuarrywrightDustMask = QuarrywrightDustMask,
++	QuarrywrightHandwraps = QuarrywrightHandwraps,
++	QuarrywrightTreads = QuarrywrightTreads,
++	QuarrywrightYoke = QuarrywrightYoke,
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
+diff --git a/src/shared/data/armourLooks/QuarrywrightDustMask.luau b/src/shared/data/armourLooks/QuarrywrightDustMask.luau
+new file mode 100644
+index 00000000..66c4b7bd
+--- /dev/null
++++ b/src/shared/data/armourLooks/QuarrywrightDustMask.luau
+@@ -0,0 +1,36 @@
++--!strict
++-- The quarrywright's dust mask (the Quarrywright set's helm): a stone-pale
++-- linen wrap over the skull and jaw, one thick cold-slate goggle band with two
++-- pale lenses and a rusted bridge, a slate dust mask with a rusted filter, and
++-- a torn cloth tab at the back. Pale as a chip of the quarry, so the head
++-- reads from the high camera without becoming a banded box.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local dust = { 156, 160, 162 }
++local quarry = { 108, 114, 116 }
++local slate = { 54, 60, 72 }
++local lens = { 176, 188, 190 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "QuarrywrightDustMask",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		Kit.box("Head", { 1.32, 0.62, 1.32 }, { 0, 0.33, 0 }, "Fabric", dust),
++		-- One thick slate goggle band: the helm's single dark stripe.
++		Kit.box("Head", { 1.4, 0.2, 1.4 }, { 0, -0.12, 0 }, "Fabric", slate),
++		Kit.box("Head", { 0.28, 0.2, 0.08 }, { 0.28, -0.12, -0.72 }, "SmoothPlastic", lens),
++		Kit.box("Head", { 0.28, 0.2, 0.08 }, { -0.28, -0.12, -0.72 }, "SmoothPlastic", lens),
++		Kit.box("Head", { 0.26, 0.06, 0.06 }, { 0, -0.12, -0.73 }, "Metal", c.rust),
++		Kit.box("Head", { 1.3, 0.36, 0.56 }, { 0, -0.36, -0.4 }, "Fabric", slate),
++		Kit.box("Head", { 0.3, 0.2, 0.12 }, { 0, -0.42, -0.7 }, "Metal", c.rust),
++		-- A dust cloth wrapped right round the jaw and neck, so no face shows.
++		Kit.box("Head", { 1.32, 0.64, 1.28 }, { 0, -0.3, 0.02 }, "Fabric", dust),
++		Kit.box("Head", { 0.22, 0.3, 0.1 }, { 0.46, -0.58, 0.68 }, "Fabric", quarry, { 0, 0, 10 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/QuarrywrightHandwraps.luau b/src/shared/data/armourLooks/QuarrywrightHandwraps.luau
+new file mode 100644
+index 00000000..4caafefd
+--- /dev/null
++++ b/src/shared/data/armourLooks/QuarrywrightHandwraps.luau
+@@ -0,0 +1,28 @@
++--!strict
++-- The quarrywright's hand wraps (the Quarrywright set's gloves): a stone-pale
++-- dust wrap down each forearm, one thick cold slate cuff at the elbow,
++-- linen-wrapped hands with a worn iron strip over the knuckles, and on the
++-- right arm only a rusted cuff edge and an iron splint down the outside, the
++-- arm that swung the chisel. Few bands, one hard dark cuff.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local dust = { 156, 160, 162 }
++local slate = { 54, 60, 72 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "QuarrywrightHandwraps",
++	slot = "Gloves",
++	parts = {
++		Kit.box("LowerArm", { 1.08, 1, 1.08 }, { 0, -0.08, 0 }, "Fabric", dust),
++		Kit.box("LowerArm", { 1.2, 0.34, 1.2 }, { 0, 0.43, 0 }, "Fabric", slate),
++		Kit.box("Hand", { 1.06, 0.42, 1.06 }, { 0, 0, 0 }, "Fabric", c.linen),
++		Kit.box("Hand", { 0.72, 0.14, 0.1 }, { 0, 0.04, -0.62 }, "Metal", c.ironWorn),
++		Kit.box("LowerArm", { 1.24, 0.12, 1.24 }, { 0, 0.27, 0 }, "Metal", c.rust, nil, "Right"),
++		Kit.box("LowerArm", { 0.1, 0.62, 0.3 }, { 0.55, -0.1, 0 }, "Metal", c.ironWorn, { 0, 0, -4 }, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/QuarrywrightTreads.luau b/src/shared/data/armourLooks/QuarrywrightTreads.luau
+new file mode 100644
+index 00000000..76070ce4
+--- /dev/null
++++ b/src/shared/data/armourLooks/QuarrywrightTreads.luau
+@@ -0,0 +1,27 @@
++--!strict
++-- The quarrywright's treads (the Quarrywright set's boots): one stone-pale
++-- gaiter up each shin, a single thick cold slate cuff at the knee, a
++-- linen-wrapped foot on a slate sole with a worn iron toe, and a rope garter
++-- under the right knee only, tied where the shin rubs the stone.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local dust = { 156, 160, 162 }
++local slate = { 54, 60, 72 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "QuarrywrightTreads",
++	slot = "Boots",
++	parts = {
++		Kit.box("LowerLeg", { 1.1, 1, 1.1 }, { 0, -0.09, 0 }, "Fabric", dust),
++		Kit.box("LowerLeg", { 1.16, 0.34, 1.16 }, { 0, 0.43, 0 }, "Fabric", slate),
++		Kit.box("Foot", { 1.08, 0.42, 1.14 }, { 0, 0.02, -0.04 }, "Fabric", c.linen),
++		Kit.box("Foot", { 1.12, 0.1, 1.2 }, { 0, -0.18, -0.04 }, "Leather", slate),
++		Kit.box("Foot", { 0.94, 0.26, 0.22 }, { 0, 0.02, -0.58 }, "Metal", c.ironWorn),
++		Kit.box("LowerLeg", { 1.18, 0.08, 1.18 }, { 0, 0.28, 0 }, "Fabric", c.rope, { 0, 0, -7 }, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/QuarrywrightYoke.luau b/src/shared/data/armourLooks/QuarrywrightYoke.luau
+new file mode 100644
+index 00000000..9741a972
+--- /dev/null
++++ b/src/shared/data/armourLooks/QuarrywrightYoke.luau
+@@ -0,0 +1,62 @@
++--!strict
++-- The quarrywright's yoke (the Quarrywright set's chest): a stone-pale padded
++-- jacket under one broad carrying yoke, a dark timber beam laid over both
++-- shoulders and standing well out past them, bound with rusted iron hoops and
++-- hanging rope ends. One thick shoulder pad on each arm, a single wide rope
++-- strap across the chest, a stone-grey pad down the back, and a rope belt with
++-- a chalk pouch and a mallet hung on the right thigh. The beam is the outline.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++local dust = { 156, 160, 162 }
++local dustDark = { 128, 133, 135 }
++local quarry = { 108, 114, 116 }
++local slate = { 54, 60, 72 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "QuarrywrightYoke",
++	slot = "Chest",
++	parts = Kit.join({
++		-- The split dust apron, hung from the thighs so it swings with them.
++		Kit.flaps(0.62, "Fabric", quarry),
++		{
++			Kit.box("UpperTorso", { 2.08, 1.64, 1.08 }, { 0, 0, 0 }, "Fabric", dust),
++			-- One thick cold slate collar, no thin bands round it.
++			Kit.box("UpperTorso", { 1.3, 0.3, 1.3 }, { 0, 0.84, 0 }, "Fabric", slate),
++			-- The carrying yoke: a timber beam past both shoulders, iron-shod.
++			Kit.box("UpperTorso", { 5.8, 0.3, 0.5 }, { 0, 0.76, 0.1 }, "Wood", c.timberDark),
++			Kit.box("UpperTorso", { 0.14, 0.36, 0.54 }, { 2.5, 0.76, 0.1 }, "Metal", c.rust),
++			Kit.box("UpperTorso", { 0.14, 0.36, 0.54 }, { -2.5, 0.76, 0.1 }, "Metal", c.rust),
++			-- Rope ends hanging from the yoke tips.
++			Kit.box("UpperTorso", { 0.1, 0.56, 0.12 }, { 2.72, 0.44, 0.1 }, "Fabric", c.rope, { 0, 0, 4 }),
++			Kit.box("UpperTorso", { 0.1, 0.56, 0.12 }, { -2.72, 0.44, 0.1 }, "Fabric", c.rope, { 0, 0, -4 }),
++			-- One thick rope strap over the shoulder, wide enough for the high camera.
++			Kit.box("UpperTorso", { 0.28, 1.9, 0.1 }, { 0, 0, -0.58 }, "Fabric", c.rope, { 0, 0, 30 }),
++			-- The dust pad down the back.
++			Kit.box("UpperTorso", { 1.6, 1.1, 0.14 }, { 0, 0.14, 0.62 }, "Fabric", quarry),
++			-- One thick pad on each shoulder, covering the arm top cleanly.
++			Kit.box("UpperArm", { 1.36, 0.54, 1.36 }, { 0, 0.35, 0 }, "Fabric", dustDark),
++			Kit.box("UpperArm", { 1.06, 0.9, 1.06 }, { 0, -0.2, 0 }, "Fabric", dust),
++			-- The waist, rope belt, rusted buckle and chalk pouch.
++			Kit.box("LowerTorso", { 2.12, 0.44, 1.12 }, { 0, 0, 0 }, "Fabric", quarry),
++			Kit.box("LowerTorso", { 2.18, 0.2, 1.18 }, { 0, 0.05, 0 }, "Fabric", c.rope, { 0, 0, -3 }),
++			Kit.box("LowerTorso", { 0.3, 0.3, 0.14 }, { 0.2, 0.05, -0.62 }, "Metal", c.rust),
++			Kit.box("LowerTorso", { 0.42, 0.44, 0.26 }, { -0.66, -0.06, -0.5 }, "Leather", c.leatherDark),
++			-- A mallet hung on the right thigh, big enough to read from above.
++			Kit.box(
++				"UpperLeg",
++				{ 0.12, 0.72, 0.12 },
++				{ 0.14, 0.24, -0.64 },
++				"Wood",
++				c.timberDark,
++				{ 0, 0, -6 },
++				"Right"
++			),
++			Kit.box("UpperLeg", { 0.4, 0.22, 0.22 }, { 0.14, -0.19, -0.68 }, "Metal", c.iron, { 0, 0, -6 }, "Right"),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551e..858ee443 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -74,6 +74,10 @@ local rows: { [string]: Row } = {
+ 	["armour:BoneTalisman"] = row("A carved bone charm with runes, hung from the left fist on a cord."),
+ 	["armour:EmberTalisman"] = row("A glowing ember stone in a small iron cage, hung on a chain."),
+ 	["armour:StormTalisman"] = row("A blue-white crystal shard bound in copper wire, hung on a cord."),
++	["armour:QuarrywrightDustMask"] = row("A stone-pale head wrap, a thick slate goggle band and a dust mask."),
++	["armour:QuarrywrightYoke"] = row("A stone-pale jacket under a wide timber carrying yoke, with a rope strap."),
++	["armour:QuarrywrightHandwraps"] = row("Stone-pale forearm wraps, a thick slate cuff and worn iron knuckles."),
++	["armour:QuarrywrightTreads"] = row("Stone-pale gaiters above linen-wrapped feet, slate soles and worn iron toes."),
+ }
+ 
+ return table.freeze(rows)

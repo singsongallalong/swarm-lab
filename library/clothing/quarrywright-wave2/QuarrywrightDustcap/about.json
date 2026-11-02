@@ -1,0 +1,22 @@
+{
+  "run": "quarrywright-wave2",
+  "letter": "B",
+  "set": "QuarrywrightDustcap",
+  "looks": [
+    "QuarrywrightDustcapBoots",
+    "QuarrywrightDustcapChest",
+    "QuarrywrightDustcapGloves",
+    "QuarrywrightDustcapHelm"
+  ],
+  "original_looks": [
+    "QuarrywrightBoots",
+    "QuarrywrightChest",
+    "QuarrywrightGloves",
+    "QuarrywrightHelm"
+  ],
+  "pick_rank": 3,
+  "intent": "A dust-white quarryman's mourning set: a wide flat dust brim and face veil under a single cold slate crown, a dust-caked tunic under a crossed leather-and-rope climbing harness, with chisels and a rusted mallet hung like grave goods, reading as a pale stone family from the high camera.",
+  "reason": "Dust-capped quarryman: the most dust-white set of the run, crossed straps under a strong slate cap that reads from above (6.55, third; first critic 5.9, fifth).",
+  "first_fix": "A pale strapped box risks reading as linen: a colder white with rusted iron, a bigger cap or hood, and one big tool.",
+  "parts": 59
+}
