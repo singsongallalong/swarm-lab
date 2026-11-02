@@ -1,0 +1,21 @@
+{
+  "skill": "Grashanveil",
+  "look": "GrashanveilHelm,GrashanveilDress,GrashanveilSleeves,GrashanveilHem",
+  "rows_added": [
+    "GrashanveilHelm",
+    "GrashanveilDress",
+    "GrashanveilSleeves",
+    "GrashanveilHem"
+  ],
+  "intent": "An ancient Grashan sun-priestess's gown in pale ruin stone with terracotta bands and a terracotta sash, gold at the sun-disc headpiece and waist; from the high camera it reads as a narrow-waisted figure under a gold sun halo, opening into a closed tiered bell skirt that widens to a terracotta hem.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A pale limestone or sandstone material for the stone pieces; Slate is the closest muted stone in the armour palette.",
+    "A tapered or trapezoid panel builder for a smooth closed bell skirt; box panels give a stepped flare."
+  ]
+}

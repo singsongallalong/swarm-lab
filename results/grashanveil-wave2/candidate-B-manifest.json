@@ -1,0 +1,16 @@
+{
+  "skill": "Grashanveil",
+  "look": "GrashanveilHelm,GrashanveilDress,GrashanveilSleeves,GrashanveilHem",
+  "rows_added": ["GrashanveilHelm", "GrashanveilDress", "GrashanveilSleeves", "GrashanveilHem"],
+  "intent": "An ancient Grashan sun-priestess's gown in pale ruin stone, sun gold and faded terracotta, with an upright sun-crowned hood, a cinched waist and a broad gold-edged bell skirt that carries its width below the shoulders from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered or conical part: hood peaks and skirt bells built only from boxes read as stepped from the high camera.",
+    "A translucent cloth material for veils and train edges."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "skill": "Grashanveil",
+  "look": "GrashanveilHelm,GrashanveilDress,GrashanveilSleeves,GrashanveilHem",
+  "rows_added": ["GrashanveilHelm", "GrashanveilDress", "GrashanveilSleeves", "GrashanveilHem"],
+  "intent": "An ancient Grashan sun-priestess gown in pale ruin stone, sun gold, faded terracotta and plains green: a narrow gold-sashed bodice over dark slim sleeves and a stone skirt that steps out from a narrow hip to a green-lined terracotta hem, under a tall sun crown.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered skirt panel (a trapezoid rather than a box) would let the bell flare smoothly instead of in stacked tiers."
+  ]
+}

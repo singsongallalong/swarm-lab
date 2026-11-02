@@ -1,0 +1,22 @@
+{
+  "run": "grashanveil-wave2",
+  "letter": "D",
+  "set": "GrashanveilHalo",
+  "looks": [
+    "GrashanveilHaloDress",
+    "GrashanveilHaloHelm",
+    "GrashanveilHaloHem",
+    "GrashanveilHaloSleeves"
+  ],
+  "original_looks": [
+    "GrashanveilDress",
+    "GrashanveilHelm",
+    "GrashanveilHem",
+    "GrashanveilSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A sun-priestess's ceremonial gown of the old Grashan ruins: pale fluted stone tiers splaying into a wide terracotta hem band over a plains-green petticoat, a wide terracotta sash and a gold sun halo, reading from the high camera as a narrow-shouldered pale bell under a gold crown.",
+  "reason": "Sun-halo priestess: a rayed gold sun disc behind the head, the clearest sun-worship read from every camera, over a pale V-neck bodice, terracotta belt and pleated stone skirt (second critic 6.25, first; first critic 6.45, second).",
+  "first_fix": "The pleated skirt hangs straight: splay it into a flare with a stepped stone hem, and halve the sleeve blocks.",
+  "parts": 89
+}

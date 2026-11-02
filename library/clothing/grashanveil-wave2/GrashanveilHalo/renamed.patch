@@ -1,0 +1,318 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..ddba286 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -12,6 +12,10 @@ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+ local FenscaleJack = require("./armourLooks/FenscaleJack")
+ local FenscaleWaders = require("./armourLooks/FenscaleWaders")
++local GrashanveilHaloDress = require("./armourLooks/GrashanveilHaloDress")
++local GrashanveilHaloHelm = require("./armourLooks/GrashanveilHaloHelm")
++local GrashanveilHaloHem = require("./armourLooks/GrashanveilHaloHem")
++local GrashanveilHaloSleeves = require("./armourLooks/GrashanveilHaloSleeves")
+ local IronCap = require("./armourLooks/IronCap")
+ local IronGauntlets = require("./armourLooks/IronGauntlets")
+ local IronGreaves = require("./armourLooks/IronGreaves")
+@@ -41,6 +45,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	FenscaleHood = FenscaleHood,
+ 	FenscaleJack = FenscaleJack,
+ 	FenscaleWaders = FenscaleWaders,
++	GrashanveilHaloDress = GrashanveilHaloDress,
++	GrashanveilHaloHelm = GrashanveilHaloHelm,
++	GrashanveilHaloHem = GrashanveilHaloHem,
++	GrashanveilHaloSleeves = GrashanveilHaloSleeves,
+ 	IronCap = IronCap,
+ 	IronGauntlets = IronGauntlets,
+ 	IronGreaves = IronGreaves,
+diff --git a/src/shared/data/armourLooks/GrashanveilHaloDress.luau b/src/shared/data/armourLooks/GrashanveilHaloDress.luau
+new file mode 100644
+index 0000000..3f62b96
+--- /dev/null
++++ b/src/shared/data/armourLooks/GrashanveilHaloDress.luau
+@@ -0,0 +1,97 @@
++--!strict
++-- The Grashan sun-priestess's gown: a fitted pale stone bodice with a gold
++-- neckline and a gold sun on the back, a wide terracotta sash at the waist
++-- with a small sun at its centre and a gathered bustle behind. The skirt is
++-- two tiers on the thighs, each wider than the one above and each fluted with
++-- dark pleats, so it splays into a bell from the hip; it stops just above the
++-- knee, where the Hem look carries it on in wider fluted tiers to a terracotta
++-- hem band and a plains-green petticoat. The back panels are a shade darker
++-- and fluted in pale stone, so the back reads as a pleated panel too.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c: { [string]: { number } } = {
++	stone = { 174, 172, 162 }, -- pale ruin stone, the gown's cloth
++	stonePale = { 194, 192, 182 }, -- the lit fronts and bodice panel
++	stoneDark = { 132, 130, 120 }, -- pleats and shadowed folds
++	gold = { 178, 144, 88 }, -- worn sun gold
++	terracotta = { 152, 96, 74 }, -- the faded terracotta sash
++	terracottaDark = { 120, 74, 56 }, -- the sash's knot and its second end
++	green = { 108, 122, 88 }, -- the plains-green under-layer
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "GrashanveilHaloDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice, a paler front panel, the gold neckline and the sun on the
++		-- back that the high camera sees.
++		Kit.box("UpperTorso", { 2.08, 1.64, 1.08 }, { 0, 0, 0 }, "Fabric", c.stone),
++		Kit.box("UpperTorso", { 1.46, 1.28, 0.06 }, { 0, -0.04, -0.56 }, "Fabric", c.stonePale),
++		Kit.box("UpperTorso", { 1, 0.07, 0.06 }, { 0, 0.72, -0.56 }, "Metal", c.gold),
++		{
++			on = "UpperTorso",
++			shape = "Cylinder",
++			size = { 0.44, 0.07, 0.44 },
++			at = { 0, 0.22, 0.57 },
++			turn = { 90, 0, 0 },
++			material = "Metal",
++			color = c.gold,
++		},
++		-- The gold neckline, a V from the neck band to the breastbone.
++		Kit.box("UpperTorso", { 0.07, 0.8, 0.06 }, { 0.225, 0.375, -0.57 }, "Metal", c.gold, { 0, 0, -31 }),
++		Kit.box("UpperTorso", { 0.07, 0.8, 0.06 }, { -0.225, 0.375, -0.57 }, "Metal", c.gold, { 0, 0, 31 }),
++		-- The waist drawn in: a fitted band under the broad terracotta sash, its
++		-- green under-edge, the knot off to the right and the sun at the centre.
++		Kit.box("LowerTorso", { 2.04, 0.4, 1.04 }, { 0, 0, 0 }, "Fabric", c.stone),
++		Kit.box("LowerTorso", { 2.08, 0.32, 1.08 }, { 0, 0.03, 0 }, "Fabric", c.terracotta),
++		Kit.box("LowerTorso", { 2.06, 0.08, 1.08 }, { 0, -0.16, 0 }, "Fabric", c.green),
++		Kit.box("LowerTorso", { 0.26, 0.22, 0.14 }, { 0.42, 0, -0.58 }, "Fabric", c.terracottaDark),
++		{
++			on = "LowerTorso",
++			shape = "Cylinder",
++			size = { 0.3, 0.08, 0.3 },
++			at = { 0, 0.03, -0.575 },
++			turn = { 90, 0, 0 },
++			material = "Metal",
++			color = c.gold,
++		},
++		-- The sash gathered into a small bustle at the back of the waist.
++		Kit.box("LowerTorso", { 1.2, 0.34, 0.22 }, { 0, -0.02, 0.63 }, "Fabric", c.terracotta),
++		-- The upper skirt tier on the thighs, narrow at the hip.
++		Kit.box("UpperLeg", { 1.1, 0.6, 0.08 }, { 0, 0.45, -0.6 }, "Fabric", c.stonePale, { 4, 0, 0 }),
++		Kit.box("UpperLeg", { 1.1, 0.6, 0.08 }, { 0, 0.45, 0.6 }, "Fabric", c.stone, { -4, 0, 0 }),
++		Kit.box("UpperLeg", { 0.08, 0.6, 1.12 }, { 0.51, 0.45, 0 }, "Fabric", c.stone),
++		Kit.box("UpperLeg", { 0.05, 0.52, 0.03 }, { -0.28, 0.45, -0.655 }, "Fabric", c.stoneDark, { 4, 0, 0 }),
++		Kit.box("UpperLeg", { 0.05, 0.52, 0.03 }, { 0.28, 0.45, -0.655 }, "Fabric", c.stoneDark, { 4, 0, 0 }),
++		-- The lower thigh tier, stepped out wider and turned out a little more.
++		Kit.box("UpperLeg", { 1.46, 1, 0.08 }, { 0.06, -0.15, -0.56 }, "Fabric", c.stonePale, { 5, 0, 0 }),
++		Kit.box("UpperLeg", { 1.46, 1, 0.08 }, { 0.06, -0.15, 0.56 }, "Fabric", c.stone, { -5, 0, 0 }),
++		Kit.box("UpperLeg", { 0.08, 1, 1.04 }, { 0.75, -0.15, 0 }, "Fabric", c.stone),
++		Kit.box("UpperLeg", { 0.05, 0.88, 0.03 }, { -0.45, -0.15, -0.615 }, "Fabric", c.stoneDark, { 5, 0, 0 }),
++		Kit.box("UpperLeg", { 0.05, 0.88, 0.03 }, { 0.06, -0.15, -0.615 }, "Fabric", c.stoneDark, { 5, 0, 0 }),
++		Kit.box("UpperLeg", { 0.05, 0.88, 0.03 }, { 0.57, -0.15, -0.615 }, "Fabric", c.stoneDark, { 5, 0, 0 }),
++		-- The back of the lower tier, fluted in pale stone on the darker panel.
++		Kit.box("UpperLeg", { 0.05, 0.88, 0.03 }, { -0.36, -0.15, 0.615 }, "Fabric", c.stonePale, { -5, 0, 0 }),
++		Kit.box("UpperLeg", { 0.05, 0.88, 0.03 }, { 0.48, -0.15, 0.615 }, "Fabric", c.stonePale, { -5, 0, 0 }),
++		-- A torn green patch low on the right of the skirt.
++		Kit.box("UpperLeg", { 0.34, 0.42, 0.03 }, { 0.34, -0.42, -0.625 }, "Fabric", c.green, { 5, 0, 0 }, "Right"),
++		-- The sash's two ends, hung from the right thigh so they swing with it.
++		Kit.box("UpperLeg", { 0.14, 0.84, 0.06 }, { 0.2, 0.3, -0.65 }, "Fabric", c.terracotta, { 4, 0, 0 }, "Right"),
++		Kit.box(
++			"UpperLeg",
++			{ 0.1, 0.6, 0.05 },
++			{ 0.05, 0.42, -0.67 },
++			"Fabric",
++			c.terracottaDark,
++			{ 6, 0, 0 },
++			"Right"
++		),
++		-- The sleeves' upper part, close to the arm, with a terracotta band at
++		-- the elbow; the wide part is carried down at the forearm by the Gloves.
++		Kit.box("UpperArm", { 1.06, 1.22, 1.06 }, { 0, 0, 0 }, "Fabric", c.stone),
++		Kit.box("UpperArm", { 1.1, 0.1, 1.1 }, { 0, -0.42, 0 }, "Fabric", c.terracotta),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/GrashanveilHaloHelm.luau b/src/shared/data/armourLooks/GrashanveilHaloHelm.luau
+new file mode 100644
+index 0000000..9d356f6
+--- /dev/null
++++ b/src/shared/data/armourLooks/GrashanveilHaloHelm.luau
+@@ -0,0 +1,78 @@
++--!strict
++-- The Grashan sun-priestess's headdress: a pale carved-stone halo with a worn
++-- gold sun set in both faces, five broken gold rays round the rim, a gold
++-- circlet and a small brow sun, and two faded terracotta ribbons behind the
++-- ears. The halo rises high behind the head, but its widest part is above ear
++-- level, so the front outline stays narrow at the shoulders.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c: { [string]: { number } } = {
++	stonePale = { 194, 192, 182 }, -- pale ruin stone catching the moon
++	gold = { 178, 144, 88 }, -- worn sun gold
++	terracotta = { 152, 96, 74 }, -- faded terracotta ribbon
++}
++
++-- The halo's centre: behind the crown, with its widest arc above the ears.
++local HALO_Y = 0.52
++local HALO_Z = 0.7
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "GrashanveilHaloHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The carved stone disc, with a gold sun set into its front and back.
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 1.5, 0.16, 1.5 },
++			at = { 0, HALO_Y, HALO_Z },
++			turn = { 90, 0, 0 },
++			material = "Fabric",
++			color = c.stonePale,
++		},
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 1.26, 0.1, 1.26 },
++			at = { 0, HALO_Y, HALO_Z - 0.1 },
++			turn = { 90, 0, 0 },
++			material = "Metal",
++			color = c.gold,
++		},
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 1.26, 0.1, 1.26 },
++			at = { 0, HALO_Y, HALO_Z + 0.1 },
++			turn = { 90, 0, 0 },
++			material = "Metal",
++			color = c.gold,
++		},
++		-- Rays round the rim, set in its plane so they read from front and back;
++		-- the lower right one is worn short.
++		Kit.box("Head", { 0.14, 0.32, 0.08 }, { 0, 1.36, HALO_Z }, "Metal", c.gold),
++		Kit.box("Head", { 0.14, 0.32, 0.08 }, { 0.42, 1.247, HALO_Z }, "Metal", c.gold, { 0, 0, -30 }),
++		Kit.box("Head", { 0.14, 0.32, 0.08 }, { -0.42, 1.247, HALO_Z }, "Metal", c.gold, { 0, 0, 30 }),
++		Kit.box("Head", { 0.13, 0.24, 0.08 }, { 0.701, 0.925, HALO_Z }, "Metal", c.gold, { 0, 0, -60 }),
++		Kit.box("Head", { 0.14, 0.32, 0.08 }, { -0.727, 0.94, HALO_Z }, "Metal", c.gold, { 0, 0, 60 }),
++		-- The circlet round the crown, which also holds the halo.
++		Kit.box("Head", { 1.26, 0.14, 1.26 }, { 0, 0.3, 0 }, "Metal", c.gold),
++		-- A small sun at the brow.
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.2, 0.08, 0.2 },
++			at = { 0, 0.12, -0.62 },
++			turn = { 90, 0, 0 },
++			material = "Metal",
++			color = c.gold,
++		},
++		-- Ribbons from the circlet, falling behind each ear.
++		Kit.box("Head", { 0.1, 0.8, 0.06 }, { 0.53, -0.15, 0.61 }, "Fabric", c.terracotta),
++		Kit.box("Head", { 0.1, 0.8, 0.06 }, { -0.53, -0.15, 0.61 }, "Fabric", c.terracotta),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/GrashanveilHaloHem.luau b/src/shared/data/armourLooks/GrashanveilHaloHem.luau
+new file mode 100644
+index 0000000..67977fd
+--- /dev/null
++++ b/src/shared/data/armourLooks/GrashanveilHaloHem.luau
+@@ -0,0 +1,42 @@
++--!strict
++-- The Grashan sun-priestess's hem: the gown's skirt carried on down each shin
++-- in two stepped tiers, each wider than the one above, the lower one fluted
++-- again so the pleat bands splay out into the widest part of the gown. A faded
++-- terracotta hem band wraps the bottom over a plains-green petticoat, and
++-- terracotta shoes show beneath. Standing, each leg's tiers overlap the other's
++-- into one full bell.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c: { [string]: { number } } = {
++	stone = { 174, 172, 162 }, -- pale ruin stone
++	stonePale = { 194, 192, 182 }, -- the lit fronts and the wide lower tier
++	stoneDark = { 132, 130, 120 }, -- the lower tier's flutes
++	terracotta = { 152, 96, 74 }, -- the faded terracotta hem band and shoes
++	green = { 108, 122, 88 }, -- the plains-green petticoat edge
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "GrashanveilHaloHem",
++	slot = "Boots",
++	parts = {
++		-- The upper tier, running on from the thigh's panels and overlapping
++		-- them a little above the knee so the skirt reads as one piece.
++		Kit.box("LowerLeg", { 1.62, 0.8, 0.08 }, { 0.1, 0.25, -0.57 }, "Fabric", c.stonePale, { 4, 0, 0 }),
++		Kit.box("LowerLeg", { 1.62, 0.8, 0.08 }, { 0.1, 0.25, 0.57 }, "Fabric", c.stone, { -4, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 0.8, 1.1 }, { 0.87, 0.25, 0 }, "Fabric", c.stone),
++		-- The lower tier, the widest fluted step, turned out a little further.
++		Kit.box("LowerLeg", { 1.95, 0.55, 0.08 }, { 0.16, -0.25, -0.55 }, "Fabric", c.stonePale, { 5, 0, 0 }),
++		Kit.box("LowerLeg", { 1.95, 0.55, 0.08 }, { 0.16, -0.25, 0.55 }, "Fabric", c.stone, { -5, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 0.55, 1.18 }, { 1.09, -0.25, 0 }, "Fabric", c.stone),
++		Kit.box("LowerLeg", { 0.05, 0.45, 0.03 }, { -0.42, -0.25, -0.605 }, "Fabric", c.stoneDark, { 5, 0, 0 }),
++		Kit.box("LowerLeg", { 0.05, 0.45, 0.03 }, { 0.64, -0.25, -0.605 }, "Fabric", c.stoneDark, { 5, 0, 0 }),
++		-- The faded terracotta hem band, over the green petticoat edge.
++		Kit.box("LowerLeg", { 2.02, 0.12, 1.42 }, { 0.16, -0.47, 0 }, "Fabric", c.terracotta),
++		Kit.box("LowerLeg", { 2.12, 0.16, 1.5 }, { 0.16, -0.61, 0 }, "Fabric", c.green),
++		-- The shoes.
++		Kit.box("Foot", { 1.06, 0.4, 1.16 }, { 0, 0, -0.06 }, "Leather", c.terracotta),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/GrashanveilHaloSleeves.luau b/src/shared/data/armourLooks/GrashanveilHaloSleeves.luau
+new file mode 100644
+index 0000000..92ebea4
+--- /dev/null
++++ b/src/shared/data/armourLooks/GrashanveilHaloSleeves.luau
+@@ -0,0 +1,32 @@
++--!strict
++-- The Grashan sun-priestess's sleeves: the lower arm of the pale gown, kept
++-- slim all the way down, with only a modest turn at the elbow, a gold cuff and
++-- a faded terracotta ribbon flaring at the wrist, and a close pale glove. The
++-- sleeves add nothing to the shoulder line and little to the arms' width, so
++-- the figure stays narrow across the top from the high camera.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c: { [string]: { number } } = {
++	stone = { 174, 172, 162 }, -- pale ruin stone
++	stoneDark = { 132, 130, 120 }, -- the close glove
++	gold = { 178, 144, 88 }, -- worn sun gold
++	terracotta = { 152, 96, 74 }, -- faded terracotta ribbon
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "GrashanveilHaloSleeves",
++	slot = "Gloves",
++	parts = {
++		-- A modest turn at the elbow, then the sleeve straight to the wrist.
++		Kit.box("LowerArm", { 1.22, 0.3, 1.22 }, { 0, 0.44, 0 }, "Fabric", c.stone),
++		Kit.box("LowerArm", { 1.08, 0.84, 1.08 }, { 0, -0.1, 0 }, "Fabric", c.stone),
++		-- The gold cuff and its terracotta ribbon, the one flare at the wrist.
++		Kit.box("LowerArm", { 1.16, 0.12, 1.16 }, { 0, -0.38, 0 }, "Metal", c.gold),
++		Kit.box("LowerArm", { 1.22, 0.12, 1.22 }, { 0, -0.52, 0 }, "Fabric", c.terracotta),
++		-- The close pale glove.
++		Kit.box("Hand", { 1.04, 0.46, 1.06 }, { 0, 0.02, 0 }, "Fabric", c.stoneDark),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..3847864 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,14 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:GrashanveilHaloHelm"] = row("A pale stone halo with a gold sun disc and rays, terracotta ribbons behind."),
++	["armour:GrashanveilHaloDress"] = row(
++		"A pale pleated gown with a terracotta sash, a gold neckline and a sun at the waist."
++	),
++	["armour:GrashanveilHaloSleeves"] = row("Pale sleeves flaring to gold cuffs and terracotta ribbons at the wrist."),
++	["armour:GrashanveilHaloHem"] = row(
++		"Tiered pale skirt panels with a terracotta hem band over a green petticoat and shoes."
++	),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

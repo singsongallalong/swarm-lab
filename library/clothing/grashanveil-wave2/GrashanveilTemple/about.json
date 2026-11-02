@@ -1,0 +1,22 @@
+{
+  "run": "grashanveil-wave2",
+  "letter": "B",
+  "set": "GrashanveilTemple",
+  "looks": [
+    "GrashanveilTempleDress",
+    "GrashanveilTempleHelm",
+    "GrashanveilTempleHem",
+    "GrashanveilTempleSleeves"
+  ],
+  "original_looks": [
+    "GrashanveilDress",
+    "GrashanveilHelm",
+    "GrashanveilHem",
+    "GrashanveilSleeves"
+  ],
+  "pick_rank": 3,
+  "intent": "An ancient Grashan sun-priestess's gown in pale ruin stone, sun gold and faded terracotta, with an upright sun-crowned hood, a cinched waist and a broad gold-edged bell skirt that carries its width below the shoulders from the high camera.",
+  "reason": "Temple gown: the most Grashan outline, a stepped ziggurat headdress over stepped temple tiers in pale stone with terracotta and gold lips, a gown carved from the ruins (5.4, third).",
+  "first_fix": "The stacked slab sleeves are wider than the shoulders and the top reads as a walking building: narrow sleeves, a tapered bodice, fewer and taller skirt tiers.",
+  "parts": 82
+}

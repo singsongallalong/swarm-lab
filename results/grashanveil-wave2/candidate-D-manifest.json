@@ -1,0 +1,13 @@
+{
+  "skill": "Grashanveil",
+  "look": "GrashanveilHelm,GrashanveilDress,GrashanveilSleeves,GrashanveilHem",
+  "rows_added": ["GrashanveilHelm", "GrashanveilDress", "GrashanveilSleeves", "GrashanveilHem"],
+  "intent": "A sun-priestess's ceremonial gown of the old Grashan ruins: pale fluted stone tiers splaying into a wide terracotta hem band over a plains-green petticoat, a wide terracotta sash and a gold sun halo, reading from the high camera as a narrow-shouldered pale bell under a gold crown.",
+  "renders": [".swarm/out/armour-set-r4.png", ".swarm/out/armour-set-close-r4.png", ".swarm/out/armour-set-fit-r4.png"],
+  "revisions": 3,
+  "requests": [
+    "A neck or collar body part: a high standing collar would bury itself in the head, so the collar is a flat gold neckline.",
+    "A cone or tapered-box part: the bell is stepped tiers because every panel is a straight box.",
+    "A brighter gold material: with no specular light, the sun gold has to live entirely in its colour."
+  ]
+}

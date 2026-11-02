@@ -1,0 +1,21 @@
+{
+  "skill": "Grashanveil",
+  "look": "GrashanveilCrown,GrashanveilDress,GrashanveilSleeves,GrashanveilHem",
+  "rows_added": [
+    "GrashanveilCrown",
+    "GrashanveilDress",
+    "GrashanveilSleeves",
+    "GrashanveilHem"
+  ],
+  "intent": "An ancient Grashan priestess's ceremonial gown in pale ruin stone, sun gold, faded terracotta and plains green: a high stepped ziggurat crown, a fitted gold-belted bodice and a stiff bell skirt that reads from the high camera as a tall crown over a pinched waist and a wide, gold-banded hem.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A flared/trapezoid panel (or cone) shape in Kit, so a stiff bell skirt can taper in one part instead of in stacked overlapping panels.",
+    "A pale stone material that stays pale under the night mood preset; Slate and Concrete render too dark, so the stone is Fabric in a stone colour."
+  ]
+}

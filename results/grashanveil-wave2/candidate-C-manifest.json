@@ -1,0 +1,21 @@
+{
+  "skill": "Grashanveil",
+  "look": "GrashanveilDiadem,GrashanveilDress,GrashanveilSleeves,GrashanveilHem",
+  "rows_added": [
+    "GrashanveilDiadem",
+    "GrashanveilDress",
+    "GrashanveilSleeves",
+    "GrashanveilHem"
+  ],
+  "intent": "An ancient Grashan sun-priestess's ceremonial gown cut like pale ruin stone, with a gold sun diadem, a cinched sun belt and a tiered bell skirt that reads from the high camera as a pale stone-and-gold A-line apart from every darker family.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A tapered or wedge skirt panel: with boxes only, the bell reads as tiers rather than a smooth cone.",
+    "A soft translucent veil material, so the headpiece's fall reads as cloth rather than stone."
+  ]
+}
