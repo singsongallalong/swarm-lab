@@ -1,0 +1,15 @@
+{
+  "skill": "Fortwarden",
+  "look": "FortwardenHelm,FortwardenChest,FortwardenGloves,FortwardenBoots",
+  "rows_added": ["FortwardenHelm", "FortwardenChest", "FortwardenGloves", "FortwardenBoots"],
+  "intent": "The watch captain's kit in town blue and cream: a blue-crowned steel sallet with a cream band and comb, a blue brigandine with a cream chevron front and back, brass rivets and badges, blue pauldron tops edged in steel, a short blue cape, and steel-shinned brown boots, reading at the high camera as the fort's own heraldry rather than another grey iron suit.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "Town blue and cream in Kit.colors: the fort's heraldry is repeated as local palettes in all four files, and later Farmland looks will want the same pair."
+  ]
+}

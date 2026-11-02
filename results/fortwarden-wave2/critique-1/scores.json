@@ -1,0 +1,22 @@
+{
+  "A": {"reads": 6.5, "fantasy": 7, "fit": 7.5, "parts": 6.5, "total": 6.85,
+        "why": "An honest blue-coated soldier with a cream baldric, but from above the brown hat crown reads as leather and nothing in the outline is uniquely Fortwarden.",
+        "fix": "Turn the hat into a steel or blue kettle hat with a broader brim and a brass badge on the band, and make that the set's signature."},
+  "B": {"reads": 5.5, "fantasy": 6.5, "fit": 7, "parts": 6, "total": 6.18,
+        "why": "The grey visored cap and big grey slab pauldrons dominate the top-down view and read as the iron family, with blue only as a chest strip.",
+        "fix": "Recolour or shrink the slab pauldrons so the town blue reads from above, and give the flat grey helm a heraldic shape."},
+  "C": {"reads": 6, "fantasy": 6, "fit": 7, "parts": 6.5, "total": 6.28,
+        "why": "The crenellated tower helm is the boldest idea, but the figure is charcoal and grey with blue only on the pauldron caps, so it reads as iron.",
+        "fix": "Make the coat blue, put cream on larger crenels and add a brass helm badge, keeping steel only for the helm and pauldrons."},
+  "D": {"reads": 7.5, "fantasy": 7, "fit": 7, "parts": 7, "total": 7.18,
+        "why": "The quartered tabard and the cream cross on a blue cap give the clearest heraldic read from the ARPG camera, but the pale pauldrons glare and the cream reads as khaki.",
+        "fix": "Darken and narrow the pauldrons and warm the cream quarters so the blue-and-cream arms lead."},
+  "E": {"reads": 7, "fantasy": 7.5, "fit": 6.5, "parts": 7, "total": 7.05,
+        "why": "The most thoroughly town-blue set, with a fine back-pavise garrison idea, but the pavise frame wraps the torso in profile and the dome coif reads as soft.",
+        "fix": "Flatten the pavise onto the back with a blue field and a cream charge, and give the coif a steel brow or a brass-bossed nasal."},
+  "F": {"reads": 7.5, "fantasy": 8, "fit": 7, "parts": 7.5, "total": 7.55,
+        "why": "The crested steel helm, the blue coat, the cream-edged pauldrons and a big brass chest roundel make it heraldic, sturdy and muted, with one clear silhouette idea.",
+        "fix": "Reshape the bent-block crest into a thinner segmented fore-and-aft crest in blue and cream so it reads from above and doesn't look like a finger."},
+  "ranking": ["F", "D", "E", "A", "C", "B"],
+  "notes": "All six use town blue and hold on the slim avatar. The field splits on how much grey steel they show from above: B and C drift into iron, while D, E and F keep blue and cream dominant. F has the best single silhouette and brass badge, D the best top-down heraldry (the cross on the cap), and E the best colour family but a clumsy pavise fit. Judged from the PNG renders only."
+}

@@ -1,0 +1,16 @@
+{
+  "skill": "Fortwarden",
+  "look": "FortwardenHelm,FortwardenChest,FortwardenGloves,FortwardenBoots",
+  "rows_added": ["FortwardenHelm", "FortwardenChest", "FortwardenGloves", "FortwardenBoots"],
+  "intent": "The fort garrison's great helm with a thin stepped blue-and-cream crest, brass brow and brass crown mount over a navy quilted gambeson, its cream yoke, shoulder and back stripes and brass tower badge reading as a distinct blue-and-cream family from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "Town blue and cream in Kit.colors: the garrison heraldry is defined locally in each Fortwarden file, so another fort set cannot share it without copying.",
+    "A cream hem on the skirt flaps, cut to keep the set inside the 64-part budget."
+  ]
+}

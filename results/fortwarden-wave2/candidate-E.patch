@@ -1,0 +1,245 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..1d88e44 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -12,6 +12,10 @@ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+ local FenscaleJack = require("./armourLooks/FenscaleJack")
+ local FenscaleWaders = require("./armourLooks/FenscaleWaders")
++local FortwardenBoots = require("./armourLooks/FortwardenBoots")
++local FortwardenBracers = require("./armourLooks/FortwardenBracers")
++local FortwardenCoif = require("./armourLooks/FortwardenCoif")
++local FortwardenPavise = require("./armourLooks/FortwardenPavise")
+ local IronCap = require("./armourLooks/IronCap")
+ local IronGauntlets = require("./armourLooks/IronGauntlets")
+ local IronGreaves = require("./armourLooks/IronGreaves")
+@@ -41,6 +45,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	FenscaleHood = FenscaleHood,
+ 	FenscaleJack = FenscaleJack,
+ 	FenscaleWaders = FenscaleWaders,
++	FortwardenBoots = FortwardenBoots,
++	FortwardenBracers = FortwardenBracers,
++	FortwardenCoif = FortwardenCoif,
++	FortwardenPavise = FortwardenPavise,
+ 	IronCap = IronCap,
+ 	IronGauntlets = IronGauntlets,
+ 	IronGreaves = IronGreaves,
+diff --git a/src/shared/data/armourLooks/FortwardenBoots.luau b/src/shared/data/armourLooks/FortwardenBoots.luau
+new file mode 100644
+index 0000000..278d431
+--- /dev/null
++++ b/src/shared/data/armourLooks/FortwardenBoots.luau
+@@ -0,0 +1,33 @@
++--!strict
++-- The Fortwarden boots (zone armour, the FortwardenBoots base): brown garrison
++-- boots, blue cuffs over a cream band, and a riveted steel shin plate. The right
++-- boot keeps its steel toe cap; the left is scuffed pale where it has worn
++-- through, so the pair carries the garrison's uneven wear.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The town's heraldry: a muted blue and a pale painted cream (bible §2), and
++-- the fort's small brass badge.
++local blue = { 54, 68, 100 }
++local cream = { 166, 154, 126 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FortwardenBoots",
++	slot = "Boots",
++	parts = {
++		Kit.box("LowerLeg", { 1.08, 1.0, 1.08 }, { 0, -0.06, 0 }, "Leather", c.leather),
++		-- Blue cuff over the cream band at the knee.
++		Kit.box("LowerLeg", { 1.14, 0.2, 1.14 }, { 0, 0.44, 0 }, "Fabric", blue),
++		Kit.box("LowerLeg", { 1.12, 0.1, 1.12 }, { 0, 0.28, 0 }, "Fabric", cream),
++		-- The steel shin plate.
++		Kit.box("LowerLeg", { 0.68, 0.54, 0.1 }, { 0, -0.08, -0.57 }, "Metal", c.iron),
++		-- The boot, the right's steel toe cap and the left's pale scuff.
++		Kit.box("Foot", { 1.06, 0.36, 1.14 }, { 0, 0.02, -0.04 }, "Leather", c.leather),
++		Kit.box("Foot", { 1.12, 0.34, 0.34 }, { 0, 0.02, -0.45 }, "Metal", c.iron, nil, "Right"),
++		Kit.box("Foot", { 1.06, 0.14, 0.32 }, { 0, 0.13, -0.46 }, "Leather", c.leatherScuff, nil, "Left"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FortwardenBracers.luau b/src/shared/data/armourLooks/FortwardenBracers.luau
+new file mode 100644
+index 0000000..559a34a
+--- /dev/null
++++ b/src/shared/data/armourLooks/FortwardenBracers.luau
+@@ -0,0 +1,36 @@
++--!strict
++-- The Fortwarden bracers (zone armour, the FortwardenBracers base): brown
++-- leather forearm bracers with a steel plate, a cream elbow cuff over a blue
++-- band, and dark gloves. The left bracer carries an extra scraped splint and
++-- the right a small brass buckle: that asymmetry is the garrison's wear.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The town's heraldry: a muted blue and a pale painted cream (bible §2), and
++-- the fort's small brass badge.
++local blue = { 54, 68, 100 }
++local cream = { 166, 154, 126 }
++local brassBadge = { 146, 122, 76 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FortwardenBracers",
++	slot = "Gloves",
++	parts = {
++		Kit.box("LowerArm", { 1.1, 0.98, 1.1 }, { 0, -0.06, 0 }, "Leather", c.leather),
++		-- Cream cuff at the elbow, over the town's blue band.
++		Kit.box("LowerArm", { 1.16, 0.18, 1.16 }, { 0, 0.46, 0 }, "Fabric", cream),
++		Kit.box("LowerArm", { 1.12, 0.12, 1.12 }, { 0, 0.3, 0 }, "Fabric", blue),
++		-- The steel plate down the front.
++		Kit.box("LowerArm", { 0.72, 0.52, 0.1 }, { 0, -0.12, -0.57 }, "Metal", c.iron),
++		-- The extra splint, written for the right and worn on the left (mirrored).
++		Kit.box("LowerArm", { 0.1, 0.6, 0.42 }, { 0.56, -0.1, -0.3 }, "Metal", c.ironWorn, nil, "Left"),
++		-- A brass buckle outside the right bracer, keeping its strap.
++		Kit.box("LowerArm", { 0.12, 0.16, 0.12 }, { 0.57, 0.02, 0.28 }, "Metal", brassBadge, nil, "Right"),
++		-- The dark glove.
++		Kit.box("Hand", { 1.06, 0.38, 1.06 }, { 0, 0, 0 }, "Leather", c.leatherDark),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FortwardenCoif.luau b/src/shared/data/armourLooks/FortwardenCoif.luau
+new file mode 100644
+index 0000000..9f84fa9
+--- /dev/null
++++ b/src/shared/data/armourLooks/FortwardenCoif.luau
+@@ -0,0 +1,42 @@
++--!strict
++-- The Fortwarden coif (zone armour, the FortwardenCoif base): the garrison's
++-- padded arming coif in the town's blue, stepped and quilted at the crown, with
++-- a cream brow band, a riveted steel brow strip and nasal, a brass badge and
++-- padded cheeks and nape. Rounded and soft beside the iron bowl, so the town's
++-- own soldiers read as a different family before any detail does.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The town's heraldry: a muted blue and a pale painted cream (bible §2), and
++-- the fort's small brass badge.
++local blue = { 54, 68, 100 }
++local blueDark = { 38, 46, 68 }
++local cream = { 166, 154, 126 }
++local brassBadge = { 146, 122, 76 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FortwardenCoif",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- A padded crown in three low steps, like a quilted arming cap.
++		Kit.box("Head", { 1.36, 0.72, 1.36 }, { 0, 0.26, 0 }, "Fabric", blue),
++		Kit.box("Head", { 1.2, 0.16, 1.2 }, { 0, 0.64, 0 }, "Fabric", blue),
++		Kit.box("Head", { 0.98, 0.1, 0.98 }, { 0, 0.75, 0 }, "Fabric", blue),
++		-- A steel brow band over a cream stripe: the garrison's soldier's edge.
++		Kit.box("Head", { 1.46, 0.16, 1.46 }, { 0, 0.09, 0 }, "Metal", c.ironWorn),
++		Kit.box("Head", { 1.42, 0.1, 1.42 }, { 0, -0.05, 0 }, "Fabric", cream),
++		-- The nasal bar under a brass boss, set on the brow band over the face.
++		Kit.box("Head", { 0.18, 0.5, 0.1 }, { 0, -0.12, -0.72 }, "Metal", c.ironWorn),
++		Kit.box("Head", { 0.3, 0.3, 0.12 }, { 0, 0.09, -0.77 }, "Metal", brassBadge),
++		-- Padded cheeks, the left sat a little lower; a pale patch on the crown.
++		Kit.box("Head", { 0.14, 0.54, 0.9 }, { 0.69, -0.3, 0 }, "Fabric", blue),
++		Kit.box("Head", { 0.14, 0.54, 0.9 }, { -0.69, -0.32, 0.02 }, "Fabric", blue, { 0, 0, -4 }),
++		Kit.box("Head", { 1.26, 0.6, 0.3 }, { 0, -0.32, 0.56 }, "Fabric", blueDark),
++		Kit.box("Head", { 0.26, 0.22, 0.06 }, { -0.4, 0.4, -0.7 }, "Fabric", c.linen, { 0, 0, 10 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FortwardenPavise.luau b/src/shared/data/armourLooks/FortwardenPavise.luau
+new file mode 100644
+index 0000000..948b39d
+--- /dev/null
++++ b/src/shared/data/armourLooks/FortwardenPavise.luau
+@@ -0,0 +1,65 @@
++--!strict
++-- The Fortwarden pavise (zone armour, the FortwardenPavise base): the garrison's
++-- blue padded coat with a cream livery panel, a brass badge and a leather
++-- quiver-belt across the chest, a bolt case at the left hip, and a tall painted
++-- pavise strapped to the back. The pavise's cream face and blue cross fill the
++-- back, and the set reads first as the cream slab and the blue body, then as
++-- the belt, buckles and steel.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The town's heraldry: a muted blue and a pale painted cream (bible §2), and
++-- the fort's small brass badge.
++local blue = { 54, 68, 100 }
++local blueDark = { 38, 46, 68 }
++local cream = { 166, 154, 126 }
++local brassBadge = { 146, 122, 76 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FortwardenPavise",
++	slot = "Chest",
++	parts = Kit.join({
++		-- The pavise: one flat board on the back in the town's blue, a cream
++		-- cross and a brass boss for the town's arms, seated close. The paint is
++		-- scraped through to the bare board at the lower right.
++		{
++			Kit.box("UpperTorso", { 1.56, 1.9, 0.14 }, { 0, 0.16, 0.62 }, "Fabric", blue),
++			Kit.box("UpperTorso", { 0.34, 1.9, 0.06 }, { 0, 0.16, 0.7 }, "Fabric", cream),
++			Kit.box("UpperTorso", { 1.56, 0.34, 0.06 }, { 0, 0.34, 0.7 }, "Fabric", cream),
++			Kit.box("UpperTorso", { 0.28, 0.28, 0.1 }, { 0, 0.34, 0.76 }, "Metal", brassBadge),
++			Kit.box("UpperTorso", { 0.46, 0.14, 0.1 }, { 0.34, -0.4, 0.69 }, "Wood", c.timber, { 0, 0, 16 }),
++		},
++		-- The padded coat: blue, with the cream livery panel and its brass badge;
++		-- a patch of pale linen sewn over a tear in the blue.
++		{
++			Kit.box("UpperTorso", { 2.08, 1.64, 1.08 }, { 0, 0, 0 }, "Fabric", blue),
++			Kit.box("LowerTorso", { 2.1, 0.44, 1.1 }, { 0, 0, 0 }, "Fabric", blueDark),
++			Kit.box("UpperTorso", { 0.96, 1.52, 0.07 }, { 0, 0, -0.57 }, "Fabric", cream),
++			Kit.box("UpperTorso", { 0.28, 1.52, 0.06 }, { 0, 0, -0.61 }, "Fabric", blue),
++			Kit.box("UpperTorso", { 0.22, 0.22, 0.08 }, { 0, 0.58, -0.65 }, "Metal", brassBadge),
++			Kit.box("UpperTorso", { 0.3, 0.26, 0.06 }, { -0.62, 0.22, -0.6 }, "Fabric", c.linen, { 0, 0, 6 }),
++		},
++		-- Belt, the quiver-belt from the right shoulder to the left hip, and the
++		-- bolt case and its pale fletchings hung at the left hip.
++		{
++			Kit.box("LowerTorso", { 2.16, 0.16, 1.16 }, { 0, 0.02, 0 }, "Leather", c.leatherDark),
++			Kit.box("LowerTorso", { 0.24, 0.18, 0.08 }, { 0.28, 0.02, -0.62 }, "Metal", brassBadge),
++			Kit.box("UpperTorso", { 0.2, 1.8, 0.08 }, { 0, 0.06, -0.66 }, "Leather", c.leather, { 0, 0, -30 }),
++			Kit.box("LowerTorso", { 0.3, 0.32, 0.22 }, { -0.58, 0.1, -0.52 }, "Leather", c.leatherDark, { 0, 0, 6 }),
++			Kit.box("LowerTorso", { 0.26, 0.14, 0.2 }, { -0.6, 0.32, -0.52 }, "Fabric", cream, { 0, 0, 6 }),
++		},
++		-- Blue padded sleeves, a blue shoulder roll each side, and a steel
++		-- spaulder only on the right.
++		{
++			Kit.box("UpperArm", { 1.06, 1.18, 1.06 }, { 0, 0, 0 }, "Fabric", blue),
++			Kit.box("UpperArm", { 1.16, 0.2, 1.16 }, { 0, 0.52, 0 }, "Fabric", blue, { 0, 0, -10 }),
++			Kit.box("UpperArm", { 1.22, 0.16, 1.22 }, { 0.03, 0.63, 0 }, "Metal", c.ironWorn, { 0, 0, -14 }, "Right"),
++		},
++		-- Blue coat tails hung from the thighs, so they swing with the legs.
++		Kit.flaps(0.7, "Fabric", blue),
++	}),
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..87c741a 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,14 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:FortwardenCoif"] = row("The garrison's padded blue coif, cream brow band, steel nasal and a brass badge."),
++	["armour:FortwardenPavise"] = row(
++		"A blue-and-cream garrison coat with a tall painted pavise strapped to the back."
++	),
++	["armour:FortwardenBracers"] = row(
++		"Brown leather bracers, steel plates and cream cuffs, the left arm extra-plated."
++	),
++	["armour:FortwardenBoots"] = row("Brown garrison boots, steel shins, blue cuffs, cream bands, and one steel toe."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

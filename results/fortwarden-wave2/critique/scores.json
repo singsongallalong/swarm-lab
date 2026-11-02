@@ -1,0 +1,22 @@
+{
+  "A": {"reads": 7, "fantasy": 7, "fit": 7, "parts": 7, "total": 7.0,
+        "why": "A wide steel kettle-hat brim gives a distinct top-down silhouette and a believable watchman, but the navy and brown sink in the dark and cream is almost absent.",
+        "fix": "Put cream or town-blue heraldry on the pauldron tops and the hat crown so the town colours read before the steel."},
+  "B": {"reads": 6, "fantasy": 5, "fit": 7, "parts": 6, "total": 5.9,
+        "why": "The colours are clean and apart from the references, but the kepi, white belt and chevron read as a modern policeman, not a gothic garrison.",
+        "fix": "Replace the peaked cap with a brimmed steel cap or blue coif and move the heraldry onto the pauldron tops."},
+  "C": {"reads": 5, "fantasy": 6, "fit": 7, "parts": 6, "total": 5.85,
+        "why": "From above it is a grey bucket helm and grey slab pauldrons, which reads as the iron family despite the good blue-and-cream tabard.",
+        "fix": "Paint the pauldron tops and helm in town blue with cream edging so the ARPG read is blue-and-cream, not grey."},
+  "D": {"reads": 8, "fantasy": 7, "fit": 7, "parts": 7, "total": 7.35,
+        "why": "The quartered blue-and-cream torso and the cream cross on the cap crown are the clearest heraldic family read from the high camera.",
+        "fix": "Give the charcoal pauldrons a blue face with cream or brass edging and add the missing brass badge."},
+  "E": {"reads": 6, "fantasy": 6, "fit": 7, "parts": 6, "total": 6.2,
+        "why": "The blue coif fits the gothic world, but the promised pavise does not show and one odd pale pauldron is the only bright shape.",
+        "fix": "Hang a broad blue-and-cream pavise on the back as the one silhouette idea and balance or recolour the lone pauldron."},
+  "F": {"reads": 7, "fantasy": 8, "fit": 7, "parts": 7, "total": 7.3,
+        "why": "Crested sallet, cream-edged pauldrons and a brass chest roundel meet the brief most fully, but the helm reads as a pale grey box from above.",
+        "fix": "Widen the plume into a blue-and-cream front-to-back crest or blue the helm crown so the head reads from the ARPG camera."},
+  "ranking": ["D", "F", "A", "E", "B", "C"],
+  "notes": "D and F are close: D wins on top-down heraldic read (quartering, crown cross), F on fantasy and brass badge. Common weakness across the run: heraldry sits on the chest front where the high camera never looks; the pauldron tops and helm crown should carry the town colours. Several sets lean on grey steel at the top of the silhouette and drift toward iron."
+}

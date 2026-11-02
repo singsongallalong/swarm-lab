@@ -1,0 +1,14 @@
+{
+  "picked": ["D", "F", "A"],
+  "reasons": {
+    "D": "Tower sergeant: a quartered blue-and-cream torso and a cream cross on the cap crown, the clearest heraldic family read from the high camera (second critic 7.35, first; first critic 7.18, second).",
+    "F": "Gatewarden: a crested sallet, cream-edged pauldrons and a big brass chest roundel, the brief's heraldic, sturdy, honest garrison met most fully (7.30, second; first critic's top set at 7.55).",
+    "A": "Militia: a wide steel kettle-hat brim over a blue coat and a cream baldric, a distinct top-down outline and a believable town watchman (7.00, third; up from 6.85)."
+  },
+  "fixes": {
+    "D": "Give the charcoal pauldrons a blue face with cream or brass edging and add the missing brass badge.",
+    "F": "Widen the plume into a blue-and-cream front-to-back crest or blue the helm crown so the head reads from the ARPG camera.",
+    "A": "Put cream or town-blue heraldry on the pauldron tops and the hat crown so the town colours read before the steel."
+  },
+  "notes": "6 of 6 survived the draft (g01 exited 1 but its set passed, so no resume) and 6 of 6 survived the rework. Both critics put D, F and A in the top three, though not in the same order. The common weakness: heraldry sits on the chest front, where the high camera never looks; the pauldron tops and helm crown should carry the town colours. B and C drift into iron with grey slab pauldrons."
+}

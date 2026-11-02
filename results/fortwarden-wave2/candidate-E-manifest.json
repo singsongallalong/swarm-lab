@@ -1,0 +1,16 @@
+{
+  "skill": "Fortwarden",
+  "look": "FortwardenCoif,FortwardenPavise,FortwardenBracers,FortwardenBoots",
+  "rows_added": ["FortwardenCoif", "FortwardenPavise", "FortwardenBracers", "FortwardenBoots"],
+  "intent": "The town garrison's crossbowman: a blue padded coif with a steel brow band and brass boss, a blue coat with cream livery and brown leather, and a flat blue pavise carrying the town's cream cross, so from the high camera the blue body and cream charge read as one heraldic family apart from iron, leather and studded.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A taller pavise that clears the shoulders without cutting the coif's neck flap.",
+    "A mail collar and a full strap harness for the pavise; the chest's 26-part cap paid for the upper-arm sleeve coverage instead."
+  ]
+}

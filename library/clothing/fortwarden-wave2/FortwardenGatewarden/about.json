@@ -1,0 +1,22 @@
+{
+  "run": "fortwarden-wave2",
+  "letter": "F",
+  "set": "FortwardenGatewarden",
+  "looks": [
+    "FortwardenGatewardenBoots",
+    "FortwardenGatewardenChest",
+    "FortwardenGatewardenGloves",
+    "FortwardenGatewardenHelm"
+  ],
+  "original_looks": [
+    "FortwardenBoots",
+    "FortwardenChest",
+    "FortwardenGloves",
+    "FortwardenHelm"
+  ],
+  "pick_rank": 2,
+  "intent": "The fort garrison's great helm with a thin stepped blue-and-cream crest, brass brow and brass crown mount over a navy quilted gambeson, its cream yoke, shoulder and back stripes and brass tower badge reading as a distinct blue-and-cream family from the high camera.",
+  "reason": "Gatewarden: a crested sallet, cream-edged pauldrons and a big brass chest roundel, the brief's heraldic, sturdy, honest garrison met most fully (7.30, second; first critic's top set at 7.55).",
+  "first_fix": "Widen the plume into a blue-and-cream front-to-back crest or blue the helm crown so the head reads from the ARPG camera.",
+  "parts": 64
+}

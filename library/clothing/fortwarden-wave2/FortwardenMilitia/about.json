@@ -1,0 +1,22 @@
+{
+  "run": "fortwarden-wave2",
+  "letter": "A",
+  "set": "FortwardenMilitia",
+  "looks": [
+    "FortwardenMilitiaBoots",
+    "FortwardenMilitiaChest",
+    "FortwardenMilitiaGloves",
+    "FortwardenMilitiaHelm"
+  ],
+  "original_looks": [
+    "FortwardenBoots",
+    "FortwardenChest",
+    "FortwardenGloves",
+    "FortwardenHelm"
+  ],
+  "pick_rank": 3,
+  "intent": "A steel kettle hat with a broad bright-lipped brim, town-blue band and brass brow plate over a town-blue quilted jack with a cream sash and broad steel spaulders, so the garrison's blue-and-cream heraldry reads by colour and outline from the high camera.",
+  "reason": "Militia: a wide steel kettle-hat brim over a blue coat and a cream baldric, a distinct top-down outline and a believable town watchman (7.00, third; up from 6.85).",
+  "first_fix": "Put cream or town-blue heraldry on the pauldron tops and the hat crown so the town colours read before the steel.",
+  "parts": 60
+}

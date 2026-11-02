@@ -126,7 +126,15 @@ get a worn particle effect in the game.
 | BarrowguardBonewrap | barrowguard-wave2 (A) | Broken Barrows | 1 | 63 | bronze crown over a pale bone face mask, burial wraps over brown-bronze plate |
 | BarrowguardKing | barrowguard-wave2 (D) | Broken Barrows | 2 | 55 | bone-spike crown, bronze plate with moss growing through, all four brief colours |
 | BarrowguardRoundel | barrowguard-wave2 (C) | Broken Barrows | 3 | 61 | black-and-bronze grave guard with a round bronze grave-disc slung on the back |
+| FortwardenSergeant | fortwarden-wave2 (D) | Farmland | 1 | 64 | quartered blue-and-cream surcoat and a cream cross on the cap crown, the clearest heraldry from above |
+| FortwardenGatewarden | fortwarden-wave2 (F) | Farmland | 2 | 64 | crested sallet, cream-edged pauldrons and a big brass chest roundel on a blue coat |
+| FortwardenMilitia | fortwarden-wave2 (A) | Farmland | 3 | 60 | wide steel kettle-hat brim over a blue coat and a cream baldric, the town watchman |
 <!-- wave2-heartland-end -->
+
+Cost: the harness puts the four runs at $7.53 (Harvestbride $2.33, Ashveil $2.38, Barrowguard
+$1.57, Fortwarden $1.25), all at off-peak prices. The DeepSeek balance went from 26.33 to 16.32
+($10.01) over the same hours, but that includes the Grashan and Aor'lan sessions' runs on the same
+key, so the Heartland share cannot be read off it exactly; it is within the $14 cap either way.
 
 ## Porting notes
 

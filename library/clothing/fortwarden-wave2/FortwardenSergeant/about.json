@@ -1,0 +1,22 @@
+{
+  "run": "fortwarden-wave2",
+  "letter": "D",
+  "set": "FortwardenSergeant",
+  "looks": [
+    "FortwardenSergeantBoots",
+    "FortwardenSergeantChest",
+    "FortwardenSergeantGloves",
+    "FortwardenSergeantHelm"
+  ],
+  "original_looks": [
+    "FortwardenBoots",
+    "FortwardenChest",
+    "FortwardenGloves",
+    "FortwardenHelm"
+  ],
+  "pick_rank": 1,
+  "intent": "The town garrison's kit: a tall-crowned steel kettle hat whose blue lid carries a cream cross, a blue-and-cream quartered surcoat over mail, dark narrow steel pauldrons rimmed in scraped steel, steel gauntlets with blue cuffs and tall leather boots banded blue, so from the high camera the pale cream cross and quartered blocks lead over the dark steel.",
+  "reason": "Tower sergeant: a quartered blue-and-cream torso and a cream cross on the cap crown, the clearest heraldic family read from the high camera (second critic 7.35, first; first critic 7.18, second).",
+  "first_fix": "Give the charcoal pauldrons a blue face with cream or brass edging and add the missing brass badge.",
+  "parts": 64
+}

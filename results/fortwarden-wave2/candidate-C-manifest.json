@@ -1,0 +1,21 @@
+{
+  "skill": "Fortwarden",
+  "look": "FortwardenHelm,FortwardenChest,FortwardenGloves,FortwardenBoots",
+  "rows_added": [
+    "FortwardenHelm",
+    "FortwardenChest",
+    "FortwardenGloves",
+    "FortwardenBoots"
+  ],
+  "intent": "A town garrison's blue livery coat with a broad cream panel and a brass badge, brown leather gloves and boots, under steel pauldrons and a steel great helm crowned with a blue band and large cream crenels, reading at the high camera as a blue body, steel shoulders and a pale battlement crown.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A town blue cloth bright enough to read as blue at the high camera without pushing the night palette's value limit; the livery coat sits at the accent's limit.",
+    "More cream on the coat's back to carry the heraldry from the rear high camera; the crenels carry it instead, as the chest panel is front-on."
+  ]
+}

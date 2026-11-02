@@ -1,0 +1,231 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..fc1bc52 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -12,6 +12,10 @@ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+ local FenscaleJack = require("./armourLooks/FenscaleJack")
+ local FenscaleWaders = require("./armourLooks/FenscaleWaders")
++local FortwardenMilitiaBoots = require("./armourLooks/FortwardenMilitiaBoots")
++local FortwardenMilitiaChest = require("./armourLooks/FortwardenMilitiaChest")
++local FortwardenMilitiaGloves = require("./armourLooks/FortwardenMilitiaGloves")
++local FortwardenMilitiaHelm = require("./armourLooks/FortwardenMilitiaHelm")
+ local IronCap = require("./armourLooks/IronCap")
+ local IronGauntlets = require("./armourLooks/IronGauntlets")
+ local IronGreaves = require("./armourLooks/IronGreaves")
+@@ -41,6 +45,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	FenscaleHood = FenscaleHood,
+ 	FenscaleJack = FenscaleJack,
+ 	FenscaleWaders = FenscaleWaders,
++	FortwardenMilitiaBoots = FortwardenMilitiaBoots,
++	FortwardenMilitiaChest = FortwardenMilitiaChest,
++	FortwardenMilitiaGloves = FortwardenMilitiaGloves,
++	FortwardenMilitiaHelm = FortwardenMilitiaHelm,
+ 	IronCap = IronCap,
+ 	IronGauntlets = IronGauntlets,
+ 	IronGreaves = IronGreaves,
+diff --git a/src/shared/data/armourLooks/FortwardenMilitiaBoots.luau b/src/shared/data/armourLooks/FortwardenMilitiaBoots.luau
+new file mode 100644
+index 0000000..8c5a75b
+--- /dev/null
++++ b/src/shared/data/armourLooks/FortwardenMilitiaBoots.luau
+@@ -0,0 +1,27 @@
++--!strict
++-- The Fortwarden boots: tall brown leather boots with a blue cuff at the
++-- knee, a cream ring and shin stripe, an ankle strap with a brass buckle
++-- and a steel toe cap. One shin is scuffed.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The town's heraldry, as on the rest of the set.
++local townBlue = { 56, 74, 100 }
++local cream = { 134, 124, 100 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FortwardenMilitiaBoots",
++	slot = "Boots",
++	parts = {
++		Kit.box("LowerLeg", { 1.08, 0.92, 1.08 }, { 0, -0.1, 0 }, "Leather", c.leather),
++		Kit.box("LowerLeg", { 1.14, 0.26, 1.14 }, { 0, 0.38, 0 }, "Fabric", townBlue),
++		Kit.box("LowerLeg", { 1.16, 0.08, 1.16 }, { 0, 0.24, 0 }, "Fabric", cream),
++		Kit.box("LowerLeg", { 0.16, 0.5, 0.06 }, { 0, -0.02, -0.56 }, "Fabric", cream),
++		Kit.box("Foot", { 1.06, 0.34, 1.2 }, { 0, 0.02, -0.08 }, "Leather", c.leather),
++		Kit.box("Foot", { 0.9, 0.26, 0.3 }, { 0, 0.03, -0.58 }, "Metal", c.ironDark),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FortwardenMilitiaChest.luau b/src/shared/data/armourLooks/FortwardenMilitiaChest.luau
+new file mode 100644
+index 0000000..5a8e4cc
+--- /dev/null
++++ b/src/shared/data/armourLooks/FortwardenMilitiaChest.luau
+@@ -0,0 +1,69 @@
++--!strict
++-- The Fortwarden chest: a town-blue quilted jack cut short like a militia
++-- coat, a cream sash across it with a brass badge, a leather belt and pouch.
++-- Steel pauldrons striped with cream give the broad shoulder line and blue
++-- cloth skirt flaps hang from the thighs, so the set reads blue and cream
++-- from the high camera.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The town's heraldry: a faded garrison blue, its shadow, and a worn cream.
++local townBlue = { 56, 74, 100 }
++local townBlueDark = { 42, 56, 78 }
++local cream = { 134, 124, 100 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FortwardenMilitiaChest",
++	slot = "Chest",
++	parts = Kit.join({
++		-- The quilted jack, its seams darker where the padding dips.
++		{
++			Kit.box("UpperTorso", { 2.08, 1.64, 1.06 }, { 0, 0, 0 }, "Fabric", townBlue),
++			Kit.box("UpperTorso", { 1.9, 0.08, 0.06 }, { 0, 0.5, -0.55 }, "Fabric", townBlueDark),
++			Kit.box("UpperTorso", { 1.9, 0.08, 0.06 }, { 0, -0.28, -0.55 }, "Fabric", townBlueDark),
++		},
++		-- The cream sash over the right shoulder, the brass badge on its chest.
++		{
++			Kit.box("UpperTorso", { 0.4, 1.64, 1.1 }, { 0, 0, 0 }, "Fabric", cream, { 0, 0, -32 }),
++			Kit.box("UpperTorso", { 0.24, 0.24, 0.1 }, { 0.12, 0.1, -0.59 }, "Metal", c.brass),
++		},
++		-- A cream neckline band, and a leather patch where the pack rubs.
++		{
++			Kit.box("UpperTorso", { 2.12, 0.14, 1.1 }, { 0, 0.74, 0 }, "Fabric", cream),
++			Kit.box("UpperTorso", { 0.42, 0.36, 0.06 }, { -0.35, 0.35, 0.55 }, "Leather", c.leatherScuff, { 0, 0, 6 }),
++		},
++		-- Sleeves, and a real spaulder line: a steel cap over a steel wing on
++		-- the outer arm, the cap striped with cream to read from the high camera.
++		{
++			Kit.box("UpperArm", { 1.08, 1.16, 1.08 }, { 0, -0.02, 0 }, "Fabric", townBlue),
++			Kit.box("UpperArm", { 1.24, 0.26, 1.26 }, { 0, 0.56, 0 }, "Metal", c.iron),
++			Kit.box("UpperArm", { 0.22, 0.3, 1.12 }, { 0.6, 0.38, 0 }, "Metal", c.iron),
++			Kit.box("UpperArm", { 0.18, 0.1, 1.26 }, { 0.3, 0.74, 0 }, "Fabric", cream),
++		},
++		-- The short skirt of the jack, and a cream hem on its front.
++		Kit.flaps(0.5, "Fabric", townBlueDark),
++		{
++			Kit.box("UpperLeg", { 0.74, 0.07, 0.08 }, { 0.08, 0.28, -0.58 }, "Fabric", cream, { 4, 0, 0 }),
++			-- The sash's end, hung from the left thigh so it swings with the leg.
++			Kit.box("UpperLeg", { 0.14, 0.46, 0.1 }, { 0.58, 0.42, -0.54 }, "Fabric", cream, { 6, 0, 0 }, "Left"),
++		},
++		-- The belt, its brass buckle off centre, and a pouch on the left hip.
++		{
++			Kit.box("LowerTorso", { 2.1, 0.44, 1.08 }, { 0, 0, 0 }, "Fabric", townBlueDark),
++			Kit.box("LowerTorso", { 2.14, 0.18, 1.12 }, { 0, 0, 0 }, "Leather", c.leatherDark),
++			Kit.box("LowerTorso", { 0.26, 0.24, 0.1 }, { 0.3, 0, -0.58 }, "Metal", c.brass),
++			Kit.box(
++				"LowerTorso",
++				{ 0.34, 0.3, 0.18 },
++				{ -0.76, -0.04, -0.54 },
++				"Leather",
++				c.leatherScuff,
++				{ 0, 18, 0 }
++			),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FortwardenMilitiaGloves.luau b/src/shared/data/armourLooks/FortwardenMilitiaGloves.luau
+new file mode 100644
+index 0000000..0959f0e
+--- /dev/null
++++ b/src/shared/data/armourLooks/FortwardenMilitiaGloves.luau
+@@ -0,0 +1,27 @@
++--!strict
++-- The Fortwarden gloves: brown leather bracers with the town's blue cuff at
++-- the elbow and a cream ring below it, an iron wrist band and a steel
++-- knuckle plate. A cream stripe runs down the outside of each bracer.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The town's heraldry, as on the rest of the set.
++local townBlue = { 56, 74, 100 }
++local cream = { 134, 124, 100 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FortwardenMilitiaGloves",
++	slot = "Gloves",
++	parts = {
++		Kit.box("LowerArm", { 1.1, 0.86, 1.1 }, { 0, -0.1, 0 }, "Leather", c.leather),
++		Kit.box("LowerArm", { 1.14, 0.22, 1.14 }, { 0, 0.4, 0 }, "Fabric", townBlue),
++		Kit.box("LowerArm", { 1.16, 0.08, 1.16 }, { 0, 0.27, 0 }, "Fabric", cream),
++		Kit.box("LowerArm", { 1.12, 0.1, 1.12 }, { 0, -0.34, 0 }, "Metal", c.ironDark),
++		Kit.box("LowerArm", { 0.08, 0.6, 0.18 }, { 0.56, -0.08, 0 }, "Fabric", cream),
++		Kit.box("Hand", { 1.06, 0.34, 1.06 }, { 0, 0, 0 }, "Leather", c.leatherDark),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FortwardenMilitiaHelm.luau b/src/shared/data/armourLooks/FortwardenMilitiaHelm.luau
+new file mode 100644
+index 0000000..074e466
+--- /dev/null
++++ b/src/shared/data/armourLooks/FortwardenMilitiaHelm.luau
+@@ -0,0 +1,41 @@
++--!strict
++-- The Fortwarden helm: the garrison's steel kettle hat. A broad steel brim
++-- with a bright lip, a town-blue band and a brass plate at the brow, and a
++-- cream crest over the crown. The wide brim and blue band are the set's
++-- signature from the high camera; the steel nasal and blue nape cloth keep
++-- the honest soldier under it.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = Kit.colors
++
++-- The town's heraldry: a faded garrison blue and a worn cream, kept dark
++-- enough for the night. Steel and brass come from Kit.
++local townBlue = { 56, 74, 100 }
++local cream = { 134, 124, 100 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FortwardenMilitiaHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The kettle crown: a steel bowl with a stepped top, sat on the brim.
++		Kit.box("Head", { 1.34, 0.44, 1.34 }, { 0, 0.34, 0 }, "Metal", c.iron),
++		Kit.box("Head", { 1.16, 0.18, 1.16 }, { 0, 0.62, 0 }, "Metal", c.iron),
++		-- The brim, a step wider than the old cap, with a bright lip at its edge.
++		Kit.box("Head", { 2, 0.12, 2 }, { 0, 0.06, 0 }, "Metal", c.iron),
++		Kit.box("Head", { 2.06, 0.06, 2.06 }, { 0, 0, 0 }, "Metal", c.ironWorn),
++		-- The town's blue band round the crown, and the brass plate on its brow.
++		Kit.box("Head", { 1.42, 0.22, 1.42 }, { 0, 0.24, 0 }, "Fabric", townBlue),
++		Kit.box("Head", { 0.4, 0.2, 0.12 }, { 0, 0.24, -0.73 }, "Metal", c.brass),
++		-- The cream crest running front to back over the crown.
++		Kit.box("Head", { 0.16, 0.3, 1.16 }, { 0, 0.82, 0 }, "Fabric", cream),
++		-- A blue cloth at the nape, a steel nasal over the brow.
++		Kit.box("Head", { 1.06, 0.46, 0.18 }, { 0, -0.26, 0.62 }, "Fabric", townBlue, { 10, 0, 0 }),
++		Kit.box("Head", { 0.1, 0.42, 0.08 }, { 0, -0.14, -0.68 }, "Metal", c.ironWorn),
++		-- A dent knocked into the right of the brim.
++		Kit.box("Head", { 0.3, 0.1, 0.18 }, { 0.6, 0.08, -0.5 }, "Metal", c.ironDark),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..a85b01e 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,12 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:FortwardenMilitiaHelm"] = row("A leather cap under a wide steel brim, with a town-blue band and a cream crest."),
++	["armour:FortwardenMilitiaChest"] = row("A town-blue quilted jack with a cream sash, steel pauldrons and a brass badge."),
++	["armour:FortwardenMilitiaGloves"] = row("Brown leather bracers with town-blue cuffs, a cream stripe and steel knuckles."),
++	["armour:FortwardenMilitiaBoots"] = row(
++		"Tall leather boots with town-blue cuffs, a cream shin stripe and steel toe caps."
++	),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),
