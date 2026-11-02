@@ -1,0 +1,22 @@
+{
+  "run": "sunwarden-wave2",
+  "letter": "C",
+  "set": "SunwardenBoulder",
+  "looks": [
+    "SunwardenBoulderBoots",
+    "SunwardenBoulderChest",
+    "SunwardenBoulderGloves",
+    "SunwardenBoulderHelm"
+  ],
+  "original_looks": [
+    "SunwardenBoots",
+    "SunwardenChest",
+    "SunwardenGloves",
+    "SunwardenHelm"
+  ],
+  "pick_rank": 3,
+  "intent": "Old green-bronze sentinel plate with a blank pale-stone face, stone tassets and shin plates and sun-gold trim, its huge round pauldrons and tall gold crest giving a heavy statue-like outline that reads at the high camera.",
+  "reason": "Boulder sentinel: round barrel pauldrons with gold caps that read as two carved stone circles, the most massive statue silhouette of the run (6.53, third; first critic 7.8, first).",
+  "first_fix": "The mid green sits close to fenscale and the helm's cross reads as a cleric's: shift the metal to brown bronze and give the helm a sun crest.",
+  "parts": 55
+}

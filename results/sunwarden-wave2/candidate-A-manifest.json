@@ -1,0 +1,13 @@
+{
+  "skill": "Sunwarden",
+  "look": "SunwardenHelm,SunwardenChest,SunwardenGloves,SunwardenBoots",
+  "rows_added": ["SunwardenHelm", "SunwardenChest", "SunwardenGloves", "SunwardenBoots"],
+  "intent": "Light warm green-bronze Grashan sentinel plate with a pale ruin-stone mask, chest slab and strip kilt, stone-topped slab pauldrons, a gold sun half-disc and thick rays behind the helm, and a large gold sun-cross on the back, all reading from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": ["A shared sun-gold swatch in Kit.colors, brighter than brass, for crests and back sigils."]
+}

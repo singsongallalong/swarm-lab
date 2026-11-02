@@ -1,0 +1,283 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..68d88e8 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -29,6 +29,10 @@ local StormTalisman = require("./armourLooks/StormTalisman")
+ local StuddedBoots = require("./armourLooks/StuddedBoots")
+ local StuddedCap = require("./armourLooks/StuddedCap")
+ local StuddedGloves = require("./armourLooks/StuddedGloves")
++local SunwardenBoots = require("./armourLooks/SunwardenBoots")
++local SunwardenChest = require("./armourLooks/SunwardenChest")
++local SunwardenGloves = require("./armourLooks/SunwardenGloves")
++local SunwardenHelm = require("./armourLooks/SunwardenHelm")
+ local TowerShield = require("./armourLooks/TowerShield")
+ 
+ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+@@ -56,6 +60,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	StuddedBoots = StuddedBoots,
+ 	StuddedCap = StuddedCap,
+ 	StuddedGloves = StuddedGloves,
++	SunwardenBoots = SunwardenBoots,
++	SunwardenChest = SunwardenChest,
++	SunwardenGloves = SunwardenGloves,
++	SunwardenHelm = SunwardenHelm,
+ 	SpellShield = SpellShield,
+ 	StormTalisman = StormTalisman,
+ 	TowerShield = TowerShield,
+diff --git a/src/shared/data/armourLooks/SunwardenBoots.luau b/src/shared/data/armourLooks/SunwardenBoots.luau
+new file mode 100644
+index 0000000..0afa13c
+--- /dev/null
++++ b/src/shared/data/armourLooks/SunwardenBoots.luau
+@@ -0,0 +1,34 @@
++--!strict
++-- The Sunwarden boots (zone armour, the Sunwarden set): bronze greaves under
++-- a broad knee cop, a pale stone shin plate, a gold band at the ankle, and
++-- plated feet with a scraped toe cap. A scar is knocked into the right shin
++-- plate: the set has seen the ruin.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- Old green-bronze and pale ruin stone with sun gold: the Sunwarden palette.
++local bronze = { 96, 98, 66 }
++local bronzeDark = { 62, 62, 42 }
++local bronzeWorn = { 146, 142, 106 }
++local stone = { 146, 142, 128 }
++local gold = { 176, 146, 90 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "SunwardenBoots",
++	slot = "Boots",
++	parts = {
++		-- The greave and the broad knee cop over it.
++		Kit.box("LowerLeg", { 1.12, 0.94, 1.12 }, { 0, -0.08, 0 }, "Metal", bronze),
++		Kit.box("LowerLeg", { 1.26, 0.22, 1.26 }, { 0, 0.4, 0 }, "Metal", bronzeDark),
++		-- The pale stone shin plate and the gold band at the ankle.
++		Kit.box("LowerLeg", { 0.9, 0.66, 0.1 }, { 0, -0.12, -0.58 }, "Marble", stone),
++		Kit.box("LowerLeg", { 1.16, 0.1, 1.16 }, { 0, -0.44, 0 }, "Metal", gold),
++		-- The sabaton and its scraped toe cap.
++		Kit.box("Foot", { 1.1, 0.36, 1.16 }, { 0, 0.02, -0.04 }, "Metal", bronze),
++		Kit.box("Foot", { 0.78, 0.22, 0.24 }, { 0, 0.05, -0.66 }, "Metal", bronzeWorn),
++		-- A scar knocked into the right shin plate.
++		Kit.box("LowerLeg", { 0.18, 0.18, 0.06 }, { 0.3, -0.24, -0.64 }, "Metal", bronzeDark, { 0, 0, 14 }, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/SunwardenChest.luau b/src/shared/data/armourLooks/SunwardenChest.luau
+new file mode 100644
+index 0000000..775da93
+--- /dev/null
++++ b/src/shared/data/armourLooks/SunwardenChest.luau
+@@ -0,0 +1,89 @@
++--!strict
++-- The Sunwarden chest (zone armour, the Sunwarden set): the muscled bronze
++-- cuirass of the Grashan sentinels, broad pale-stone pauldron caps over
++-- stepped bronze, a stone collar, a bright scraped belt with an off-centre
++-- sun buckle, bronze skirt flaps on the thighs, and a great gold sun slung
++-- on the back, ringed with rays and set with a dark boss.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- Old green-bronze and pale ruin stone with sun gold: the Sunwarden palette.
++local bronze = { 96, 98, 66 }
++local bronzeDark = { 62, 62, 42 }
++local bronzeWorn = { 146, 142, 106 }
++local stone = { 146, 142, 128 }
++local gold = { 176, 146, 90 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "SunwardenChest",
++	slot = "Chest",
++	parts = Kit.join({
++		-- Skirt flaps hung from the thighs so they swing with the legs.
++		Kit.flaps(0.62, "Metal", bronzeDark),
++		{
++			-- The cuirass shell and its waist.
++			Kit.box("UpperTorso", { 2.12, 1.66, 1.1 }, { 0, 0, 0 }, "Metal", bronze),
++			Kit.box("LowerTorso", { 2.12, 0.46, 1.12 }, { 0, 0, 0 }, "Metal", bronzeDark),
++			-- A muscle cuirass: two worn pectorals.
++			Kit.box("UpperTorso", { 0.92, 0.54, 0.16 }, { 0.48, 0.38, -0.57 }, "Metal", bronzeWorn),
++			Kit.box("UpperTorso", { 0.92, 0.54, 0.16 }, { -0.48, 0.38, -0.57 }, "Metal", bronzeWorn),
++			-- Two scraped bands across the belly.
++			Kit.box("UpperTorso", { 1.74, 0.14, 0.1 }, { 0, 0.02, -0.58 }, "Metal", bronzeWorn),
++			Kit.box("UpperTorso", { 1.84, 0.14, 0.1 }, { 0, -0.26, -0.58 }, "Metal", bronzeWorn),
++			-- The sun on the back: a gold disc with eight thin gold rays and a
++			-- bronze hub. Four crossed gold bars hide behind the disc and put
++			-- their ends out past its rim as rays.
++			{
++				on = "UpperTorso",
++				shape = "Cylinder",
++				size = { 1.86, 0.14, 1.86 },
++				at = { 0.08, 0.1, 0.6 },
++				turn = { 90, 0, 0 },
++				material = "Metal",
++				color = gold,
++			},
++			Kit.box("UpperTorso", { 2.6, 0.16, 0.1 }, { 0.08, 0.1, 0.57 }, "Metal", gold, { 0, 0, 22.5 }),
++			Kit.box("UpperTorso", { 2.6, 0.16, 0.1 }, { 0.08, 0.1, 0.58 }, "Metal", gold, { 0, 0, 67.5 }),
++			Kit.box("UpperTorso", { 2.6, 0.16, 0.1 }, { 0.08, 0.1, 0.59 }, "Metal", gold, { 0, 0, 112.5 }),
++			Kit.box("UpperTorso", { 2.6, 0.16, 0.1 }, { 0.08, 0.1, 0.6 }, "Metal", gold, { 0, 0, 157.5 }),
++			{
++				on = "UpperTorso",
++				shape = "Cylinder",
++				size = { 0.46, 0.12, 0.46 },
++				at = { 0.08, 0.1, 0.73 },
++				turn = { 90, 0, 0 },
++				material = "Metal",
++				color = bronze,
++			},
++			-- Bronze sleeves and stepped pauldrons, capped in pale stone.
++			Kit.box("UpperArm", { 1.06, 1.2, 1.06 }, { 0, 0, 0 }, "Metal", bronzeDark),
++			Kit.box("UpperArm", { 1.28, 0.16, 1.28 }, { 0.02, 0.42, 0 }, "Metal", bronze),
++			Kit.box("UpperArm", { 1.4, 0.22, 1.4 }, { 0.02, 0.62, 0 }, "Marble", stone),
++			-- One sun disc on the right pauldron: the set never quite matches.
++			{
++				on = "UpperArm",
++				side = "Right",
++				shape = "Cylinder",
++				size = { 0.36, 0.08, 0.36 },
++				at = { 0.02, 0.76, 0 },
++				material = "Metal",
++				color = gold,
++			},
++			-- The belt, scraped bright, with its sun buckle off centre.
++			Kit.box("LowerTorso", { 2.18, 0.16, 1.18 }, { 0, 0.12, 0 }, "Metal", bronzeWorn),
++			{
++				on = "LowerTorso",
++				shape = "Cylinder",
++				size = { 0.34, 0.12, 0.34 },
++				at = { 0.26, 0.12, -0.6 },
++				turn = { 90, 0, 0 },
++				material = "Metal",
++				color = gold,
++			},
++			-- A pale stone collar at the neck.
++			Kit.box("UpperTorso", { 1.06, 0.18, 0.96 }, { 0, 0.8, -0.02 }, "Marble", stone),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/SunwardenGloves.luau b/src/shared/data/armourLooks/SunwardenGloves.luau
+new file mode 100644
+index 0000000..625fc3b
+--- /dev/null
++++ b/src/shared/data/armourLooks/SunwardenGloves.luau
+@@ -0,0 +1,43 @@
++--!strict
++-- The Sunwarden gloves (zone armour, the Sunwarden set): bronze vambraces
++-- flaring to a dark elbow cuff, a gold band at the wrist, a pale stone inlay
++-- down the forearm, and bronze gauntlet hands with a scraped knuckle guard.
++-- A gold sun disc on the right elbow: the set is never a matched pair.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- Old green-bronze and pale ruin stone with sun gold: the Sunwarden palette.
++local bronze = { 96, 98, 66 }
++local bronzeDark = { 62, 62, 42 }
++local bronzeWorn = { 146, 142, 106 }
++local stone = { 146, 142, 128 }
++local gold = { 176, 146, 90 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "SunwardenGloves",
++	slot = "Gloves",
++	parts = {
++		-- The vambrace, its flared elbow cuff and the gold band at the wrist.
++		Kit.box("LowerArm", { 1.12, 0.9, 1.12 }, { 0, -0.08, 0 }, "Metal", bronze),
++		Kit.box("LowerArm", { 1.28, 0.2, 1.28 }, { 0, 0.44, 0 }, "Metal", bronzeDark),
++		Kit.box("LowerArm", { 1.17, 0.1, 1.17 }, { 0, -0.46, 0 }, "Metal", gold),
++		-- A pale stone inlay down the front of the forearm.
++		Kit.box("LowerArm", { 0.26, 0.54, 0.09 }, { 0, -0.02, -0.59 }, "Marble", stone),
++		-- The sun disc on the right elbow.
++		{
++			on = "LowerArm",
++			side = "Right",
++			shape = "Cylinder",
++			size = { 0.28, 0.1, 0.28 },
++			at = { 0.66, 0.44, 0 },
++			turn = { 0, 0, 90 },
++			material = "Metal",
++			color = gold,
++		},
++		-- The gauntlet hand and a scraped knuckle guard.
++		Kit.box("Hand", { 1.08, 0.42, 1.08 }, { 0, 0, 0 }, "Metal", bronzeDark),
++		Kit.box("Hand", { 1.1, 0.18, 0.18 }, { 0, 0.04, -0.55 }, "Metal", bronzeWorn),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/SunwardenHelm.luau b/src/shared/data/armourLooks/SunwardenHelm.luau
+new file mode 100644
+index 0000000..b96e87e
+--- /dev/null
++++ b/src/shared/data/armourLooks/SunwardenHelm.luau
+@@ -0,0 +1,50 @@
++--!strict
++-- The Sunwarden helm (zone armour, the Sunwarden set): the ancient Grashan
++-- sentinels' war helm, a flat-topped great helm of old bronze over a pale
++-- ruin-stone face mask cut by a black eye slit, a gold nasal and brow band,
++-- and one low transverse crest of ruin stone with a gold stripe along its
++-- top. A dent above the right brow and one sun disc at the left ear keep it
++-- from being a pair.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- Old green-bronze and pale ruin stone with sun gold: the Sunwarden palette.
++local bronze = { 96, 98, 66 }
++local bronzeDark = { 62, 62, 42 }
++local stone = { 146, 142, 128 }
++local gold = { 176, 146, 90 }
++local slit = { 34, 36, 30 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "SunwardenHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- One massive flat-topped helm, and the pale stone face mask.
++		Kit.box("Head", { 1.42, 1.34, 1.48 }, { 0, 0.04, 0.02 }, "Metal", bronze),
++		Kit.box("Head", { 1.28, 0.72, 0.16 }, { 0, -0.24, -0.7 }, "Marble", stone),
++		Kit.box("Head", { 1.06, 0.1, 0.08 }, { 0, -0.08, -0.8 }, "Metal", slit),
++		-- A gold nasal divides the slit, under the gold band at the brow.
++		Kit.box("Head", { 0.13, 0.44, 0.09 }, { 0, -0.28, -0.81 }, "Metal", gold),
++		Kit.box("Head", { 1.46, 0.14, 1.52 }, { 0, 0.18, 0.02 }, "Metal", gold),
++		-- One low transverse crest across the flat top, with a gold stripe
++		-- set into it so it catches the moon from the high camera.
++		Kit.box("Head", { 1.6, 0.18, 0.56 }, { 0, 0.8, 0.02 }, "Marble", stone),
++		Kit.box("Head", { 1.4, 0.05, 0.46 }, { 0, 0.915, 0.02 }, "Metal", gold),
++		-- A flared neck guard at the back.
++		Kit.box("Head", { 1.36, 0.3, 0.32 }, { 0, -0.32, 0.78 }, "Metal", bronzeDark, { -8, 0, 0 }),
++		-- A dent above the right brow, and the sun disc at the left ear.
++		Kit.box("Head", { 0.34, 0.2, 0.1 }, { 0.36, 0.4, -0.74 }, "Metal", bronzeDark, { 0, 0, 12 }),
++		{
++			on = "Head",
++			shape = "Cylinder",
++			size = { 0.3, 0.08, 0.3 },
++			at = { -0.73, -0.02, 0.05 },
++			turn = { 0, 0, 90 },
++			material = "Metal",
++			color = gold,
++		},
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..ec0c6a9 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -74,6 +74,12 @@ local rows: { [string]: Row } = {
+ 	["armour:BoneTalisman"] = row("A carved bone charm with runes, hung from the left fist on a cord."),
+ 	["armour:EmberTalisman"] = row("A glowing ember stone in a small iron cage, hung on a chain."),
+ 	["armour:StormTalisman"] = row("A blue-white crystal shard bound in copper wire, hung on a cord."),
++	["armour:SunwardenHelm"] = row(
++		"An old bronze great helm with a black eye slit, a pale stone face and a low crest."
++	),
++	["armour:SunwardenChest"] = row("A muscled bronze cuirass with stone pauldrons and a gold sun shield on the back."),
++	["armour:SunwardenGloves"] = row("Bronze vambraces with gold wrist bands and stone-set gauntlets."),
++	["armour:SunwardenBoots"] = row("Bronze greaves with stone shin plates, gold ankle bands and bright toes."),
+ }
+ 
+ return table.freeze(rows)

@@ -1,0 +1,16 @@
+{
+  "skill": "Sunwarden",
+  "look": "SunwardenHelm,SunwardenChest,SunwardenGloves,SunwardenBoots",
+  "rows_added": ["SunwardenHelm", "SunwardenChest", "SunwardenGloves", "SunwardenBoots"],
+  "intent": "Ancient Grashan sentinel armour in lifted green-bronze with pale stone face, breast, upper-back mantle, knee and toe plates, a heavy crested helm with a sun-gold ridge, a gold belt sun and gold wrist rings; from the high camera it reads as a statue's pale-shouldered, gold-crested back over an olive-bronze plated body.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A sun-gold bright enough to read as gold under the moon preset without passing the bible's trim values; the crest ridge, belt sun and wrist rings carry it instead.",
+    "A gold-pale cloth that stays gold from the high camera instead of reading as brown leather; the cloak became a pale stone back mantle over bronze plate."
+  ]
+}

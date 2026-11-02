@@ -1,0 +1,17 @@
+{
+  "skill": "Sunwarden",
+  "look": "SunwardenHelm,SunwardenChest,SunwardenGloves,SunwardenBoots",
+  "rows_added": ["SunwardenHelm", "SunwardenChest", "SunwardenGloves", "SunwardenBoots"],
+  "intent": "Warm olive-bronze sentinel plate under domed pale-stone pauldrons on gold rims, a stepped stone crown with a gold sun disc rising behind it, a gold sun on the stone breastplate and gold trim at belt, wrists and knees, the left pauldron deliberately broken to its socket and lichen on the stone: a rounded, gold-sunned silhouette that reads apart from grey iron and cool fenscale from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A matte, weathered pale-stone material: Marble is the only pale stone to hand and reads smooth beside the bronze.",
+    "A lichen or moss material that reads as growth rather than a flat patch; Slate is a stand-in.",
+    "A gold that keeps its colour on vertical faces under the mood lighting; the sun discs read bronze-brown from the front."
+  ]
+}

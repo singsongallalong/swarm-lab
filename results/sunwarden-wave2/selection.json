@@ -1,0 +1,18 @@
+{
+  "picked": [
+    "A",
+    "F",
+    "C"
+  ],
+  "reasons": {
+    "A": "Sunburst sentinel: a radiating gold sunburst crest and wide pale-stone shoulder slabs over dark old bronze, one strong idea that reads from the ARPG camera and looks like no other family (second critic 7.8, first; first critic 7.0, second).",
+    "F": "Sun-wheel sentinel: the right muted olive bronze and pale stone, with a big sun-wheel on the back that shows from above, where the camera mostly sees backs (7.0, second; first critic 6.7, third).",
+    "C": "Boulder sentinel: round barrel pauldrons with gold caps that read as two carved stone circles, the most massive statue silhouette of the run (6.53, third; first critic 7.8, first)."
+  },
+  "fixes": {
+    "A": "Make the crest rays fewer, broader and duller so they read as cast bronze, not feathers; cover the green thigh gap; simplify the toothed waist fringe.",
+    "F": "The back wheel's square teeth read as a cog: turn them into rays, put a sun motif on the front, and warm the grey stone; the box helm reads as iron from the front.",
+    "C": "The mid green sits close to fenscale and the helm's cross reads as a cleric's: shift the metal to brown bronze and give the helm a sun crest."
+  },
+  "notes": "6 of 6 survived the draft and the rework with no resume (g00, g02 and g05 hit the 40-turn rework cap with their sets passing). Too little sun gold and too much olive across the run, which risks fenscale from above; every set leaves the avatar's green trousers showing at the thighs. C was first before the rework (7.8) and third after (6.53): the second critic read its green as near fenscale and its helm crest as a cleric's cross."
+}

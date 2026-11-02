@@ -1,0 +1,16 @@
+{
+  "skill": "Sunwarden",
+  "look": "SunwardenHelm,SunwardenChest,SunwardenGloves,SunwardenBoots",
+  "rows_added": ["SunwardenHelm", "SunwardenChest", "SunwardenGloves", "SunwardenBoots"],
+  "intent": "Old green-bronze sentinel plate with a blank pale-stone face, stone tassets and shin plates and sun-gold trim, its huge round pauldrons and tall gold crest giving a heavy statue-like outline that reads at the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A muted verdigris old-bronze in Kit.colors: the set's palette had to be declared locally in each of the four files.",
+    "A torus or ring part, for a true sun halo on the chest and a rolled rim on the pauldrons; a cylinder only reads as a flat disc."
+  ]
+}

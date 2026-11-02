@@ -1,0 +1,17 @@
+{
+  "skill": "Sunwarden",
+  "look": "SunwardenHelm,SunwardenChest,SunwardenGloves,SunwardenBoots",
+  "rows_added": ["SunwardenHelm", "SunwardenChest", "SunwardenGloves", "SunwardenBoots"],
+  "intent": "A massive ancient-sentinel set in old green-bronze, pale ruin stone and sun gold, with a stone face mask, a stepped stone crest, stone-capped pauldrons and a round stone-faced shield on the back, so from the high camera it reads as bright stone shoulders and crest over a dark bronze body.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A brighter sun gold in Kit.colors: Kit.brass reads brown under the mood preset, so the set carries its own gold.",
+    "A per-piece rigid flag, so the round shield on the back keeps its shape on slim avatars while the cuirass stretches.",
+    "A ring or torus piece for the shield rim, instead of a second full disc behind the stone face."
+  ]
+}

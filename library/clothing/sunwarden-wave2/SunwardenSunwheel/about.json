@@ -1,0 +1,22 @@
+{
+  "run": "sunwarden-wave2",
+  "letter": "F",
+  "set": "SunwardenSunwheel",
+  "looks": [
+    "SunwardenSunwheelBoots",
+    "SunwardenSunwheelChest",
+    "SunwardenSunwheelGloves",
+    "SunwardenSunwheelHelm"
+  ],
+  "original_looks": [
+    "SunwardenBoots",
+    "SunwardenChest",
+    "SunwardenGloves",
+    "SunwardenHelm"
+  ],
+  "pick_rank": 2,
+  "intent": "A massive ancient-sentinel set in old green-bronze, pale ruin stone and sun gold, with a stone face mask, a stepped stone crest, stone-capped pauldrons and a round stone-faced shield on the back, so from the high camera it reads as bright stone shoulders and crest over a dark bronze body.",
+  "reason": "Sun-wheel sentinel: the right muted olive bronze and pale stone, with a big sun-wheel on the back that shows from above, where the camera mostly sees backs (7.0, second; first critic 6.7, third).",
+  "first_fix": "The back wheel's square teeth read as a cog: turn them into rays, put a sun motif on the front, and warm the grey stone; the box helm reads as iron from the front.",
+  "parts": 62
+}

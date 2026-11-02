@@ -1,0 +1,16 @@
+{
+  "skill": "Sunwarden",
+  "look": "SunwardenHelm,SunwardenChest,SunwardenGloves,SunwardenBoots",
+  "rows_added": ["SunwardenHelm", "SunwardenChest", "SunwardenGloves", "SunwardenBoots"],
+  "intent": "Hewn pale ruin-stone pauldrons, chest and crown over bright green-bronze arms, greaves and belt, with a bronze crest swept up the helm, a gold brow band and a gold-ringed bronze sun on the chest; from the high camera it reads as pale stone blocks on green-bronze limbs under a gold band.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A pale stone material that reads as carved rock at the high camera; Granite and Marble both go flat under the mood light.",
+    "A sun-gold that stays bright without a specular light, so the brow band and chest ring read as gold rather than brass at distance."
+  ]
+}
