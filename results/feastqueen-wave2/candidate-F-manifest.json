@@ -1,0 +1,22 @@
+{
+  "skill": "Feastqueen",
+  "look": "FeastqueenHelm,FeastqueenDress,FeastqueenSleeves,FeastqueenHem",
+  "rows_added": [
+    "FeastqueenHelm",
+    "FeastqueenDress",
+    "FeastqueenSleeves",
+    "FeastqueenHem"
+  ],
+  "intent": "A bright candle-gold sun-court gown with a wine underlayer showing between ivory pleats, a wide ivory sun-disc collar and a rayed gold crown, flaring into a broad bell that reads gold, wine and ivory from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A ring or torus primitive, for a sun-disc rim that is a true ring rather than stacked discs.",
+    "A tapered cone primitive for the bell skirt, which took five flared panels a leg to fake.",
+    "A gold cloth material that keeps its warmth under the night preset without Neon."
+  ]
+}

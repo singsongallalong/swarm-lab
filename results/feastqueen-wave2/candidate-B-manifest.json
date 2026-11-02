@@ -1,0 +1,17 @@
+{
+  "skill": "Feastqueen",
+  "look": "FeastqueenHelm,FeastqueenDress,FeastqueenSleeves,FeastqueenHem",
+  "rows_added": ["FeastqueenHelm", "FeastqueenDress", "FeastqueenSleeves", "FeastqueenHem"],
+  "intent": "A candlelit gown of the ancient Grashan court: a gold bodice with a stepped wine corset front and gold V neckline, a flame-crowned wine coif trailing pale gold veils, and tiers of wine ruffles belling wide to a gold hem rotted black at one edge; from the high camera it reads as a gold crown and corset over a broad wine bell, with three candle-gems burning.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A translucent gauze for the veils; armour parts have no transparency, so the gold veils are solid Fabric.",
+    "A tapered or conical piece for the skirt tiers and the bodice's corset point; stacked boxes step rather than curve.",
+    "A warm gold and wine in Kit.colors; the set carries its own palette because the shared Kit has only worn iron, leather and cloth tones."
+  ]
+}

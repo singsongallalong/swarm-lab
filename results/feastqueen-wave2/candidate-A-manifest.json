@@ -1,0 +1,16 @@
+{
+  "skill": "Feastqueen",
+  "look": "FeastqueenVeil,FeastqueenDress,FeastqueenSleeves,FeastqueenHem",
+  "rows_added": ["FeastqueenVeil", "FeastqueenDress", "FeastqueenSleeves", "FeastqueenHem"],
+  "intent": "A shade-bride's Grashan feast gown: a rich gold brocade bodice and short gold overskirt over an ivory bell skirt, slim ivory sleeves, a tall gold crown with one amber gem, and shade creeping up the hem, reading gold and ivory from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A translucent cloth material for a face veil; parts hold only colour, so the veil is opaque and the amber eyes sit on it.",
+    "A cone or tapered skirt primitive; flat panels leave corner gaps, so the skirt needs hidden core boxes to keep the legs covered."
+  ]
+}

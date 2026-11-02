@@ -1,0 +1,23 @@
+{
+  "run": "feastqueen-wave2",
+  "letter": "B",
+  "set": "FeastqueenBanquet",
+  "looks": [
+    "FeastqueenBanquetDress",
+    "FeastqueenBanquetHelm",
+    "FeastqueenBanquetHem",
+    "FeastqueenBanquetSleeves"
+  ],
+  "original_looks": [
+    "FeastqueenDress",
+    "FeastqueenHelm",
+    "FeastqueenHem",
+    "FeastqueenSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A candlelit gown of the ancient Grashan court: a gold bodice with a stepped wine corset front and gold V neckline, a flame-crowned wine coif trailing pale gold veils, and tiers of wine ruffles belling wide to a gold hem rotted black at one edge; from the high camera it reads as a gold crown and corset over a broad wine bell, with three candle-gems burning.",
+  "reason": "Wine-and-gold feast queen: a wine bell skirt flaring from the hip, a gold butterfly bodice and a candle crown, the richest and most epic read from the high camera and apart from every other family (second critic 6.85, first; first critic 6.08, second).",
+  "first_fix": "The full-width wine sleeves make the top a broad slab: slim them with gold cuffs, round the hem, and let shade-black creep up the front.",
+  "parts": 81,
+  "epic": true
+}

@@ -1,0 +1,17 @@
+{
+  "skill": "Feastqueen",
+  "look": "FeastqueenHelm,FeastqueenDress,FeastqueenSleeves,FeastqueenHem",
+  "rows_added": ["FeastqueenHelm", "FeastqueenDress", "FeastqueenSleeves", "FeastqueenHem"],
+  "intent": "The ancient court's feast gown: wine velvet and ivory under a tall gold crown, a gold-stomached bodice and belt, and a tiered wine bell skirt with gold centre bands and a gold hem, reading from the high camera as a bright gold crown over a narrow wine top and a wide gold-banded bell.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A tapered or conical part (or a sheared box) for the skirt: boxes can only widen in steps, so the bell reads tiered rather than as one smooth cone.",
+    "A translucent cloth material for the train and a veil; solid parts read as boards when they hang free.",
+    "A gold material that catches the moon: under the mood preset metal never shines, so the gold has to carry all its light in its colour."
+  ]
+}

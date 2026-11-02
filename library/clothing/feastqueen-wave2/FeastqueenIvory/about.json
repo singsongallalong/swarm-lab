@@ -1,0 +1,23 @@
+{
+  "run": "feastqueen-wave2",
+  "letter": "A",
+  "set": "FeastqueenIvory",
+  "looks": [
+    "FeastqueenIvoryDress",
+    "FeastqueenIvoryHem",
+    "FeastqueenIvorySleeves",
+    "FeastqueenIvoryVeil"
+  ],
+  "original_looks": [
+    "FeastqueenDress",
+    "FeastqueenHem",
+    "FeastqueenSleeves",
+    "FeastqueenVeil"
+  ],
+  "pick_rank": 2,
+  "intent": "A shade-bride's Grashan feast gown: a rich gold brocade bodice and short gold overskirt over an ivory bell skirt, slim ivory sleeves, a tall gold crown with one amber gem, and shade creeping up the hem, reading gold and ivory from the high camera.",
+  "reason": "Ivory court gown: the most elegant bodice, gold with a chain necklace, over a true A-line skirt under a veil of candle spikes; the prettiest dress of the run (5.98, second; first critic 5.35, third).",
+  "first_fix": "Too pale for the night and drifting toward linen: make the skirt wine or deep gold over ivory, slim the banded sleeves, and add shade-black at the hem.",
+  "parts": 94,
+  "epic": true
+}

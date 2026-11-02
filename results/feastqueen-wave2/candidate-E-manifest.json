@@ -1,0 +1,16 @@
+{
+  "skill": "Feastqueen",
+  "look": "FeastqueenHelm,FeastqueenDress,FeastqueenSleeves,FeastqueenHem",
+  "rows_added": ["FeastqueenHelm", "FeastqueenDress", "FeastqueenSleeves", "FeastqueenHem"],
+  "intent": "An ivory bust over a solid cloth-of-gold feast gown: four gold skirt tiers widening to a wine petticoat, the wine band and amber lamps lifted under the breast, the cup-bearer's sash, and a candle-flame crown, reading gold and wine from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered skirt panel or cone frustum: the solid bell has to be four stacked box tiers, since a box cannot widen toward the hem without a step.",
+    "A deep gold that still separates from Roblox's yellow skin: the crown's circlet has to be dark gold to read against the face."
+  ]
+}

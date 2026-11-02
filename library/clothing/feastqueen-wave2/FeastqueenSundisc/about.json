@@ -1,0 +1,23 @@
+{
+  "run": "feastqueen-wave2",
+  "letter": "F",
+  "set": "FeastqueenSundisc",
+  "looks": [
+    "FeastqueenSundiscDress",
+    "FeastqueenSundiscHelm",
+    "FeastqueenSundiscHem",
+    "FeastqueenSundiscSleeves"
+  ],
+  "original_looks": [
+    "FeastqueenDress",
+    "FeastqueenHelm",
+    "FeastqueenHem",
+    "FeastqueenSleeves"
+  ],
+  "pick_rank": 3,
+  "intent": "A bright candle-gold sun-court gown with a wine underlayer showing between ivory pleats, a wide ivory sun-disc collar and a rayed gold crown, flaring into a broad bell that reads gold, wine and ivory from the high camera.",
+  "reason": "Sun-disc queen: the run's best invention, a sun-disc crown and ruff collar over a pleated gold skirt that flares at the front, the only one that reads as gold from far off (5.70, third; first critic 6.53, first).",
+  "first_fix": "All one saturated gold reads as a gold box from above: make the bodice and sleeves wine or dark gold, keep bright gold for trim, and carry the flare and stripes round the back.",
+  "parts": 95,
+  "epic": true
+}

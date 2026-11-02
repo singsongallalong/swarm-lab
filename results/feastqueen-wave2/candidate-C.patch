@@ -1,0 +1,245 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..21eeae9 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -8,6 +8,10 @@ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+ local Chainmail = require("./armourLooks/Chainmail")
+ local EmberTalisman = require("./armourLooks/EmberTalisman")
++local FeastqueenDress = require("./armourLooks/FeastqueenDress")
++local FeastqueenHelm = require("./armourLooks/FeastqueenHelm")
++local FeastqueenHem = require("./armourLooks/FeastqueenHem")
++local FeastqueenSleeves = require("./armourLooks/FeastqueenSleeves")
+ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+ local FenscaleJack = require("./armourLooks/FenscaleJack")
+@@ -37,6 +41,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	Buckler = Buckler,
+ 	Chainmail = Chainmail,
+ 	EmberTalisman = EmberTalisman,
++	FeastqueenDress = FeastqueenDress,
++	FeastqueenHelm = FeastqueenHelm,
++	FeastqueenHem = FeastqueenHem,
++	FeastqueenSleeves = FeastqueenSleeves,
+ 	FenscaleGrips = FenscaleGrips,
+ 	FenscaleHood = FenscaleHood,
+ 	FenscaleJack = FenscaleJack,
+diff --git a/src/shared/data/armourLooks/FeastqueenDress.luau b/src/shared/data/armourLooks/FeastqueenDress.luau
+new file mode 100644
+index 0000000..727d847
+--- /dev/null
++++ b/src/shared/data/armourLooks/FeastqueenDress.luau
+@@ -0,0 +1,58 @@
++--!strict
++-- The Feastqueen's dress (the FeastqueenDress of the Grashan Feast set): a
++-- wine velvet bodice over an ivory chemise, a gold stomacher and collar, and
++-- a gold belt drawing in the waist under the bow at the small of the back.
++-- The upper skirt hangs from the thighs and starts the bell at the hip: wine
++-- panels with a gold band down the centre front and back, over dark wine side
++-- panels. The upper arms stay close and shadowed, leaving the volume and the
++-- colour to the sleeves' bells.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local gold = { 196, 148, 58 }
++local goldBright = { 232, 192, 104 }
++local wine = { 112, 26, 36 }
++local wineDark = { 76, 18, 28 }
++local wineLight = { 142, 42, 50 }
++local ivory = { 216, 202, 174 }
++local amber = { 255, 178, 76 }
++
++-- How far the upper skirt runs down the thigh from just above its top.
++local SKIRT = 1.18
++local SKIRT_Y = 0.75 - SKIRT / 2
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FeastqueenDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice, the ivory chemise at the neckline and the gold collar.
++		Kit.box("UpperTorso", { 2.12, 1.62, 1.1 }, { 0, 0, 0 }, "Fabric", wine),
++		Kit.box("UpperTorso", { 1.44, 0.2, 1.14 }, { 0, 0.7, 0 }, "Fabric", ivory),
++		Kit.box("UpperTorso", { 1.12, 0.14, 1.16 }, { 0, 0.83, 0 }, "Metal", goldBright),
++		-- The ivory front panel and the gold stomacher laid over it.
++		Kit.box("UpperTorso", { 0.74, 1.42, 0.05 }, { 0, -0.02, -0.568 }, "Fabric", ivory),
++		Kit.box("UpperTorso", { 0.5, 1.3, 0.05 }, { 0, -0.02, -0.598 }, "Metal", gold),
++		Kit.box("UpperTorso", { 0.16, 0.16, 0.08 }, { 0, 0.52, -0.63 }, "Neon", amber),
++		-- A gold panel down the back, and the bow at the small of it.
++		Kit.box("UpperTorso", { 0.5, 1.3, 0.05 }, { 0, -0.02, 0.568 }, "Metal", gold),
++		Kit.box("UpperTorso", { 0.44, 0.2, 0.14 }, { 0.25, -0.54, 0.61 }, "Fabric", wineLight, { 0, 0, 20 }),
++		Kit.box("UpperTorso", { 0.44, 0.2, 0.14 }, { -0.25, -0.54, 0.61 }, "Fabric", wineLight, { 0, 0, -20 }),
++		Kit.box("UpperTorso", { 0.18, 0.2, 0.18 }, { 0, -0.54, 0.64 }, "Metal", gold),
++		-- The waist: wine, stepped in under the bodice so the gold belt is the
++		-- narrowest line of the figure.
++		Kit.box("LowerTorso", { 2.02, 0.42, 1.02 }, { 0, 0, 0 }, "Fabric", wine),
++		Kit.box("LowerTorso", { 2.06, 0.2, 1.06 }, { 0, 0.02, 0 }, "Metal", gold),
++		Kit.box("LowerTorso", { 0.32, 0.32, 0.07 }, { 0, 0.02, -0.56 }, "Metal", goldBright, { 0, 0, 45 }),
++		-- The upper arms: a close shadowed sleeve, slim at the shoulder.
++		Kit.box("UpperArm", { 1.02, 1.24, 1.02 }, { 0, 0, 0 }, "Fabric", wineDark),
++		-- The upper skirt: it starts the bell at the hip, wine panels wide out
++		-- from the body centre with a gold band down the front and back.
++		Kit.box("UpperLeg", { 1.2, SKIRT, 0.1 }, { 0.1, SKIRT_Y, -0.72 }, "Fabric", wine),
++		Kit.box("UpperLeg", { 0.28, SKIRT - 0.02, 0.06 }, { -0.36, SKIRT_Y, -0.785 }, "Metal", gold),
++		Kit.box("UpperLeg", { 1.2, SKIRT, 0.1 }, { 0.1, SKIRT_Y, 0.72 }, "Fabric", wine),
++		Kit.box("UpperLeg", { 0.28, SKIRT - 0.02, 0.06 }, { -0.36, SKIRT_Y, 0.785 }, "Metal", gold),
++		Kit.box("UpperLeg", { 0.1, SKIRT, 1.44 }, { 0.75, SKIRT_Y, 0 }, "Fabric", wineDark),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FeastqueenHelm.luau b/src/shared/data/armourLooks/FeastqueenHelm.luau
+new file mode 100644
+index 0000000..139c332
+--- /dev/null
++++ b/src/shared/data/armourLooks/FeastqueenHelm.luau
+@@ -0,0 +1,44 @@
++--!strict
++-- The Feastqueen's crown (the FeastqueenHelm of the Grashan Feast set): a wine
++-- velvet cap under a broad gold circlet, a square crown wall with four corner
++-- spires and a tall crest at the back, and a candle-amber gem at the brow.
++-- The gold is the brightest thing in the set so the head reads from the high
++-- camera; a shade-stain creeps across the left of the wall as the dream sours.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local gold = { 196, 148, 58 }
++local goldBright = { 232, 192, 104 }
++local wine = { 112, 26, 36 }
++local shade = { 26, 20, 30 }
++local amber = { 255, 178, 76 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FeastqueenHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The velvet cap and the circlet that holds it.
++		Kit.box("Head", { 1.24, 0.28, 1.24 }, { 0, 0.48, 0 }, "Fabric", wine),
++		Kit.box("Head", { 1.34, 0.18, 1.34 }, { 0, 0.28, 0 }, "Metal", gold),
++		-- The crown wall above the brow, open in the middle so the cap shows.
++		Kit.box("Head", { 1.04, 0.5, 0.12 }, { 0, 0.66, -0.56 }, "Metal", gold),
++		Kit.box("Head", { 1.04, 0.5, 0.12 }, { 0, 0.66, 0.56 }, "Metal", gold),
++		Kit.box("Head", { 0.12, 0.5, 1 }, { 0.56, 0.66, 0 }, "Metal", gold),
++		Kit.box("Head", { 0.12, 0.5, 1 }, { -0.56, 0.66, 0 }, "Metal", gold),
++		-- The spires: two short at the front corners, two taller behind, and a
++		-- tall back crest that rakes a little backwards.
++		Kit.box("Head", { 0.13, 0.44, 0.13 }, { 0.47, 1.06, -0.47 }, "Metal", goldBright),
++		Kit.box("Head", { 0.13, 0.44, 0.13 }, { -0.47, 1.06, -0.47 }, "Metal", goldBright),
++		Kit.box("Head", { 0.15, 0.62, 0.15 }, { 0.47, 1.15, 0.47 }, "Metal", goldBright),
++		Kit.box("Head", { 0.15, 0.62, 0.15 }, { -0.47, 1.15, 0.47 }, "Metal", goldBright),
++		Kit.box("Head", { 0.22, 0.9, 0.16 }, { 0, 1.3, 0.56 }, "Metal", goldBright, { 6, 0, 0 }),
++		-- The point over the brow, and the gem beneath it.
++		Kit.box("Head", { 0.16, 0.4, 0.12 }, { 0, 1.1, -0.56 }, "Metal", gold),
++		Kit.box("Head", { 0.16, 0.16, 0.1 }, { 0, 0.28, -0.68 }, "Neon", amber),
++		-- The dream souring: a shade-crack running up the left of the crown.
++		Kit.box("Head", { 0.08, 0.44, 0.04 }, { -0.3, 0.62, -0.625 }, "Fabric", shade, { 0, 0, 7 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FeastqueenHem.luau b/src/shared/data/armourLooks/FeastqueenHem.luau
+new file mode 100644
+index 0000000..4b7ea55
+--- /dev/null
++++ b/src/shared/data/armourLooks/FeastqueenHem.luau
+@@ -0,0 +1,43 @@
++--!strict
++-- The Feastqueen's hem (the FeastqueenHem of the Grashan Feast set): the skirt
++-- carried on down the shins, flaring hard from the knee. The upper tier is
++-- wine with a gold band down the centre; the gold hem tier below it is the
++-- bell's edge, cut into an octagon of panels that fan outward, and its back
++-- panels fall lower and further out as a train. Wine slippers hide under it,
++-- and a shade-crack creeps up from the hem on one side where the dream got in.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local gold = { 196, 148, 58 }
++local goldBright = { 232, 192, 104 }
++local wine = { 112, 26, 36 }
++local wineDark = { 76, 18, 28 }
++local shade = { 26, 20, 30 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FeastqueenHem",
++	slot = "Boots",
++	parts = {
++		-- The wine tier: wider than the hip, rising well above the knee so it
++		-- laps over the thigh panels and the skirt reads as one.
++		Kit.box("LowerLeg", { 1.5, 1.05, 0.1 }, { 0.25, 0.395, -0.88 }, "Fabric", wine),
++		Kit.box("LowerLeg", { 0.28, 1.03, 0.06 }, { -0.36, 0.395, -0.945 }, "Metal", gold),
++		Kit.box("LowerLeg", { 1.5, 1.05, 0.1 }, { 0.25, 0.395, 0.88 }, "Fabric", wine),
++		Kit.box("LowerLeg", { 0.28, 1.03, 0.06 }, { -0.36, 0.395, 0.945 }, "Metal", gold),
++		Kit.box("LowerLeg", { 0.1, 1.05, 1.76 }, { 1.05, 0.395, 0 }, "Fabric", wineDark),
++		-- The gold hem tier: the bell's edge, an octagon of panels that fan out
++		-- to the widest point of the set. The back panels hang lower as a train.
++		Kit.box("LowerLeg", { 1.6, 0.67, 0.1 }, { 0.3, -0.235, -1.05 }, "Metal", gold),
++		Kit.box("LowerLeg", { 0.6, 0.67, 0.1 }, { 1.3, -0.235, -0.85 }, "Metal", gold, { 0, -45, 0 }),
++		Kit.box("LowerLeg", { 0.12, 0.67, 1.4 }, { 1.44, -0.235, 0.05 }, "Metal", goldBright),
++		Kit.box("LowerLeg", { 0.6, 0.86, 0.1 }, { 1.3, -0.33, 0.95 }, "Metal", gold, { 0, 45, 0 }),
++		Kit.box("LowerLeg", { 1.6, 0.86, 0.1 }, { 0.3, -0.33, 1.15 }, "Metal", gold),
++		-- The slippers, hidden under the bell.
++		Kit.box("Foot", { 1.06, 0.3, 1.2 }, { 0, 0, -0.06 }, "Fabric", wineDark),
++		-- The dream souring: shade cracking up from the hem on the right.
++		Kit.box("LowerLeg", { 0.1, 0.46, 0.06 }, { 0.62, -0.35, -1.11 }, "Fabric", shade, { 0, 0, 6 }, "Right"),
++		Kit.box("LowerLeg", { 0.34, 0.14, 0.06 }, { 0.66, -0.5, -1.11 }, "Fabric", shade, { 0, 0, 2 }, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FeastqueenSleeves.luau b/src/shared/data/armourLooks/FeastqueenSleeves.luau
+new file mode 100644
+index 0000000..ad0644a
+--- /dev/null
++++ b/src/shared/data/armourLooks/FeastqueenSleeves.luau
+@@ -0,0 +1,35 @@
++--!strict
++-- The Feastqueen's sleeves (the FeastqueenSleeves of the Grashan Feast set):
++-- the lower sleeve takes over from the close dark upper arm and bells out to a
++-- deep cuff, finished with an ivory lace lip and an amber gem on the outside.
++-- The hands are shade-black gloves with a gold ring, and on one arm a crack of
++-- shade creeps up from the lace: the dream already taking the queen's fingers.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local goldBright = { 232, 192, 104 }
++local wine = { 112, 26, 36 }
++local ivory = { 216, 202, 174 }
++local shade = { 26, 20, 30 }
++local amber = { 255, 178, 76 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FeastqueenSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The sleeve, close at the elbow and belling toward the wrist.
++		Kit.box("LowerArm", { 1.04, 0.66, 1.04 }, { 0, 0.2, 0 }, "Fabric", wine),
++		Kit.box("LowerArm", { 1.24, 0.38, 1.24 }, { 0, -0.2, 0 }, "Fabric", wine),
++		Kit.box("LowerArm", { 1.44, 0.3, 1.44 }, { 0, -0.44, 0 }, "Fabric", wine),
++		-- The ivory lace lip and the gem set on the outside of the bell.
++		Kit.box("LowerArm", { 1.5, 0.1, 1.5 }, { 0, -0.56, 0 }, "Fabric", ivory),
++		Kit.box("LowerArm", { 0.08, 0.16, 0.14 }, { 0.74, -0.42, 0 }, "Neon", amber),
++		-- The shade creeping up from the lace on one arm.
++		Kit.box("LowerArm", { 0.12, 0.3, 0.05 }, { 0.3, -0.4, -0.735 }, "Fabric", shade, { 0, 0, 8 }, "Right"),
++		-- The shadowed glove and its gold ring.
++		Kit.box("Hand", { 1.04, 0.3, 1.04 }, { 0, 0, 0 }, "Fabric", shade),
++		Kit.box("Hand", { 1.06, 0.07, 1.06 }, { 0, 0.08, 0 }, "Metal", goldBright),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..417fa63 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:FeastqueenHelm"] = row("A wine velvet cap under a tall gold crown, crested and set with an amber gem."),
++	["armour:FeastqueenDress"] = row("A wine velvet gown with a gold stomacher, belt and a gold-panelled bell skirt."),
++	["armour:FeastqueenSleeves"] = row("Wine sleeves belling to ivory lace cuffs, with gold bands and shadowed hands."),
++	["armour:FeastqueenHem"] = row("The gown's gold hem tier, flaring to a train over wine slippers with gold toes."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

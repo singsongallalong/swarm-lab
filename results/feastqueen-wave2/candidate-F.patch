@@ -1,0 +1,478 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..21eeae9 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -8,6 +8,10 @@ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+ local Chainmail = require("./armourLooks/Chainmail")
+ local EmberTalisman = require("./armourLooks/EmberTalisman")
++local FeastqueenDress = require("./armourLooks/FeastqueenDress")
++local FeastqueenHelm = require("./armourLooks/FeastqueenHelm")
++local FeastqueenHem = require("./armourLooks/FeastqueenHem")
++local FeastqueenSleeves = require("./armourLooks/FeastqueenSleeves")
+ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+ local FenscaleJack = require("./armourLooks/FenscaleJack")
+@@ -37,6 +41,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	Buckler = Buckler,
+ 	Chainmail = Chainmail,
+ 	EmberTalisman = EmberTalisman,
++	FeastqueenDress = FeastqueenDress,
++	FeastqueenHelm = FeastqueenHelm,
++	FeastqueenHem = FeastqueenHem,
++	FeastqueenSleeves = FeastqueenSleeves,
+ 	FenscaleGrips = FenscaleGrips,
+ 	FenscaleHood = FenscaleHood,
+ 	FenscaleJack = FenscaleJack,
+diff --git a/src/shared/data/armourLooks/FeastqueenDress.luau b/src/shared/data/armourLooks/FeastqueenDress.luau
+new file mode 100644
+index 0000000..1266ad2
+--- /dev/null
++++ b/src/shared/data/armourLooks/FeastqueenDress.luau
+@@ -0,0 +1,166 @@
++--!strict
++-- The Feastqueen's dress (the Feastqueen feast set): a bright gold bodice
++-- with an ivory stomacher laced in wine, a wine sash under a gold sun belt,
++-- a slim gold sleeve on each upper arm, and the gown's upper skirt hung in
++-- four flared panels from each thigh. A wide sun-disc collar rings the neck:
++-- a bright ivory disc, a wine inner ring and six gold rays, all inside the
++-- shoulder line, so it frames the head without broadening the figure. Between
++-- the ivory pleats a wine underlayer shows, and the side panels fall in deep
++-- gold, so the skirt reads gold, wine and ivory from the high camera.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The set's palette: the feast's bright candle gold, its deep shadow gold and
++-- paler edge, the court's wine, warm ivory, and candle amber at the belt.
++local gold = { 212, 166, 68 }
++local goldDeep = { 148, 104, 40 }
++local goldPale = { 244, 208, 116 }
++local wine = { 122, 38, 50 }
++local ivory = { 236, 224, 196 }
++local amber = { 255, 190, 86 }
++
++local FLARE = 12
++local SKIRT_TOP = 0.75
++local SKIRT_LENGTH = 1.31
++local R_TOP = 0.55
++local FRONT_A = math.rad(FLARE)
++local FRONT_R = R_TOP + math.sin(FRONT_A) * SKIRT_LENGTH / 2
++local FRONT_Y = SKIRT_TOP - math.cos(FRONT_A) * SKIRT_LENGTH / 2
++
++-- The turn that stands a panel at `azimuth` around the thigh (0 = front) and
++-- flares its hem outward. Rotations compose as CFrame.Angles(x, y, z), so the
++-- yaw is folded through X and Z to keep the flare radial.
++local function turnAt(azimuth: number, flare: number): { number }
++	local th = math.rad(-azimuth)
++	local a = math.rad(flare)
++	return {
++		math.deg(math.atan2(math.sin(a), math.cos(th) * math.cos(a))),
++		math.deg(math.asin(math.sin(th) * math.cos(a))),
++		math.deg(math.atan2(-math.sin(th) * math.sin(a), math.cos(th))),
++	}
++end
++
++-- One flared skirt panel hung from the thigh, in `color`.
++local function panel(azimuth: number, width: number, color: { number }): ArmourLookTypes.ArmourPart
++	local a = math.rad(FLARE)
++	local az = math.rad(azimuth)
++	local radius = R_TOP + math.sin(a) * SKIRT_LENGTH / 2
++	return Kit.box("UpperLeg", { width, SKIRT_LENGTH, 0.06 }, {
++		radius * math.sin(az),
++		SKIRT_TOP - math.cos(a) * SKIRT_LENGTH / 2,
++		-radius * math.cos(az),
++	}, "Fabric", color, turnAt(azimuth, FLARE))
++end
++
++-- A piece on the front panel, `down` its length and `proud` off its face.
++local function frontPiece(
++	x: number,
++	width: number,
++	height: number,
++	down: number,
++	proud: number,
++	material: string,
++	color: { number },
++	turnZ: number?,
++	side: ArmourLookTypes.Side?
++): ArmourLookTypes.ArmourPart
++	return Kit.box("UpperLeg", { width, height, 0.04 }, {
++		x,
++		FRONT_Y - math.cos(FRONT_A) * down + math.sin(FRONT_A) * proud,
++		-FRONT_R - math.sin(FRONT_A) * down - math.cos(FRONT_A) * proud,
++	}, material, color, { FLARE, 0, turnZ or 0 }, side)
++end
++
++-- A disc lying flat around the neck, like a sun platter.
++local function collar(
++	diameter: number,
++	thickness: number,
++	y: number,
++	material: string,
++	color: { number }
++): ArmourLookTypes.ArmourPart
++	return {
++		on = "UpperTorso",
++		shape = "Cylinder",
++		size = { diameter, thickness, diameter },
++		at = { 0, y, 0 },
++		material = material,
++		color = color,
++	}
++end
++
++-- One ray of the collar sun, lying flat on the discs.
++local function collarRay(degrees: number): ArmourLookTypes.ArmourPart
++	local a = math.rad(degrees)
++	return Kit.box("UpperTorso", { 0.12, 0.05, 0.48 }, {
++		0.72 * math.sin(a),
++		0.92,
++		0.72 * math.cos(a),
++	}, "Metal", gold, { 0, degrees, 0 })
++end
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FeastqueenDress",
++	slot = "Chest",
++	parts = Kit.join({
++		{
++			-- The fitted bodice, its ivory stomacher and a wine lace.
++			Kit.box("UpperTorso", { 2.06, 1.64, 1.06 }, { 0, 0, 0 }, "Fabric", gold),
++			Kit.box("UpperTorso", { 0.84, 1.3, 0.06 }, { 0, -0.04, -0.555 }, "Fabric", ivory),
++			Kit.box("UpperTorso", { 0.56, 0.05, 0.05 }, { 0, 0.18, -0.59 }, "Fabric", wine),
++			-- A wine V at the neckline.
++			Kit.box("UpperTorso", { 0.64, 0.09, 0.05 }, { 0.33, 0.6, -0.565 }, "Fabric", wine, { 0, 0, -22 }),
++			Kit.box("UpperTorso", { 0.64, 0.09, 0.05 }, { -0.33, 0.6, -0.565 }, "Fabric", wine, { 0, 0, 22 }),
++			-- A wine panel at the back.
++			Kit.box("UpperTorso", { 0.72, 1.0, 0.05 }, { 0, 0.02, 0.55 }, "Fabric", wine),
++		},
++		{
++			-- The sun-disc collar: bright ivory, a wine inner ring, six rays.
++			collar(1.9, 0.1, 0.84, "Fabric", ivory),
++			collar(1.44, 0.05, 0.895, "Fabric", wine),
++			collarRay(0),
++			collarRay(60),
++			collarRay(120),
++			collarRay(180),
++			collarRay(240),
++			collarRay(300),
++		},
++		{
++			-- The waist: a wine sash pinched by a gold belt with a sun buckle.
++			Kit.box("LowerTorso", { 2.1, 0.34, 1.1 }, { 0, 0.01, 0 }, "Fabric", wine),
++			Kit.box("LowerTorso", { 2.14, 0.1, 1.14 }, { 0, -0.12, 0 }, "Metal", gold),
++			{
++				on = "LowerTorso",
++				shape = "Cylinder",
++				size = { 0.3, 0.08, 0.3 },
++				at = { 0, -0.12, -0.6 },
++				turn = { 90, 0, 0 },
++				material = "Metal",
++				color = goldPale,
++			},
++			Kit.box("LowerTorso", { 0.16, 0.16, 0.06 }, { 0, -0.12, -0.65 }, "Neon", amber),
++			-- A wine bow at the back.
++			Kit.box("LowerTorso", { 0.24, 0.18, 0.14 }, { 0, 0.03, 0.58 }, "Fabric", wine),
++			Kit.box("LowerTorso", { 0.26, 0.16, 0.1 }, { 0.22, 0.06, 0.57 }, "Fabric", wine, { 0, 0, 12 }),
++			Kit.box("LowerTorso", { 0.26, 0.16, 0.1 }, { -0.22, 0.06, 0.57 }, "Fabric", wine, { 0, 0, -12 }),
++		},
++		{
++			-- A slim gold sleeve, snug over the shoulder top.
++			Kit.box("UpperArm", { 1.06, 1.18, 1.06 }, { 0, 0, 0 }, "Fabric", gold),
++		},
++		{
++			-- The upper skirt: four panels a leg, bright front and back, the
++			-- sides in deep gold, the wine underlayer showing between pleats.
++			panel(0, 1.3, gold),
++			panel(60, 0.92, goldDeep),
++			panel(120, 0.92, goldDeep),
++			panel(180, 1.3, gold),
++			frontPiece(-0.3, 0.16, 1.22, 0, 0.05, "Fabric", ivory),
++			frontPiece(0.32, 0.16, 1.22, 0, 0.05, "Fabric", ivory),
++			frontPiece(0.01, 0.4, 1.22, 0, 0.04, "Fabric", wine),
++			frontPiece(0, 1.28, 0.12, 0.59, 0.05, "Metal", goldPale),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FeastqueenHelm.luau b/src/shared/data/armourLooks/FeastqueenHelm.luau
+new file mode 100644
+index 0000000..b0d8d24
+--- /dev/null
++++ b/src/shared/data/armourLooks/FeastqueenHelm.luau
+@@ -0,0 +1,73 @@
++--!strict
++-- The Feastqueen's crown (the Feastqueen feast set): a bright gold circlet
++-- with an ivory band, a wine-backed sun disc on the brow with an amber eye,
++-- and five pale-gold rays rising from it. The rays go up and out above the
++-- head, never wide at the ear, so from the high camera the headpiece reads as
++-- a crown of candlelight before any detail does.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The set's palette: the feast's bright candle gold and its paler edge, the
++-- court's wine, warm ivory, and the candle amber kept for the glowing eye.
++local gold = { 212, 166, 68 }
++local goldPale = { 244, 208, 116 }
++local wine = { 122, 38, 50 }
++local ivory = { 236, 224, 196 }
++local amber = { 255, 190, 86 }
++
++local PIVOT_Y = 0.42
++local PIVOT_Z = -0.62
++
++-- A disc stood upright on the face of the head, facing front or back.
++local function disc(
++	diameter: number,
++	thickness: number,
++	at: { number },
++	material: string,
++	color: { number }
++): ArmourLookTypes.ArmourPart
++	return {
++		on = "Head",
++		shape = "Cylinder",
++		size = { diameter, thickness, diameter },
++		at = at,
++		turn = { 90, 0, 0 },
++		material = material,
++		color = color,
++	}
++end
++
++-- One ray of the sun fan: `degrees` off upright, its root at the brow disc.
++local function ray(degrees: number): ArmourLookTypes.ArmourPart
++	local a = math.rad(degrees)
++	return Kit.box("Head", { 0.11, 0.72, 0.07 }, {
++		math.sin(a) * 0.36,
++		PIVOT_Y + math.cos(a) * 0.36,
++		PIVOT_Z,
++	}, "Metal", goldPale, { 0, 0, -degrees })
++end
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FeastqueenHelm",
++	slot = "Helm",
++	parts = {
++		-- The circlet and its warm ivory lining.
++		Kit.box("Head", { 1.3, 0.14, 1.3 }, { 0, 0.36, 0 }, "Metal", gold),
++		Kit.box("Head", { 1.24, 0.08, 1.24 }, { 0, 0.26, 0 }, "Fabric", ivory),
++		-- The sun at the brow: wine behind, bright gold in front, an amber eye.
++		disc(0.62, 0.05, { 0, 0.42, -0.635 }, "Fabric", wine),
++		disc(0.5, 0.07, { 0, 0.42, -0.675 }, "Metal", gold),
++		Kit.box("Head", { 0.16, 0.16, 0.06 }, { 0, 0.42, -0.72 }, "Neon", amber),
++		-- Five rays of the sun, fanned above the brow.
++		ray(0),
++		ray(25),
++		ray(-25),
++		ray(50),
++		ray(-50),
++		-- The two ivory ribbons that hang from the circlet behind the head.
++		Kit.box("Head", { 0.1, 0.6, 0.05 }, { 0.34, 0.08, 0.64 }, "Fabric", ivory, { 0, 0, 8 }),
++		Kit.box("Head", { 0.1, 0.6, 0.05 }, { -0.34, 0.08, 0.64 }, "Fabric", ivory, { 0, 0, -8 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FeastqueenHem.luau b/src/shared/data/armourLooks/FeastqueenHem.luau
+new file mode 100644
+index 0000000..a40f813
+--- /dev/null
++++ b/src/shared/data/armourLooks/FeastqueenHem.luau
+@@ -0,0 +1,124 @@
++--!strict
++-- The Feastqueen's hem (the Feastqueen feast set): the gown's lower skirt,
++-- carried on from the knee in five widely flared gold panels a leg that open
++-- into a broad bell, with an ivory hem band all round, ivory pleats down the
++-- front and the wine underlayer showing between them. A pale gold garter
++-- closes the knee, and the shoes are gold with a point. One thin amber seam
++-- glows above the hem on the right, and on the left a shade-black stain
++-- creeps up from the floor where the feast's dream has begun to sour.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The set's palette: the feast's bright candle gold and its paler edge, the
++-- court's wine, warm ivory, the shade creeping in at the hem, and amber.
++local gold = { 212, 166, 68 }
++local goldPale = { 244, 208, 116 }
++local wine = { 122, 38, 50 }
++local ivory = { 236, 224, 196 }
++local shade = { 30, 26, 30 }
++local amber = { 255, 190, 86 }
++
++local FLARE = 26
++local SKIRT_TOP = 0.6
++local SKIRT_LENGTH = 1.24
++local R_TOP = 0.55
++local HEM_HEIGHT = 0.16
++local HEM_THICK = 0.06
++local FRONT_A = math.rad(FLARE)
++local FRONT_R = R_TOP + math.sin(FRONT_A) * SKIRT_LENGTH / 2
++local FRONT_Y = SKIRT_TOP - math.cos(FRONT_A) * SKIRT_LENGTH / 2
++
++-- The turn that stands a panel at `azimuth` around the shin (0 = front) and
++-- flares its hem outward; rotations compose as CFrame.Angles(x, y, z).
++local function turnAt(azimuth: number, flare: number): { number }
++	local th = math.rad(-azimuth)
++	local a = math.rad(flare)
++	return {
++		math.deg(math.atan2(math.sin(a), math.cos(th) * math.cos(a))),
++		math.deg(math.asin(math.sin(th) * math.cos(a))),
++		math.deg(math.atan2(-math.sin(th) * math.sin(a), math.cos(th))),
++	}
++end
++
++-- One flared panel of the lower skirt, hung from the shin.
++local function panel(azimuth: number, width: number): ArmourLookTypes.ArmourPart
++	local a = math.rad(FLARE)
++	local az = math.rad(azimuth)
++	local radius = R_TOP + math.sin(a) * SKIRT_LENGTH / 2
++	return Kit.box("LowerLeg", { width, SKIRT_LENGTH, 0.06 }, {
++		radius * math.sin(az),
++		SKIRT_TOP - math.cos(a) * SKIRT_LENGTH / 2,
++		-radius * math.cos(az),
++	}, "Fabric", gold, turnAt(azimuth, FLARE))
++end
++
++-- The ivory band across the bottom of the panel at `azimuth`, proud of it.
++local function hemBand(azimuth: number, width: number): ArmourLookTypes.ArmourPart
++	local a = math.rad(FLARE)
++	local az = math.rad(azimuth)
++	local radius = R_TOP + math.sin(a) * SKIRT_LENGTH / 2
++	local down = SKIRT_LENGTH / 2 - HEM_HEIGHT / 2 - 0.01
++	local proud = 0.03 + HEM_THICK / 2
++	local ux, uy, uz = -math.sin(az) * math.sin(a), math.cos(a), math.cos(az) * math.sin(a)
++	local nx, ny, nz = math.sin(az) * math.cos(a), math.sin(a), -math.cos(az) * math.cos(a)
++	return Kit.box("LowerLeg", { width, HEM_HEIGHT, HEM_THICK }, {
++		radius * math.sin(az) - ux * down + nx * proud,
++		SKIRT_TOP - math.cos(a) * SKIRT_LENGTH / 2 - uy * down + ny * proud,
++		-radius * math.cos(az) - uz * down + nz * proud,
++	}, "Fabric", ivory, turnAt(azimuth, FLARE))
++end
++
++-- A piece on the front panel, `down` its length and `proud` off its face.
++local function frontPiece(
++	x: number,
++	width: number,
++	height: number,
++	down: number,
++	proud: number,
++	material: string,
++	color: { number },
++	turnZ: number?,
++	side: ArmourLookTypes.Side?
++): ArmourLookTypes.ArmourPart
++	return Kit.box("LowerLeg", { width, height, 0.04 }, {
++		x,
++		FRONT_Y - math.cos(FRONT_A) * down + math.sin(FRONT_A) * proud,
++		-FRONT_R - math.sin(FRONT_A) * down - math.cos(FRONT_A) * proud,
++	}, material, color, { FLARE, 0, turnZ or 0 }, side)
++end
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FeastqueenHem",
++	slot = "Boots",
++	parts = Kit.join({
++		{
++			-- The lower skirt: five broad panels a leg, meeting at the centre
++			-- and closing the sides.
++			panel(0, 1.34),
++			panel(60, 0.98),
++			panel(90, 0.98),
++			panel(120, 0.98),
++			panel(180, 1.34),
++			-- The ivory hem carried all round, ivory pleats down the front with
++			-- the wine underlayer between them, the amber seam and the creep.
++			hemBand(0, 1.36),
++			hemBand(60, 1.0),
++			hemBand(90, 1.0),
++			hemBand(120, 1.0),
++			hemBand(180, 1.36),
++			frontPiece(-0.3, 0.16, 1.06, 0, 0.05, "Fabric", ivory),
++			frontPiece(0.32, 0.16, 1.06, 0, 0.05, "Fabric", ivory),
++			frontPiece(0.01, 0.4, 1.06, 0, 0.04, "Fabric", wine),
++			frontPiece(0.16, 0.5, 0.06, 0.42, 0.06, "Neon", amber, 0, "Right"),
++			frontPiece(-0.5, 0.1, 0.36, 0.42, 0.05, "Fabric", shade, -10, "Left"),
++		},
++		{
++			-- The garter that closes the knee, and the shoes.
++			Kit.box("LowerLeg", { 1.18, 0.22, 1.18 }, { 0, 0.54, 0 }, "Metal", goldPale),
++			Kit.box("Foot", { 1.06, 0.3, 1.12 }, { 0, 0.02, -0.04 }, "Fabric", gold),
++			Kit.box("Foot", { 0.3, 0.16, 0.3 }, { 0, -0.02, -0.6 }, "Fabric", goldPale),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/FeastqueenSleeves.luau b/src/shared/data/armourLooks/FeastqueenSleeves.luau
+new file mode 100644
+index 0000000..4be6147
+--- /dev/null
++++ b/src/shared/data/armourLooks/FeastqueenSleeves.luau
+@@ -0,0 +1,48 @@
++--!strict
++-- The Feastqueen's sleeves (the Feastqueen feast set): a slim gold sleeve on
++-- the upper arm, then a small round bell on the forearm, stepping from wine
++-- at the elbow through two gold tiers to a narrow ivory cuff at the wrist.
++-- Keeping the cuff close to the arm leaves the shoulder line the narrowest
++-- part of the figure and stops the sleeve reading as a frill from above.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++-- The set's palette: the feast's bright candle gold, the court's wine and
++-- warm ivory.
++local gold = { 212, 166, 68 }
++local wine = { 122, 38, 50 }
++local ivory = { 236, 224, 196 }
++
++-- A round tier of the sleeve, running down the forearm.
++local function tier(
++	diameter: number,
++	length: number,
++	y: number,
++	material: string,
++	color: { number }
++): ArmourLookTypes.ArmourPart
++	return {
++		on = "LowerArm",
++		shape = "Cylinder",
++		size = { diameter, length, diameter },
++		at = { 0, y, 0 },
++		material = material,
++		color = color,
++	}
++end
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "FeastqueenSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The small sleeve bell: wine at the elbow, two gold tiers, ivory cuff.
++		tier(1.1, 0.1, 0.47, "Fabric", wine),
++		tier(1.14, 0.5, 0.2, "Fabric", gold),
++		tier(1.2, 0.55, -0.26, "Fabric", gold),
++		tier(1.24, 0.12, -0.49, "Fabric", ivory),
++		-- The gold glove.
++		Kit.box("Hand", { 1.06, 0.32, 1.06 }, { 0, 0, 0 }, "Fabric", gold),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..72bb79c 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,12 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:FeastqueenHelm"] = row("A gold sun crown, its five pale rays and amber brow gem catching candlelight."),
++	["armour:FeastqueenDress"] = row(
++		"A bright gold gown, ivory-laced, with a wine sash and a wide ivory sun-disc collar."
++	),
++	["armour:FeastqueenSleeves"] = row("Slim gold sleeves belling to a narrow ivory cuff, with wine at the elbow."),
++	["armour:FeastqueenHem"] = row("A gold bell skirt with ivory pleats, a wine underlayer and an amber hem seam."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),
