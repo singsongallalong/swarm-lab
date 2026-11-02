@@ -1,0 +1,22 @@
+{
+  "skill": "Barrowguard",
+  "look": "BarrowguardHelm,BarrowguardChest,BarrowguardGloves,BarrowguardBoots",
+  "rows_added": [
+    "BarrowguardHelm",
+    "BarrowguardChest",
+    "BarrowguardGloves",
+    "BarrowguardBoots"
+  ],
+  "intent": "A tall tarnished-bronze crown-helm of uneven bone tines and a dark face mask over warm bronze-brown mail with green verdigris, a broad bronze collar holding a pale bone gorget and a mouldering moss cloak hung from one shoulder, so the high camera reads a pale crown over a bronze yoke and a green back.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered crown point: boxes read as pegs at the high camera, where a wedge or cone point would sharpen the crown.",
+    "A bronze that reads as metal under the flat night preset: Metal renders tan and carries no shine, so the whole bronze look has to live in the colour.",
+    "A soft draped mantle: the cloak cannot fall over one shoulder in one cloth piece, so it is built from boxes."
+  ]
+}

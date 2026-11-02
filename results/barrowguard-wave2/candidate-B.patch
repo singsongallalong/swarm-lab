@@ -1,0 +1,240 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..cea4df7 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -3,6 +3,10 @@
+ -- (art pass A014), and every offhand's (A020): shields and talismans are worn
+ -- on the left forearm and hand. A new look is a new file here, never code.
+ local ArmourLookTypes = require("../ArmourLookTypes")
++local BarrowguardBoots = require("./armourLooks/BarrowguardBoots")
++local BarrowguardChest = require("./armourLooks/BarrowguardChest")
++local BarrowguardGloves = require("./armourLooks/BarrowguardGloves")
++local BarrowguardHelm = require("./armourLooks/BarrowguardHelm")
+ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+@@ -32,6 +36,10 @@ local StuddedGloves = require("./armourLooks/StuddedGloves")
+ local TowerShield = require("./armourLooks/TowerShield")
+ 
+ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
++	BarrowguardBoots = BarrowguardBoots,
++	BarrowguardChest = BarrowguardChest,
++	BarrowguardGloves = BarrowguardGloves,
++	BarrowguardHelm = BarrowguardHelm,
+ 	BoneTalisman = BoneTalisman,
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
+diff --git a/src/shared/data/armourLooks/BarrowguardBoots.luau b/src/shared/data/armourLooks/BarrowguardBoots.luau
+new file mode 100644
+index 0000000..f8c0102
+--- /dev/null
++++ b/src/shared/data/armourLooks/BarrowguardBoots.luau
+@@ -0,0 +1,36 @@
++--!strict
++-- The barrowguard boots (zone armour, the BarrowguardBoots base): mould-black
++-- leather boots under a grave-moss wrap, plated with a broad bronze shin plate
++-- and a bronze toe cap. Moss has crept up one boot, and a bone toggle hangs
++-- from the other, so the pair is never quite matched.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	mould = { 42, 44, 40 },
++	moss = { 74, 88, 60 },
++	mossDark = { 50, 60, 42 },
++	bronze = { 100, 84, 54 },
++	bronzeWorn = { 136, 110, 68 },
++	bone = { 154, 144, 118 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "BarrowguardBoots",
++	slot = "Boots",
++	parts = {
++		-- The boot shaft, with a moss wrap under the knee.
++		Kit.box("LowerLeg", { 1.08, 0.94, 1.08 }, { 0, -0.1, 0 }, "Leather", c.mould),
++		Kit.box("LowerLeg", { 1.14, 0.18, 1.14 }, { 0, 0.34, 0 }, "Fabric", c.moss),
++		-- A broad bronze shin plate.
++		Kit.box("LowerLeg", { 0.72, 0.62, 0.16 }, { 0, -0.02, -0.54 }, "Metal", c.bronze),
++		-- The foot, with a bronze toe cap worn bright.
++		Kit.box("Foot", { 1.06, 0.36, 1.14 }, { 0, 0.02, -0.04 }, "Leather", c.mould),
++		Kit.box("Foot", { 0.98, 0.18, 0.22 }, { 0, 0.02, -0.56 }, "Metal", c.bronzeWorn),
++		-- Moss up the right shin; a bone toggle hung at the left ankle.
++		Kit.box("LowerLeg", { 0.5, 0.4, 0.06 }, { 0.2, -0.18, -0.56 }, "Fabric", c.mossDark, nil, "Right"),
++		Kit.box("LowerLeg", { 0.12, 0.18, 0.12 }, { -0.56, 0.16, -0.3 }, "Marble", c.bone, nil, "Left"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/BarrowguardChest.luau b/src/shared/data/armourLooks/BarrowguardChest.luau
+new file mode 100644
+index 0000000..7778b18
+--- /dev/null
++++ b/src/shared/data/armourLooks/BarrowguardChest.luau
+@@ -0,0 +1,55 @@
++--!strict
++-- The barrowguard chest (zone armour, the BarrowguardChest base): the grave
++-- armour of the old barrow king's guard. Mould-black mail and leather under
++-- grave-moss cloth, plated over with tarnished bronze: stepped pauldrons on
++-- both shoulders, a gorget at the throat, a broad breastplate pinned by a
++-- diamond brooch, and a gilded belt with grave-goods hung off it. The bronze
++-- plates catch the moon; the bone brooch and studs keep the grave-goods read.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	mail = { 52, 58, 52 },
++	mould = { 42, 44, 40 },
++	moss = { 74, 88, 60 },
++	bronze = { 100, 84, 54 },
++	bronzeWorn = { 136, 110, 68 },
++	bone = { 154, 144, 118 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "BarrowguardChest",
++	slot = "Chest",
++	parts = Kit.join({
++		-- Mail tails hung from the thighs, so they swing with the legs.
++		Kit.flaps(0.55, "Metal", c.mail),
++		{
++			-- The hauberk under the plates.
++			Kit.box("UpperTorso", { 2.08, 1.64, 1.08 }, { 0, 0, 0 }, "Metal", c.mail),
++			Kit.box("LowerTorso", { 2.1, 0.44, 1.1 }, { 0, 0, 0 }, "Metal", c.mail),
++			-- The grave-moss surcoat, front and back.
++			Kit.box("UpperTorso", { 1.14, 1.5, 0.06 }, { 0, -0.02, -0.56 }, "Fabric", c.moss),
++			Kit.box("UpperTorso", { 1.14, 1.3, 0.06 }, { 0, -0.1, 0.56 }, "Fabric", c.moss),
++			-- Mould-black sleeves under stepped bronze pauldrons, the top
++			-- plate scraped bright so the shoulders read from the high camera.
++			Kit.box("UpperArm", { 1.12, 1.28, 1.12 }, { 0, 0, 0 }, "Leather", c.mould),
++			Kit.box("UpperArm", { 1.3, 0.2, 1.28 }, { 0, 0.6, 0 }, "Metal", c.bronzeWorn),
++			Kit.box("UpperArm", { 1.22, 0.16, 1.2 }, { 0, 0.42, 0 }, "Metal", c.bronze),
++			-- The bronze gorget at the throat, with a bone stud.
++			Kit.box("UpperTorso", { 1.5, 0.24, 1.2 }, { 0, 0.72, 0 }, "Metal", c.bronzeWorn),
++			Kit.box("UpperTorso", { 0.2, 0.16, 0.1 }, { 0.36, 0.72, -0.62 }, "Marble", c.bone),
++			-- The bronze breastplate and the great diamond brooch on it.
++			Kit.box("UpperTorso", { 0.92, 0.76, 0.12 }, { 0, 0.04, -0.6 }, "Metal", c.bronze),
++			Kit.box("UpperTorso", { 0.3, 0.3, 0.1 }, { 0, 0.3, -0.68 }, "Metal", c.bronzeWorn, { 0, 0, 45 }),
++			Kit.box("UpperTorso", { 0.18, 0.18, 0.06 }, { 0, 0.3, -0.74 }, "Marble", c.bone, { 0, 0, 45 }),
++			-- The gilded belt, its buckle, and grave-goods hung off it.
++			Kit.box("LowerTorso", { 2.14, 0.18, 1.14 }, { 0, 0.1, 0 }, "Metal", c.bronzeWorn),
++			Kit.box("LowerTorso", { 0.38, 0.26, 0.1 }, { 0.06, 0.08, -0.6 }, "Metal", c.bronze),
++			Kit.box("LowerTorso", { 0.16, 0.12, 0.06 }, { 0.06, 0.08, -0.66 }, "Marble", c.bone),
++			Kit.box("LowerTorso", { 0.12, 0.3, 0.08 }, { 0.36, -0.1, -0.58 }, "Marble", c.bone),
++			Kit.box("LowerTorso", { 0.18, 0.18, 0.08 }, { -0.36, -0.06, -0.58 }, "Metal", c.bronze, { 0, 0, 45 }),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/BarrowguardGloves.luau b/src/shared/data/armourLooks/BarrowguardGloves.luau
+new file mode 100644
+index 0000000..d3fcb4f
+--- /dev/null
++++ b/src/shared/data/armourLooks/BarrowguardGloves.luau
+@@ -0,0 +1,34 @@
++--!strict
++-- The barrowguard gloves (zone armour, the BarrowguardGloves base): mould-black
++-- leather under a broad tarnished bronze vambrace plate, with a grave-moss cuff
++-- at the elbow, a gilded bronze cuff at the wrist and a bone ridge across the
++-- knuckles. The bronze plates carry the family's grave-goods down to the hands.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	mould = { 42, 44, 40 },
++	moss = { 74, 88, 60 },
++	bronze = { 100, 84, 54 },
++	bronzeWorn = { 136, 110, 68 },
++	bone = { 154, 144, 118 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "BarrowguardGloves",
++	slot = "Gloves",
++	parts = {
++		-- The leather bracer under the plate.
++		Kit.box("LowerArm", { 1.1, 0.92, 1.1 }, { 0, -0.08, 0 }, "Leather", c.mould),
++		-- A broad bronze plate down the front of the forearm.
++		Kit.box("LowerArm", { 1.14, 0.62, 0.18 }, { 0, -0.04, -0.54 }, "Metal", c.bronze),
++		-- A grave-moss cuff at the elbow and a gilded cuff at the wrist.
++		Kit.box("LowerArm", { 1.12, 0.16, 1.12 }, { 0, 0.42, 0 }, "Fabric", c.moss),
++		Kit.box("LowerArm", { 1.18, 0.16, 1.18 }, { 0, -0.38, 0 }, "Metal", c.bronzeWorn),
++		-- The glove, with a bone ridge across the knuckles.
++		Kit.box("Hand", { 1.06, 0.36, 1.06 }, { 0, 0, 0 }, "Leather", c.mould),
++		Kit.box("Hand", { 0.82, 0.12, 0.14 }, { 0, 0.14, -0.5 }, "Marble", c.bone),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/BarrowguardHelm.luau b/src/shared/data/armourLooks/BarrowguardHelm.luau
+new file mode 100644
+index 0000000..2f57ba9
+--- /dev/null
++++ b/src/shared/data/armourLooks/BarrowguardHelm.luau
+@@ -0,0 +1,46 @@
++--!strict
++-- The barrowguard helm (zone armour, the BarrowguardHelm base): the crown-helm
++-- of the old barrow king's guard, dug up still faintly regal. A mould-black
++-- leather bowl under a broad tarnished bronze crown band, its four posts tall
++-- and uneven, two broken long ago, each capped with bone or verdigris. The
++-- face is closed: a bone jaw guard and a bronze nasal over the mouth, so the
++-- helm reads as the dead guard's face, not the avatar's, and a moss veil hangs
++-- at the back of the neck.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	mould = { 42, 44, 40 },
++	bronze = { 100, 84, 54 },
++	bronzeWorn = { 136, 110, 68 },
++	bone = { 154, 144, 118 },
++	moss = { 74, 88, 60 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "BarrowguardHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The bowl, down to the eye line.
++		Kit.box("Head", { 1.3, 0.7, 1.3 }, { 0, 0.26, 0 }, "Leather", c.mould),
++		-- The broad bronze crown band, and its four uneven posts.
++		Kit.box("Head", { 1.34, 0.12, 1.34 }, { 0, 0.64, 0 }, "Metal", c.bronzeWorn),
++		Kit.box("Head", { 0.16, 0.52, 0.16 }, { 0.54, 0.94, -0.54 }, "Metal", c.bronze),
++		Kit.box("Head", { 0.16, 0.44, 0.16 }, { -0.54, 0.9, -0.54 }, "Metal", c.bronze),
++		Kit.box("Head", { 0.16, 0.34, 0.16 }, { 0.54, 0.85, 0.54 }, "Metal", c.bronze),
++		Kit.box("Head", { 0.16, 0.22, 0.16 }, { -0.54, 0.79, 0.54 }, "Metal", c.bronze),
++		-- A bone or verdigris point on every post.
++		Kit.box("Head", { 0.12, 0.14, 0.12 }, { 0.54, 1.27, -0.54 }, "Marble", c.bone),
++		Kit.box("Head", { 0.12, 0.14, 0.12 }, { -0.54, 1.19, -0.54 }, "Marble", c.bone),
++		Kit.box("Head", { 0.12, 0.14, 0.12 }, { 0.54, 1.09, 0.54 }, "Fabric", c.moss),
++		Kit.box("Head", { 0.12, 0.14, 0.12 }, { -0.54, 0.97, 0.54 }, "Fabric", c.moss),
++		-- The bone jaw guard and the bronze nasal over it.
++		Kit.box("Head", { 1.24, 0.52, 0.12 }, { 0, -0.35, -0.58 }, "Marble", c.bone),
++		Kit.box("Head", { 0.12, 0.5, 0.08 }, { -0.02, -0.2, -0.66 }, "Metal", c.bronze, { 0, 0, 4 }),
++		-- The grave-moss veil at the back of the neck.
++		Kit.box("Head", { 1.18, 0.44, 0.14 }, { 0, -0.3, 0.58 }, "Fabric", c.moss, { 8, 0, 0 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..a05a902 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,14 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:BarrowguardHelm"] = row(
++		"A mould-black crown-helm in tarnished bronze, its bone jaw guard and uneven points."
++	),
++	["armour:BarrowguardChest"] = row(
++		"Grave-moss cloth and black mail under tarnished bronze plates and a gilded belt."
++	),
++	["armour:BarrowguardGloves"] = row("Mould-black gloves under a bronze vambrace plate, bone across the knuckles."),
++	["armour:BarrowguardBoots"] = row("Mould-black boots with a bronze shin plate, moss up one shin, a bone toggle."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

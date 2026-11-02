@@ -1,0 +1,22 @@
+{
+  "run": "barrowguard-wave2",
+  "letter": "C",
+  "set": "BarrowguardRoundel",
+  "looks": [
+    "BarrowguardRoundelBoots",
+    "BarrowguardRoundelChest",
+    "BarrowguardRoundelGloves",
+    "BarrowguardRoundelHelm"
+  ],
+  "original_looks": [
+    "BarrowguardBoots",
+    "BarrowguardChest",
+    "BarrowguardGloves",
+    "BarrowguardHelm"
+  ],
+  "pick_rank": 3,
+  "intent": "A grave guard dug out of the barrows: a tall rounded bronze helm with a bright brow rim and a masked face over three bands of tarnished bronze scale on a mould-black leather jack, a bone gorget, a moss sash, and a big round bronze shield on the back with a bright worn rim, a raised bone boss and moss creeping over it, so from the high camera the roundel is the first thing seen.",
+  "reason": "Grave guard: a black-and-bronze palette nobody else owns, with a round bronze grave-disc slung on the back as its silhouette idea (6.90, second; up from 6.78).",
+  "first_fix": "Remove or bone-tint the stray white shoulder block that dominates the ARPG view, and dim the hot yellow eyes.",
+  "parts": 61
+}

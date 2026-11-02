@@ -1,0 +1,20 @@
+{
+  "skill": "Barrowguard",
+  "look": "BarrowguardHelm,BarrowguardHauberk,BarrowguardGauntlets,BarrowguardGreaves",
+  "rows_added": [
+    "BarrowguardHelm",
+    "BarrowguardHauberk",
+    "BarrowguardGauntlets",
+    "BarrowguardGreaves"
+  ],
+  "intent": "A sunken jarl's grave armour in dark tarnished bronze: a bone-crested nasal helm with a narrow shadowed eye slit, a moss-grown fur mantle edged in worn bronze rim plates, bronze lames and long dark mail tails; from the high camera it reads as a bone-topped bronze helm over green fur shoulders above a mould-black body.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A fur material distinct from Fabric, so the moss-grown mantle reads as fur up close as well as at the high camera."
+  ]
+}

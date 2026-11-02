@@ -120,6 +120,9 @@ get a worn particle effect in the game.
 | AshveilGatekeeper **EPIC** | ashveil-wave2 (D) | Ashfields | 1 | 86 | ash A-line with a pale front panel and violet hem, violet gems at the waist and in a tall fan crown |
 | AshveilGiantbone **EPIC** | ashveil-wave2 (E) | Ashfields | 2 | 81 | bone-spike crown over bone-and-charcoal rib pleats with violet seams |
 | AshveilEmber **EPIC** | ashveil-wave2 (C) | Ashfields | 3 | 81 | the best bell from the hip: charred petal panels over a violet-glowing hem |
+| BarrowguardBonewrap | barrowguard-wave2 (A) | Broken Barrows | 1 | 63 | bronze crown over a pale bone face mask, burial wraps over brown-bronze plate |
+| BarrowguardKing | barrowguard-wave2 (D) | Broken Barrows | 2 | 55 | bone-spike crown, bronze plate with moss growing through, all four brief colours |
+| BarrowguardRoundel | barrowguard-wave2 (C) | Broken Barrows | 3 | 61 | black-and-bronze grave guard with a round bronze grave-disc slung on the back |
 <!-- wave2-heartland-end -->
 
 ## Porting notes

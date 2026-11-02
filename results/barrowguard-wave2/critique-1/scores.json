@@ -1,0 +1,22 @@
+{
+  "A": {"reads": 5.5, "fantasy": 6, "fit": 7.5, "parts": 6.5, "total": 6.2,
+        "why": "A green box helm on a green-and-black body reads too close to fenscale, with little bronze or bone and no single strong outline from above.",
+        "fix": "Make bronze the main colour with moss growing on it, and turn the cube great-helm into a crowned or crested regal shape."},
+  "B": {"reads": 6.5, "fantasy": 7, "fit": 7.5, "parts": 7, "total": 6.93,
+        "why": "The bronze post-crown helm is a clear, regal idea from above, but the near-black boxy body reads like dark iron and drops bone entirely.",
+        "fix": "Turn the bronze trim into bronze plates, add a bone accent and a face guard, and enlarge and break up the crown posts."},
+  "C": {"reads": 6.5, "fantasy": 6.5, "fit": 7.5, "parts": 7, "total": 6.78,
+        "why": "The slung round grave-shield on the back is a distinctive silhouette, but the striped brown tunic reads as leather and the cap reads as a hat.",
+        "fix": "Shift the tunic from brown to verdigris bronze, enlarge the back roundel, and give the helm a guard or crown rim plus some bone."},
+  "D": {"reads": 7.5, "fantasy": 8, "fit": 7.5, "parts": 7, "total": 7.58,
+        "why": "A bone-tined crown helm, one moss-grown pauldron and all four brief colours give the most readable, on-brief barrow-guard.",
+        "fix": "Warm the grey cuirass to tarnished bronze so it stops echoing iron, and roughen the crown tines."},
+  "E": {"reads": 7, "fantasy": 7, "fit": 7, "parts": 7.5, "total": 7.08,
+        "why": "The wide moss mantle and the tabard-and-greaves lower body give a strong outline, but the tan body risks reading as linen and the mantle overhangs the arms.",
+        "fix": "Darken the hauberk to green-bronze, rag or rim the mantle edge so it is not a plain slab, and seat it closer to the shoulder."},
+  "F": {"reads": 6.5, "fantasy": 6, "fit": 7, "parts": 6.5, "total": 6.45,
+        "why": "The horned black helm reads as a raider and pulls towards the Reaver family, and the horns are lost from the overhead camera.",
+        "fix": "Replace the horns with a tall bronze crest or crown that reads from above, and cut the thin chest banding into fewer, bolder bands."},
+  "ranking": ["D", "E", "B", "C", "F", "A"],
+  "notes": "Judged from software renders only (sheet.png plus the six per-letter sheets, at normal and slim fit). D is the only set that lands bronze, moss, bone and black together around a regal crown idea. E has the strongest outline but its colour drifts towards linen. B's and D's crowns are the best helm ideas in the batch. Common problems: bone is missing in B and C, there is too much flat green (A, E), and parts are spent on thin bands that cannot be read from the ARPG camera."
+}

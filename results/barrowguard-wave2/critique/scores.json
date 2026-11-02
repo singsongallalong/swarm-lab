@@ -1,0 +1,22 @@
+{
+  "A": {"reads": 7, "fantasy": 8, "fit": 7, "parts": 7, "total": 7.30,
+        "why": "The bronze crown over a pale bone face is the clearest top-down read in the run and nails 'faintly regal grave guard'.",
+        "fix": "Push the brown torso toward tarnished olive-bronze so the body stops reading as the leather family."},
+  "C": {"reads": 7, "fantasy": 7, "fit": 6.5, "parts": 7, "total": 6.90,
+        "why": "The black-and-bronze palette is distinct, and the round bronze grave-disc on the back is a fresh silhouette idea.",
+        "fix": "Remove or bone-tint the stray white shoulder block that dominates the ARPG view, and dim the hot yellow eyes."},
+  "D": {"reads": 6, "fantasy": 8, "fit": 7, "parts": 6, "total": 6.80,
+        "why": "The bone-spike crown and moss-overgrowth patches tell the dug-up story best, but the brown base sits near leather and hide.",
+        "fix": "Re-base the metal to tarnished bronze, unify the dark-green back with the front, and use fewer, larger moss patches."},
+  "B": {"reads": 6, "fantasy": 6, "fit": 7, "parts": 7, "total": 6.35,
+        "why": "A clean, distinct black-and-bronze build, but it reads as a generic dark knight with no strong idea or barrow story.",
+        "fix": "Grow the helm prongs into a real barrow-king crest or crown, and add moss and bone."},
+  "F": {"reads": 6, "fantasy": 6, "fit": 7, "parts": 6, "total": 6.20,
+        "why": "A strong winged lamellar helm and a broad outline, but green-and-black with no bronze reads as samurai and fenscale-adjacent.",
+        "fix": "Make the lamellar plates tarnished bronze with moss lacing, and bend the helm wings into burial-crown points."},
+  "E": {"reads": 4, "fantasy": 6, "fit": 7, "parts": 6, "total": 5.50,
+        "why": "An olive-green blob from above with no silhouette idea, too close to fenscale, and the yellow visor reads as hi-vis.",
+        "fix": "Make tarnished bronze the dominant metal and commit to one silhouette idea such as a crested helm or a burial cape."},
+  "ranking": ["A", "C", "D", "B", "F", "E"],
+  "notes": "Nobody owns tarnished bronze yet. A, C and D carry the barrow fantasy (crowns, bone, grave-disc, moss), but A and D lean brown toward leather, while E and F lean green toward fenscale. The winning direction is A's crown and bone face on C's black-and-bronze palette, plus D's moss patches."
+}

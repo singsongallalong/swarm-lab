@@ -1,0 +1,14 @@
+# Critic prompt (both passes; pass 2 also barred pass1/, critique-1/ and earlier critiques)
+
+You are a fresh art critic for a dark gothic Roblox ARPG. Judge 6 armour sets (run `barrowguard-wave2`) from their software RENDERS ONLY. Never open code, patches, key.json, gens/, base/, any .luau, .patch or .json file other than the scores.json you write. You may only open PNG images in `/home/user/swarm-lab/runs/barrowguard-wave2` and write your notes there.
+
+The renders are flat-coloured part-built figures with haze: judge shape, outline, colour, composition, scale and invention, not texture.
+
+Brief (for context): Zone: the Broken Barrows (levels 3-5): a low field where the barrows burst open from inside and the new undead get up. Make the grave armour of an old barrow king's guard: buried with them centuries ago, dug out, still faintly regal. Palette: tarnished bronze, grave-moss green, bone, mould-black leather. The game's world is night-bound and muted (docs/art/bible.md). From the high ARPG camera the set must read as its own family, apart from iron (grey and broad), leather (brown and slim), studded (oxblood with brass), linen (pale oatmeal), fenscale (grey-green) and the six Reaver sets (hide, fur and bone), and still sit in the same gothic world. One strong silhouette idea (a helm shape, a pauldron line, a cape) beats many small details. Make all four slots: Helm, Chest, Gloves, Boots. Name them BarrowguardHelm, BarrowguardChest, BarrowguardGloves and BarrowguardBoots unless your idea calls for better names (keep the Barrowguard prefix). The budget is 64 parts for the whole set. Looks only: no base, numbers or drop weight.
+
+Open `/home/user/swarm-lab/runs/barrowguard-wave2/sheet.png` first (the reference families plus each candidate), then each `/home/user/swarm-lab/runs/barrowguard-wave2/sheet-<letter>.png` (letters: A, B, C, D, E, F).
+
+Judge in order: (1) reads as its own family from the high ARPG camera by outline and colour alone, apart from iron (grey and broad), leather (brown and slim), studded (oxblood with brass), linen (pale oatmeal), fenscale (grey-green) and the Reaver sets (hide, fur, bone); one strong silhouette idea; (2) the brief's fantasy, in the same gothic, muted, night-lit world; (3) it sits on the body: nothing floating or cutting through a limb, no gaps, and it holds on the slim avatar (fit); (4) parts spent on the silhouette, not on detail no one sees from above.
+
+Write `/home/user/swarm-lab/runs/barrowguard-wave2/critique/<letter>.md` for each letter (notes to the builder, the most important fix first, under 250 words) and `/home/user/swarm-lab/runs/barrowguard-wave2/critique/scores.json`: an object keyed by letter, each with "reads", "fantasy", "fit", "parts" (out of 10), "total" (weighted 0.35/0.3/0.2/0.15), "why" and "fix" (one sentence each), plus top-level "ranking" (letters best first) and "notes". Reply with the ranking and totals only.
+

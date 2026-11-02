@@ -1,0 +1,14 @@
+{
+  "picked": ["A", "D", "C"],
+  "reasons": {
+    "A": "Bone-wrapped: a bronze crown over a pale bone face mask, the clearest top-down read and the most 'faintly regal grave guard' (second critic 7.30, first; up from 6.20 and last before the rework).",
+    "D": "Barrow king: a bone-spike crown with moss overgrowth patches on bronze plate, all four brief colours together, the dug-up story told best (first critic 7.58, first; second critic 6.80, third).",
+    "C": "Grave guard: a black-and-bronze palette nobody else owns, with a round bronze grave-disc slung on the back as its silhouette idea (6.90, second; up from 6.78)."
+  },
+  "fixes": {
+    "A": "Push the brown torso toward tarnished olive-bronze so the body stops reading as the leather family.",
+    "D": "Re-base the metal to tarnished bronze, unify the dark-green back with the front, and use fewer, larger moss patches.",
+    "C": "Remove or bone-tint the stray white shoulder block that dominates the ARPG view, and dim the hot yellow eyes."
+  },
+  "notes": "6 of 6 survived after resuming g04 (generator exit 1 in the draft); 6 of 6 survived the rework (g02 exited 1 on its rework but its set still passes). The critics disagreed more than in the gown runs: A rose from last to first after the rework, and E fell from second to last. No set owns tarnished bronze outright; the second critic suggested A's crown and bone face on C's black-and-bronze palette, plus D's moss patches."
+}

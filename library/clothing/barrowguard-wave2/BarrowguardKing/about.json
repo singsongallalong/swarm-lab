@@ -1,0 +1,22 @@
+{
+  "run": "barrowguard-wave2",
+  "letter": "D",
+  "set": "BarrowguardKing",
+  "looks": [
+    "BarrowguardKingBoots",
+    "BarrowguardKingChest",
+    "BarrowguardKingGloves",
+    "BarrowguardKingHelm"
+  ],
+  "original_looks": [
+    "BarrowguardBoots",
+    "BarrowguardChest",
+    "BarrowguardGloves",
+    "BarrowguardHelm"
+  ],
+  "pick_rank": 2,
+  "intent": "A tall tarnished-bronze crown-helm of uneven bone tines and a dark face mask over warm bronze-brown mail with green verdigris, a broad bronze collar holding a pale bone gorget and a mouldering moss cloak hung from one shoulder, so the high camera reads a pale crown over a bronze yoke and a green back.",
+  "reason": "Barrow king: a bone-spike crown with moss overgrowth patches on bronze plate, all four brief colours together, the dug-up story told best (first critic 7.58, first; second critic 6.80, third).",
+  "first_fix": "Re-base the metal to tarnished bronze, unify the dark-green back with the front, and use fewer, larger moss patches.",
+  "parts": 55
+}

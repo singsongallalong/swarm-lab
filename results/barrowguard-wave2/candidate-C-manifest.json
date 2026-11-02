@@ -1,0 +1,20 @@
+{
+  "skill": "Barrowguard",
+  "look": "BarrowguardHelm,BarrowguardChest,BarrowguardGloves,BarrowguardBoots",
+  "rows_added": [
+    "BarrowguardHelm",
+    "BarrowguardChest",
+    "BarrowguardGloves",
+    "BarrowguardBoots"
+  ],
+  "intent": "A grave guard dug out of the barrows: a tall rounded bronze helm with a bright brow rim and a masked face over three bands of tarnished bronze scale on a mould-black leather jack, a bone gorget, a moss sash, and a big round bronze shield on the back with a bright worn rim, a raised bone boss and moss creeping over it, so from the high camera the roundel is the first thing seen.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A rigid flag per part: the back shield is a chest part, so it stretches oval on a slim avatar."
+  ]
+}

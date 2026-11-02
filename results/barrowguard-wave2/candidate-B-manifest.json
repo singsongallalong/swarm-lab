@@ -1,0 +1,22 @@
+{
+  "skill": "Barrowguard",
+  "look": "BarrowguardHelm,BarrowguardChest,BarrowguardGloves,BarrowguardBoots",
+  "rows_added": [
+    "BarrowguardHelm",
+    "BarrowguardChest",
+    "BarrowguardGloves",
+    "BarrowguardBoots"
+  ],
+  "intent": "A barrow king's guard in mould-black mail under grave-moss cloth, plated with tarnished bronze — a tall uneven crown, stepped pauldrons, a gorget and breastplate, a gilded belt of grave-goods — with a bone jaw mask, so the bronze plates and bone read first from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A gilded bronze bright enough for broad plates without leaving the trim value limit: bronzeWorn reads from the high camera but is over the limit, so it is spent on the crown, gorget, pauldron tops and belt only.",
+    "A curved or rounded plate for pauldrons: two stepped boxes read as barrow-stone, but a curved scale would sit on the shoulder better.",
+    "A torus or ring part for torcs and brooch rims, which solid boxes can only fake as collars."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "skill": "Barrowguard",
+  "look": "BarrowguardHelm,BarrowguardChest,BarrowguardGloves,BarrowguardBoots",
+  "rows_added": ["BarrowguardHelm", "BarrowguardChest", "BarrowguardGloves", "BarrowguardBoots"],
+  "intent": "A bronze-clad barrow guard: a tarnished bronze great-helm crowned with a raised worn rim, four crown points and a pale bone ridge, a bronze cuirass with a bone collar and a bone spine down the back, one great stepped pauldron with a raised fin against a smaller moss-draped shoulder, grave moss creeping in patches over the plate and a moss sash; from the high camera it reads as a broad bronze, bone-crowned, moss-flecked family, apart from the grey iron, brown leather and oxblood studded sets.",
+  "renders": [
+    ".swarm/out/armour-set-r7.png",
+    ".swarm/out/armour-set-close-r7.png",
+    ".swarm/out/armour-set-fit-r7.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A verdigris or patina bronze tone of its own, so the plate reads as metal rather than tan leather under the mood preset.",
+    "A bone tone that separates further from tarnished bronze; bone and worn bronze sit close in value at the high camera."
+  ]
+}

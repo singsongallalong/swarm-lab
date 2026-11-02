@@ -1,0 +1,22 @@
+{
+  "run": "barrowguard-wave2",
+  "letter": "A",
+  "set": "BarrowguardBonewrap",
+  "looks": [
+    "BarrowguardBonewrapBoots",
+    "BarrowguardBonewrapChest",
+    "BarrowguardBonewrapGloves",
+    "BarrowguardBonewrapHelm"
+  ],
+  "original_looks": [
+    "BarrowguardBoots",
+    "BarrowguardChest",
+    "BarrowguardGloves",
+    "BarrowguardHelm"
+  ],
+  "pick_rank": 1,
+  "intent": "A bronze-clad barrow guard: a tarnished bronze great-helm crowned with a raised worn rim, four crown points and a pale bone ridge, a bronze cuirass with a bone collar and a bone spine down the back, one great stepped pauldron with a raised fin against a smaller moss-draped shoulder, grave moss creeping in patches over the plate and a moss sash; from the high camera it reads as a broad bronze, bone-crowned, moss-flecked family, apart from the grey iron, brown leather and oxblood studded sets.",
+  "reason": "Bone-wrapped: a bronze crown over a pale bone face mask, the clearest top-down read and the most 'faintly regal grave guard' (second critic 7.30, first; up from 6.20 and last before the rework).",
+  "first_fix": "Push the brown torso toward tarnished olive-bronze so the body stops reading as the leather family.",
+  "parts": 63
+}

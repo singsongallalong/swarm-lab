@@ -1,0 +1,22 @@
+{
+  "skill": "Barrowguard",
+  "look": "BarrowguardHelm,BarrowguardChest,BarrowguardGloves,BarrowguardBoots",
+  "rows_added": [
+    "BarrowguardHelm",
+    "BarrowguardChest",
+    "BarrowguardGloves",
+    "BarrowguardBoots"
+  ],
+  "intent": "Grave-armour of a barrow king's guard: a closed-face helm winged and crested in tarnished bronze, a moss-eaten fur mantle over mould-black leather, and bold bronze at the breastplate, belt and pauldrons, so the winged head and green shoulders read first from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r6.png",
+    ".swarm/out/armour-set-close-r6.png",
+    ".swarm/out/armour-set-fit-r6.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A mid-bronze colour between the dull plate and the scraped edge, for a large crown or pauldron plate that must catch the moon without reading as a worn strip.",
+    "A fur or fleece material (or a clumped fur builder) so a mantle does not read as a flat slab from the high camera.",
+    "A wedge or fan piece for a swept wing that reads from two angles in one part, instead of stepping a wing out of boxes."
+  ]
+}
