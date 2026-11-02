@@ -1,0 +1,21 @@
+{
+  "skill": "Harvestbride",
+  "look": "HarvestbrideHelm,HarvestbrideDress,HarvestbrideSleeves,HarvestbrideHem",
+  "rows_added": [
+    "HarvestbrideHelm",
+    "HarvestbrideDress",
+    "HarvestbrideSleeves",
+    "HarvestbrideHem"
+  ],
+  "intent": "A warm country-wedding gown: a hearth-red kerchief hood with a wheat sprig and a wheat-gold laced bodice over fitted sleeves, a pale linen apron down a two-tier field-green quilted bell skirt, reading from the high camera as a narrow red-and-gold waist above a wide green-and-cream A.",
+  "renders": [
+    ".swarm/out/armour-set-r7.png",
+    ".swarm/out/armour-set-close-r7.png",
+    ".swarm/out/armour-set-fit-r7.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered trapezoid panel primitive: the skirt bell can only be stepped tiers of parallel-sided boxes.",
+    "A quilted-cloth material or a cheap quilt-pattern trim, so the overskirt's quilting does not cost silhouette parts."
+  ]
+}

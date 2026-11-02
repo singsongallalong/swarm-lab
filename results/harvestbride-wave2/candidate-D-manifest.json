@@ -1,0 +1,15 @@
+{
+  "skill": "Harvestbride",
+  "look": "HarvestbrideHelm,HarvestbrideDress,HarvestbrideSleeves,HarvestbrideHem",
+  "rows_added": ["HarvestbrideHelm", "HarvestbrideDress", "HarvestbrideSleeves", "HarvestbrideHem"],
+  "intent": "A milkmaid's harvest-festival gown in lifted field green with a warm linen blouse, a short shoulder puff over a slim sleeve and a full forearm cuff, a wide tiered bell skirt with a lighter lowest tier, a wheat-gold hem and a pale apron, and a straw hat with a bright hearth-red ribbon.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A woven straw material for the hat; Fabric is the closest available."
+  ]
+}

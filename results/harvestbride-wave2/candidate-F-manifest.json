@@ -1,0 +1,21 @@
+{
+  "skill": "Harvestbride",
+  "look": "HarvestbrideWreath,HarvestbrideBodice,HarvestbrideSleeves,HarvestbrideHem",
+  "rows_added": [
+    "HarvestbrideWreath",
+    "HarvestbrideBodice",
+    "HarvestbrideSleeves",
+    "HarvestbrideHem"
+  ],
+  "intent": "A country harvest-festival gown — a wheat-and-poppy crown, slim cream chemise sleeves with a red-banded cuff, a dark laced bodice front and back over a red sash, and a full wheat-gold skirt flared from hip to hem over a white linen apron — reading from the high camera as a narrow top over a wide gold bell.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A warmer wheat gold than the bible's trim limits allow; inside them the harvest skirt reads olive-grey at the high camera.",
+    "A tapered (trapezoid) cloth panel, so a full skirt can widen smoothly instead of as overlapping straight panels."
+  ]
+}

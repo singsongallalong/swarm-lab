@@ -1,0 +1,22 @@
+{
+  "run": "harvestbride-wave2",
+  "letter": "B",
+  "set": "HarvestbrideApron",
+  "looks": [
+    "HarvestbrideApronDress",
+    "HarvestbrideApronHelm",
+    "HarvestbrideApronHem",
+    "HarvestbrideApronSleeves"
+  ],
+  "original_looks": [
+    "HarvestbrideDress",
+    "HarvestbrideHelm",
+    "HarvestbrideHem",
+    "HarvestbrideSleeves"
+  ],
+  "pick_rank": 2,
+  "intent": "A Farmland village bride's cream wedding gown, with a wheat-straw flower wreath, a short linen veil, a bright red waist sash and a full two-tier bell skirt over a gold-embroidered, green-petticoated hem; from the high camera it reads as a pale cream cone under a gold-and-green crown with a red waist.",
+  "reason": "Harvest apron: a wheat-gold apron skirt that flares from the waist, the warmest country-dress colour in the run (6.1, second).",
+  "first_fix": "Slim the sleeves and add a hearth-red bodice or sash so the pale upper body stops reading as the linen family.",
+  "parts": 80
+}

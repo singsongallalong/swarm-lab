@@ -1,0 +1,233 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..4d3b35c 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -12,6 +12,10 @@ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+ local FenscaleJack = require("./armourLooks/FenscaleJack")
+ local FenscaleWaders = require("./armourLooks/FenscaleWaders")
++local HarvestbrideDress = require("./armourLooks/HarvestbrideDress")
++local HarvestbrideHelm = require("./armourLooks/HarvestbrideHelm")
++local HarvestbrideHem = require("./armourLooks/HarvestbrideHem")
++local HarvestbrideSleeves = require("./armourLooks/HarvestbrideSleeves")
+ local IronCap = require("./armourLooks/IronCap")
+ local IronGauntlets = require("./armourLooks/IronGauntlets")
+ local IronGreaves = require("./armourLooks/IronGreaves")
+@@ -41,6 +45,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	FenscaleHood = FenscaleHood,
+ 	FenscaleJack = FenscaleJack,
+ 	FenscaleWaders = FenscaleWaders,
++	HarvestbrideDress = HarvestbrideDress,
++	HarvestbrideHelm = HarvestbrideHelm,
++	HarvestbrideHem = HarvestbrideHem,
++	HarvestbrideSleeves = HarvestbrideSleeves,
+ 	IronCap = IronCap,
+ 	IronGauntlets = IronGauntlets,
+ 	IronGreaves = IronGreaves,
+diff --git a/src/shared/data/armourLooks/HarvestbrideDress.luau b/src/shared/data/armourLooks/HarvestbrideDress.luau
+new file mode 100644
+index 0000000..b2030aa
+--- /dev/null
++++ b/src/shared/data/armourLooks/HarvestbrideDress.luau
+@@ -0,0 +1,57 @@
++--!strict
++-- The harvest bride's dress (art pass A014): a wheat-gold bodice laced
++-- hearth-red and belted at the waist, with fitted wheat sleeves against the
++-- arms. The quilted field-green overskirt is drawn aside at the front to show
++-- the pale linen apron, and hangs from the thighs in wide panels that the
++-- Hem look carries on wider still, so the skirt bells from a clear waist.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local h = {
++	wheat = { 138, 114, 64 }, -- the gown's warm straw gold
++	wheatDark = { 100, 82, 46 }, -- the fitted sleeves, a shade back from the bodice
++	linen = { 150, 140, 118 }, -- the apron and collar
++	hearth = { 112, 56, 46 }, -- sash, lacing and ties
++	hearthDark = { 84, 42, 36 }, -- the sash knot
++	field = { 82, 100, 60 }, -- the quilted overskirt
++	fieldDark = { 60, 74, 46 }, -- the fold where the overskirt is drawn aside
++	walnut = { 66, 50, 38 }, -- the belt
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "HarvestbrideDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice: wheat cloth, a square linen collar, a hearth-red stomacher
++		-- cross-laced in linen down the front.
++		Kit.box("UpperTorso", { 2.06, 1.62, 1.06 }, { 0, 0, 0 }, "Fabric", h.wheat),
++		Kit.box("UpperTorso", { 1.16, 0.2, 1.04 }, { 0, 0.76, 0 }, "Fabric", h.linen),
++		Kit.box("UpperTorso", { 0.52, 1, 0.06 }, { 0, 0.02, -0.56 }, "Fabric", h.hearth),
++		Kit.box("UpperTorso", { 0.08, 0.72, 0.05 }, { 0, 0.04, -0.6 }, "Fabric", h.linen, { 0, 0, 26 }),
++		Kit.box("UpperTorso", { 0.08, 0.72, 0.05 }, { 0, 0.04, -0.6 }, "Fabric", h.linen, { 0, 0, -26 }),
++		-- Fitted wheat sleeves kept close to the upper arm; the linen bell (the
++		-- Gloves look) carries the volume at the forearm.
++		Kit.box("UpperArm", { 1.04, 1.22, 1.04 }, { 0, 0, 0 }, "Fabric", h.wheatDark),
++		-- The waist: a hearth-red sash under a walnut belt, tied in a bow at the
++		-- back whose tails fall down the skirt behind.
++		Kit.box("LowerTorso", { 2.14, 0.24, 1.14 }, { 0, 0.07, 0 }, "Fabric", h.hearth),
++		Kit.box("LowerTorso", { 2.18, 0.1, 1.18 }, { 0, -0.09, 0 }, "Leather", h.walnut),
++		Kit.box("LowerTorso", { 0.18, 0.18, 0.12 }, { 0, 0.06, 0.6 }, "Fabric", h.hearthDark),
++		Kit.box("LowerTorso", { 0.34, 0.24, 0.09 }, { 0.22, 0.1, 0.62 }, "Fabric", h.hearth, { 0, 0, 18 }),
++		Kit.box("LowerTorso", { 0.34, 0.24, 0.09 }, { -0.22, 0.1, 0.62 }, "Fabric", h.hearth, { 0, 0, -18 }),
++		-- The skirt: a pale linen apron down the front centre with the green
++		-- overskirt drawn aside either side of it and falling round the back,
++		-- gathered into a fold and tied with hearth-red ribbon at the right hip.
++		Kit.box("UpperLeg", { 1, 1.2, 0.09 }, { 0, 0.06, -0.57 }, "Fabric", h.linen, { 5, 0, 0 }),
++		Kit.box("UpperLeg", { 0.9, 1.2, 0.09 }, { 0.95, 0.06, -0.57 }, "Fabric", h.field, { 5, 0, 0 }),
++		Kit.box("UpperLeg", { 1.9, 1.15, 0.1 }, { 0.45, 0.02, 0.64 }, "Fabric", h.field, { -6, 0, 0 }),
++		Kit.box("UpperLeg", { 0.11, 1.12, 1.2 }, { 1.4, 0.04, 0.02 }, "Fabric", h.field, { 0, 0, 8 }),
++		Kit.box("UpperLeg", { 0.3, 0.95, 0.07 }, { 0.56, 0.12, -0.66 }, "Fabric", h.fieldDark, { 5, 0, 0 }),
++		Kit.box("UpperLeg", { 0.14, 0.2, 0.12 }, { 0.58, 0.5, -0.68 }, "Fabric", h.hearth),
++		Kit.box("UpperLeg", { 0.1, 0.36, 0.05 }, { 0.6, 0.3, -0.68 }, "Fabric", h.hearth, { 0, 0, -6 }),
++		-- The sash bow's tails, fallen down the back of the green skirt.
++		Kit.box("UpperLeg", { 0.12, 0.7, 0.06 }, { 0.24, 0.25, 0.74 }, "Fabric", h.hearth, { -6, 0, 0 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/HarvestbrideHelm.luau b/src/shared/data/armourLooks/HarvestbrideHelm.luau
+new file mode 100644
+index 0000000..5e5ce53
+--- /dev/null
++++ b/src/shared/data/armourLooks/HarvestbrideHelm.luau
+@@ -0,0 +1,42 @@
++--!strict
++-- The harvest bride's helm (art pass A014): a soft hearth-red kerchief hood
++-- over a pale linen lining and a wheat ribbon, tied at the right temple with
++-- two short tails and a bright wheat sprig tucked behind the knot.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local h = {
++	hearth = { 112, 56, 46 }, -- the kerchief's warm red
++	hearthDark = { 84, 42, 36 }, -- the knot and the kerchief's folds
++	linen = { 150, 140, 118 }, -- the lining at the brow
++	wheat = { 166, 140, 82 }, -- the ribbon and the wheat sprig
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "HarvestbrideHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The kerchief: a soft crown and a fold down the back of the head, open
++		-- at the face.
++		Kit.box("Head", { 1.3, 0.5, 1.3 }, { 0, 0.42, 0.02 }, "Fabric", h.hearth),
++		Kit.box("Head", { 1.28, 1, 0.44 }, { 0, -0.02, 0.48 }, "Fabric", h.hearth),
++		Kit.box("Head", { 0.18, 0.86, 1.06 }, { 0.6, -0.02, 0.1 }, "Fabric", h.hearth, { 0, 0, 3 }),
++		Kit.box("Head", { 0.18, 0.86, 1.06 }, { -0.6, -0.02, 0.1 }, "Fabric", h.hearth, { 0, 0, -3 }),
++		-- The linen lining shows at the brow, under a wheat ribbon.
++		Kit.box("Head", { 1.14, 0.16, 0.16 }, { 0, 0.2, -0.6 }, "Fabric", h.linen),
++		Kit.box("Head", { 1.34, 0.12, 1.34 }, { 0, 0.34, 0 }, "Fabric", h.wheat),
++		-- The kerchief is tied at the right temple, two short tails below the knot.
++		Kit.box("Head", { 0.22, 0.24, 0.2 }, { 0.54, 0.18, -0.5 }, "Fabric", h.hearthDark),
++		Kit.box("Head", { 0.1, 0.36, 0.06 }, { 0.6, -0.03, -0.5 }, "Fabric", h.hearth, { 0, 0, -12 }),
++		Kit.box("Head", { 0.09, 0.28, 0.06 }, { 0.64, 0.05, -0.4 }, "Fabric", h.hearth, { 0, 0, 16 }),
++		-- A wheat sprig tucked behind the knot, rising over the crown.
++		Kit.box("Head", { 0.05, 0.55, 0.05 }, { 0.6, 0.62, -0.05 }, "Fabric", h.wheat, { 0, 0, 8 }),
++		Kit.box("Head", { 0.045, 0.45, 0.045 }, { 0.55, 0.55, 0.1 }, "Fabric", h.wheat, { 0, 0, 14 }),
++		Kit.box("Head", { 0.13, 0.22, 0.13 }, { 0.66, 0.94, -0.05 }, "Fabric", h.wheat),
++		Kit.box("Head", { 0.11, 0.18, 0.11 }, { 0.62, 0.82, 0.1 }, "Fabric", h.wheat),
++		Kit.box("Head", { 0.09, 0.15, 0.09 }, { 0.57, 0.87, -0.12 }, "Fabric", h.wheat),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/HarvestbrideHem.luau b/src/shared/data/armourLooks/HarvestbrideHem.luau
+new file mode 100644
+index 0000000..9dfcce5
+--- /dev/null
++++ b/src/shared/data/armourLooks/HarvestbrideHem.luau
+@@ -0,0 +1,35 @@
++--!strict
++-- The harvest bride's hem (art pass A014): the pale linen apron carried on
++-- down the shins between the green overskirt's panels, in one wide tier to
++-- the ankle, closed by a single hearth-red hem ribbon and walnut country
++-- shoes with linen tongues.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local h = {
++	linen = { 150, 140, 118 }, -- the apron
++	hearth = { 112, 56, 46 }, -- the hem ribbon
++	field = { 82, 100, 60 }, -- the quilted overskirt
++	walnut = { 66, 50, 38 }, -- the shoes
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "HarvestbrideHem",
++	slot = "Boots",
++	parts = {
++		-- The apron front, the green overskirt either side and round the back,
++		-- one wide tier from knee to ankle.
++		Kit.box("LowerLeg", { 1, 1.4, 0.09 }, { 0, 0.03, -0.6 }, "Fabric", h.linen, { 6, 0, 0 }),
++		Kit.box("LowerLeg", { 1.6, 1.4, 0.09 }, { 1.3, 0.03, -0.6 }, "Fabric", h.field, { 6, 0, 0 }),
++		Kit.box("LowerLeg", { 2.6, 1.4, 0.1 }, { 0.8, 0.03, 0.62 }, "Fabric", h.field, { -6, 0, 0 }),
++		Kit.box("LowerLeg", { 0.11, 1.4, 1.3 }, { 2.1, 0.03, 0 }, "Fabric", h.field, { 0, 0, 10 }),
++		-- One hearth-red hem ribbon round the front and back of the tier.
++		Kit.box("LowerLeg", { 2.6, 0.12, 0.04 }, { 0.8, -0.62, -0.73 }, "Fabric", h.hearth, { 6, 0, 0 }),
++		Kit.box("LowerLeg", { 2.6, 0.12, 0.04 }, { 0.8, -0.64, 0.76 }, "Fabric", h.hearth, { -6, 0, 0 }),
++		-- Walnut shoes with a pale linen tongue showing under the hem.
++		Kit.box("Foot", { 1.1, 0.3, 1.18 }, { 0, 0, -0.1 }, "Leather", h.walnut),
++		Kit.box("Foot", { 1, 0.08, 0.9 }, { 0, 0.14, -0.02 }, "Fabric", h.linen),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/HarvestbrideSleeves.luau b/src/shared/data/armourLooks/HarvestbrideSleeves.luau
+new file mode 100644
+index 0000000..97ce2bb
+--- /dev/null
++++ b/src/shared/data/armourLooks/HarvestbrideSleeves.luau
+@@ -0,0 +1,32 @@
++--!strict
++-- The harvest bride's sleeves (art pass A014): a linen bell swelling in two
++-- broad steps from the elbow to a wide cuff, tied with hearth-red ribbon at
++-- the elbow and a little bow at the cuff, over warm walnut gloves.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local h = {
++	linen = { 150, 140, 118 }, -- the bell sleeve
++	linenShade = { 122, 112, 92 }, -- the wristband
++	hearth = { 112, 56, 46 }, -- the ribbon tie and bow
++	walnut = { 66, 50, 38 }, -- the gloves
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "HarvestbrideSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The bell: a narrow start at the elbow, then one wide cuff.
++		Kit.box("LowerArm", { 1.18, 0.3, 1.18 }, { 0, 0.36, 0 }, "Fabric", h.linen),
++		Kit.box("LowerArm", { 1.46, 0.58, 1.46 }, { 0, -0.22, 0 }, "Fabric", h.linen),
++		-- The ribbon at the elbow, and a small bow on the outside of the cuff.
++		Kit.box("LowerArm", { 1.22, 0.1, 1.22 }, { 0, 0.5, 0 }, "Fabric", h.hearth),
++		Kit.box("LowerArm", { 0.12, 0.16, 0.1 }, { 0.76, -0.3, 0 }, "Fabric", h.hearth),
++		Kit.box("LowerArm", { 0.08, 0.32, 0.05 }, { 0.82, -0.5, 0 }, "Fabric", h.hearth, { 0, 0, -6 }),
++		-- Walnut gloves with a pale linen wristband.
++		Kit.box("Hand", { 1.06, 0.3, 1.06 }, { 0, 0, 0 }, "Leather", h.walnut),
++		Kit.box("Hand", { 1.1, 0.1, 1.1 }, { 0, 0.12, 0 }, "Fabric", h.linenShade),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..7a8163b 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -74,6 +74,12 @@ local rows: { [string]: Row } = {
+ 	["armour:BoneTalisman"] = row("A carved bone charm with runes, hung from the left fist on a cord."),
+ 	["armour:EmberTalisman"] = row("A glowing ember stone in a small iron cage, hung on a chain."),
+ 	["armour:StormTalisman"] = row("A blue-white crystal shard bound in copper wire, hung on a cord."),
++	["armour:HarvestbrideHelm"] = row(
++		"A hearth-red kerchief hood with a linen brow, knotted at the temple with a wheat sprig."
++	),
++	["armour:HarvestbrideDress"] = row("A wheat-gold bodice laced red over a green quilted overskirt and linen apron."),
++	["armour:HarvestbrideSleeves"] = row("Fitted wheat sleeves above wide linen bell cuffs tied with red ribbon."),
++	["armour:HarvestbrideHem"] = row("A linen apron over green quilted panels, one red hem ribbon and walnut shoes."),
+ }
+ 
+ return table.freeze(rows)

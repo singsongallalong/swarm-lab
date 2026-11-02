@@ -1,0 +1,16 @@
+{
+  "skill": "Harvestbride",
+  "look": "HarvestbrideHelm,HarvestbrideDress,HarvestbrideSleeves,HarvestbrideHem",
+  "rows_added": ["HarvestbrideHelm", "HarvestbrideDress", "HarvestbrideSleeves", "HarvestbrideHem"],
+  "intent": "A Farmland village bride's cream wedding gown, with a wheat-straw flower wreath, a short linen veil, a bright red waist sash and a full two-tier bell skirt over a gold-embroidered, green-petticoated hem; from the high camera it reads as a pale cream cone under a gold-and-green crown with a red waist.",
+  "renders": [
+    ".swarm/out/armour-set-r2.png",
+    ".swarm/out/armour-set-close-r2.png",
+    ".swarm/out/armour-set-fit-r2.png"
+  ],
+  "revisions": 1,
+  "requests": [
+    "A sheer or translucent cloth material for the veil; opaque linen makes it read as a panel rather than gauze.",
+    "A ring or torus shape for the flower wreath; four box bars are the closest the blocky part set allows."
+  ]
+}

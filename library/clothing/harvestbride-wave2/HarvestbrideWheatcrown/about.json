@@ -1,0 +1,22 @@
+{
+  "run": "harvestbride-wave2",
+  "letter": "F",
+  "set": "HarvestbrideWheatcrown",
+  "looks": [
+    "HarvestbrideWheatcrownBodice",
+    "HarvestbrideWheatcrownHem",
+    "HarvestbrideWheatcrownSleeves",
+    "HarvestbrideWheatcrownWreath"
+  ],
+  "original_looks": [
+    "HarvestbrideBodice",
+    "HarvestbrideHem",
+    "HarvestbrideSleeves",
+    "HarvestbrideWreath"
+  ],
+  "pick_rank": 3,
+  "intent": "A country harvest-festival gown \u2014 a wheat-and-poppy crown, slim cream chemise sleeves with a red-banded cuff, a dark laced bodice front and back over a red sash, and a full wheat-gold skirt flared from hip to hem over a white linen apron \u2014 reading from the high camera as a narrow top over a wide gold bell.",
+  "reason": "Wheat crown: a tall wheat-sheaf crown that gives height and says Farmland at once, over a parted gold skirt (5.98, third).",
+  "first_fix": "Widen the parted skirt into a clear bell and slim the pale block sleeves to the arm.",
+  "parts": 87
+}

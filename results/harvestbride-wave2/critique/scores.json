@@ -1,0 +1,22 @@
+{
+  "A": {"reads": 5, "elegance": 5.5, "skirt": 4, "parts": 5.5, "total": 5.03,
+        "why": "Warm hearth-red pinafore with green apron, but a straight column skirt and pale block sleeves read as a red box close to the studded family from above.",
+        "fix": "Build a real bell from the hip in the Boots slot and slim the linen shoulder-block sleeves."},
+  "B": {"reads": 6, "elegance": 6, "skirt": 6.5, "parts": 6, "total": 6.1,
+        "why": "Gold apron skirt flares from the waist and reads as a country dress, but the upper body is one bulky pale linen slab and the wheat headpiece is lost.",
+        "fix": "Slim the sleeves and add a red bodice or sash so the set stops reading as linen."},
+  "C": {"reads": 4.5, "elegance": 5, "skirt": 4, "parts": 5, "total": 4.63,
+        "why": "Broad dark walnut shoulders dominate the ARPG view and the column skirt does not flare, though the ruffled forearm cuffs are the best sleeve idea.",
+        "fix": "Narrow and lighten the shoulders and give the skirt a real bell from the hip."},
+  "D": {"reads": 7, "elegance": 7, "skirt": 7, "parts": 6, "total": 6.85,
+        "why": "The straw hat with red ribbon and tiered green bell skirt read at once as a farm girl's festival dress, with a true cone in side view.",
+        "fix": "Slim the broad grey banded sleeves and lighten tier edges so the dark green bell does not vanish at night."},
+  "E": {"reads": 6, "elegance": 5, "skirt": 6.5, "parts": 5, "total": 5.65,
+        "why": "Widest flare in the wave and a strong red head, but the broad olive yoke and box-like kerchief read armoured and muddy.",
+        "fix": "Strip the shoulder width and soften the headpiece into a kerchief that shows the head."},
+  "F": {"reads": 6, "elegance": 6.5, "skirt": 5.5, "parts": 5.5, "total": 5.98,
+        "why": "The wheat-sheaf crown gives height and zone identity and the parted gold skirt is pretty, but the skirt barely flares and the sleeves are pale blocks.",
+        "fix": "Widen the parted skirt into a clear bell and slim the sleeves to the arm."},
+  "ranking": ["D", "B", "F", "E", "A", "C"],
+  "notes": "No candidate achieved slim sleeves: every set still carries shoulder-width blocks, the wave's common flaw. D wins on its straw-hat read and tiered bell; B and E have the best flares; F and D have the best headpieces; C's ruffled forearm cuffs are the sleeve idea to copy."
+}

@@ -99,6 +99,23 @@ the game later.
 | CinderveilFissure | cinderveil-wave2 (B) | Aor'lan Mountain | 3 | 66 | bright jagged magma cracks over basalt, ash stole and hem; the strongest lava read |
 <!-- wave2-aorlan-end -->
 
+## Wave 2: Heartland (2026-11-02)
+
+Wardrobe wave 2 for the Heartland (Rhodri, arpg-game R039): two gown runs and two armour runs,
+three picks each, every run with two render-only critic passes and one rework between them; run
+evidence is in `results/<run>/`. Same files per set as above. Part counts were measured with
+`ArmourLook.partCount` on arpg-game main `7c1c5fb`, where each set's `renamed.patch` applies
+and `Catalog`, `ContentCompleteness` and `DressBudget` pass. Gowns are on the `feminine`
+figure under the 100-part gown budget; armour is under the 64-part budget. **EPIC** sets will
+get a worn particle effect in the game.
+
+| Set | Run | Zone | Pick | Parts | In short |
+| --- | --- | --- | --- | --- | --- |
+| HarvestbrideMilkmaid | harvestbride-wave2 (D) | Farmland | 1 | 85 | straw hat with a red ribbon over a tiered field-green bell, a true cone from the side |
+| HarvestbrideApron | harvestbride-wave2 (B) | Farmland | 2 | 80 | wheat-gold apron skirt flaring from the waist, the warmest country colour |
+| HarvestbrideWheatcrown | harvestbride-wave2 (F) | Farmland | 3 | 87 | tall wheat-sheaf crown over a parted gold skirt |
+<!-- wave2-heartland-end -->
+
 ## Porting notes
 
 1. **Apply:** from a swarm-lab clone, onto a branch from arpg-game main:

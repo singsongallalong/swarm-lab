@@ -1,0 +1,21 @@
+{
+  "skill": "Harvestbride",
+  "look": "HarvestbrideCirclet,HarvestbrideBodice,HarvestbrideSleeves,HarvestbrideHem",
+  "rows_added": [
+    "HarvestbrideCirclet",
+    "HarvestbrideBodice",
+    "HarvestbrideSleeves",
+    "HarvestbrideHem"
+  ],
+  "intent": "A light country wedding gown in wheat gold and cream linen, with a full linen apron carrying a green heraldic stripe, a fitted dark walnut bodice, pale sleeves flaring only at the forearm and a fanned wheat crown; from the high camera it reads as a warm gold bell under a pale apron with a dark fitted top.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered or wedge skirt panel that widens toward the hem, so the bell grows smoothly in depth as well as width; boxes on two rigid leg panels only step outward.",
+    "A gold cloth colour for large surfaces that stays warm under the blue night fill; the hand-mixed wheat gold can drift khaki under the mood preset."
+  ]
+}

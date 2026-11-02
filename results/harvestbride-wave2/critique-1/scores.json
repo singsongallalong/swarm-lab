@@ -1,0 +1,22 @@
+{
+  "A": {"reads": 4.5, "elegance": 4.5, "skirt": 3.5, "parts": 5.5, "total": 4.45,
+        "why": "Hearth-red tube with a green apron, broad block sleeves and a boxy unflared skirt; from above it reads close to the studded family.",
+        "fix": "Bell the skirt out from the hip in widening tiers and slim the sleeves to the arm."},
+  "B": {"reads": 5.0, "elegance": 5.5, "skirt": 4.5, "parts": 6.0, "total": 5.2,
+        "why": "Clear, quiet linen bride gown that stands out at night, but the giant pale block sleeves dominate and the all-linen palette reads as the Linen family.",
+        "fix": "Fit the sleeves close to the arm and bring wheat-gold or field green into a skirt that widens from the hip."},
+  "C": {"reads": 3.5, "elegance": 4.0, "skirt": 3.0, "parts": 4.5, "total": 3.7,
+        "why": "Almost all dark walnut with tiered pauldron-like sleeves and a split short skirt; from above it reads as lamellar armour and vanishes into the night.",
+        "fix": "Make the skirt a single light wheat or linen bell to the ground and replace the stacked sleeve blocks with slim sleeves."},
+  "D": {"reads": 7.0, "elegance": 6.5, "skirt": 6.5, "parts": 6.5, "total": 6.68,
+        "why": "The straw hat and tiered green bell skirt with a linen apron read instantly as a farm girl's gown and a family of its own, though the sleeves are still blocks.",
+        "fix": "Slim the grey-walnut sleeves to the arm and lighten one skirt tier or the hem so the bell stays visible at night."},
+  "E": {"reads": 6.5, "elegance": 4.5, "skirt": 6.0, "parts": 5.0, "total": 5.58,
+        "why": "Boldest flare and the most distinct family, but the high green sleeve blocks give broad shoulders and the slab tiers read as a haystack ziggurat with a kettle-hook hat.",
+        "fix": "Slim the sleeves inside the shoulder line, merge the skirt into fewer smoother tiers and replace the hooked kerchief with a soft bonnet."},
+  "F": {"reads": 6.0, "elegance": 6.5, "skirt": 4.5, "parts": 5.5, "total": 5.78,
+        "why": "The palette and wheat wreath match the brief best, and the split wheat-gold overskirt is pretty, but bright block sleeves make it top-heavy and the skirt hangs straight.",
+        "fix": "Slim the linen sleeves and flare both skirt layers out from the hip."},
+  "ranking": ["D", "F", "E", "B", "A", "C"],
+  "notes": "No candidate fully meets the wave-2 sleeve brief: every set still uses shoulder-width block sleeves. D wins on its outline (the straw hat and tiered bell) and its zone identity. F has the best palette and headpiece but no flare. E has the flare but broad shoulders and clumsy tiers. Best next step: D's silhouette with F's wreath-and-wheat palette and slim sleeves. Judged from the sheet renders only, at 2x crops."
+}

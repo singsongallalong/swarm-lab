@@ -1,0 +1,16 @@
+{
+  "skill": "Harvestbride",
+  "look": "HarvestbrideHelm,HarvestbrideDress,HarvestbrideSleeves,HarvestbrideHem",
+  "rows_added": ["HarvestbrideHelm", "HarvestbrideDress", "HarvestbrideSleeves", "HarvestbrideHem"],
+  "intent": "A farm-girl harvest-festival gown of apple-red bodice and skirt stepping out in four widening tiers to a pale linen flounce, with a widening green pocketed apron, fitted linen sleeves and a tall wheat-banded kerchief, reading as a light-crowned bell from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A straw or wicker material for the basket and wheat ears; Fabric and Leather are the closest the palette allows.",
+    "An apple-red cloth colour in Kit.colors, between oxblood and rust, so farmland gowns can share one tone."
+  ]
+}

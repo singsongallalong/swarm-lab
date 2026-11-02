@@ -1,0 +1,22 @@
+{
+  "run": "harvestbride-wave2",
+  "letter": "D",
+  "set": "HarvestbrideMilkmaid",
+  "looks": [
+    "HarvestbrideMilkmaidDress",
+    "HarvestbrideMilkmaidHelm",
+    "HarvestbrideMilkmaidHem",
+    "HarvestbrideMilkmaidSleeves"
+  ],
+  "original_looks": [
+    "HarvestbrideDress",
+    "HarvestbrideHelm",
+    "HarvestbrideHem",
+    "HarvestbrideSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A milkmaid's harvest-festival gown in lifted field green with a warm linen blouse, a short shoulder puff over a slim sleeve and a full forearm cuff, a wide tiered bell skirt with a lighter lowest tier, a wheat-gold hem and a pale apron, and a straw hat with a bright hearth-red ribbon.",
+  "reason": "Milkmaid: a straw hat with a red ribbon over a tiered field-green bell that is a true cone from the side; the clearest farm-festival read from the ARPG camera (second critic 6.85, first; first critic 6.68, first).",
+  "first_fix": "Slim the broad grey banded sleeves to the arm, and lighten the tier edges so the dark green bell does not vanish at night.",
+  "parts": 85
+}

@@ -1,0 +1,242 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..4d3b35c 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -12,6 +12,10 @@ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+ local FenscaleJack = require("./armourLooks/FenscaleJack")
+ local FenscaleWaders = require("./armourLooks/FenscaleWaders")
++local HarvestbrideDress = require("./armourLooks/HarvestbrideDress")
++local HarvestbrideHelm = require("./armourLooks/HarvestbrideHelm")
++local HarvestbrideHem = require("./armourLooks/HarvestbrideHem")
++local HarvestbrideSleeves = require("./armourLooks/HarvestbrideSleeves")
+ local IronCap = require("./armourLooks/IronCap")
+ local IronGauntlets = require("./armourLooks/IronGauntlets")
+ local IronGreaves = require("./armourLooks/IronGreaves")
+@@ -41,6 +45,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	FenscaleHood = FenscaleHood,
+ 	FenscaleJack = FenscaleJack,
+ 	FenscaleWaders = FenscaleWaders,
++	HarvestbrideDress = HarvestbrideDress,
++	HarvestbrideHelm = HarvestbrideHelm,
++	HarvestbrideHem = HarvestbrideHem,
++	HarvestbrideSleeves = HarvestbrideSleeves,
+ 	IronCap = IronCap,
+ 	IronGauntlets = IronGauntlets,
+ 	IronGreaves = IronGreaves,
+diff --git a/src/shared/data/armourLooks/HarvestbrideDress.luau b/src/shared/data/armourLooks/HarvestbrideDress.luau
+new file mode 100644
+index 0000000..2491bf9
+--- /dev/null
++++ b/src/shared/data/armourLooks/HarvestbrideDress.luau
+@@ -0,0 +1,71 @@
++--!strict
++-- The harvest bride's dress: the chest of a country wedding gown. An apple-red
++-- bodice fitted over a stepped dark field-green apron bib, held by two green
++-- straps and edged in wheat gold, with a laced green back. The waist is the
++-- narrowest point: a red waistband under a dark walnut belt with a brass-hued
++-- buckle, and the apron's bow tied just off centre at the back. Below it the
++-- skirt steps out twice on the thighs, the apron widening with it, and a little
++-- walnut basket of apples hangs at the right hip.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local apple = { 122, 58, 48 }
++local appleDeep = { 96, 44, 38 }
++local green = { 74, 86, 60 }
++local greenDeep = { 56, 66, 46 }
++local wheat = { 150, 124, 72 }
++local wheatPale = { 176, 150, 98 }
++local linen = { 146, 136, 114 }
++local walnut = { 70, 52, 40 }
++local basket = { 92, 68, 48 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "HarvestbrideDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice, and the apron's bib stepped narrower toward the neck.
++		Kit.box("UpperTorso", { 2.08, 1.64, 1.08 }, { 0, -0.01, 0 }, "Fabric", apple),
++		Kit.box("UpperTorso", { 1.2, 0.56, 0.06 }, { 0, -0.505, -0.58 }, "Fabric", green),
++		Kit.box("UpperTorso", { 0.92, 0.6, 0.06 }, { 0, 0.075, -0.585 }, "Fabric", green),
++		Kit.box("UpperTorso", { 0.94, 0.08, 0.07 }, { 0, 0.375, -0.59 }, "Fabric", wheat),
++		-- The apron's two straps to the shoulders, and a pale linen neckline.
++		Kit.box("UpperTorso", { 0.13, 0.46, 0.08 }, { 0.33, 0.57, -0.59 }, "Fabric", green, { 0, 0, 5 }),
++		Kit.box("UpperTorso", { 0.13, 0.46, 0.08 }, { -0.33, 0.57, -0.59 }, "Fabric", green, { 0, 0, -5 }),
++		Kit.box("UpperTorso", { 1, 0.1, 0.08 }, { 0, 0.74, -0.56 }, "Fabric", linen),
++		-- The laced green panel down the back, three bands of wheat-gold lace.
++		Kit.box("UpperTorso", { 0.62, 1, 0.06 }, { 0, -0.18, 0.575 }, "Fabric", green),
++		Kit.box("UpperTorso", { 0.54, 0.05, 0.04 }, { 0, 0.17, 0.62 }, "Fabric", wheat, { 0, 0, 24 }),
++		Kit.box("UpperTorso", { 0.54, 0.05, 0.04 }, { 0, 0, 0.62 }, "Fabric", wheat, { 0, 0, -24 }),
++		Kit.box("UpperTorso", { 0.54, 0.05, 0.04 }, { 0, -0.17, 0.62 }, "Fabric", wheat, { 0, 0, 24 }),
++		-- The waist: a narrower band, a walnut belt and its buckle.
++		Kit.box("LowerTorso", { 2.02, 0.39, 1.02 }, { 0, 0.005, 0 }, "Fabric", appleDeep),
++		Kit.box("LowerTorso", { 2.04, 0.12, 1.04 }, { 0, 0.04, 0 }, "Leather", walnut),
++		Kit.box("LowerTorso", { 0.2, 0.16, 0.06 }, { 0, 0.04, -0.545 }, "Metal", wheat),
++		-- The apron's bow at the back, a little off centre.
++		Kit.box("LowerTorso", { 0.32, 0.18, 0.09 }, { 0.18, 0.08, 0.55 }, "Fabric", wheat, { 0, 0, 20 }),
++		Kit.box("LowerTorso", { 0.32, 0.18, 0.09 }, { -0.18, 0.08, 0.55 }, "Fabric", wheat, { 0, 0, -20 }),
++		Kit.box("LowerTorso", { 0.16, 0.16, 0.12 }, { 0.02, 0.08, 0.585 }, "Fabric", wheatPale),
++		-- Slim linen upper sleeves, fitted to the arm.
++		Kit.box("UpperArm", { 1.04, 1.2, 1.04 }, { 0, 0, 0 }, "Fabric", linen),
++		-- The skirt's first step at the hip, and the second out below it.
++		Kit.box("UpperLeg", { 1.1, 0.55, 0.08 }, { 0.05, 0.475, -0.56 }, "Fabric", apple, { 4, 0, 0 }),
++		Kit.box("UpperLeg", { 1.1, 0.55, 0.08 }, { 0.05, 0.475, 0.56 }, "Fabric", apple, { -4, 0, 0 }),
++		Kit.box("UpperLeg", { 0.08, 0.55, 1.08 }, { 0.56, 0.475, 0 }, "Fabric", apple),
++		Kit.box("UpperLeg", { 1.2, 0.65, 0.08 }, { 0.1, -0.125, -0.6 }, "Fabric", apple, { 4, 0, 0 }),
++		Kit.box("UpperLeg", { 1.2, 0.65, 0.08 }, { 0.1, -0.125, 0.6 }, "Fabric", apple, { -4, 0, 0 }),
++		Kit.box("UpperLeg", { 0.08, 0.65, 1.24 }, { 0.66, -0.125, 0 }, "Fabric", apple),
++		-- The apron's front, widening with each step, with a deep pocket low on each thigh.
++		Kit.box("UpperLeg", { 0.75, 0.55, 0.06 }, { -0.125, 0.475, -0.63 }, "Fabric", green, { 4, 0, 0 }),
++		Kit.box("UpperLeg", { 0.95, 0.7, 0.06 }, { -0.025, -0.13, -0.67 }, "Fabric", green, { 4, 0, 0 }),
++		Kit.box("UpperLeg", { 0.32, 0.24, 0.05 }, { -0.14, -0.13, -0.72 }, "Fabric", greenDeep, { 4, 0, 0 }),
++		-- The bow's tails, hanging over the back of the skirt.
++		Kit.box("UpperLeg", { 0.16, 0.7, 0.05 }, { -0.35, 0.35, 0.64 }, "Fabric", wheat, { 5, 0, -3 }),
++		-- A little walnut basket of apples at the right hip, hung at the back.
++		Kit.box("UpperLeg", { 0.4, 0.46, 0.3 }, { 0.38, 0.08, 0.66 }, "Leather", basket, nil, "Right"),
++		Kit.box("UpperLeg", { 0.42, 0.1, 0.32 }, { 0.38, 0.14, 0.66 }, "Fabric", wheat, nil, "Right"),
++		Kit.box("UpperLeg", { 0.14, 0.14, 0.14 }, { 0.33, 0.37, 0.63 }, "Fabric", apple, nil, "Right"),
++		Kit.box("UpperLeg", { 0.14, 0.14, 0.14 }, { 0.46, 0.37, 0.7 }, "Fabric", apple, nil, "Right"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/HarvestbrideHelm.luau b/src/shared/data/armourLooks/HarvestbrideHelm.luau
+new file mode 100644
+index 0000000..0238041
+--- /dev/null
++++ b/src/shared/data/armourLooks/HarvestbrideHelm.luau
+@@ -0,0 +1,41 @@
++--!strict
++-- The harvest bride's helm: a soft linen kerchief drawn over the hair, its crown
++-- larger and folded high at the back so it reads pale from the high camera, a
++-- broad wheat-gold band round it and a fan of three wheat ears rising behind
++-- the right. A red bow ties it at the nape. Height and a light crown, never
++-- width at the ears.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local apple = { 122, 58, 48 }
++local appleDeep = { 96, 44, 38 }
++local wheat = { 150, 124, 72 }
++local wheatPale = { 176, 150, 98 }
++local linen = { 146, 136, 114 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "HarvestbrideHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The kerchief's crown, its folded peak behind, and the drape down the back.
++		Kit.box("Head", { 1.4, 0.26, 1.4 }, { 0, 0.53, 0 }, "Fabric", linen),
++		Kit.box("Head", { 0.95, 0.36, 0.32 }, { 0, 0.71, 0.3 }, "Fabric", linen, { 12, 0, 0 }),
++		Kit.box("Head", { 1.2, 0.6, 0.14 }, { 0, 0.18, 0.6 }, "Fabric", linen),
++		-- The broad wheat-gold band: a pale ring from above, not a red one.
++		Kit.box("Head", { 1.44, 0.1, 1.44 }, { 0, 0.45, 0 }, "Fabric", wheat),
++		-- The red bow at the nape, tied a little off centre.
++		Kit.box("Head", { 0.3, 0.18, 0.09 }, { 0.17, 0.27, 0.69 }, "Fabric", apple, { 0, 0, 18 }),
++		Kit.box("Head", { 0.3, 0.18, 0.09 }, { -0.17, 0.27, 0.69 }, "Fabric", apple, { 0, 0, -18 }),
++		Kit.box("Head", { 0.14, 0.16, 0.11 }, { 0.02, 0.27, 0.71 }, "Fabric", appleDeep),
++		-- A fan of three wheat ears behind the right of the crown, standing up and back.
++		Kit.box("Head", { 0.06, 0.4, 0.06 }, { 0.34, 0.8, 0.22 }, "Fabric", wheat, { 0, 0, -16 }),
++		Kit.box("Head", { 0.16, 0.28, 0.14 }, { 0.42, 1.05, 0.22 }, "Fabric", wheatPale, { 0, 0, -16 }),
++		Kit.box("Head", { 0.06, 0.42, 0.06 }, { 0.16, 0.84, 0.33 }, "Fabric", wheat, { 0, 0, -8 }),
++		Kit.box("Head", { 0.15, 0.28, 0.13 }, { 0.2, 1.1, 0.33 }, "Fabric", wheat, { 0, 0, -8 }),
++		Kit.box("Head", { 0.06, 0.34, 0.06 }, { -0.02, 0.8, 0.4 }, "Fabric", wheat, { 0, 0, 8 }),
++		Kit.box("Head", { 0.14, 0.26, 0.12 }, { -0.05, 1.02, 0.4 }, "Fabric", wheatPale, { 0, 0, 8 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/HarvestbrideHem.luau b/src/shared/data/armourLooks/HarvestbrideHem.luau
+new file mode 100644
+index 0000000..21586fc
+--- /dev/null
++++ b/src/shared/data/armourLooks/HarvestbrideHem.luau
+@@ -0,0 +1,38 @@
++--!strict
++-- The harvest bride's hem: the gown's skirt below the knee. A red tier steps
++-- out from the thigh's, then the pale linen petticoat flounce, the widest and
++-- lowest tier, so the skirt's lowest edge is its widest point. The green apron
++-- reaches just above the flounce with another pocket row, a linen mend sits on
++-- the back, and the shoes are dark walnut.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local apple = { 122, 58, 48 }
++local green = { 74, 86, 60 }
++local greenDeep = { 56, 66, 46 }
++local linen = { 146, 136, 114 }
++local walnut = { 70, 52, 40 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "HarvestbrideHem",
++	slot = "Boots",
++	parts = {
++		-- The red tier below the knee, stepped out from the thigh's tier.
++		Kit.box("LowerLeg", { 1.4, 0.85, 0.08 }, { 0.2, 0.325, -0.68 }, "Fabric", apple, { 4, 0, 0 }),
++		Kit.box("LowerLeg", { 1.4, 0.85, 0.08 }, { 0.2, 0.325, 0.68 }, "Fabric", apple, { -4, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 0.85, 1.4 }, { 0.86, 0.325, 0 }, "Fabric", apple),
++		-- The pale linen petticoat flounce: the widest tier, at the lowest edge.
++		Kit.box("LowerLeg", { 1.6, 0.45, 0.08 }, { 0.3, -0.325, -0.76 }, "Fabric", linen, { 4, 0, 0 }),
++		Kit.box("LowerLeg", { 1.6, 0.45, 0.08 }, { 0.3, -0.325, 0.76 }, "Fabric", linen, { -4, 0, 0 }),
++		Kit.box("LowerLeg", { 0.08, 0.45, 1.56 }, { 1.06, -0.325, 0 }, "Fabric", linen),
++		-- The apron's lower reach, ending above the flounce, and its low pocket row.
++		Kit.box("LowerLeg", { 1.15, 0.8, 0.06 }, { 0.075, 0.35, -0.75 }, "Fabric", green, { 4, 0, 0 }),
++		Kit.box("LowerLeg", { 0.34, 0.26, 0.05 }, { -0.16, 0.2, -0.8 }, "Fabric", greenDeep, { 4, 0, 0 }),
++		-- A pale linen mend, hand-sewn crooked, on the back of the skirt.
++		Kit.box("LowerLeg", { 0.3, 0.22, 0.03 }, { 0.42, 0.05, 0.735 }, "Fabric", linen, { 0, 0, 4 }, "Right"),
++		-- A plain dark walnut shoe.
++		Kit.box("Foot", { 1.08, 0.34, 1.16 }, { 0, 0.02, -0.04 }, "Leather", walnut),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/HarvestbrideSleeves.luau b/src/shared/data/armourLooks/HarvestbrideSleeves.luau
+new file mode 100644
+index 0000000..e2dbd08
+--- /dev/null
++++ b/src/shared/data/armourLooks/HarvestbrideSleeves.luau
+@@ -0,0 +1,27 @@
++--!strict
++-- The harvest bride's sleeves: pale linen from shoulder to wrist, fitted to the
++-- arm, gathered into a wide bell cuff at the wrist with a hearth-red ribbon at
++-- its edge, and a close walnut glove. All the volume is at the forearm; the
++-- shoulder stays the width of the arm.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local apple = { 122, 58, 48 }
++local linen = { 146, 136, 114 }
++local walnut = { 70, 52, 40 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "HarvestbrideSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The fitted linen lower sleeve.
++		Kit.box("LowerArm", { 1.04, 1.2, 1.04 }, { 0, 0, 0 }, "Fabric", linen),
++		-- The bell cuff, and the red ribbon at its edge.
++		Kit.box("LowerArm", { 1.36, 0.42, 1.36 }, { 0, -0.42, 0 }, "Fabric", linen),
++		Kit.box("LowerArm", { 1.4, 0.1, 1.4 }, { 0, -0.62, 0 }, "Fabric", apple),
++		-- The glove.
++		Kit.box("Hand", { 1.06, 0.34, 1.06 }, { 0, 0, 0 }, "Leather", walnut),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..eec6677 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,10 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:HarvestbrideHelm"] = row("A pale linen kerchief with a wheat-gold band, wheat ears and a red nape bow."),
++	["armour:HarvestbrideDress"] = row("An apple-red bodice over a stepped green apron, its skirt flaring in tiers."),
++	["armour:HarvestbrideSleeves"] = row("Pale linen sleeves belling into wide cuffs ribboned in hearth red."),
++	["armour:HarvestbrideHem"] = row("A stepped red skirt ending in a wide pale linen petticoat flounce."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),
