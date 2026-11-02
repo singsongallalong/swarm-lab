@@ -1,0 +1,10 @@
+{
+  "A": {"reads": 8, "fantasy": 8, "fit": 7, "parts": 7, "why": "Gold spiked crown plus flared black pauldrons with molten strips: the clearest regal silhouette, reads from the ARPG camera, palette right.", "fix": "Thin the crown to fewer tines with a molten gem at its base; add a hip plate over the olive waist gap; widen the chest crack.", "total": 7.65},
+  "B": {"reads": 7, "fantasy": 7, "fit": 7, "parts": 7, "why": "Molten plume and chest core gem, restrained Neon, but the outline is a black box from above.", "fix": "Taller swept flame crest; seat the gem in a raised socket; hip plate; a seam on the back.", "total": 7.0},
+  "C": {"reads": 7.5, "fantasy": 8, "fit": 7, "parts": 7, "why": "Horned helm with glowing eyes and molten diamond heart; most distinctive outline from front and back, horns weaker from ARPG.", "fix": "Angle and thicken horns to read from above; frame the diamond; hip plate.", "total": 7.475},
+  "D": {"reads": 7.5, "fantasy": 7, "fit": 7, "parts": 6, "why": "Vent-post pauldrons read well from above and suit the zone, but Neon and gold are overspent.", "fix": "Cut Neon to vent caps and one seam; cut gold trim; fewer, bigger vents; hip plate.", "total": 7.025},
+  "E": {"reads": 6.5, "fantasy": 6.5, "fit": 7, "parts": 6.5, "why": "Thin gold spike crown vanishes from the high camera; orange pauldron strips dominate.", "fix": "Thicker, fewer crown spikes; tone pauldron strips; bigger chest crack; hip plate.", "total": 6.6},
+  "F": {"reads": 5.5, "fantasy": 5.5, "fit": 7, "parts": 6, "why": "No silhouette idea that reads from above; a dark blob with one chest crack.", "fix": "Commit to one silhouette idea; run the crack up through the helm; molten seams on pauldron tops.", "total": 5.875},
+  "ranking": ["A", "C", "D", "B", "E", "F"],
+  "notes": "All six share a waist gap where the olive avatar legs show between chest and boots; a hip plate fixes it on every set. A and C carry the strongest single ideas (crown, horns); C's horns need to survive the ARPG camera. D's vent posts are a good zone tie but overspend Neon."
+}

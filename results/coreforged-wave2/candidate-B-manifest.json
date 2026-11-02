@@ -1,0 +1,13 @@
+{
+  "skill": "Coreforged",
+  "look": "CoreforgedHelm,CoreforgedChest,CoreforgedGloves,CoreforgedBoots",
+  "rows_added": ["CoreforgedHelm", "CoreforgedChest", "CoreforgedGloves", "CoreforgedBoots"],
+  "intent": "A black basalt plate set banded in ember gold, with a molten heart, one bold crack splitting the chest and back, and a gold crown whose molten crest burns above narrow, tilted, gold-ridged pauldrons, reading as a crowned black-and-gold silhouette from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": ["More Neon allowance so the forearm and shin seams could burn too; three glow parts meant the gloves' and boots' cracks had to be painted ember."]
+}

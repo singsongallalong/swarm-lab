@@ -1,0 +1,21 @@
+{
+  "skill": "Coreforged",
+  "look": "CoreforgedHelm,CoreforgedChest,CoreforgedGloves,CoreforgedBoots",
+  "rows_added": [
+    "CoreforgedHelm",
+    "CoreforgedChest",
+    "CoreforgedGloves",
+    "CoreforgedBoots"
+  ],
+  "intent": "A black basalt plate set whose long gold-capped horns sweep wide as its single silhouette, with a burning ember core and molten seams carried from the chest over the gold-ridged pauldrons, reading at the high camera as a horned black-and-gold shape with hot orange lines.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A cone or tapered horn part: the long horns are straight boxes, and a taper would make them read as horns rather than swept posts.",
+    "A gold that still catches light under the mood preset: with environment specular off, the ember-gold trim can only be painted flat and reads bronze at distance."
+  ]
+}

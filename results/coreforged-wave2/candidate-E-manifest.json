@@ -1,0 +1,16 @@
+{
+  "skill": "Coreforged",
+  "look": "CoreforgedHelm,CoreforgedChest,CoreforgedGloves,CoreforgedBoots",
+  "rows_added": ["CoreforgedHelm", "CoreforgedChest", "CoreforgedGloves", "CoreforgedBoots"],
+  "intent": "A sleek basalt-black knight's plate under a three-point ember-gold crown with one great gem on the brow, its broad pauldrons raised into molten ridges, so the high camera reads black mass with two bold lines of fire across the shoulders, gold points above the head and a long gold-yoked, gold-hemmed cape.",
+  "renders": [
+    ".swarm/out/armour-set-r5.png",
+    ".swarm/out/armour-set-close-r5.png",
+    ".swarm/out/armour-set-fit-r5.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A cape that hangs and drifts from the shoulders: the chest slot stops at the thighs, so the cloak is rigid torso and thigh panels and splits with the legs.",
+    "Ember gold above the bible's 40% trim value: below it gold reads brown at the high camera, so most of the trim sits dull and a few brighter parts carry the shine."
+  ]
+}

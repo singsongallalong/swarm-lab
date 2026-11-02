@@ -1,0 +1,16 @@
+{
+  "skill": "Coreforged",
+  "look": "CoreforgedHelm,CoreforgedChest,CoreforgedGloves,CoreforgedBoots",
+  "rows_added": ["CoreforgedHelm", "CoreforgedChest", "CoreforgedGloves", "CoreforgedBoots"],
+  "intent": "Black basalt plate split by molten seams front, back and across both pauldron tops, under a tall gold-crowned helm whose vent chimney glows and gold-rimmed vent chimneys rise from the shoulders; at the high camera it reads as a black crown-and-gold silhouette with burning vents, apart from every other family.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A taller gold-edged standing gorget collar on the chest, cut to keep the set inside the part budget.",
+    "Pointed sabaton toes and heel spurs on the boots, cut to keep the set inside the part budget."
+  ]
+}

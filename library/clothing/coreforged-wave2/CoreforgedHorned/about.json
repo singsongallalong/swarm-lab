@@ -1,0 +1,23 @@
+{
+  "run": "coreforged-wave2",
+  "letter": "C",
+  "set": "CoreforgedHorned",
+  "looks": [
+    "CoreforgedHornedBoots",
+    "CoreforgedHornedChest",
+    "CoreforgedHornedGloves",
+    "CoreforgedHornedHelm"
+  ],
+  "original_looks": [
+    "CoreforgedBoots",
+    "CoreforgedChest",
+    "CoreforgedGloves",
+    "CoreforgedHelm"
+  ],
+  "pick_rank": 2,
+  "intent": "A black basalt plate set whose long gold-capped horns sweep wide as its single silhouette, with a burning ember core and molten seams carried from the chest over the gold-ridged pauldrons, reading at the high camera as a horned black-and-gold shape with hot orange lines.",
+  "reason": "Godforged: long gold-capped horns sweeping wide over glowing eye slits, a burning diamond heart on the chest and seams over gold-ridged pauldrons; the most distinctive outline front and back (second critic 7.475, second; first critic 7.0, third).",
+  "first_fix": "The horns weaken from the ARPG camera: angle and thicken them so they read from above, frame the diamond heart, add a hip plate.",
+  "parts": 64,
+  "epic": true
+}

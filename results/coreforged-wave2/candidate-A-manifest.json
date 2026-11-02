@@ -1,0 +1,21 @@
+{
+  "skill": "Coreforged",
+  "look": "CoreforgedCrown,CoreforgedCuirass,CoreforgedGauntlets,CoreforgedGreaves",
+  "rows_added": [
+    "CoreforgedCrown",
+    "CoreforgedCuirass",
+    "CoreforgedGauntlets",
+    "CoreforgedGreaves"
+  ],
+  "intent": "A basalt-black plate set with dim ember-gold trim and one bright gold crown point, wide molten seams across the tilted pauldron tops and down the breast, and a heavy black war-cape; from the high camera it reads as a black winged-shoulder silhouette cut by orange seams, apart from every other family.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A cape that hangs and swings from the shoulders; rigid parts only, so it is a back mantle and thigh tails.",
+    "An open circlet for the crown; a box band still reads as a solid cap from above even dimmed."
+  ]
+}

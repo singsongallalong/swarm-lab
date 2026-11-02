@@ -1,0 +1,23 @@
+{
+  "run": "coreforged-wave2",
+  "letter": "A",
+  "set": "CoreforgedKing",
+  "looks": [
+    "CoreforgedKingCrown",
+    "CoreforgedKingCuirass",
+    "CoreforgedKingGauntlets",
+    "CoreforgedKingGreaves"
+  ],
+  "original_looks": [
+    "CoreforgedCrown",
+    "CoreforgedCuirass",
+    "CoreforgedGauntlets",
+    "CoreforgedGreaves"
+  ],
+  "pick_rank": 1,
+  "intent": "A basalt-black plate set with dim ember-gold trim and one bright gold crown point, wide molten seams across the tilted pauldron tops and down the breast, and a heavy black war-cape; from the high camera it reads as a black winged-shoulder silhouette cut by orange seams, apart from every other family.",
+  "reason": "Core king: a gold spiked crown over flared black pauldrons cut by wide molten-orange seams, a cross crack on the breast and a heavy black war-cape; the clearest regal outline from the ARPG camera (second critic 7.65, first; first critic 7.35, second).",
+  "first_fix": "Thin the crown to fewer tines with a molten gem at its base, and cover the olive waist gap with a hip plate.",
+  "parts": 64,
+  "epic": true
+}

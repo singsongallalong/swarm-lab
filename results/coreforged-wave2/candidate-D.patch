@@ -1,0 +1,241 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..b37a7d4 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -7,6 +7,10 @@ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+ local Chainmail = require("./armourLooks/Chainmail")
++local CoreforgedBoots = require("./armourLooks/CoreforgedBoots")
++local CoreforgedChest = require("./armourLooks/CoreforgedChest")
++local CoreforgedGloves = require("./armourLooks/CoreforgedGloves")
++local CoreforgedHelm = require("./armourLooks/CoreforgedHelm")
+ local EmberTalisman = require("./armourLooks/EmberTalisman")
+ local FenscaleGrips = require("./armourLooks/FenscaleGrips")
+ local FenscaleHood = require("./armourLooks/FenscaleHood")
+@@ -36,6 +40,10 @@ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
+ 	Chainmail = Chainmail,
++	CoreforgedBoots = CoreforgedBoots,
++	CoreforgedChest = CoreforgedChest,
++	CoreforgedGloves = CoreforgedGloves,
++	CoreforgedHelm = CoreforgedHelm,
+ 	EmberTalisman = EmberTalisman,
+ 	FenscaleGrips = FenscaleGrips,
+ 	FenscaleHood = FenscaleHood,
+diff --git a/src/shared/data/armourLooks/CoreforgedBoots.luau b/src/shared/data/armourLooks/CoreforgedBoots.luau
+new file mode 100644
+index 0000000..d7dd7e7
+--- /dev/null
++++ b/src/shared/data/armourLooks/CoreforgedBoots.luau
+@@ -0,0 +1,37 @@
++--!strict
++-- The vent lord's greaves (Coreforged, the Aor'lan Core's epic plate): tall
++-- black basalt greaves with a raised shin plate, a gold band at the ankle and
++-- one gold knee horn on the right. A hot crack runs up the right shin plate,
++-- the only heat on the leg. At the high camera the gold knee and ankle bands
++-- break the black into a leg-shaped outline.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	basalt = { 27, 25, 30 },
++	basaltDark = { 15, 14, 18 },
++	basaltEdge = { 48, 44, 48 },
++	molten = { 255, 94, 26 },
++	emberGold = { 190, 136, 56 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CoreforgedBoots",
++	slot = "Boots",
++	parts = {
++		-- The greave, a knee cop and a raised shin plate.
++		Kit.box("LowerLeg", { 1.12, 1, 1.12 }, { 0, -0.06, 0 }, "Metal", c.basalt),
++		Kit.box("LowerLeg", { 1.2, 0.26, 1.2 }, { 0, 0.46, 0 }, "Metal", c.basaltDark),
++		Kit.box("LowerLeg", { 0.72, 0.6, 0.12 }, { 0, -0.02, -0.58 }, "Metal", c.basaltEdge),
++		-- One gold knee horn, on the right only.
++		Kit.box("LowerLeg", { 0.18, 0.34, 0.18 }, { 0.34, 0.68, -0.18 }, "Metal", c.emberGold, { 0, 0, -10 }, "Right"),
++		-- A hot crack up the right shin plate.
++		Kit.box("LowerLeg", { 0.07, 0.46, 0.08 }, { 0.16, -0.04, -0.65 }, "Metal", c.molten, { 0, 0, 8 }, "Right"),
++		-- A gold band at the ankle.
++		Kit.box("LowerLeg", { 1.16, 0.09, 1.16 }, { 0, -0.5, 0 }, "Metal", c.emberGold),
++		-- The plated sabaton.
++		Kit.box("Foot", { 1.1, 0.44, 1.16 }, { 0, 0, -0.04 }, "Metal", c.basaltDark),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CoreforgedChest.luau b/src/shared/data/armourLooks/CoreforgedChest.luau
+new file mode 100644
+index 0000000..e039962
+--- /dev/null
++++ b/src/shared/data/armourLooks/CoreforgedChest.luau
+@@ -0,0 +1,56 @@
++--!strict
++-- The vent lord's cuirass (Coreforged, the Aor'lan Core's epic plate): a
++-- broad black basalt cuirass whose two mismatched breastplates are split by a
++-- glowing seam, a gold gorget at the throat and tasset flaps below. Each arm
++-- is sleeved in black plate to a stepped pauldron carrying a tall vent
++-- chimney, its mouth hot inside a gold lip, and a molten seam across the
++-- shoulder top; a seam runs down each upper arm and one down the back beside
++-- the gold spine. At the high camera the chimneys flanking the helm and the
++-- gold trim carry it, with heat on every face.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	basalt = { 27, 25, 30 },
++	basaltDark = { 15, 14, 18 },
++	basaltEdge = { 48, 44, 48 },
++	molten = { 255, 94, 26 },
++	emberGold = { 190, 136, 56 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CoreforgedChest",
++	slot = "Chest",
++	parts = Kit.join({
++		Kit.flaps(0.58, "Metal", c.basalt),
++		{
++			-- The cuirass shell over the whole torso.
++			Kit.box("UpperTorso", { 2.08, 1.64, 1.08 }, { 0, 0, 0 }, "Metal", c.basalt),
++			-- Two basalt breastplates, mismatched and canted, split by the Core's seam.
++			Kit.box("UpperTorso", { 0.94, 1.18, 0.12 }, { 0.48, 0.08, -0.57 }, "Metal", c.basalt, { 0, 0, -3 }),
++			Kit.box("UpperTorso", { 0.96, 1.14, 0.12 }, { -0.47, 0.1, -0.57 }, "Metal", c.basalt, { 0, 0, 3 }),
++			Kit.box("UpperTorso", { 0.07, 1.06, 0.1 }, { 0.01, 0.04, -0.65 }, "Neon", c.molten, { 0, 0, 4 }),
++			-- A gold gorget at the throat and a gold spine down the back.
++			Kit.box("UpperTorso", { 1, 0.12, 0.14 }, { 0, 0.7, -0.56 }, "Metal", c.emberGold),
++			Kit.box("UpperTorso", { 0.18, 1.1, 0.1 }, { 0, 0.08, 0.56 }, "Metal", c.emberGold),
++			-- The Core splits the back too, just off the spine.
++			Kit.box("UpperTorso", { 0.07, 0.86, 0.1 }, { 0.34, 0.1, 0.56 }, "Neon", c.molten, { 0, 0, -6 }),
++			-- Black plate sleeves, under stepped pauldrons.
++			Kit.box("UpperArm", { 1.08, 1.2, 1.08 }, { 0, 0, 0 }, "Metal", c.basalt),
++			Kit.box("UpperArm", { 1.38, 0.52, 1.38 }, { 0.06, 0.44, 0 }, "Metal", c.basalt, { 0, 0, -10 }),
++			Kit.box("UpperArm", { 1.16, 0.16, 1.16 }, { 0.08, 0.72, 0 }, "Metal", c.basaltEdge, { 0, 0, -10 }),
++			Kit.box("UpperArm", { 0.08, 0.06, 0.72 }, { 0.515, 0.745, 0 }, "Neon", c.molten, { 0, 0, -10 }),
++			-- Each pauldron carries a tall vent chimney, hot at the throat.
++			Kit.box("UpperArm", { 0.34, 0.72, 0.34 }, { 0.24, 1.04, 0.02 }, "Metal", c.basaltDark),
++			Kit.box("UpperArm", { 0.48, 0.1, 0.48 }, { 0.24, 1.44, 0.02 }, "Metal", c.emberGold),
++			Kit.box("UpperArm", { 0.26, 0.06, 0.26 }, { 0.24, 1.5, 0.02 }, "Metal", c.molten),
++			-- The seam runs on down each upper arm, hot in the dark.
++			Kit.box("UpperArm", { 0.08, 0.5, 0.08 }, { 0.53, -0.08, 0 }, "Neon", c.molten),
++			-- A broad belt over the whole waist, and its buckle.
++			Kit.box("LowerTorso", { 2.16, 0.42, 1.14 }, { 0, 0, 0 }, "Metal", c.basaltDark),
++			Kit.box("LowerTorso", { 0.34, 0.22, 0.1 }, { 0, 0.06, -0.6 }, "Metal", c.emberGold),
++		},
++	}),
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CoreforgedGloves.luau b/src/shared/data/armourLooks/CoreforgedGloves.luau
+new file mode 100644
+index 0000000..bf78c07
+--- /dev/null
++++ b/src/shared/data/armourLooks/CoreforgedGloves.luau
+@@ -0,0 +1,37 @@
++--!strict
++-- The vent lord's gauntlets (Coreforged, the Aor'lan Core's epic plate): close
++-- black plate bracers flaring to an elbow cuff, a molten seam down the outside
++-- of each forearm and a plated hand with a gold knuckle ridge. The right cuff
++-- is gold, the left scuffed bare, so the pair never reads stamped. At the high
++-- camera the forearm seam and the gold cuff are the line; the plate is
++-- near-black around them.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	basalt = { 27, 25, 30 },
++	basaltDark = { 15, 14, 18 },
++	basaltEdge = { 48, 44, 48 },
++	molten = { 255, 94, 26 },
++	emberGold = { 190, 136, 56 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CoreforgedGloves",
++	slot = "Gloves",
++	parts = {
++		-- A black plate bracer up the forearm, flaring to the elbow.
++		Kit.box("LowerArm", { 1.14, 0.92, 1.14 }, { 0, -0.02, 0 }, "Metal", c.basalt),
++		Kit.box("LowerArm", { 1.34, 0.24, 1.34 }, { 0, 0.38, 0 }, "Metal", c.basaltDark),
++		-- One gold cuff, one scuffed: the pair is not a matched cast.
++		Kit.box("LowerArm", { 1.38, 0.08, 1.38 }, { 0, 0.52, 0 }, "Metal", c.emberGold, nil, "Right"),
++		Kit.box("LowerArm", { 1.38, 0.08, 1.38 }, { 0, 0.52, 0 }, "Metal", c.basaltEdge, nil, "Left"),
++		-- The molten seam down the outside of each forearm.
++		Kit.box("LowerArm", { 0.08, 0.68, 0.08 }, { 0.55, -0.14, 0 }, "Neon", c.molten),
++		-- A plated hand with a gold knuckle ridge.
++		Kit.box("Hand", { 1.1, 0.5, 1.14 }, { 0, 0, -0.02 }, "Metal", c.basaltDark),
++		Kit.box("Hand", { 0.9, 0.12, 0.16 }, { 0, 0.17, -0.56 }, "Metal", c.emberGold),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/CoreforgedHelm.luau b/src/shared/data/armourLooks/CoreforgedHelm.luau
+new file mode 100644
+index 0000000..3561fe4
+--- /dev/null
++++ b/src/shared/data/armourLooks/CoreforgedHelm.luau
+@@ -0,0 +1,44 @@
++--!strict
++-- The vent crown (Coreforged, the Aor'lan Core's epic plate): a tall close
++-- helm of black basalt split by a molten visor slit. Above the gold circlet
++-- the crown stacks into a vent chimney, its hot mouth ringed in gold, and one
++-- gold crown spike leans off the right so the crown never reads stamped. At
++-- the high camera the tall stack and the gold band are the outline; up close
++-- the visor burns behind a gold nasal.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local c = {
++	basalt = { 27, 25, 30 },
++	basaltDark = { 15, 14, 18 },
++	molten = { 255, 94, 26 },
++	emberGold = { 190, 136, 56 },
++}
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "CoreforgedHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The bowl: a close basalt shell over the skull.
++		Kit.box("Head", { 1.34, 0.72, 1.34 }, { 0, 0.28, 0 }, "Metal", c.basalt),
++		-- A hammered jaw guard, split by a gold nasal ridge.
++		Kit.box("Head", { 1.02, 0.52, 0.32 }, { 0, -0.2, -0.53 }, "Metal", c.basaltDark),
++		Kit.box("Head", { 0.16, 0.56, 0.12 }, { 0, -0.14, -0.7 }, "Metal", c.emberGold),
++		-- The molten gaze behind the nasal.
++		Kit.box("Head", { 0.7, 0.09, 0.08 }, { 0, 0.22, -0.68 }, "Neon", c.molten),
++		-- The gold circlet and the stepped crown above it.
++		Kit.box("Head", { 1.42, 0.14, 1.42 }, { 0, 0.67, 0 }, "Metal", c.emberGold),
++		Kit.box("Head", { 1.02, 0.24, 1.02 }, { 0, 0.83, 0 }, "Metal", c.basaltDark),
++		-- The vent stack, capped in gold, its mouth a hot square from above.
++		Kit.box("Head", { 0.44, 0.5, 0.44 }, { 0, 1.05, 0 }, "Metal", c.basalt),
++		Kit.box("Head", { 0.6, 0.12, 0.6 }, { 0, 1.36, 0 }, "Metal", c.emberGold),
++		Kit.box("Head", { 0.34, 0.06, 0.34 }, { 0, 1.43, 0 }, "Metal", c.molten),
++		-- One gold crown spike, leaned, so the crown never reads stamped.
++		Kit.box("Head", { 0.16, 0.46, 0.16 }, { 0.52, 0.9, 0.06 }, "Metal", c.emberGold, { 0, 0, -10 }),
++		-- A plate tail over the back of the neck.
++		Kit.box("Head", { 1.3, 0.4, 0.46 }, { 0, -0.28, 0.46 }, "Metal", c.basaltDark),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..8d25091 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,12 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:CoreforgedHelm"] = row(
++		"A tall black basalt helm crowned with a chimney, one gold spike and a molten visor."
++	),
++	["armour:CoreforgedChest"] = row("Black basalt plate split by a glowing seam, vent chimneys on both pauldrons."),
++	["armour:CoreforgedGloves"] = row("Black plate bracers with a molten seam up each forearm and a gold right cuff."),
++	["armour:CoreforgedBoots"] = row("Black greaves, a gold knee horn and ankle band, a hot crack up the right shin."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

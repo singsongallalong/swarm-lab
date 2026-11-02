@@ -1,0 +1,23 @@
+{
+  "run": "coreforged-wave2",
+  "letter": "D",
+  "set": "CoreforgedVent",
+  "looks": [
+    "CoreforgedVentBoots",
+    "CoreforgedVentChest",
+    "CoreforgedVentGloves",
+    "CoreforgedVentHelm"
+  ],
+  "original_looks": [
+    "CoreforgedBoots",
+    "CoreforgedChest",
+    "CoreforgedGloves",
+    "CoreforgedHelm"
+  ],
+  "pick_rank": 3,
+  "intent": "Black basalt plate split by molten seams front, back and across both pauldron tops, under a tall gold-crowned helm whose vent chimney glows and gold-rimmed vent chimneys rise from the shoulders; at the high camera it reads as a black crown-and-gold silhouette with burning vents, apart from every other family.",
+  "reason": "Vent lord: a tall gold-crowned helm with a glowing vent chimney and gold-rimmed vent chimneys rising from the shoulders, molten seams front and back; reads from above and fits the Core (second critic 7.025, third; first critic 7.65, first).",
+  "first_fix": "Too much Neon and gold for an aura to sit on: keep Neon to the vent caps and one seam, cut the gold trim, fewer and bigger vents.",
+  "parts": 64,
+  "epic": true
+}

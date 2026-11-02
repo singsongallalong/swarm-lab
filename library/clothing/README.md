@@ -88,8 +88,8 @@ Wardrobe wave 2 for Aor'lan (Rhodri, arpg-game R039): two gown runs (`feminine` 
 sleeves and a flared skirt asked for) and two armour runs, three picks from each, all from
 swarm-lab briefs at `57474d7`. Each run had two render-only critic passes with one rework
 between them; run evidence is in `results/<run>/`. Same files per set as above. Part counts are
-`ArmourLook.partCount` on arpg-game main `20eaa41`, where every patch applies and `Catalog`,
-`ContentCompleteness` and `DressBudget` pass. **EPIC** sets will get a worn particle effect in
+`ArmourLook.partCount` on arpg-game main `a45a052` (2026-11-02), where all twelve apply together
+(each also applies alone) and `Catalog`, `ContentCompleteness` and `DressBudget` pass. **EPIC** sets will get a worn particle effect in
 the game later.
 
 | Set | Run | Zone | Pick | Parts | In short |
@@ -103,7 +103,14 @@ the game later.
 | BasaltplateTerrace | basaltplate-wave2 (B) | Aor'lan Mountain | 1 | 64 | shoulders stacked into stepped basalt ledges with red seams, a chest crack, a low sealed helm with a red slit |
 | BasaltplateCrag | basaltplate-wave2 (C) | Aor'lan Mountain | 2 | 60 | one big raw basalt crag breaking out of the right pauldron: a mountain outline |
 | BasaltplateCairn | basaltplate-wave2 (D) | Aor'lan Mountain | 3 | 59 | clean black slab plate, red undersides on sloped pauldrons, a cairn-stone helm |
-<!-- wave2-aorlan-end -->
+| CoreforgedKing **EPIC** | coreforged-wave2 (A) | Aor'lan Core | 1 | 64 | gold spiked crown over flared black pauldrons cut by molten seams, a cross crack, a black war-cape |
+| CoreforgedHorned **EPIC** | coreforged-wave2 (C) | Aor'lan Core | 2 | 64 | long gold-capped horns, glowing eye slits, a burning diamond heart on the chest |
+| CoreforgedVent **EPIC** | coreforged-wave2 (D) | Aor'lan Core | 3 | 64 | gold-crowned helm with a glowing chimney, vent chimneys rising from the shoulders; heavy on Neon |
+
+The gowns (Cinderveil, Cliffwind) were made under the raised 100-part budget; the armour sets
+fit the 64-part one. No gown take made slim sleeves despite the brief: the first fix for most
+of them is still narrowing the sleeves. CoreforgedKing's looks keep its worker's slot names
+(`CoreforgedKingCrown`, `...Cuirass`, `...Gauntlets`, `...Greaves`).
 
 ## Wave 2: Heartland (2026-11-02)
 

@@ -1,0 +1,14 @@
+{
+  "picked": ["A", "C", "D"],
+  "reasons": {
+    "A": "Core king: a gold spiked crown over flared black pauldrons cut by wide molten-orange seams, a cross crack on the breast and a heavy black war-cape; the clearest regal outline from the ARPG camera (second critic 7.65, first; first critic 7.35, second).",
+    "C": "Godforged: long gold-capped horns sweeping wide over glowing eye slits, a burning diamond heart on the chest and seams over gold-ridged pauldrons; the most distinctive outline front and back (second critic 7.475, second; first critic 7.0, third).",
+    "D": "Vent lord: a tall gold-crowned helm with a glowing vent chimney and gold-rimmed vent chimneys rising from the shoulders, molten seams front and back; reads from above and fits the Core (second critic 7.025, third; first critic 7.65, first)."
+  },
+  "fixes": {
+    "A": "Thin the crown to fewer tines with a molten gem at its base, and cover the olive waist gap with a hip plate.",
+    "C": "The horns weaken from the ARPG camera: angle and thicken them so they read from above, frame the diamond heart, add a hip plate.",
+    "D": "Too much Neon and gold for an aura to sit on: keep Neon to the vent caps and one seam, cut the gold trim, fewer and bigger vents."
+  },
+  "notes": "6 of 6 survived the draft and the rework with no resume. EPIC set: the same three led both critic passes (pass 1 D, A, C; pass 2 A, C, D), the steadiest ranking in the wave. Black, molten orange and gold carry the EPIC read from above far better than Basaltplate's black and red; the risk is over-lighting (D) before the game adds its worn particle effect. Every set leaves the dummy's olive hips showing."
+}
