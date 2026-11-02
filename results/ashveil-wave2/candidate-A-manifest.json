@@ -1,0 +1,17 @@
+{
+  "skill": "Ashveil",
+  "look": "AshveilHelm,AshveilDress,AshveilSleeves,AshveilHem",
+  "rows_added": ["AshveilHelm", "AshveilDress", "AshveilSleeves", "AshveilHem"],
+  "intent": "A cinder-lolita Victorian gown: a thin charcoal circlet with violet-tipped tines and a pale veil above a fitted dark bodice and one bone belt, flaring into a pale ash bell skirt burnt black at the hem with one glowing violet seam, so the high camera reads a slim dark top over a full pale bell widest at the burnt hem.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A translucent or ragged cloth kind of piece for the veil and the burnt hem: opaque Fabric blocks cannot show a thin veil or a torn edge.",
+    "A tapered or fanning piece (a wedge that widens downward) so the skirt can flare as one continuous bell rather than stepped tiers.",
+    "A thin ring or torus kind of piece for the circlet, so it could be one part instead of four strips."
+  ]
+}

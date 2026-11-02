@@ -1,0 +1,23 @@
+{
+  "run": "ashveil-wave2",
+  "letter": "E",
+  "set": "AshveilGiantbone",
+  "looks": [
+    "AshveilGiantboneDress",
+    "AshveilGiantboneHelm",
+    "AshveilGiantboneHem",
+    "AshveilGiantboneSleeves"
+  ],
+  "original_looks": [
+    "AshveilDress",
+    "AshveilHelm",
+    "AshveilHem",
+    "AshveilSleeves"
+  ],
+  "pick_rank": 2,
+  "intent": "A burnt Ashfields court gown: an ash bodice and a widening ash underskirt under charred overpanels whose bold bone staves fan into a bell, with violet light at the centre seam and the hem, reading from the high camera as a slim ash top over a wide splayed skirt under a bone crown.",
+  "reason": "Giant's bone: a bone-spike crown over bone-and-charcoal rib pleats with violet seams, the most distinctive family and the most of its zone, made for an aura (6.23, second; up from 5.48 after the rework).",
+  "first_fix": "Close the split pleats into one continuous bell that carries round the back, and narrow the boxy sleeves.",
+  "parts": 81,
+  "epic": true
+}

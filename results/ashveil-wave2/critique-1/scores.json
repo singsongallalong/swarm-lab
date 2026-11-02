@@ -1,0 +1,22 @@
+{
+  "D": {"reads": 6.5, "elegance": 6, "skirt": 6.5, "parts": 6, "total": 6.28,
+        "why": "Pale ash skirt with a real side bell and a tall spiked crown reads most like a gown from above.",
+        "fix": "Slim the full-width grey sleeves and add a glowing violet hem seam and waist gem."},
+  "F": {"reads": 6.5, "elegance": 6, "skirt": 6, "parts": 6, "total": 6.18,
+        "why": "Charred black bodice over a pale lilac skirt with a violet waist gem is the clearest dress read.",
+        "fix": "Slim the bulky black sleeves, widen the hem, and replace the yellow headband with a bone or violet crown."},
+  "B": {"reads": 6, "elegance": 6.5, "skirt": 5, "parts": 6, "total": 5.95,
+        "why": "The violet flame-crown is the most epic, light-ready idea, but block sleeves and a near-straight skirt read armoured.",
+        "fix": "Slim the sleeves, bell out the skirt, and open the black box hood under the crown."},
+  "E": {"reads": 6, "elegance": 5.5, "skirt": 4.5, "parts": 5.5, "total": 5.48,
+        "why": "Bone crown and rib skirt are zone-true and distinctive, but the straight ribs read as a cage, not a flare.",
+        "fix": "Fan the bone ribs outward from the hip into a bell with fewer, bolder panels."},
+  "A": {"reads": 4.5, "elegance": 4.5, "skirt": 4.5, "parts": 5, "total": 4.58,
+        "why": "Flat mortarboard hat and stacked equal-width slabs read as a pagoda or armour, all mid-grey.",
+        "fix": "Replace the flat cap with a tall slim circlet and make the tiers widen strongly toward the hem."},
+  "C": {"reads": 3.5, "elegance": 4, "skirt": 5, "parts": 6, "total": 4.33,
+        "why": "All-black boxy figure with huge sleeves vanishes into the night and has almost no violet light.",
+        "fix": "Bring ash grey and bone white into the bodice and add a glowing violet hem and crown."},
+  "ranking": ["D", "F", "B", "E", "A", "C"],
+  "notes": "No candidate solved the wave's headline ask: every set still has full shoulder-width block sleeves. D and F lead on gown read (light skirt, defined waist); B has the best epic crown and E the best zone-true bone motif, and a merge of D's bell, F's contrast and B or E's crown would be strongest. Violet Neon is underused across the board; most sets need a glowing hem seam plus one waist gem."
+}

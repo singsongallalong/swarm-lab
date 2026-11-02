@@ -114,6 +114,9 @@ get a worn particle effect in the game.
 | HarvestbrideMilkmaid | harvestbride-wave2 (D) | Farmland | 1 | 85 | straw hat with a red ribbon over a tiered field-green bell, a true cone from the side |
 | HarvestbrideApron | harvestbride-wave2 (B) | Farmland | 2 | 80 | wheat-gold apron skirt flaring from the waist, the warmest country colour |
 | HarvestbrideWheatcrown | harvestbride-wave2 (F) | Farmland | 3 | 87 | tall wheat-sheaf crown over a parted gold skirt |
+| AshveilGatekeeper **EPIC** | ashveil-wave2 (D) | Ashfields | 1 | 86 | ash A-line with a pale front panel and violet hem, violet gems at the waist and in a tall fan crown |
+| AshveilGiantbone **EPIC** | ashveil-wave2 (E) | Ashfields | 2 | 81 | bone-spike crown over bone-and-charcoal rib pleats with violet seams |
+| AshveilEmber **EPIC** | ashveil-wave2 (C) | Ashfields | 3 | 81 | the best bell from the hip: charred petal panels over a violet-glowing hem |
 <!-- wave2-heartland-end -->
 
 ## Porting notes

@@ -1,0 +1,23 @@
+{
+  "run": "ashveil-wave2",
+  "letter": "D",
+  "set": "AshveilGatekeeper",
+  "looks": [
+    "AshveilGatekeeperDress",
+    "AshveilGatekeeperHelm",
+    "AshveilGatekeeperHem",
+    "AshveilGatekeeperSleeves"
+  ],
+  "original_looks": [
+    "AshveilDress",
+    "AshveilHelm",
+    "AshveilHem",
+    "AshveilSleeves"
+  ],
+  "pick_rank": 1,
+  "intent": "A charred court gown of ash cloth with a wide bell skirt, a bone-spired black crown and gate-violet at the throat, a glowing waist gem and a glowing hem seam; from the high camera it reads as slim shadow-grey sleeves over a pale, wide bell.",
+  "reason": "Fan crown: the most gown-like shape, an ash A-line with a pale front panel and a violet hem, violet gems at the waist and in a tall fan crown, all in the brief's palette (second critic 6.28, first; first critic 6.28, first).",
+  "first_fix": "Slim the shoulder-width grey block sleeves and lean the skirt panels further out so the hem clearly outflares the elbows.",
+  "parts": 86,
+  "epic": true
+}

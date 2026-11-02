@@ -1,0 +1,16 @@
+{
+  "skill": "Ashveil",
+  "look": "AshveilHelm,AshveilDress,AshveilSleeves,AshveilHem",
+  "rows_added": ["AshveilHelm", "AshveilDress", "AshveilSleeves", "AshveilHem"],
+  "intent": "A charred court gown of ash cloth with a wide bell skirt, a bone-spired black crown and gate-violet at the throat, a glowing waist gem and a glowing hem seam; from the high camera it reads as slim shadow-grey sleeves over a pale, wide bell.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A translucent veil material: the nape veil is solid Fabric and reads as a cloth flap rather than gauze.",
+    "A way to taper a panel on two axes at once: the skirt bell is stepped wedge tiers rather than one true cone."
+  ]
+}

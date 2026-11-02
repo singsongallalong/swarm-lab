@@ -1,0 +1,23 @@
+{
+  "run": "ashveil-wave2",
+  "letter": "C",
+  "set": "AshveilEmber",
+  "looks": [
+    "AshveilEmberDress",
+    "AshveilEmberHem",
+    "AshveilEmberSleeves",
+    "AshveilEmberVeil"
+  ],
+  "original_looks": [
+    "AshveilDress",
+    "AshveilHem",
+    "AshveilSleeves",
+    "AshveilVeil"
+  ],
+  "pick_rank": 3,
+  "intent": "A gothic widow's gown of charcoal cloth and an ash-grey veil, bone-laced at the waist with its tiered bell skirt burnt to ragged, violet-glowing tongues; from the high camera it reads as a narrow-shouldered, ash-crowned A-line.",
+  "reason": "Charred bell: the best true bell from the hip, charred petal panels over a violet-glowing hem (5.48, third).",
+  "first_fix": "Slim the huge black sleeves and add an ash or bone layer to the bodice and underskirt, or it vanishes into the night from above.",
+  "parts": 81,
+  "epic": true
+}

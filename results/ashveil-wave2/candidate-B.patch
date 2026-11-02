@@ -1,0 +1,259 @@
+diff --git a/src/shared/data/ArmourLooks.luau b/src/shared/data/ArmourLooks.luau
+index 28ed00e..006397f 100644
+--- a/src/shared/data/ArmourLooks.luau
++++ b/src/shared/data/ArmourLooks.luau
+@@ -3,6 +3,10 @@
+ -- (art pass A014), and every offhand's (A020): shields and talismans are worn
+ -- on the left forearm and hand. A new look is a new file here, never code.
+ local ArmourLookTypes = require("../ArmourLookTypes")
++local AshveilDress = require("./armourLooks/AshveilDress")
++local AshveilHelm = require("./armourLooks/AshveilHelm")
++local AshveilHem = require("./armourLooks/AshveilHem")
++local AshveilSleeves = require("./armourLooks/AshveilSleeves")
+ local BoneTalisman = require("./armourLooks/BoneTalisman")
+ local Brigandine = require("./armourLooks/Brigandine")
+ local Buckler = require("./armourLooks/Buckler")
+@@ -32,6 +36,10 @@ local StuddedGloves = require("./armourLooks/StuddedGloves")
+ local TowerShield = require("./armourLooks/TowerShield")
+ 
+ local ArmourLooks: { [string]: ArmourLookTypes.ArmourLook } = {
++	AshveilDress = AshveilDress,
++	AshveilHelm = AshveilHelm,
++	AshveilHem = AshveilHem,
++	AshveilSleeves = AshveilSleeves,
+ 	BoneTalisman = BoneTalisman,
+ 	Brigandine = Brigandine,
+ 	Buckler = Buckler,
+diff --git a/src/shared/data/armourLooks/AshveilDress.luau b/src/shared/data/armourLooks/AshveilDress.luau
+new file mode 100644
+index 0000000..95eb25a
+--- /dev/null
++++ b/src/shared/data/armourLooks/AshveilDress.luau
+@@ -0,0 +1,69 @@
++--!strict
++-- The Ashveil dress (the Ashfields gown set's chest): a pale ash bodice fitted
++-- over the bust and cinched at a dark waist, its right side burnt to charcoal,
++-- a bone stomacher and an underbust band. The skirt hangs in two tiers from
++-- each thigh, each tier much wider and deeper than the last and meeting at the
++-- centre, so the hem reads as a bell clearly wider than the shoulders.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local ash = { 126, 124, 132 }
++local ashPale = { 158, 154, 164 }
++local ashShade = { 104, 102, 112 }
++local charcoal = { 46, 44, 52 }
++local charcoalDeep = { 30, 29, 36 }
++local bone = { 206, 204, 198 }
++local violet = { 104, 70, 140 }
++local glow = { 190, 132, 255 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "AshveilDress",
++	slot = "Chest",
++	parts = {
++		-- The bodice, its shaped front, and the fire-blackened right half.
++		Kit.box("UpperTorso", { 2.06, 1.64, 1.06 }, { 0, 0, 0 }, "Fabric", ash),
++		Kit.box("UpperTorso", { 0.62, 0.54, 0.14 }, { -0.42, 0.22, -0.55 }, "Fabric", ash, { 0, 0, -4 }),
++		Kit.box("UpperTorso", { 0.62, 0.54, 0.14 }, { 0.42, 0.22, -0.55 }, "Fabric", ash, { 0, 0, 4 }),
++		Kit.box("UpperTorso", { 1.12, 0.9, 1.08 }, { 0.44, -0.34, 0 }, "Fabric", charcoal, { 0, 0, -8 }),
++		-- The violet V at the collarbones, the bone stomacher and its seam,
++		-- and the bone band under the bust.
++		Kit.box("UpperTorso", { 0.72, 0.07, 0.06 }, { -0.48, 0.7, -0.56 }, "Fabric", violet, { 0, 0, -10 }),
++		Kit.box("UpperTorso", { 0.72, 0.07, 0.06 }, { 0.48, 0.7, -0.56 }, "Fabric", violet, { 0, 0, 10 }),
++		Kit.box("UpperTorso", { 0.34, 1.18, 0.05 }, { 0, 0.02, -0.56 }, "SmoothPlastic", bone),
++		Kit.box("UpperTorso", { 0.05, 1.1, 0.03 }, { 0, 0.02, -0.59 }, "Fabric", violet),
++		Kit.box("UpperTorso", { 1.35, 0.05, 0.14 }, { 0, -0.08, -0.59 }, "SmoothPlastic", bone),
++		-- Waist: a dark cinch under a bone belt and a violet seam, with the
++		-- set's glowing stone at the buckle and a small bustle behind.
++		Kit.box("LowerTorso", { 2.04, 0.4, 1.06 }, { 0, 0, 0 }, "Fabric", charcoal),
++		Kit.box("LowerTorso", { 2.08, 0.12, 1.1 }, { 0, 0.06, 0 }, "SmoothPlastic", bone),
++		Kit.box("LowerTorso", { 2.1, 0.05, 1.12 }, { 0, -0.04, 0 }, "Fabric", violet),
++		Kit.box("LowerTorso", { 0.16, 0.16, 0.16 }, { 0, 0.06, -0.6 }, "Neon", glow),
++		Kit.box("LowerTorso", { 1.15, 0.16, 0.26 }, { 0, -0.05, 0.62 }, "Fabric", ashPale),
++		-- One slim upper sleeve, narrow as the arm, belling only at the forearm.
++		Kit.box("UpperArm", { 1.04, 1.2, 1.04 }, { 0, 0, 0 }, "Fabric", ashShade),
++		-- The upper skirt tier, wide at the hip, meeting its twin at the centre.
++		Kit.box("UpperLeg", { 1.4, 0.64, 0.1 }, { 0.1, 0.42, -0.6 }, "Fabric", ash, { 5, 0, 0 }),
++		Kit.box("UpperLeg", { 1.4, 0.64, 0.1 }, { 0.1, 0.42, 0.6 }, "Fabric", ash, { -5, 0, 0 }),
++		Kit.box("UpperLeg", { 0.1, 0.64, 1.34 }, { 0.86, 0.42, 0 }, "Fabric", ash, { 0, 0, 8 }),
++		-- The lower tier, much wider and deeper, stopping above the knee.
++		Kit.box("UpperLeg", { 1.7, 0.7, 0.1 }, { 0.15, -0.21, -0.72 }, "Fabric", ash, { 7, 0, 0 }),
++		Kit.box("UpperLeg", { 1.7, 0.7, 0.1 }, { 0.15, -0.21, 0.72 }, "Fabric", ash, { -7, 0, 0 }),
++		Kit.box("UpperLeg", { 0.1, 0.7, 1.62 }, { 1.12, -0.21, 0 }, "Fabric", ash, { 0, 0, 12 }),
++		-- A bone band and a violet line at the tier seam.
++		Kit.box("UpperLeg", { 1.42, 0.07, 0.1 }, { 0.1, 0.12, -0.66 }, "SmoothPlastic", bone, { 5, 0, 0 }),
++		Kit.box("UpperLeg", { 1.72, 0.04, 0.05 }, { 0.15, 0.1, -0.775 }, "Fabric", violet, { 7, 0, 0 }),
++		-- Charcoal where the fire took the skirt, higher on the right front.
++		Kit.box(
++			"UpperLeg",
++			{ 0.75, 0.64, 0.05 },
++			{ 0.55, -0.3, -0.78 },
++			"Fabric",
++			charcoalDeep,
++			{ 7, 0, -10 },
++			"Right"
++		),
++		Kit.box("UpperLeg", { 0.6, 0.52, 0.05 }, { 0.45, -0.34, 0.785 }, "Fabric", charcoal, { -7, 0, 8 }, "Left"),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/AshveilHelm.luau b/src/shared/data/armourLooks/AshveilHelm.luau
+new file mode 100644
+index 0000000..f7bafa3
+--- /dev/null
++++ b/src/shared/data/armourLooks/AshveilHelm.luau
+@@ -0,0 +1,53 @@
++--!strict
++-- The Ashveil veil (the Ashfields gown set's helm): an open face under a pale
++-- ash veil, a bone circlet and brow point, and behind the head a tall fan of
++-- violet light-shapes. One lower blade is burnt out to charcoal so the fan is
++-- not a stamped ring; a single Neon core is the only light on the head.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local ashPale = { 158, 154, 164 }
++local charcoal = { 46, 44, 52 }
++local bone = { 206, 204, 198 }
++local boneDim = { 166, 164, 158 }
++local violet = { 104, 70, 140 }
++local violetDeep = { 62, 42, 92 }
++local violetPale = { 150, 112, 194 }
++local glow = { 190, 132, 255 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "AshveilHelm",
++	slot = "Helm",
++	hidesHair = true,
++	parts = {
++		-- The pale veil over the back of the head and crown, its tail and comb;
++		-- the face is left open below the circlet.
++		Kit.box("Head", { 1.24, 1.1, 0.56 }, { 0, 0, 0.33 }, "Fabric", ashPale),
++		Kit.box("Head", { 1.24, 0.12, 1.24 }, { 0, 0.6, 0 }, "Fabric", ashPale),
++		Kit.box("Head", { 0.9, 0.6, 0.07 }, { 0, -0.25, 0.64 }, "Fabric", ashPale),
++		Kit.box("Head", { 0.92, 0.08, 0.09 }, { 0, 0.04, 0.64 }, "SmoothPlastic", bone),
++		-- The circlet with its brow stone, and the small point over the brow.
++		Kit.box("Head", { 1.26, 0.1, 1.26 }, { 0, 0.3, 0 }, "SmoothPlastic", bone),
++		Kit.box("Head", { 0.16, 0.18, 0.07 }, { 0, 0.3, -0.63 }, "Fabric", violetPale),
++		Kit.box("Head", { 0.08, 0.3, 0.06 }, { 0, 0.48, -0.61 }, "SmoothPlastic", boneDim, { -4, 0, 0 }),
++		-- The bone mount on the back of the head, where the fan is pinned.
++		Kit.box("Head", { 0.88, 0.34, 0.1 }, { 0, 0.3, 0.65 }, "SmoothPlastic", boneDim),
++		-- The stem of the fan, rising just above the head.
++		Kit.box("Head", { 0.14, 0.46, 0.1 }, { 0, 0.5, 0.7 }, "Fabric", violetDeep, { 10, 0, 0 }),
++		-- Lower blades: the left still lit, the right burnt out.
++		Kit.box("Head", { 0.14, 0.64, 0.1 }, { -0.35, 0.84, 0.72 }, "Fabric", violet, { 12, 0, 22 }),
++		Kit.box("Head", { 0.14, 0.6, 0.1 }, { 0.35, 0.82, 0.72 }, "Fabric", charcoal, { 12, 0, -22 }),
++		-- Mid blades at the fan's widest, leaning in towards the apex.
++		Kit.box("Head", { 0.13, 0.64, 0.1 }, { -0.56, 1.32, 0.76 }, "Fabric", violet, { 14, 0, -12 }),
++		Kit.box("Head", { 0.13, 0.64, 0.1 }, { 0.56, 1.32, 0.76 }, "Fabric", violet, { 14, 0, 12 }),
++		-- Upper blades, pale as the gate's far light, and the apex.
++		Kit.box("Head", { 0.12, 0.58, 0.09 }, { -0.28, 1.8, 0.8 }, "Fabric", violetPale, { 16, 0, -26 }),
++		Kit.box("Head", { 0.12, 0.58, 0.09 }, { 0.28, 1.8, 0.8 }, "Fabric", violetPale, { 16, 0, 26 }),
++		Kit.box("Head", { 0.13, 0.44, 0.09 }, { 0, 2.04, 0.84 }, "Fabric", violetPale, { 18, 0, 0 }),
++		Kit.box("Head", { 0.15, 0.11, 0.09 }, { 0, 2.26, 0.86 }, "SmoothPlastic", bone, { 18, 0, 0 }),
++		-- The one hot core in the fan.
++		Kit.box("Head", { 0.06, 0.38, 0.05 }, { 0, 1.96, 0.89 }, "Neon", glow, { 18, 0, 0 }),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/AshveilHem.luau b/src/shared/data/armourLooks/AshveilHem.luau
+new file mode 100644
+index 0000000..933fe8e
+--- /dev/null
++++ b/src/shared/data/armourLooks/AshveilHem.luau
+@@ -0,0 +1,41 @@
++--!strict
++-- The Ashveil hem (the Ashfields gown set's boots): the skirt's two lower
++-- tiers carried on the shins, each much wider and deeper than the last, so the
++-- hem stands clearly wider than the shoulders. The lower tier is burnt to
++-- charcoal, edged in pale violet, a charcoal scar climbs the left and one thin
++-- glowing crack marks the right. Under it, dark boots with bone toes.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local ash = { 126, 124, 132 }
++local charcoal = { 46, 44, 52 }
++local charcoalDeep = { 30, 29, 36 }
++local bone = { 206, 204, 198 }
++local violetPale = { 150, 112, 194 }
++local glow = { 190, 132, 255 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "AshveilHem",
++	slot = "Boots",
++	parts = {
++		-- The upper tier, from the knee to mid-shin.
++		Kit.box("LowerLeg", { 2, 0.56, 0.1 }, { 0.22, 0.38, -0.86 }, "Fabric", ash, { 8, 0, 0 }),
++		Kit.box("LowerLeg", { 2, 0.56, 0.1 }, { 0.22, 0.38, 0.86 }, "Fabric", ash, { -8, 0, 0 }),
++		Kit.box("LowerLeg", { 0.1, 0.56, 1.92 }, { 1.32, 0.38, 0 }, "Fabric", ash, { 0, 0, 12 }),
++		-- The lower tier, the burnt hem, flaring far out and down.
++		Kit.box("LowerLeg", { 2.6, 0.58, 0.1 }, { 0.32, -0.17, -1.02 }, "Fabric", charcoal, { 10, 0, 0 }),
++		Kit.box("LowerLeg", { 2.6, 0.58, 0.1 }, { 0.32, -0.17, 1.02 }, "Fabric", charcoal, { -10, 0, 0 }),
++		Kit.box("LowerLeg", { 0.1, 0.58, 2.32 }, { 1.72, -0.17, 0 }, "Fabric", charcoalDeep, { 0, 0, 16 }),
++		-- The pale violet hem edge, and the burn climbing the left front.
++		Kit.box("LowerLeg", { 2.62, 0.06, 0.05 }, { 0.32, -0.45, -1.115 }, "Fabric", violetPale, { 10, 0, 0 }),
++		Kit.box("LowerLeg", { 0.05, 0.06, 2.32 }, { 1.84, -0.45, 0 }, "Fabric", violetPale, { 0, 0, 16 }),
++		Kit.box("LowerLeg", { 0.9, 0.54, 0.05 }, { 0.75, -0.24, -0.925 }, "Fabric", charcoal, { 8, 0, 8 }, "Left"),
++		-- One thin crack of the gate's fire at the right hem.
++		Kit.box("LowerLeg", { 0.05, 0.3, 0.04 }, { 0.95, -0.3, -1.09 }, "Neon", glow, { 10, 0, -13 }, "Right"),
++		-- Dark boots under the skirt, and their bone toes.
++		Kit.box("Foot", { 1.06, 0.44, 1.14 }, { 0, 0.05, -0.03 }, "Fabric", charcoal),
++		Kit.box("Foot", { 0.68, 0.16, 0.32 }, { 0, 0.1, -0.64 }, "SmoothPlastic", bone),
++	},
++}
++
++return look
+diff --git a/src/shared/data/armourLooks/AshveilSleeves.luau b/src/shared/data/armourLooks/AshveilSleeves.luau
+new file mode 100644
+index 0000000..688475a
+--- /dev/null
++++ b/src/shared/data/armourLooks/AshveilSleeves.luau
+@@ -0,0 +1,29 @@
++--!strict
++-- The Ashveil sleeves (the Ashfields gown set's gloves): a close ash sleeve
++-- down the forearm with a small bell cuff at the wrist, its rim bone and its
++-- lining violet, the right cuff burnt to charcoal. The hands are dark gloves.
++local ArmourLookTypes = require("../../ArmourLookTypes")
++local Kit = require("./Kit")
++
++local ash = { 126, 124, 132 }
++local charcoal = { 46, 44, 52 }
++local bone = { 206, 204, 198 }
++local violet = { 104, 70, 140 }
++
++local look: ArmourLookTypes.ArmourLook = {
++	name = "AshveilSleeves",
++	slot = "Gloves",
++	parts = {
++		-- The forearm and its small bell, rimmed and lined at the wrist.
++		Kit.box("LowerArm", { 1.06, 0.5, 1.06 }, { 0, 0.3, 0 }, "Fabric", ash),
++		Kit.box("LowerArm", { 1.24, 0.42, 1.24 }, { 0, -0.26, 0 }, "Fabric", ash),
++		Kit.box("LowerArm", { 1.28, 0.06, 1.28 }, { 0, -0.44, 0 }, "SmoothPlastic", bone),
++		Kit.box("LowerArm", { 1.16, 0.06, 1.16 }, { 0, -0.39, 0 }, "Fabric", violet),
++		-- The right cuff's burn.
++		Kit.box("LowerArm", { 0.55, 0.4, 1.26 }, { 0.14, -0.26, 0 }, "Fabric", charcoal, { 0, 0, -8 }, "Right"),
++		-- The glove.
++		Kit.box("Hand", { 1.03, 0.36, 1.03 }, { 0, 0, 0 }, "Fabric", charcoal),
++	},
++}
++
++return look
+diff --git a/src/shared/data/catalog/Gear.luau b/src/shared/data/catalog/Gear.luau
+index 3499551..c224154 100644
+--- a/src/shared/data/catalog/Gear.luau
++++ b/src/shared/data/catalog/Gear.luau
+@@ -64,6 +64,12 @@ local rows: { [string]: Row } = {
+ 	["armour:IronGreaves"] = row("Iron greaves over boots."),
+ 	["armour:FenscaleWaders"] = row("Tall waders soaked black to the waterline, a scale plate over the shin."),
+ 	["armour:LinenSlippers"] = row("Soft cloth shoes with linen-wrapped shins."),
++	["armour:AshveilHelm"] = row("A pale veil and bone circlet under a tall violet halo, one blade burnt out."),
++	["armour:AshveilDress"] = row(
++		"A fitted ash bodice, half burnt to charcoal, over a skirt that flares to the floor."
++	),
++	["armour:AshveilSleeves"] = row("Slim ash sleeves belling into small bone-rimmed cuffs at the wrists."),
++	["armour:AshveilHem"] = row("A long charcoal-scorched skirt hem edged in violet, over bone-toed shoes."),
+ 	-- Offhands (A020), worn on the left forearm and hand
+ 	["armour:Buckler"] = row("A small round buckler with an iron rim, cross-band and boss."),
+ 	["armour:KiteShield"] = row("A tall teardrop kite shield, painted oxblood with a pale cross."),

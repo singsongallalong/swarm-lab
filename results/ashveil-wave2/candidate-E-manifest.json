@@ -1,0 +1,16 @@
+{
+  "skill": "Ashveil",
+  "look": "AshveilHelm,AshveilDress,AshveilSleeves,AshveilHem",
+  "rows_added": ["AshveilHelm", "AshveilDress", "AshveilSleeves", "AshveilHem"],
+  "intent": "A burnt Ashfields court gown: an ash bodice and a widening ash underskirt under charred overpanels whose bold bone staves fan into a bell, with violet light at the centre seam and the hem, reading from the high camera as a slim ash top over a wide splayed skirt under a bone crown.",
+  "renders": [
+    ".swarm/out/armour-set-r4.png",
+    ".swarm/out/armour-set-close-r4.png",
+    ".swarm/out/armour-set-fit-r4.png"
+  ],
+  "revisions": 3,
+  "requests": [
+    "A tapered skirt panel or cone: boxes only tilt in straight planes, so the bell is a set of splayed panels rather than one smooth flare.",
+    "A ring (torus) for a bone crown/halo: the part set has only boxes, wedges, cylinders and balls, so the crown is separate shards."
+  ]
+}

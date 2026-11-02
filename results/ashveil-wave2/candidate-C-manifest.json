@@ -1,0 +1,16 @@
+{
+  "skill": "Ashveil",
+  "look": "AshveilVeil,AshveilDress,AshveilSleeves,AshveilHem",
+  "rows_added": ["AshveilVeil", "AshveilDress", "AshveilSleeves", "AshveilHem"],
+  "intent": "A gothic widow's gown of charcoal cloth and an ash-grey veil, bone-laced at the waist with its tiered bell skirt burnt to ragged, violet-glowing tongues; from the high camera it reads as a narrow-shouldered, ash-crowned A-line.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A sheer or translucent cloth material for the veil; Fabric renders the ash veil as a solid slab.",
+    "A tapered skirt-panel shape; boxes can only step the bell outward in tiers, so the flare reads as stacked tiers rather than one smooth cone."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "D": {"reads": 6.5, "elegance": 6.0, "skirt": 6.5, "parts": 6.0, "total": 6.28,
+        "why": "The most gown-like shape: an ash A-line skirt with a pale front panel, a violet hem, waist and crown gems, and a tall fan crown, all in the right palette.",
+        "fix": "Slim the shoulder-width grey block sleeves and lean the skirt panels further out so the hem clearly outflares the elbows."},
+  "E": {"reads": 6.5, "elegance": 6.5, "skirt": 5.5, "parts": 6.0, "total": 6.23,
+        "why": "The most distinctive family: a bone-spike crown and bone-and-charcoal rib pleats with violet seams that suit the giants'-bones zone and read from above.",
+        "fix": "Close the split pleats into one continuous bell that carries round the back, and narrow the boxy sleeves."},
+  "C": {"reads": 5.0, "elegance": 5.0, "skirt": 7.0, "parts": 5.5, "total": 5.48,
+        "why": "The best true bell from the hip, with charred petals and a violet hem, ruined by huge black block sleeves and an overall darkness that vanishes at night.",
+        "fix": "Slim the black sleeves and add an ash or bone layer to the bodice and underskirt so the gown has a light value from above."},
+  "B": {"reads": 5.5, "elegance": 5.5, "skirt": 5.5, "parts": 5.0, "total": 5.43,
+        "why": "The violet halo is a good place for light, but the all-grey boxy torso and shoulder-width sleeves read as armour, and the stepped skirt is short and stiff.",
+        "fix": "Slim and darken the sleeves, lengthen and widen the bell, and swap the gold waist trim for bone or violet."},
+  "F": {"reads": 5.0, "elegance": 4.5, "skirt": 6.0, "parts": 5.0, "total": 5.05,
+        "why": "The pale ash tiered skirt flares well, but the hood and spike headpiece and the dominant dark block sleeves read as a monk, not a lady.",
+        "fix": "Open the hood into a crown or halo, slim the sleeves, and char the lowest skirt tier with a violet edge."},
+  "A": {"reads": 3.5, "elegance": 3.5, "skirt": 4.0, "parts": 4.0, "total": 3.68,
+        "why": "Black block sleeves wider than the shoulders and a hip shelf make a square armoured outline, and the skirt barely widens.",
+        "fix": "Cut the sleeves slim, remove the hip shelf, and build a real flared skirt from the hip with a bone crown and violet seams."},
+  "ranking": ["D", "E", "C", "B", "F", "A"],
+  "notes": "No candidate solved slim sleeves: every set still wears block sleeves the width of the shoulders, and that remains the top fix across the run. D and E are close. D is the prettiest gown shape and E is the most inventive family. A builder who merged C's bell, E's crown and pleats and D's palette with slim sleeves would win."
+}

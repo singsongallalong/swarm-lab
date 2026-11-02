@@ -1,0 +1,16 @@
+{
+  "skill": "Ashveil",
+  "look": "AshveilHelm,AshveilDress,AshveilSleeves,AshveilHem",
+  "rows_added": ["AshveilHelm", "AshveilDress", "AshveilSleeves", "AshveilHem"],
+  "intent": "A gothic ash-smoke dancer's gown, burnt charcoal at the fitted bodice and paling through drifting ash tiers to a bone-edged hem, its tall smoke crown and violet embers reading as a narrow dark top over a wide pale bell from the high camera.",
+  "renders": [
+    ".swarm/out/armour-set-r3.png",
+    ".swarm/out/armour-set-close-r3.png",
+    ".swarm/out/armour-set-fit-r3.png"
+  ],
+  "revisions": 2,
+  "requests": [
+    "A translucent or fading material for the veil and hem wisps, so the smoke can thin at its edges.",
+    "A tapered trapezoid part (or a wedge that widens downward) for a smooth skirt flare without stepped tiers."
+  ]
+}
